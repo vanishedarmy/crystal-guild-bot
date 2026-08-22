@@ -1,0 +1,1359 @@
+[
+  {
+    "id": "bomb_king",
+    "name": "Bomb King",
+    "hp": 9000,
+    "xp": 1800,
+    "gil": 6500,
+    "tier": "World Boss",
+    "recommended_level": 20,
+    "signature": "Self-Destruct",
+    "description": "A royal Bomb swollen with unstable fire and deeply irresponsible confidence",
+    "drops": [
+      {
+        "item_id": "bomb_kings_fuse",
+        "chance": 0.45
+      },
+      {
+        "item_id": "bomb_core",
+        "chance": 0.65
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Self-Destruct",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "king_behemoth",
+    "name": "King Behemoth",
+    "hp": 22000,
+    "xp": 4500,
+    "gil": 15000,
+    "tier": "High Boss",
+    "recommended_level": 55,
+    "signature": "Meteor",
+    "description": "A towering Behemoth monarch that considers Meteor a reasonable disagreement-resolution tool.",
+    "drops": [
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.65
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.08
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Meteor",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "tonberry_king",
+    "name": "Tonberry King",
+    "hp": 18000,
+    "xp": 4000,
+    "gil": 13000,
+    "tier": "High Boss",
+    "recommended_level": 50,
+    "signature": "Everyone's Grudge",
+    "description": "The crown, robe and tiny knife do absolutely nothing to make this situation less threatening.",
+    "drops": [
+      {
+        "item_id": "chef_knife",
+        "chance": 0.18
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.06
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Everyone's Grudge",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "death_machine_prime",
+    "name": "Death Machine Prime",
+    "hp": 30000,
+    "xp": 6000,
+    "gil": 20000,
+    "tier": "High Boss",
+    "recommended_level": 65,
+    "signature": "Nuke",
+    "description": "An upgraded killing machine left running long after everyone responsible had stopped answering emails.",
+    "drops": [
+      {
+        "item_id": "magitek_core",
+        "chance": 0.65
+      },
+      {
+        "item_id": "warmech_component",
+        "chance": 0.08
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Nuke",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "rift_dragon",
+    "name": "Rift Dragon",
+    "hp": 42000,
+    "xp": 8500,
+    "gil": 28000,
+    "tier": "High Boss",
+    "recommended_level": 72,
+    "signature": "Dimensional Breath",
+    "description": "A dragon twisted by the Rift, carrying enough unstable aether to upset several realities at once.",
+    "drops": [
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.7
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.65
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Dimensional Breath",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "ifrit",
+    "name": "Ifrit",
+    "tier": "Primal Boss",
+    "recommended_level": 25,
+    "hp": 18000,
+    "xp": 4200,
+    "gil": 12000,
+    "signature": "Hellfire",
+    "description": "An infernal eidolon whose flames punish unprepared parties.",
+    "drops": [
+      {
+        "item_id": "summoners_ember",
+        "chance": 0.45
+      },
+      {
+        "item_id": "bomb_core",
+        "chance": 0.6
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Flames Awaken",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Hellfire Rising",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Inferno",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "shiva",
+    "name": "Shiva",
+    "tier": "Primal Boss",
+    "recommended_level": 25,
+    "hp": 18000,
+    "xp": 4200,
+    "gil": 12000,
+    "signature": "Diamond Dust",
+    "description": "An icebound eidolon that turns overconfidence into decorative frost.",
+    "drops": [
+      {
+        "item_id": "glacial_crystal",
+        "chance": 0.45
+      },
+      {
+        "item_id": "crystal_shard",
+        "chance": 0.6
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Frozen Court",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Permafrost",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Diamond Dust",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "ramuh",
+    "name": "Ramuh",
+    "tier": "Primal Boss",
+    "recommended_level": 28,
+    "hp": 20000,
+    "xp": 4600,
+    "gil": 13000,
+    "signature": "Judgment Bolt",
+    "description": "An ancient lord of lightning who tests the Guild with thunderous judgment.",
+    "drops": [
+      {
+        "item_id": "judgment_spark",
+        "chance": 0.45
+      },
+      {
+        "item_id": "crystal_shard",
+        "chance": 0.6
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Gathering Storm",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Thunderhead",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Judgment Bolt",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "garuda_prime",
+    "name": "Garuda",
+    "tier": "Primal Boss",
+    "recommended_level": 30,
+    "hp": 22000,
+    "xp": 5000,
+    "gil": 14000,
+    "signature": "Aerial Blast",
+    "description": "A violent wind eidolon whose storms make standing still an aspirational goal.",
+    "drops": [
+      {
+        "item_id": "gale_feather",
+        "chance": 0.45
+      },
+      {
+        "item_id": "garuda_feather",
+        "chance": 0.7
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Aerial Blast",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "titan",
+    "name": "Titan",
+    "tier": "Primal Boss",
+    "recommended_level": 32,
+    "hp": 26000,
+    "xp": 5600,
+    "gil": 15500,
+    "signature": "Earthen Fury",
+    "description": "A colossal earth eidolon with a regrettable enthusiasm for tectonics.",
+    "drops": [
+      {
+        "item_id": "earth_heart",
+        "chance": 0.45
+      },
+      {
+        "item_id": "adamantite",
+        "chance": 0.1
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Stonewall",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Fault Line",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Earthen Fury",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "leviathan",
+    "name": "Leviathan",
+    "tier": "Primal Boss",
+    "recommended_level": 35,
+    "hp": 29000,
+    "xp": 6200,
+    "gil": 17000,
+    "signature": "Tidal Wave",
+    "description": "The great sea serpent arrives with enough water to invalidate several maps.",
+    "drops": [
+      {
+        "item_id": "tidal_scale",
+        "chance": 0.45
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.35
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Rising Tide",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Maelstrom",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Tidal Wave",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "ultros",
+    "name": "Ultros",
+    "tier": "World Boss",
+    "recommended_level": 28,
+    "hp": 19000,
+    "xp": 4300,
+    "gil": 13500,
+    "signature": "Tentacle",
+    "description": "A recurring purple nuisance with too many arms and far too much confidence.",
+    "drops": [
+      {
+        "item_id": "ultros_tentacle",
+        "chance": 0.55
+      },
+      {
+        "item_id": "fish_scale",
+        "chance": 0.6
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Tentacle Trouble",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Eight-Armed Panic",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Seafood Catastrophe",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "demon_wall",
+    "name": "Demon Wall",
+    "tier": "World Boss",
+    "recommended_level": 35,
+    "hp": 30000,
+    "xp": 6500,
+    "gil": 19000,
+    "signature": "Crush",
+    "description": "The corridor is shrinking, the wall is moving, and architecture has chosen violence.",
+    "drops": [
+      {
+        "item_id": "demon_wall_fragment",
+        "chance": 0.55
+      },
+      {
+        "item_id": "crystal_shard",
+        "chance": 0.45
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Crush",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "gilgamesh",
+    "name": "Gilgamesh",
+    "tier": "High Boss",
+    "recommended_level": 45,
+    "hp": 45000,
+    "xp": 9000,
+    "gil": 26000,
+    "signature": "Excalipoor?",
+    "description": "A legendary weapon collector storms in from the Rift looking for worthy opponents and suspicious swords.",
+    "drops": [
+      {
+        "item_id": "genji_token",
+        "chance": 0.45
+      },
+      {
+        "item_id": "masamune_fragment",
+        "chance": 0.18
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Weapon Collector",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Enough Exposition",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Final Bridge",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "cerberus",
+    "name": "Cerberus",
+    "tier": "High Boss",
+    "recommended_level": 48,
+    "hp": 48000,
+    "xp": 9800,
+    "gil": 28000,
+    "signature": "Triple",
+    "description": "Three heads, three spells, zero respect for sensible action economy.",
+    "drops": [
+      {
+        "item_id": "dark_matter",
+        "chance": 0.1
+      },
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.3
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Triple",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "deathgaze",
+    "name": "Deathgaze",
+    "tier": "High Boss",
+    "recommended_level": 52,
+    "hp": 56000,
+    "xp": 11000,
+    "gil": 32000,
+    "signature": "Death",
+    "description": "A winged terror that appears where travelers were hoping for literally anything else.",
+    "drops": [
+      {
+        "item_id": "deathgaze_plume",
+        "chance": 0.45
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.12
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Death",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "atomos",
+    "name": "Atomos",
+    "tier": "High Boss",
+    "recommended_level": 55,
+    "hp": 62000,
+    "xp": 12000,
+    "gil": 35000,
+    "signature": "Wormhole",
+    "description": "A living void that attempts to solve raid composition by simply swallowing it.",
+    "drops": [
+      {
+        "item_id": "void_essence",
+        "chance": 0.55
+      },
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.45
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Wormhole",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "bahamut",
+    "name": "Bahamut",
+    "tier": "High Boss",
+    "recommended_level": 65,
+    "hp": 95000,
+    "xp": 17500,
+    "gil": 52000,
+    "signature": "Mega Flare",
+    "description": "The Dragon King tests only those heroes whose insurance paperwork is already complete.",
+    "drops": [
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.8
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.22
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Wyrmking",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Megaflare Charge",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Teraflare",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "ultima_weapon",
+    "name": "Ultima Weapon",
+    "tier": "High Boss",
+    "recommended_level": 70,
+    "hp": 125000,
+    "xp": 22000,
+    "gil": 65000,
+    "signature": "Ultima",
+    "description": "An ancient weaponized abomination fueled by enough magic to make the Black Mages nervous.",
+    "drops": [
+      {
+        "item_id": "ultima_core",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.2
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Containment Failure",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Ultima Resonance",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Ultima",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "warmech",
+    "name": "Warmech",
+    "tier": "Superboss",
+    "recommended_level": 75,
+    "hp": 150000,
+    "xp": 26000,
+    "gil": 76000,
+    "signature": "Nuclear",
+    "description": "A wandering death machine famous for arriving uninvited and leaving fewer adventurers than it found.",
+    "drops": [
+      {
+        "item_id": "warmech_component",
+        "chance": 0.38
+      },
+      {
+        "item_id": "magitek_core",
+        "chance": 0.75
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Target Acquired",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Nuclear Protocol",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Extermination",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "omega",
+    "name": "Omega",
+    "tier": "Superboss",
+    "recommended_level": 80,
+    "hp": 190000,
+    "xp": 32000,
+    "gil": 95000,
+    "signature": "Wave Cannon",
+    "description": "An interdimensional machine whose primary directive appears to be humbling max-level parties.",
+    "drops": [
+      {
+        "item_id": "omega_core",
+        "chance": 0.28
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.28
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Analysis",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Adaptation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Wave Cannon Protocol",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "shinryu",
+    "name": "Shinryu",
+    "tier": "Superboss",
+    "recommended_level": 82,
+    "hp": 210000,
+    "xp": 34000,
+    "gil": 100000,
+    "signature": "Tidal Wave",
+    "description": "A legendary dragon from beyond the Rift that treats elemental catastrophe as a rotation.",
+    "drops": [
+      {
+        "item_id": "shinryu_scale",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.85
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Dragon God",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Elemental Cataclysm",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Final Nova",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "omega_weapon",
+    "name": "Omega Weapon",
+    "tier": "Superboss",
+    "recommended_level": 88,
+    "hp": 280000,
+    "xp": 43000,
+    "gil": 130000,
+    "signature": "Terra Break",
+    "description": "A weapon beyond weapons; the Guild recommends bringing heroes you are emotionally prepared to lose temporarily.",
+    "drops": [
+      {
+        "item_id": "omega_core",
+        "chance": 0.4
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.35
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Weapon Online",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Core Unsealed",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Terra Break",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "emerald_weapon",
+    "name": "Emerald Weapon",
+    "tier": "Superboss",
+    "recommended_level": 90,
+    "hp": 320000,
+    "xp": 48000,
+    "gil": 145000,
+    "signature": "Aire Tam Storm",
+    "description": "An immense Weapon awakened beneath the waves, heavily armored and deeply opposed to breathing room.",
+    "drops": [
+      {
+        "item_id": "earth_harp",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.32
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Submerged Terror",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Eyes of Emerald",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Aire Tam Storm",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "ruby_weapon",
+    "name": "Ruby Weapon",
+    "tier": "Superboss",
+    "recommended_level": 90,
+    "hp": 340000,
+    "xp": 50000,
+    "gil": 150000,
+    "signature": "Whirlsand",
+    "description": "A desert Weapon that turns party members into optional content.",
+    "drops": [
+      {
+        "item_id": "desert_rose",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.34
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Desert Ambush",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Tentacles Unbound",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Ruby Catastrophe",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "ozma",
+    "name": "Ozma",
+    "tier": "Superboss",
+    "recommended_level": 92,
+    "hp": 375000,
+    "xp": 54000,
+    "gil": 165000,
+    "signature": "Doomsday",
+    "description": "A floating sphere of cosmic hostility that has no business being this threatening.",
+    "drops": [
+      {
+        "item_id": "ozma_shard",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.38
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Impossible Geometry",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Event Horizon",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Doomsday",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "nemesis",
+    "name": "Nemesis",
+    "tier": "Superboss",
+    "recommended_level": 94,
+    "hp": 430000,
+    "xp": 59000,
+    "gil": 180000,
+    "signature": "Armageddon",
+    "description": "A monster-arena nightmare assembled from the Guild\u2019s worst collection habits.",
+    "drops": [
+      {
+        "item_id": "nemesis_mark",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.4
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Armageddon",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "kaiser_dragon",
+    "name": "Kaiser Dragon",
+    "tier": "Superboss",
+    "recommended_level": 95,
+    "hp": 475000,
+    "xp": 64000,
+    "gil": 195000,
+    "signature": "Heartless Angel",
+    "description": "An ancient dragon sovereign with a spell list long enough to require pagination.",
+    "drops": [
+      {
+        "item_id": "kaiser_scale",
+        "chance": 0.32
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.9
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Heartless Angel",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "proto_babil",
+    "name": "Proto-Babil",
+    "tier": "Superboss",
+    "recommended_level": 96,
+    "hp": 520000,
+    "xp": 68000,
+    "gil": 210000,
+    "signature": "Divine Judgment",
+    "description": "An ancient lunar war machine that makes Magitek technology look charmingly homemade.",
+    "drops": [
+      {
+        "item_id": "proto_babil_core",
+        "chance": 0.32
+      },
+      {
+        "item_id": "omega_core",
+        "chance": 0.15
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Divine Judgment",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "long_gui",
+    "name": "Long Gui",
+    "tier": "Superboss",
+    "recommended_level": 96,
+    "hp": 560000,
+    "xp": 70000,
+    "gil": 220000,
+    "signature": "Ultima",
+    "description": "A towering adamantoise-class titan with the approximate mobility and durability of a continent.",
+    "drops": [
+      {
+        "item_id": "long_gui_plate",
+        "chance": 0.34
+      },
+      {
+        "item_id": "adamantite",
+        "chance": 0.65
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Ultima",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "penance",
+    "name": "Penance",
+    "tier": "Ultimate Superboss",
+    "recommended_level": 98,
+    "hp": 700000,
+    "xp": 85000,
+    "gil": 270000,
+    "signature": "Judgment Day",
+    "description": "A final trial accompanied by regenerating arms and absolutely no sympathy for casual preparation.",
+    "drops": [
+      {
+        "item_id": "penance_core",
+        "chance": 0.34
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.55
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Judgment Begins",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Arms Regenerate",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Obliteration",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 8,
+    "attacks_per_round": 5,
+    "aoe_every": 2
+  },
+  {
+    "id": "yiazmat",
+    "name": "Yiazmat",
+    "tier": "Ultimate Superboss",
+    "recommended_level": 99,
+    "hp": 850000,
+    "xp": 100000,
+    "gil": 320000,
+    "signature": "Cyclone",
+    "description": "An ancient elite mark built for the kind of raid where the snack break becomes part of the strategy.",
+    "drops": [
+      {
+        "item_id": "yiazmat_scale",
+        "chance": 0.36
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.95
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Ancient Wyrm",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Cyclone of Ages",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Growing Threat",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 8,
+    "attacks_per_round": 5,
+    "aoe_every": 2
+  },
+  {
+    "id": "absolute_virtue",
+    "name": "Absolute Virtue",
+    "tier": "Ultimate Superboss",
+    "recommended_level": 99,
+    "hp": 1000000,
+    "xp": 120000,
+    "gil": 400000,
+    "signature": "Medusa Javelin",
+    "description": "An infamous celestial terror reserved for communities that have mistaken suffering for a group activity.",
+    "drops": [
+      {
+        "item_id": "absolute_crystal",
+        "chance": 0.36
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.6
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.6
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Virtue Unbound",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Perfect Defense",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Absolute Judgment",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 8,
+    "attacks_per_round": 5,
+    "aoe_every": 2
+  }
+]

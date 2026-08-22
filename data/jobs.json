@@ -1,0 +1,1444 @@
+[
+  {
+    "id": "warrior",
+    "name": "Warrior",
+    "tier": "starter",
+    "combat_type": "physical",
+    "damage_mod": 1.12,
+    "crit_bonus": 0.01,
+    "signature": "Armor Break",
+    "signature_chance": 0.14,
+    "signature_multiplier": 1.45,
+    "growth": {
+      "str": 2.4,
+      "vit": 2.3,
+      "mag": 0.7,
+      "spr": 1.0,
+      "dex": 1.2,
+      "lck": 0.8
+    },
+    "attack_name": "Ruin Blade",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Heavy Swing",
+        "description": "Physical damage +5%.",
+        "effects": {
+          "physical_mult": 0.05
+        }
+      },
+      {
+        "level": 10,
+        "name": "Iron Will",
+        "description": "Damage taken -6%.",
+        "effects": {
+          "defense_mult": 0.06
+        }
+      },
+      {
+        "level": 20,
+        "name": "Sunder",
+        "description": "Armor Break triggers more often.",
+        "effects": {
+          "signature_chance": 0.04
+        }
+      },
+      {
+        "level": 30,
+        "name": "War Cry",
+        "description": "All damage +6%.",
+        "effects": {
+          "damage_mult": 0.06
+        }
+      },
+      {
+        "level": 40,
+        "name": "Unyielding",
+        "description": "Maximum HP +10%.",
+        "effects": {
+          "hp_mult": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Battle Hardened",
+      "description": "Damage taken -5% on any Job.",
+      "effects": {
+        "defense_mult": 0.05
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "monk",
+    "name": "Monk",
+    "tier": "starter",
+    "combat_type": "physical",
+    "damage_mod": 1.08,
+    "crit_bonus": 0.1,
+    "signature": "Pummel",
+    "signature_chance": 0.17,
+    "signature_multiplier": 1.55,
+    "growth": {
+      "str": 2.2,
+      "vit": 1.9,
+      "mag": 0.6,
+      "spr": 1.0,
+      "dex": 1.9,
+      "lck": 1.1
+    },
+    "attack_name": "Chakra Burst",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Focus",
+        "description": "Critical chance +3%.",
+        "effects": {
+          "crit_bonus": 0.03
+        }
+      },
+      {
+        "level": 10,
+        "name": "Chakra",
+        "description": "Maximum HP +6%.",
+        "effects": {
+          "hp_mult": 0.06
+        }
+      },
+      {
+        "level": 20,
+        "name": "Twin Fists",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.06
+        }
+      },
+      {
+        "level": 30,
+        "name": "Perfect Balance",
+        "description": "Physical damage +8%.",
+        "effects": {
+          "physical_mult": 0.08
+        }
+      },
+      {
+        "level": 40,
+        "name": "Final Form",
+        "description": "Critical chance +5%.",
+        "effects": {
+          "crit_bonus": 0.05
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Counterstance",
+      "description": "Physical damage +4% on any Job.",
+      "effects": {
+        "physical_mult": 0.04
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "thief",
+    "name": "Thief",
+    "tier": "starter",
+    "combat_type": "physical",
+    "damage_mod": 0.98,
+    "crit_bonus": 0.07,
+    "loot_bonus": 0.18,
+    "gil_bonus": 0.1,
+    "signature": "Mug",
+    "signature_chance": 0.18,
+    "signature_multiplier": 1.35,
+    "growth": {
+      "str": 1.5,
+      "vit": 1.3,
+      "mag": 0.8,
+      "spr": 1.0,
+      "dex": 2.5,
+      "lck": 2.0
+    },
+    "attack_name": "Shadowbind",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Treasure Sense",
+        "description": "Loot chance +5%.",
+        "effects": {
+          "loot_bonus": 0.05
+        }
+      },
+      {
+        "level": 10,
+        "name": "Flee Artist",
+        "description": "Evasion chance +4%.",
+        "effects": {
+          "evade_chance": 0.04
+        }
+      },
+      {
+        "level": 20,
+        "name": "Mug II",
+        "description": "Gil earned +10%.",
+        "effects": {
+          "gil_bonus": 0.1
+        }
+      },
+      {
+        "level": 30,
+        "name": "Sneak Attack",
+        "description": "Critical chance +5%.",
+        "effects": {
+          "crit_bonus": 0.05
+        }
+      },
+      {
+        "level": 40,
+        "name": "Master Thief",
+        "description": "Loot chance +10%.",
+        "effects": {
+          "loot_bonus": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Treasure Hunter",
+      "description": "Loot chance +5% on any Job.",
+      "effects": {
+        "loot_bonus": 0.05
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "blackmage",
+    "name": "Black Mage",
+    "tier": "starter",
+    "combat_type": "magic",
+    "damage_mod": 1.24,
+    "crit_bonus": 0.0,
+    "signature": "Flare",
+    "signature_chance": 0.13,
+    "signature_multiplier": 1.7,
+    "growth": {
+      "str": 0.6,
+      "vit": 1.0,
+      "mag": 2.7,
+      "spr": 1.8,
+      "dex": 1.1,
+      "lck": 1.0
+    },
+    "attack_name": "elemental spell",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Elemental Focus",
+        "description": "Magic damage +6%.",
+        "effects": {
+          "magic_mult": 0.06
+        }
+      },
+      {
+        "level": 10,
+        "name": "Arcane Mind",
+        "description": "MAG +5%.",
+        "effects": {
+          "mag_mult": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Elemental Mastery",
+        "description": "Weakness damage improves.",
+        "effects": {
+          "weakness_bonus": 0.1
+        }
+      },
+      {
+        "level": 30,
+        "name": "Flare Adept",
+        "description": "Signature attacks trigger more often.",
+        "effects": {
+          "signature_chance": 0.04
+        }
+      },
+      {
+        "level": 40,
+        "name": "Sorcery Supreme",
+        "description": "Magic damage +10%.",
+        "effects": {
+          "magic_mult": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Arcane Reservoir",
+      "description": "Magic damage +5% on any Job.",
+      "effects": {
+        "magic_mult": 0.05
+      }
+    },
+    "resource_mode": "mp"
+  },
+  {
+    "id": "whitemage",
+    "name": "White Mage",
+    "tier": "starter",
+    "combat_type": "magic",
+    "damage_mod": 0.93,
+    "crit_bonus": 0.0,
+    "heal_chance": 0.7,
+    "signature": "Holy",
+    "signature_chance": 0.11,
+    "signature_multiplier": 1.65,
+    "growth": {
+      "str": 0.7,
+      "vit": 1.3,
+      "mag": 2.0,
+      "spr": 2.7,
+      "dex": 1.0,
+      "lck": 1.2
+    },
+    "attack_name": "Dia",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Cure II",
+        "description": "Healing +10%.",
+        "effects": {
+          "heal_bonus": 0.1
+        }
+      },
+      {
+        "level": 10,
+        "name": "Protect",
+        "description": "Damage taken -5%.",
+        "effects": {
+          "defense_mult": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Blessing",
+        "description": "Maximum HP +5%.",
+        "effects": {
+          "hp_mult": 0.05
+        }
+      },
+      {
+        "level": 30,
+        "name": "Divine Grace",
+        "description": "Healing +15%.",
+        "effects": {
+          "heal_bonus": 0.15
+        }
+      },
+      {
+        "level": 40,
+        "name": "Holy Mastery",
+        "description": "Magic damage +8%.",
+        "effects": {
+          "magic_mult": 0.08
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Auto-Regen",
+      "description": "Maximum HP +5% and healing +5% on any Job.",
+      "effects": {
+        "hp_mult": 0.05,
+        "heal_bonus": 0.05
+      }
+    },
+    "resource_mode": "mp"
+  },
+  {
+    "id": "redmage",
+    "name": "Red Mage",
+    "tier": "starter",
+    "combat_type": "hybrid",
+    "damage_mod": 1.03,
+    "crit_bonus": 0.03,
+    "heal_chance": 0.38,
+    "signature": "Doublecast",
+    "signature_chance": 0.13,
+    "signature_multiplier": 1.6,
+    "growth": {
+      "str": 1.5,
+      "vit": 1.4,
+      "mag": 1.8,
+      "spr": 1.7,
+      "dex": 1.6,
+      "lck": 1.2
+    },
+    "attack_name": "Red Magic",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Dual Discipline",
+        "description": "All damage +4%.",
+        "effects": {
+          "damage_mult": 0.04
+        }
+      },
+      {
+        "level": 10,
+        "name": "Quickcast",
+        "description": "Signature chance +3%.",
+        "effects": {
+          "signature_chance": 0.03
+        }
+      },
+      {
+        "level": 20,
+        "name": "Versatility",
+        "description": "Critical chance +3% and healing +5%.",
+        "effects": {
+          "crit_bonus": 0.03,
+          "heal_bonus": 0.05
+        }
+      },
+      {
+        "level": 30,
+        "name": "Chainspell",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.05
+        }
+      },
+      {
+        "level": 40,
+        "name": "Jack of All Trades",
+        "description": "All damage +8%.",
+        "effects": {
+          "damage_mult": 0.08
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Versatile Soul",
+      "description": "All damage +3% on any Job.",
+      "effects": {
+        "damage_mult": 0.03
+      }
+    },
+    "resource_mode": "mp"
+  },
+  {
+    "id": "paladin",
+    "name": "Paladin",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 20
+      },
+      {
+        "type": "job_level",
+        "job_id": "whitemage",
+        "amount": 10
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "oath_of_light"
+      }
+    ],
+    "combat_type": "hybrid",
+    "damage_mod": 1.09,
+    "crit_bonus": 0.01,
+    "heal_chance": 0.42,
+    "signature": "Holy Blade",
+    "signature_chance": 0.15,
+    "signature_multiplier": 1.6,
+    "growth": {
+      "str": 2.0,
+      "vit": 2.7,
+      "mag": 1.4,
+      "spr": 2.2,
+      "dex": 1.1,
+      "lck": 1.0
+    },
+    "attack_name": "Holy Strike",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Cover",
+        "description": "Damage taken -7%.",
+        "effects": {
+          "defense_mult": 0.07
+        }
+      },
+      {
+        "level": 10,
+        "name": "Sheltron",
+        "description": "Maximum HP +8%.",
+        "effects": {
+          "hp_mult": 0.08
+        }
+      },
+      {
+        "level": 20,
+        "name": "Sword Oath",
+        "description": "Physical damage +7%.",
+        "effects": {
+          "physical_mult": 0.07
+        }
+      },
+      {
+        "level": 30,
+        "name": "Clemency",
+        "description": "Healing +15%.",
+        "effects": {
+          "heal_bonus": 0.15
+        }
+      },
+      {
+        "level": 40,
+        "name": "Hallowed Ground",
+        "description": "Damage taken -10%.",
+        "effects": {
+          "defense_mult": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Guardian's Oath",
+      "description": "Damage taken -6% on any Job.",
+      "effects": {
+        "defense_mult": 0.06
+      }
+    },
+    "resource_mode": "dual"
+  },
+  {
+    "id": "darkknight",
+    "name": "Dark Knight",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 20
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "abyssal_oath"
+      }
+    ],
+    "combat_type": "physical",
+    "damage_mod": 1.25,
+    "crit_bonus": 0.03,
+    "signature": "Souleater",
+    "signature_chance": 0.16,
+    "signature_multiplier": 1.82,
+    "growth": {
+      "str": 2.7,
+      "vit": 2.1,
+      "mag": 1.3,
+      "spr": 1.2,
+      "dex": 1.3,
+      "lck": 0.9
+    },
+    "attack_name": "Darkness",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Darkside",
+        "description": "Physical damage +8%.",
+        "effects": {
+          "physical_mult": 0.08
+        }
+      },
+      {
+        "level": 10,
+        "name": "Blackest Night",
+        "description": "Damage taken -5%.",
+        "effects": {
+          "defense_mult": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Blood Weapon",
+        "description": "Critical chance +4%.",
+        "effects": {
+          "crit_bonus": 0.04
+        }
+      },
+      {
+        "level": 30,
+        "name": "Living Shadow",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.07
+        }
+      },
+      {
+        "level": 40,
+        "name": "Abyss Walker",
+        "description": "All damage +10%.",
+        "effects": {
+          "damage_mult": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Edge of Darkness",
+      "description": "All damage +5% on any Job.",
+      "effects": {
+        "damage_mult": 0.05
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "dragoon",
+    "name": "Dragoon",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "character_level",
+        "amount": 20
+      },
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 15
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "skybound_trial"
+      }
+    ],
+    "combat_type": "physical",
+    "damage_mod": 1.18,
+    "crit_bonus": 0.05,
+    "signature": "Jump",
+    "signature_chance": 0.21,
+    "signature_multiplier": 1.85,
+    "growth": {
+      "str": 2.5,
+      "vit": 2.0,
+      "mag": 0.8,
+      "spr": 1.1,
+      "dex": 2.1,
+      "lck": 1.0
+    },
+    "attack_name": "Lance Thrust",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "High Jump",
+        "description": "Signature damage +12%.",
+        "effects": {
+          "signature_mult": 0.12
+        }
+      },
+      {
+        "level": 10,
+        "name": "Lancer's Poise",
+        "description": "Critical chance +3%.",
+        "effects": {
+          "crit_bonus": 0.03
+        }
+      },
+      {
+        "level": 20,
+        "name": "Dragon Sight",
+        "description": "Physical damage +7%.",
+        "effects": {
+          "physical_mult": 0.07
+        }
+      },
+      {
+        "level": 30,
+        "name": "Mirage Dive",
+        "description": "Signature chance +5%.",
+        "effects": {
+          "signature_chance": 0.05
+        }
+      },
+      {
+        "level": 40,
+        "name": "Stardiver",
+        "description": "Signature damage +20%.",
+        "effects": {
+          "signature_mult": 0.2
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Highwind",
+      "description": "Critical damage +12% on any Job.",
+      "effects": {
+        "crit_damage": 0.12
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "ninja",
+    "name": "Ninja",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "thief",
+        "amount": 25
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "shadow_of_the_guild"
+      }
+    ],
+    "combat_type": "physical",
+    "damage_mod": 1.08,
+    "crit_bonus": 0.1,
+    "loot_bonus": 0.12,
+    "signature": "Ninjutsu",
+    "signature_chance": 0.2,
+    "signature_multiplier": 1.65,
+    "growth": {
+      "str": 1.9,
+      "vit": 1.4,
+      "mag": 1.5,
+      "spr": 1.2,
+      "dex": 2.8,
+      "lck": 1.8
+    },
+    "attack_name": "Throw",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Dual Wield",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.08
+        }
+      },
+      {
+        "level": 10,
+        "name": "Shukuchi",
+        "description": "Evasion +5%.",
+        "effects": {
+          "evade_chance": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Trick Attack",
+        "description": "Critical chance +5%.",
+        "effects": {
+          "crit_bonus": 0.05
+        }
+      },
+      {
+        "level": 30,
+        "name": "Kassatsu",
+        "description": "Signature chance +5%.",
+        "effects": {
+          "signature_chance": 0.05
+        }
+      },
+      {
+        "level": 40,
+        "name": "Ten Chi Jin",
+        "description": "All damage +10%.",
+        "effects": {
+          "damage_mult": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Fleetfoot",
+      "description": "Evasion +4% on any Job.",
+      "effects": {
+        "evade_chance": 0.04
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "samurai",
+    "name": "Samurai",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "character_level",
+        "amount": 25
+      },
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 20
+      },
+      {
+        "type": "hunt_clear",
+        "hunt_id": "the_riven_ronin",
+        "amount": 1
+      }
+    ],
+    "combat_type": "physical",
+    "damage_mod": 1.22,
+    "crit_bonus": 0.08,
+    "signature": "Midare Setsugekka",
+    "signature_chance": 0.15,
+    "signature_multiplier": 2.0,
+    "growth": {
+      "str": 2.6,
+      "vit": 1.8,
+      "mag": 0.9,
+      "spr": 1.1,
+      "dex": 2.0,
+      "lck": 1.5
+    },
+    "attack_name": "Iaijutsu",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Third Eye",
+        "description": "Damage taken -4%.",
+        "effects": {
+          "defense_mult": 0.04
+        }
+      },
+      {
+        "level": 10,
+        "name": "Meikyo Shisui",
+        "description": "Critical chance +4%.",
+        "effects": {
+          "crit_bonus": 0.04
+        }
+      },
+      {
+        "level": 20,
+        "name": "Higanbana",
+        "description": "Physical damage +8%.",
+        "effects": {
+          "physical_mult": 0.08
+        }
+      },
+      {
+        "level": 30,
+        "name": "Shoha",
+        "description": "Signature damage +15%.",
+        "effects": {
+          "signature_mult": 0.15
+        }
+      },
+      {
+        "level": 40,
+        "name": "Ogi Namikiri",
+        "description": "All damage +10%.",
+        "effects": {
+          "damage_mult": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Bushido",
+      "description": "Critical chance +3% on any Job.",
+      "effects": {
+        "crit_bonus": 0.03
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "summoner",
+    "name": "Summoner",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "blackmage",
+        "amount": 20
+      },
+      {
+        "type": "job_level",
+        "job_id": "whitemage",
+        "amount": 20
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "call_of_the_eikons"
+      }
+    ],
+    "combat_type": "magic",
+    "damage_mod": 1.2,
+    "crit_bonus": 0.01,
+    "signature": "Grand Summon",
+    "signature_chance": 0.16,
+    "signature_multiplier": 1.9,
+    "growth": {
+      "str": 0.7,
+      "vit": 1.2,
+      "mag": 2.8,
+      "spr": 2.3,
+      "dex": 1.2,
+      "lck": 1.2
+    },
+    "attack_name": "Aetherbolt",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Aetherflow",
+        "description": "Magic damage +6%.",
+        "effects": {
+          "magic_mult": 0.06
+        }
+      },
+      {
+        "level": 10,
+        "name": "Egi Assault",
+        "description": "Signature chance +4%.",
+        "effects": {
+          "signature_chance": 0.04
+        }
+      },
+      {
+        "level": 20,
+        "name": "Astral Flow",
+        "description": "Signature damage +15%.",
+        "effects": {
+          "signature_mult": 0.15
+        }
+      },
+      {
+        "level": 30,
+        "name": "Elemental Attunement",
+        "description": "Weakness damage +15%.",
+        "effects": {
+          "weakness_bonus": 0.15
+        }
+      },
+      {
+        "level": 40,
+        "name": "Trance",
+        "description": "Magic damage +12%.",
+        "effects": {
+          "magic_mult": 0.12
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Aetherbound",
+      "description": "Weakness damage +10% on any Job.",
+      "effects": {
+        "weakness_bonus": 0.1
+      }
+    },
+    "resource_mode": "mp"
+  },
+  {
+    "id": "bluemage",
+    "name": "Blue Mage",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "bestiary_unique",
+        "amount": 20
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "aetheric_fieldwork"
+      }
+    ],
+    "combat_type": "hybrid",
+    "damage_mod": 1.08,
+    "crit_bonus": 0.03,
+    "signature": "Enemy Skill",
+    "signature_chance": 0.18,
+    "signature_multiplier": 1.75,
+    "growth": {
+      "str": 1.5,
+      "vit": 1.7,
+      "mag": 2.0,
+      "spr": 1.7,
+      "dex": 1.5,
+      "lck": 1.4
+    },
+    "attack_name": "Blue Magic",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Learning",
+        "description": "Bestiary hunt damage +5%.",
+        "effects": {
+          "hunt_damage_mult": 0.05
+        }
+      },
+      {
+        "level": 10,
+        "name": "Mighty Guard",
+        "description": "Damage taken -6%.",
+        "effects": {
+          "defense_mult": 0.06
+        }
+      },
+      {
+        "level": 20,
+        "name": "Goblin Punch",
+        "description": "Physical damage +6%.",
+        "effects": {
+          "physical_mult": 0.06
+        }
+      },
+      {
+        "level": 30,
+        "name": "Aqua Breath",
+        "description": "Magic damage +8%.",
+        "effects": {
+          "magic_mult": 0.08
+        }
+      },
+      {
+        "level": 40,
+        "name": "Level 5 Death-ish",
+        "description": "Hunt damage +12%.",
+        "effects": {
+          "hunt_damage_mult": 0.12
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Monster Lore",
+      "description": "Hunt damage +7% on any Job.",
+      "effects": {
+        "hunt_damage_mult": 0.07
+      }
+    },
+    "resource_mode": "mp"
+  },
+  {
+    "id": "timemage",
+    "name": "Time Mage",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "blackmage",
+        "amount": 20
+      },
+      {
+        "type": "character_level",
+        "amount": 25
+      }
+    ],
+    "combat_type": "magic",
+    "damage_mod": 1.15,
+    "crit_bonus": 0.02,
+    "signature": "Comet",
+    "signature_chance": 0.17,
+    "signature_multiplier": 1.75,
+    "growth": {
+      "str": 0.7,
+      "vit": 1.1,
+      "mag": 2.5,
+      "spr": 2.0,
+      "dex": 1.8,
+      "lck": 1.1
+    },
+    "attack_name": "Time Magic",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Haste",
+        "description": "Evasion +4%.",
+        "effects": {
+          "evade_chance": 0.04
+        }
+      },
+      {
+        "level": 10,
+        "name": "Slow",
+        "description": "Damage taken -4%.",
+        "effects": {
+          "defense_mult": 0.04
+        }
+      },
+      {
+        "level": 20,
+        "name": "Quick",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.06
+        }
+      },
+      {
+        "level": 30,
+        "name": "Gravity",
+        "description": "Magic damage +9%.",
+        "effects": {
+          "magic_mult": 0.09
+        }
+      },
+      {
+        "level": 40,
+        "name": "Meteor",
+        "description": "Signature damage +18%.",
+        "effects": {
+          "signature_mult": 0.18
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Temporal Step",
+      "description": "Evasion +3% on any Job.",
+      "effects": {
+        "evade_chance": 0.03
+      }
+    },
+    "resource_mode": "mp"
+  },
+  {
+    "id": "bard",
+    "name": "Bard",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "redmage",
+        "amount": 15
+      },
+      {
+        "type": "ventures",
+        "amount": 30
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "song_of_the_wanderer"
+      }
+    ],
+    "combat_type": "hybrid",
+    "damage_mod": 1.0,
+    "crit_bonus": 0.06,
+    "signature": "Requiem",
+    "signature_chance": 0.18,
+    "signature_multiplier": 1.55,
+    "growth": {
+      "str": 1.4,
+      "vit": 1.4,
+      "mag": 1.7,
+      "spr": 2.0,
+      "dex": 2.1,
+      "lck": 1.8
+    },
+    "attack_name": "Resonant Arrow",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Mage's Ballad",
+        "description": "Magic damage +5%.",
+        "effects": {
+          "magic_mult": 0.05
+        }
+      },
+      {
+        "level": 10,
+        "name": "Army's Paeon",
+        "description": "Physical damage +5%.",
+        "effects": {
+          "physical_mult": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Wanderer's Minuet",
+        "description": "Critical chance +4%.",
+        "effects": {
+          "crit_bonus": 0.04
+        }
+      },
+      {
+        "level": 30,
+        "name": "Troubadour",
+        "description": "Damage taken -5%.",
+        "effects": {
+          "defense_mult": 0.05
+        }
+      },
+      {
+        "level": 40,
+        "name": "Finale",
+        "description": "All damage +8%.",
+        "effects": {
+          "damage_mult": 0.08
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Battle Hymn",
+      "description": "Critical chance +2% and damage +2% on any Job.",
+      "effects": {
+        "crit_bonus": 0.02,
+        "damage_mult": 0.02
+      }
+    },
+    "resource_mode": "dual"
+  },
+  {
+    "id": "machinist",
+    "name": "Machinist",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "thief",
+        "amount": 15
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "magitek_drone",
+        "amount": 10
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "salvage_rights"
+      }
+    ],
+    "combat_type": "physical",
+    "damage_mod": 1.14,
+    "crit_bonus": 0.07,
+    "signature": "Wildfire",
+    "signature_chance": 0.18,
+    "signature_multiplier": 1.72,
+    "growth": {
+      "str": 1.9,
+      "vit": 1.5,
+      "mag": 1.1,
+      "spr": 1.2,
+      "dex": 2.6,
+      "lck": 1.5
+    },
+    "attack_name": "Aether Round",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Gauss Round",
+        "description": "Physical damage +6%.",
+        "effects": {
+          "physical_mult": 0.06
+        }
+      },
+      {
+        "level": 10,
+        "name": "Ricochet",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Reassemble",
+        "description": "Critical chance +5%.",
+        "effects": {
+          "crit_bonus": 0.05
+        }
+      },
+      {
+        "level": 30,
+        "name": "Automaton",
+        "description": "All damage +6%.",
+        "effects": {
+          "damage_mult": 0.06
+        }
+      },
+      {
+        "level": 40,
+        "name": "Queen's Gambit",
+        "description": "Signature damage +18%.",
+        "effects": {
+          "signature_mult": 0.18
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Targeting Array",
+      "description": "Critical chance +3% on any Job.",
+      "effects": {
+        "crit_bonus": 0.03
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "beastmaster",
+    "name": "Beastmaster",
+    "tier": "advanced",
+    "unlock": [
+      {
+        "type": "bestiary_unique",
+        "amount": 30
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "behemoth",
+        "amount": 3
+      }
+    ],
+    "combat_type": "physical",
+    "damage_mod": 1.12,
+    "crit_bonus": 0.04,
+    "loot_bonus": 0.08,
+    "signature": "Call Beast",
+    "signature_chance": 0.18,
+    "signature_multiplier": 1.72,
+    "growth": {
+      "str": 2.1,
+      "vit": 2.0,
+      "mag": 1.1,
+      "spr": 1.4,
+      "dex": 1.8,
+      "lck": 1.7
+    },
+    "attack_name": "Beast Lash",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Feral Instinct",
+        "description": "Loot chance +4%.",
+        "effects": {
+          "loot_bonus": 0.04
+        }
+      },
+      {
+        "level": 10,
+        "name": "Thick Hide",
+        "description": "Maximum HP +7%.",
+        "effects": {
+          "hp_mult": 0.07
+        }
+      },
+      {
+        "level": 20,
+        "name": "Predator",
+        "description": "Critical chance +4%.",
+        "effects": {
+          "crit_bonus": 0.04
+        }
+      },
+      {
+        "level": 30,
+        "name": "Pack Tactics",
+        "description": "Chance to strike twice.",
+        "effects": {
+          "double_strike_chance": 0.06
+        }
+      },
+      {
+        "level": 40,
+        "name": "King of Beasts",
+        "description": "Hunt damage +12%.",
+        "effects": {
+          "hunt_damage_mult": 0.12
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Feral Wisdom",
+      "description": "Loot +3% and HP +3% on any Job.",
+      "effects": {
+        "loot_bonus": 0.03,
+        "hp_mult": 0.03
+      }
+    },
+    "resource_mode": "ap"
+  },
+  {
+    "id": "sage",
+    "name": "Sage",
+    "tier": "elite",
+    "unlock": [
+      {
+        "type": "job_level",
+        "job_id": "blackmage",
+        "amount": 35
+      },
+      {
+        "type": "job_level",
+        "job_id": "whitemage",
+        "amount": 35
+      },
+      {
+        "type": "mastery_count",
+        "amount": 2
+      },
+      {
+        "type": "quest_complete",
+        "quest_id": "wisdom_of_the_crystal"
+      }
+    ],
+    "combat_type": "magic",
+    "damage_mod": 1.22,
+    "crit_bonus": 0.02,
+    "heal_chance": 0.58,
+    "signature": "Pneuma",
+    "signature_chance": 0.17,
+    "signature_multiplier": 1.85,
+    "growth": {
+      "str": 0.7,
+      "vit": 1.5,
+      "mag": 2.7,
+      "spr": 2.8,
+      "dex": 1.5,
+      "lck": 1.3
+    },
+    "attack_name": "Noulith Barrage",
+    "abilities": [
+      {
+        "level": 5,
+        "name": "Kardia",
+        "description": "Healing +10%.",
+        "effects": {
+          "heal_bonus": 0.1
+        }
+      },
+      {
+        "level": 10,
+        "name": "Eukrasia",
+        "description": "Damage taken -5%.",
+        "effects": {
+          "defense_mult": 0.05
+        }
+      },
+      {
+        "level": 20,
+        "name": "Addersting",
+        "description": "Magic damage +8%.",
+        "effects": {
+          "magic_mult": 0.08
+        }
+      },
+      {
+        "level": 30,
+        "name": "Haima",
+        "description": "Maximum HP +8%.",
+        "effects": {
+          "hp_mult": 0.08
+        }
+      },
+      {
+        "level": 40,
+        "name": "Pneuma Mastery",
+        "description": "All damage +10% and healing +10%.",
+        "effects": {
+          "damage_mult": 0.1,
+          "heal_bonus": 0.1
+        }
+      }
+    ],
+    "mastery": {
+      "name": "Crystal Wisdom",
+      "description": "Magic +4%, defense +4% on any Job.",
+      "effects": {
+        "magic_mult": 0.04,
+        "defense_mult": 0.04
+      }
+    },
+    "resource_mode": "mp"
+  }
+]

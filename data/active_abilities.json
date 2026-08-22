@@ -1,0 +1,1080 @@
+[
+  {
+    "job_id": "warrior",
+    "abilities": [
+      {
+        "id": "power_break",
+        "name": "Power Break",
+        "level": 1,
+        "target": "enemy",
+        "description": "Heavy physical strike that weakens enemy damage for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.15
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 1.0
+          }
+        ],
+        "cost": 4,
+        "resource": "ap"
+      },
+      {
+        "id": "provoke",
+        "name": "Provoke",
+        "level": 15,
+        "target": "self",
+        "description": "Draws enemy attention and reduces incoming damage for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.25
+          },
+          {
+            "type": "status",
+            "status": "taunt",
+            "turns": 2,
+            "magnitude": 2.5
+          }
+        ],
+        "cost": 6,
+        "resource": "ap"
+      },
+      {
+        "id": "armor_break",
+        "name": "Armor Break",
+        "level": 30,
+        "target": "enemy",
+        "description": "Crushing strike that leaves the enemy vulnerable.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.75
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.16,
+            "chance": 1.0
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "monk",
+    "abilities": [
+      {
+        "id": "bootshine",
+        "name": "Bootshine",
+        "level": 1,
+        "target": "enemy",
+        "description": "Fast physical attack with a large critical bonus.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.1,
+            "crit_bonus": 0.25
+          }
+        ],
+        "cost": 3,
+        "resource": "ap"
+      },
+      {
+        "id": "chakra",
+        "name": "Chakra",
+        "level": 15,
+        "target": "self",
+        "description": "Restores your own HP and clears one harmful status.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.45
+          },
+          {
+            "type": "cleanse",
+            "count": 1
+          }
+        ],
+        "cost": 7,
+        "resource": "ap"
+      },
+      {
+        "id": "pummel",
+        "name": "Pummel",
+        "level": 30,
+        "target": "enemy",
+        "description": "A relentless flurry of strikes.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.95
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "thief",
+    "abilities": [
+      {
+        "id": "sneak_attack",
+        "name": "Sneak Attack",
+        "level": 1,
+        "target": "enemy",
+        "description": "Precise physical attack with increased critical chance.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.18,
+            "crit_bonus": 0.18
+          }
+        ],
+        "cost": 4,
+        "resource": "ap"
+      },
+      {
+        "id": "smoke_bomb",
+        "name": "Smoke Bomb",
+        "level": 15,
+        "target": "self",
+        "description": "Greatly increases evasion for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 2,
+            "magnitude": 0.28
+          }
+        ],
+        "cost": 6,
+        "resource": "ap"
+      },
+      {
+        "id": "mug",
+        "name": "Mug",
+        "level": 30,
+        "target": "enemy",
+        "description": "A vicious strike that exposes the target to follow-up attacks.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.65
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0
+          }
+        ],
+        "cost": 10,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "blackmage",
+    "abilities": [
+      {
+        "id": "fire",
+        "name": "Fire",
+        "level": 1,
+        "target": "enemy",
+        "description": "Focused elemental magic. Exploits Fire weakness when present.",
+        "element": "Fire",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.2
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
+        "id": "thunder",
+        "name": "Thunder",
+        "level": 15,
+        "target": "enemy",
+        "description": "Lightning magic with a chance to stagger the enemy.",
+        "element": "Lightning",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.45
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.2
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
+        "id": "flare",
+        "name": "Flare",
+        "level": 30,
+        "target": "enemy",
+        "description": "Massive non-elemental magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.2
+          }
+        ],
+        "cost": 18,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "whitemage",
+    "abilities": [
+      {
+        "id": "cure",
+        "name": "Cure",
+        "level": 1,
+        "target": "ally",
+        "description": "Restore HP to one living ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.35
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
+        "id": "protect",
+        "name": "Protect",
+        "level": 15,
+        "target": "ally",
+        "description": "Reduces damage taken by an ally for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
+        "id": "raise",
+        "name": "Raise",
+        "level": 30,
+        "target": "ally",
+        "description": "Revives a KO'd ally with 35% HP.",
+        "effects": [
+          {
+            "type": "revive",
+            "fraction": 0.35
+          }
+        ],
+        "cost": 18,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "redmage",
+    "abilities": [
+      {
+        "id": "jolt",
+        "name": "Jolt",
+        "level": 1,
+        "target": "enemy",
+        "description": "Quick hybrid spellblade attack.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.15
+          }
+        ],
+        "cost": 4,
+        "resource": "mp"
+      },
+      {
+        "id": "vercure",
+        "name": "Vercure",
+        "level": 15,
+        "target": "ally",
+        "description": "Restore HP to one ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.05
+          }
+        ],
+        "cost": 7,
+        "resource": "mp"
+      },
+      {
+        "id": "dualcast",
+        "name": "Dualcast",
+        "level": 30,
+        "target": "enemy",
+        "description": "Two rapid magical strikes condensed into one action.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.9
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "paladin",
+    "abilities": [
+      {
+        "id": "shield_bash",
+        "name": "Shield Bash",
+        "level": 1,
+        "target": "enemy",
+        "description": "Physical strike with a chance to stun.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.05
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.22
+          }
+        ],
+        "cost": 5,
+        "resource": "ap"
+      },
+      {
+        "id": "cover",
+        "name": "Cover",
+        "level": 15,
+        "target": "ally",
+        "description": "Protect an ally and draw attacks toward yourself.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.3
+          },
+          {
+            "type": "status",
+            "status": "taunt",
+            "turns": 2,
+            "magnitude": 2.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 8,
+        "resource": "ap"
+      },
+      {
+        "id": "clemency",
+        "name": "Clemency",
+        "level": 30,
+        "target": "ally",
+        "description": "Powerful single-target healing.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.65
+          }
+        ],
+        "cost": 13,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "darkknight",
+    "abilities": [
+      {
+        "id": "souleater",
+        "name": "Souleater",
+        "level": 1,
+        "target": "enemy",
+        "description": "Dark physical strike that restores a portion of damage dealt.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.25
+          },
+          {
+            "type": "drain",
+            "fraction": 0.28
+          }
+        ],
+        "cost": 5,
+        "resource": "ap"
+      },
+      {
+        "id": "blackest_night",
+        "name": "The Blackest Night",
+        "level": 15,
+        "target": "self",
+        "description": "Greatly reduces incoming damage for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.38
+          }
+        ],
+        "cost": 8,
+        "resource": "ap"
+      },
+      {
+        "id": "abyssal_drain",
+        "name": "Abyssal Drain",
+        "level": 30,
+        "target": "enemy",
+        "description": "Heavy dark damage that returns health to the caster.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.75
+          },
+          {
+            "type": "drain",
+            "fraction": 0.35
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "dragoon",
+    "abilities": [
+      {
+        "id": "jump",
+        "name": "Jump",
+        "level": 1,
+        "target": "enemy",
+        "description": "High-impact physical attack.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.32
+          }
+        ],
+        "cost": 4,
+        "resource": "ap"
+      },
+      {
+        "id": "dragon_sight",
+        "name": "Dragon Sight",
+        "level": 15,
+        "target": "ally",
+        "description": "Raises an ally's outgoing damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.14
+          }
+        ],
+        "cost": 7,
+        "resource": "ap"
+      },
+      {
+        "id": "stardiver",
+        "name": "Stardiver",
+        "level": 30,
+        "target": "enemy",
+        "description": "Devastating aerial strike.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.05
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "ninja",
+    "abilities": [
+      {
+        "id": "ninjutsu",
+        "name": "Ninjutsu",
+        "level": 1,
+        "target": "enemy",
+        "description": "Hybrid ninjutsu attack that ignores a portion of defensive pressure.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.25,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 5,
+        "resource": "ap"
+      },
+      {
+        "id": "trick_attack",
+        "name": "Trick Attack",
+        "level": 15,
+        "target": "enemy",
+        "description": "Deals damage and makes the enemy vulnerable for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.2
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 3,
+            "magnitude": 0.14,
+            "chance": 1.0
+          }
+        ],
+        "cost": 8,
+        "resource": "ap"
+      },
+      {
+        "id": "kassatsu",
+        "name": "Kassatsu",
+        "level": 30,
+        "target": "enemy",
+        "description": "A highly focused critical assault.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.8,
+            "crit_bonus": 0.3
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "samurai",
+    "abilities": [
+      {
+        "id": "iaijutsu",
+        "name": "Iaijutsu",
+        "level": 1,
+        "target": "enemy",
+        "description": "Measured physical strike with increased critical chance.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.25,
+            "crit_bonus": 0.15
+          }
+        ],
+        "cost": 4,
+        "resource": "ap"
+      },
+      {
+        "id": "third_eye",
+        "name": "Third Eye",
+        "level": 15,
+        "target": "self",
+        "description": "Reduces incoming damage and improves evasion for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.22
+          },
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 2,
+            "magnitude": 0.12
+          }
+        ],
+        "cost": 6,
+        "resource": "ap"
+      },
+      {
+        "id": "midare",
+        "name": "Midare Setsugekka",
+        "level": 30,
+        "target": "enemy",
+        "description": "A single overwhelming physical cut.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.15
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "summoner",
+    "abilities": [
+      {
+        "id": "egi_assault",
+        "name": "Egi Assault",
+        "level": 1,
+        "target": "enemy",
+        "description": "Summoned magical assault.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.28
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
+        "id": "aetherflow",
+        "name": "Aetherflow",
+        "level": 15,
+        "target": "self",
+        "description": "Restore 22% of maximum battle MP. The spent action is the cost.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.22
+          }
+        ],
+        "cost": 0,
+        "resource": "mp"
+      },
+      {
+        "id": "grand_summon",
+        "name": "Grand Summon",
+        "level": 30,
+        "target": "enemy",
+        "description": "Massive summoned magical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.15
+          }
+        ],
+        "cost": 17,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "bluemage",
+    "abilities": [
+      {
+        "id": "goblin_punch",
+        "name": "Goblin Punch",
+        "level": 1,
+        "target": "enemy",
+        "description": "Reliable hybrid strike.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.2
+          }
+        ],
+        "cost": 4,
+        "resource": "mp"
+      },
+      {
+        "id": "mighty_guard",
+        "name": "Mighty Guard",
+        "level": 15,
+        "target": "party",
+        "description": "Reduces damage taken by the entire party for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.18,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "aqua_breath",
+        "name": "Aqua Breath",
+        "level": 30,
+        "target": "enemy",
+        "description": "Heavy magic attack that weakens the enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.75
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "timemage",
+    "abilities": [
+      {
+        "id": "haste",
+        "name": "Haste",
+        "level": 1,
+        "target": "ally",
+        "description": "Raises action priority and damage slightly for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "haste",
+            "turns": 3,
+            "magnitude": 0.1
+          }
+        ],
+        "cost": 6,
+        "resource": "mp"
+      },
+      {
+        "id": "slow",
+        "name": "Slow",
+        "level": 15,
+        "target": "enemy",
+        "description": "Reduces enemy pressure for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.25,
+            "chance": 0.85
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
+        "id": "comet",
+        "name": "Comet",
+        "level": 30,
+        "target": "enemy",
+        "description": "Heavy non-elemental magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.95
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "bard",
+    "abilities": [
+      {
+        "id": "mages_ballad",
+        "name": "Mage's Ballad",
+        "level": 1,
+        "target": "party",
+        "description": "Restores a small amount of MP to the whole party.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.14,
+            "recipient": "party"
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
+        "id": "armys_paeon",
+        "name": "Army's Paeon",
+        "level": 15,
+        "target": "party",
+        "description": "Raises party damage for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 2,
+            "magnitude": 0.1,
+            "recipient": "party"
+          }
+        ],
+        "cost": 8,
+        "resource": "ap"
+      },
+      {
+        "id": "requiem",
+        "name": "Requiem",
+        "level": 30,
+        "target": "enemy",
+        "description": "Magical attack that leaves the enemy vulnerable.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.6
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 1.0
+          }
+        ],
+        "cost": 13,
+        "resource": "mp"
+      }
+    ]
+  },
+  {
+    "job_id": "machinist",
+    "abilities": [
+      {
+        "id": "gauss_round",
+        "name": "Gauss Round",
+        "level": 1,
+        "target": "enemy",
+        "description": "Precision physical shot with partial defense piercing.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.22,
+            "pierce": 0.18
+          }
+        ],
+        "cost": 4,
+        "resource": "ap"
+      },
+      {
+        "id": "reassemble",
+        "name": "Reassemble",
+        "level": 15,
+        "target": "self",
+        "description": "Raises damage and critical chance for 2 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 2,
+            "magnitude": 0.12
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 2,
+            "magnitude": 0.18
+          }
+        ],
+        "cost": 6,
+        "resource": "ap"
+      },
+      {
+        "id": "wildfire",
+        "name": "Wildfire",
+        "level": 30,
+        "target": "enemy",
+        "description": "Explosive physical burst.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.0
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "beastmaster",
+    "abilities": [
+      {
+        "id": "predator",
+        "name": "Predator",
+        "level": 1,
+        "target": "enemy",
+        "description": "Savage physical strike.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.25
+          }
+        ],
+        "cost": 4,
+        "resource": "ap"
+      },
+      {
+        "id": "thick_hide",
+        "name": "Thick Hide",
+        "level": 15,
+        "target": "self",
+        "description": "Reduces incoming damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.24
+          }
+        ],
+        "cost": 6,
+        "resource": "ap"
+      },
+      {
+        "id": "call_beast",
+        "name": "Call Beast",
+        "level": 30,
+        "target": "enemy",
+        "description": "Call a powerful beast for a heavy strike that weakens the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.85
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      }
+    ]
+  },
+  {
+    "job_id": "sage",
+    "abilities": [
+      {
+        "id": "dosis",
+        "name": "Dosis",
+        "level": 1,
+        "target": "enemy",
+        "description": "Focused magical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.24
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
+        "id": "haima",
+        "name": "Haima",
+        "level": 15,
+        "target": "ally",
+        "description": "Strong protective barrier for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.32
+          }
+        ],
+        "cost": 9,
+        "resource": "mp"
+      },
+      {
+        "id": "pneuma",
+        "name": "Pneuma",
+        "level": 30,
+        "target": "enemy",
+        "description": "Powerful magic blast followed by party healing.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.75
+          },
+          {
+            "type": "heal",
+            "power": 0.7,
+            "recipient": "party"
+          }
+        ],
+        "cost": 17,
+        "resource": "mp"
+      }
+    ]
+  }
+]

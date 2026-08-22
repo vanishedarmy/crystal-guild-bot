@@ -1,0 +1,7623 @@
+[
+  {
+    "id": "potion",
+    "name": "Potion",
+    "type": "consumable",
+    "rarity": "common",
+    "price": 50,
+    "shop": true,
+    "shop_level": 1,
+    "description": "Restores 50 HP to one conscious hero.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "amount": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "hi_potion",
+    "name": "Hi-Potion",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 250,
+    "shop": true,
+    "shop_level": 10,
+    "description": "Restores 200 HP to one conscious hero.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "amount": 200
+        }
+      ]
+    }
+  },
+  {
+    "id": "x_potion",
+    "name": "X-Potion",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 1200,
+    "shop": true,
+    "shop_level": 30,
+    "description": "Restores 1,000 HP to one conscious hero.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "amount": 1000
+        }
+      ]
+    }
+  },
+  {
+    "id": "ether",
+    "name": "Ether",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 300,
+    "shop": true,
+    "shop_level": 8,
+    "description": "A compact vial of refined aether for restoring a spellcaster\u2019s reserves between difficult fights. Restores 40% of maximum MP and can be used in or out of Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "restore_mp",
+          "fraction": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "id": "phoenix_down",
+    "name": "Phoenix Down",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 500,
+    "shop": true,
+    "shop_level": 12,
+    "description": "Revives a KO\u2019d hero with 30% maximum HP.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "revive",
+          "fraction": 0.3
+        }
+      ]
+    }
+  },
+  {
+    "id": "antidote",
+    "name": "Antidote",
+    "type": "consumable",
+    "rarity": "common",
+    "price": 60,
+    "shop": true,
+    "shop_level": 1,
+    "description": "Removes Poison during Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "statuses": [
+            "poison"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "echo_herbs",
+    "name": "Echo Herbs",
+    "type": "consumable",
+    "rarity": "common",
+    "price": 75,
+    "shop": true,
+    "shop_level": 1,
+    "description": "Removes Silence during Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "statuses": [
+            "silence"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "remedy",
+    "name": "Remedy",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 900,
+    "shop": true,
+    "shop_level": 20,
+    "description": "Removes all harmful Active Battle statuses from one hero.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "all_harmful": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "tent",
+    "name": "Tent",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 850,
+    "shop": true,
+    "shop_level": 8,
+    "description": "Immediately restores a hero to full HP, MP and AP outside combat and ends an active camp rest.",
+    "use": {
+      "target": "self",
+      "field": true,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "fraction": 1.0
+        },
+        {
+          "type": "restore_mp",
+          "fraction": 1.0
+        },
+        {
+          "type": "restore_ap",
+          "fraction": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "hunters_axe",
+    "name": "Hunter's Axe",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 270,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 13,
+      "str": 2,
+      "vit": 1
+    },
+    "description": "Heavy axe for Beastmasters and Jobs that consider subtlety optional.",
+    "gear_family": "axe"
+  },
+  {
+    "id": "bronze_dagger",
+    "name": "Bronze Dagger",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 220,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 8,
+      "dex": 2,
+      "lck": 1
+    },
+    "description": "Fast blade built for nimble Jobs and opportunistic critical strikes.",
+    "gear_family": "dagger"
+  },
+  {
+    "id": "copper_pistol",
+    "name": "Copper Pistol",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 300,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 11,
+      "dex": 2,
+      "lck": 1
+    },
+    "description": "Precision firearm tuned for Machinist combat.",
+    "gear_family": "firearm"
+  },
+  {
+    "id": "travelers_harp",
+    "name": "Traveler's Harp",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 200,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 6,
+      "magic_power": 6,
+      "spr": 2,
+      "dex": 1
+    },
+    "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
+    "gear_family": "instrument"
+  },
+  {
+    "id": "ashigaru_katana",
+    "name": "Ashigaru Katana",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 280,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 11,
+      "str": 1,
+      "dex": 2
+    },
+    "description": "Balanced eastern blade for Samurai and Ninja.",
+    "gear_family": "katana"
+  },
+  {
+    "id": "leather_knuckles",
+    "name": "Leather Knuckles",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 180,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 10,
+      "str": 1,
+      "dex": 1
+    },
+    "description": "Hand-to-hand weapon favored by Monks.",
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "copper_rapier",
+    "name": "Copper Rapier",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 250,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 8,
+      "magic_power": 5,
+      "dex": 1,
+      "mag": 1
+    },
+    "description": "Spell-friendly dueling blade for hybrid casters.",
+    "gear_family": "rapier"
+  },
+  {
+    "id": "training_spear",
+    "name": "Training Spear",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 260,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 12,
+      "str": 2,
+      "dex": 1
+    },
+    "description": "Long-reach polearm designed for Dragoon assaults.",
+    "gear_family": "spear"
+  },
+  {
+    "id": "oak_staff",
+    "name": "Oak Staff",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 180,
+    "shop": true,
+    "shop_level": 1,
+    "bonuses": {
+      "magic_power": 10
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "gear_family": "staff"
+  },
+  {
+    "id": "bronze_sword",
+    "name": "Bronze Sword",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 180,
+    "shop": true,
+    "shop_level": 1,
+    "bonuses": {
+      "attack": 10
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "gear_family": "sword"
+  },
+  {
+    "id": "ash_wand",
+    "name": "Ash Wand",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 240,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 12,
+      "mag": 2,
+      "spr": 1
+    },
+    "description": "Arcane focus for dedicated spellcasting Jobs.",
+    "gear_family": "wand"
+  },
+  {
+    "id": "bronze_waraxe",
+    "name": "Bronze Waraxe",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 485,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "axe",
+    "bonuses": {
+      "attack": 20,
+      "str": 3,
+      "vit": 1
+    },
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ]
+  },
+  {
+    "id": "iron_dirk",
+    "name": "Iron Dirk",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 445,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "dagger",
+    "bonuses": {
+      "attack": 15,
+      "dex": 3,
+      "lck": 1
+    },
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ]
+  },
+  {
+    "id": "iron_pistol",
+    "name": "Iron Pistol",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 490,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "firearm",
+    "bonuses": {
+      "attack": 18,
+      "dex": 3,
+      "lck": 1
+    },
+    "allowed_jobs": [
+      "machinist"
+    ]
+  },
+  {
+    "id": "maple_harp",
+    "name": "Maple Harp",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 450,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "instrument",
+    "bonuses": {
+      "attack": 12,
+      "magic_power": 12,
+      "spr": 3,
+      "dex": 1
+    },
+    "allowed_jobs": [
+      "bard"
+    ]
+  },
+  {
+    "id": "iron_katana",
+    "name": "Iron Katana",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 480,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "katana",
+    "bonuses": {
+      "attack": 18,
+      "str": 2,
+      "dex": 2
+    },
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ]
+  },
+  {
+    "id": "brass_knuckles",
+    "name": "Brass Knuckles",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 440,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "knuckles",
+    "bonuses": {
+      "attack": 17,
+      "str": 2,
+      "dex": 1
+    },
+    "allowed_jobs": [
+      "monk"
+    ]
+  },
+  {
+    "id": "iron_rapier",
+    "name": "Iron Rapier",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 470,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "rapier",
+    "bonuses": {
+      "attack": 15,
+      "magic_power": 11,
+      "dex": 2,
+      "mag": 2
+    },
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "bronze_lance",
+    "name": "Bronze Lance",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 475,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "spear",
+    "bonuses": {
+      "attack": 19,
+      "str": 3,
+      "dex": 1
+    },
+    "allowed_jobs": [
+      "dragoon"
+    ]
+  },
+  {
+    "id": "elm_staff",
+    "name": "Elm Staff",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 455,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "staff",
+    "bonuses": {
+      "magic_power": 18,
+      "spr": 3,
+      "mag": 1
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "tempered_shortsword",
+    "name": "Tempered Shortsword",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 460,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "sword",
+    "bonuses": {
+      "attack": 17,
+      "str": 1,
+      "vit": 1
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "willow_wand",
+    "name": "Willow Wand",
+    "type": "weapon",
+    "rarity": "common",
+    "price": 455,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "wand",
+    "bonuses": {
+      "magic_power": 18,
+      "mag": 3,
+      "spr": 1
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "iron_waraxe",
+    "name": "Iron Waraxe",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 850,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 27,
+      "str": 4,
+      "vit": 2
+    },
+    "description": "Heavy axe for Beastmasters and Jobs that consider subtlety optional.",
+    "gear_family": "axe"
+  },
+  {
+    "id": "mythril_dagger",
+    "name": "Mythril Dagger",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 800,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 22,
+      "dex": 4,
+      "lck": 2
+    },
+    "description": "Fast blade built for nimble Jobs and opportunistic critical strikes.",
+    "gear_family": "dagger"
+  },
+  {
+    "id": "flintlock_pistol",
+    "name": "Flintlock Pistol",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 880,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 25,
+      "dex": 4,
+      "lck": 2
+    },
+    "description": "Precision firearm tuned for Machinist combat.",
+    "gear_family": "firearm"
+  },
+  {
+    "id": "silver_harp",
+    "name": "Silver Harp",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 780,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 19,
+      "magic_power": 19,
+      "spr": 4,
+      "dex": 2
+    },
+    "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
+    "gear_family": "instrument"
+  },
+  {
+    "id": "steel_katana",
+    "name": "Steel Katana",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 860,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 25,
+      "str": 3,
+      "dex": 4
+    },
+    "description": "Balanced eastern blade for Samurai and Ninja.",
+    "gear_family": "katana"
+  },
+  {
+    "id": "iron_knuckles",
+    "name": "Iron Knuckles",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 760,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 24,
+      "str": 2,
+      "dex": 2
+    },
+    "description": "Hand-to-hand weapon favored by Monks.",
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "silver_rapier",
+    "name": "Silver Rapier",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 830,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 22,
+      "magic_power": 17,
+      "dex": 2,
+      "mag": 2
+    },
+    "description": "Spell-friendly dueling blade for hybrid casters.",
+    "gear_family": "rapier"
+  },
+  {
+    "id": "iron_spear",
+    "name": "Iron Spear",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 840,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 26,
+      "str": 4,
+      "dex": 2
+    },
+    "description": "Long-reach polearm designed for Dragoon assaults.",
+    "gear_family": "spear"
+  },
+  {
+    "id": "rune_staff",
+    "name": "Rune Staff",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 780,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "bonuses": {
+      "magic_power": 25,
+      "mag": 2
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "gear_family": "staff"
+  },
+  {
+    "id": "iron_blade",
+    "name": "Iron Blade",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 750,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "bonuses": {
+      "attack": 24,
+      "str": 2
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "gear_family": "sword"
+  },
+  {
+    "id": "yew_wand",
+    "name": "Yew Wand",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 820,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 26,
+      "mag": 4,
+      "spr": 2
+    },
+    "description": "Arcane focus for dedicated spellcasting Jobs.",
+    "gear_family": "wand"
+  },
+  {
+    "id": "steel_greataxe",
+    "name": "Steel Greataxe",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1360,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "axe",
+    "bonuses": {
+      "attack": 35,
+      "str": 5,
+      "vit": 2
+    },
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ]
+  },
+  {
+    "id": "silver_knife",
+    "name": "Silver Knife",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1290,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "dagger",
+    "bonuses": {
+      "attack": 30,
+      "dex": 5,
+      "lck": 2
+    },
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ]
+  },
+  {
+    "id": "steel_revolver",
+    "name": "Steel Revolver",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1380,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "firearm",
+    "bonuses": {
+      "attack": 33,
+      "dex": 5,
+      "lck": 2
+    },
+    "allowed_jobs": [
+      "machinist"
+    ]
+  },
+  {
+    "id": "rosewood_harp",
+    "name": "Rosewood Harp",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1280,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "instrument",
+    "bonuses": {
+      "attack": 27,
+      "magic_power": 27,
+      "spr": 5,
+      "dex": 2
+    },
+    "allowed_jobs": [
+      "bard"
+    ]
+  },
+  {
+    "id": "osafune",
+    "name": "Osafune",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1360,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "katana",
+    "bonuses": {
+      "attack": 33,
+      "str": 4,
+      "dex": 5
+    },
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ]
+  },
+  {
+    "id": "steel_cesti",
+    "name": "Steel Cesti",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1270,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "knuckles",
+    "bonuses": {
+      "attack": 32,
+      "str": 3,
+      "dex": 3
+    },
+    "allowed_jobs": [
+      "monk"
+    ]
+  },
+  {
+    "id": "mythril_foil",
+    "name": "Mythril Foil",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1330,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "rapier",
+    "bonuses": {
+      "attack": 30,
+      "magic_power": 25,
+      "dex": 3,
+      "mag": 3
+    },
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "steel_lance",
+    "name": "Steel Lance",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1340,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "spear",
+    "bonuses": {
+      "attack": 34,
+      "str": 5,
+      "dex": 2
+    },
+    "allowed_jobs": [
+      "dragoon"
+    ]
+  },
+  {
+    "id": "silver_staff",
+    "name": "Silver Staff",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1310,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "staff",
+    "bonuses": {
+      "magic_power": 34,
+      "spr": 5,
+      "mag": 2
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "steel_longsword",
+    "name": "Steel Longsword",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1300,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "sword",
+    "bonuses": {
+      "attack": 32,
+      "str": 3,
+      "vit": 1
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "silver_wand",
+    "name": "Silver Wand",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1310,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "wand",
+    "bonuses": {
+      "magic_power": 34,
+      "mag": 5,
+      "spr": 2
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "coral_trident",
+    "name": "Coral Trident",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2600,
+    "shop": false,
+    "min_level": 15,
+    "bonuses": {
+      "attack": 42,
+      "str": 4,
+      "dex": 3
+    },
+    "gear_family": "spear"
+  },
+  {
+    "id": "mythril_greataxe",
+    "name": "Mythril Greataxe",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2060,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "axe",
+    "bonuses": {
+      "attack": 43,
+      "str": 6,
+      "vit": 3
+    },
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ]
+  },
+  {
+    "id": "chef_knife",
+    "name": "Chef's Knife",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 12000,
+    "shop": false,
+    "min_level": 16,
+    "bonuses": {
+      "attack": 62,
+      "dex": 8,
+      "lck": 8
+    },
+    "gear_family": "dagger"
+  },
+  {
+    "id": "mage_masher",
+    "name": "Mage Masher",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1980,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "dagger",
+    "bonuses": {
+      "attack": 38,
+      "dex": 6,
+      "lck": 2
+    },
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.15,
+      "turns": 2,
+      "magnitude": 0.0
+    },
+    "description": "A quick dagger with a chance to inflict Silence on basic attacks."
+  },
+  {
+    "id": "mythril_musket",
+    "name": "Mythril Musket",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2080,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "firearm",
+    "bonuses": {
+      "attack": 41,
+      "dex": 6,
+      "lck": 3
+    },
+    "allowed_jobs": [
+      "machinist"
+    ]
+  },
+  {
+    "id": "faerie_harp",
+    "name": "Faerie Harp",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1970,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "instrument",
+    "bonuses": {
+      "attack": 35,
+      "magic_power": 35,
+      "spr": 6,
+      "dex": 3
+    },
+    "allowed_jobs": [
+      "bard"
+    ]
+  },
+  {
+    "id": "kogarasu",
+    "name": "Kogarasu",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2060,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "katana",
+    "bonuses": {
+      "attack": 41,
+      "str": 5,
+      "dex": 6
+    },
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ]
+  },
+  {
+    "id": "tiger_cesti",
+    "name": "Tiger Cesti",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1960,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "knuckles",
+    "bonuses": {
+      "attack": 40,
+      "str": 4,
+      "dex": 4
+    },
+    "allowed_jobs": [
+      "monk"
+    ]
+  },
+  {
+    "id": "rune_foil",
+    "name": "Rune Foil",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2020,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "rapier",
+    "bonuses": {
+      "attack": 38,
+      "magic_power": 33,
+      "dex": 4,
+      "mag": 4
+    },
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "mythril_lance",
+    "name": "Mythril Lance",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2040,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "spear",
+    "bonuses": {
+      "attack": 42,
+      "str": 6,
+      "dex": 3
+    },
+    "allowed_jobs": [
+      "dragoon"
+    ]
+  },
+  {
+    "id": "priests_staff",
+    "name": "Priest's Staff",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2000,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "staff",
+    "bonuses": {
+      "magic_power": 42,
+      "spr": 6,
+      "mag": 3
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "knights_broadsword",
+    "name": "Knight's Broadsword",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 1990,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "sword",
+    "bonuses": {
+      "attack": 40,
+      "str": 4,
+      "vit": 2
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "rune_wand",
+    "name": "Rune Wand",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2000,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "wand",
+    "bonuses": {
+      "magic_power": 42,
+      "mag": 6,
+      "spr": 3
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "rune_axe",
+    "name": "Rune Axe",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2940,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 51,
+      "str": 6,
+      "vit": 3
+    },
+    "description": "Heavy axe for Beastmasters and Jobs that consider subtlety optional.",
+    "gear_family": "axe"
+  },
+  {
+    "id": "orichalcum_knife",
+    "name": "Orichalcum Knife",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2890,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 46,
+      "dex": 6,
+      "lck": 3
+    },
+    "description": "Fast blade built for nimble Jobs and opportunistic critical strikes.",
+    "gear_family": "dagger"
+  },
+  {
+    "id": "mythril_revolver",
+    "name": "Mythril Revolver",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2970,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 49,
+      "dex": 6,
+      "lck": 3
+    },
+    "description": "Precision firearm tuned for Machinist combat.",
+    "gear_family": "firearm"
+  },
+  {
+    "id": "dream_harp",
+    "name": "Dream Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2870,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 43,
+      "magic_power": 43,
+      "spr": 6,
+      "dex": 3
+    },
+    "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
+    "gear_family": "instrument"
+  },
+  {
+    "id": "kotetsu",
+    "name": "Kotetsu",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2950,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 49,
+      "str": 5,
+      "dex": 6
+    },
+    "description": "Balanced eastern blade for Samurai and Ninja.",
+    "gear_family": "katana"
+  },
+  {
+    "id": "mythril_claws",
+    "name": "Mythril Claws",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2850,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 48,
+      "str": 4,
+      "dex": 3
+    },
+    "description": "Hand-to-hand weapon favored by Monks.",
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "coral_rapier",
+    "name": "Coral Rapier",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2920,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 46,
+      "magic_power": 41,
+      "dex": 3,
+      "mag": 3
+    },
+    "description": "Spell-friendly dueling blade for hybrid casters.",
+    "gear_family": "rapier"
+  },
+  {
+    "id": "wyvern_spear",
+    "name": "Wyvern Spear",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2930,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 50,
+      "str": 6,
+      "dex": 3
+    },
+    "description": "Long-reach polearm designed for Dragoon assaults.",
+    "gear_family": "spear"
+  },
+  {
+    "id": "sage_rod",
+    "name": "Sage Rod",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2900,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "bonuses": {
+      "magic_power": 50,
+      "spr": 4
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "gear_family": "staff"
+  },
+  {
+    "id": "mythril_sword",
+    "name": "Mythril Sword",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2800,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "bonuses": {
+      "attack": 48,
+      "dex": 4
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "gear_family": "sword"
+  },
+  {
+    "id": "mythril_wand",
+    "name": "Mythril Wand",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 2910,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 50,
+      "mag": 6,
+      "spr": 3
+    },
+    "description": "Arcane focus for dedicated spellcasting Jobs.",
+    "gear_family": "wand"
+  },
+  {
+    "id": "mythril_knuckles",
+    "name": "Mythril Knuckles",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4300,
+    "shop": false,
+    "min_level": 24,
+    "bonuses": {
+      "attack": 54,
+      "str": 8,
+      "dex": 5
+    },
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "flame_tongue",
+    "name": "Flametongue",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4200,
+    "shop": false,
+    "min_level": 24,
+    "bonuses": {
+      "attack": 58,
+      "str": 6,
+      "mag": 3
+    },
+    "gear_family": "sword",
+    "element": "Fire",
+    "description": "A fire-aspected sword whose basic attacks exploit Fire weakness."
+  },
+  {
+    "id": "icebrand",
+    "name": "Icebrand",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4200,
+    "shop": false,
+    "min_level": 24,
+    "bonuses": {
+      "attack": 56,
+      "str": 5,
+      "spr": 5
+    },
+    "gear_family": "sword",
+    "element": "Ice",
+    "description": "An ice-aspected sword whose basic attacks exploit Ice weakness."
+  },
+  {
+    "id": "ogre_cleaver",
+    "name": "Ogre Cleaver",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3960,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "axe",
+    "bonuses": {
+      "attack": 57,
+      "str": 7,
+      "vit": 4
+    },
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ]
+  },
+  {
+    "id": "rune_knife",
+    "name": "Rune Knife",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3880,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "dagger",
+    "bonuses": {
+      "attack": 52,
+      "dex": 7,
+      "lck": 4
+    },
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ]
+  },
+  {
+    "id": "magitek_pistol",
+    "name": "Magitek Pistol",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3980,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "firearm",
+    "bonuses": {
+      "attack": 55,
+      "dex": 7,
+      "lck": 4
+    },
+    "allowed_jobs": [
+      "machinist"
+    ]
+  },
+  {
+    "id": "siren_harp",
+    "name": "Siren Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3870,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "instrument",
+    "bonuses": {
+      "attack": 49,
+      "magic_power": 49,
+      "spr": 7,
+      "dex": 4
+    },
+    "allowed_jobs": [
+      "bard"
+    ]
+  },
+  {
+    "id": "kiyomori",
+    "name": "Kiyomori",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3960,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "katana",
+    "bonuses": {
+      "attack": 55,
+      "str": 6,
+      "dex": 7
+    },
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ]
+  },
+  {
+    "id": "wyvern_claws",
+    "name": "Wyvern Claws",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3860,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "knuckles",
+    "bonuses": {
+      "attack": 54,
+      "str": 6,
+      "dex": 5
+    },
+    "allowed_jobs": [
+      "monk"
+    ]
+  },
+  {
+    "id": "flame_rapier",
+    "name": "Flame Rapier",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3920,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "rapier",
+    "bonuses": {
+      "attack": 52,
+      "magic_power": 47,
+      "dex": 5,
+      "mag": 5
+    },
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "element": "Fire",
+    "description": "A fire-aspected hybrid rapier whose basic attacks exploit Fire weakness."
+  },
+  {
+    "id": "coral_lance",
+    "name": "Coral Lance",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3940,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "spear",
+    "bonuses": {
+      "attack": 56,
+      "str": 7,
+      "dex": 4
+    },
+    "allowed_jobs": [
+      "dragoon"
+    ]
+  },
+  {
+    "id": "elemental_staff",
+    "name": "Elemental Staff",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3900,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "staff",
+    "bonuses": {
+      "magic_power": 56,
+      "spr": 7,
+      "mag": 4
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "coral_saber",
+    "name": "Coral Saber",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3890,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "sword",
+    "bonuses": {
+      "attack": 54,
+      "str": 6,
+      "vit": 2
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "sages_wand",
+    "name": "Sage's Wand",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3900,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "wand",
+    "bonuses": {
+      "magic_power": 56,
+      "mag": 7,
+      "spr": 4
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "ronin_katana",
+    "name": "Riven Katana",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 6800,
+    "shop": false,
+    "min_level": 26,
+    "bonuses": {
+      "attack": 66,
+      "str": 7,
+      "dex": 6,
+      "lck": 4
+    },
+    "gear_family": "katana"
+  },
+  {
+    "id": "thunder_spear",
+    "name": "Thunder Spear",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4800,
+    "shop": false,
+    "min_level": 28,
+    "bonuses": {
+      "attack": 64,
+      "str": 6,
+      "dex": 7
+    },
+    "gear_family": "spear"
+  },
+  {
+    "id": "adamant_axe",
+    "name": "Adamant Axe",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5060,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "axe",
+    "bonuses": {
+      "attack": 63,
+      "str": 8,
+      "vit": 4
+    },
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ]
+  },
+  {
+    "id": "platinum_stiletto",
+    "name": "Platinum Stiletto",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4980,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "dagger",
+    "bonuses": {
+      "attack": 58,
+      "dex": 8,
+      "lck": 4
+    },
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ]
+  },
+  {
+    "id": "aether_carbine",
+    "name": "Aether Carbine",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5080,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "firearm",
+    "bonuses": {
+      "attack": 61,
+      "dex": 8,
+      "lck": 4
+    },
+    "allowed_jobs": [
+      "machinist"
+    ]
+  },
+  {
+    "id": "rune_harp",
+    "name": "Rune Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4970,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "instrument",
+    "bonuses": {
+      "attack": 55,
+      "magic_power": 55,
+      "spr": 8,
+      "dex": 4
+    },
+    "allowed_jobs": [
+      "bard"
+    ]
+  },
+  {
+    "id": "genji_katana",
+    "name": "Genji Katana",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5060,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "katana",
+    "bonuses": {
+      "attack": 61,
+      "str": 7,
+      "dex": 8
+    },
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ]
+  },
+  {
+    "id": "diamond_knuckles",
+    "name": "Diamond Knuckles",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4960,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "knuckles",
+    "bonuses": {
+      "attack": 60,
+      "str": 7,
+      "dex": 6
+    },
+    "allowed_jobs": [
+      "monk"
+    ]
+  },
+  {
+    "id": "spellblade_rapier",
+    "name": "Spellblade Rapier",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5020,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "rapier",
+    "bonuses": {
+      "attack": 58,
+      "magic_power": 53,
+      "dex": 5,
+      "mag": 5
+    },
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "dragonbone_spear",
+    "name": "Dragonbone Spear",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5040,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "spear",
+    "bonuses": {
+      "attack": 62,
+      "str": 8,
+      "dex": 4
+    },
+    "allowed_jobs": [
+      "dragoon"
+    ]
+  },
+  {
+    "id": "high_mage_staff",
+    "name": "High Mage Staff",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5000,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "staff",
+    "bonuses": {
+      "magic_power": 62,
+      "spr": 8,
+      "mag": 4
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "platinum_blade",
+    "name": "Platinum Blade",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4990,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "sword",
+    "bonuses": {
+      "attack": 60,
+      "str": 7,
+      "vit": 3
+    },
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "crystal_wand",
+    "name": "Crystal Wand",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5000,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "wand",
+    "bonuses": {
+      "magic_power": 62,
+      "mag": 8,
+      "spr": 4
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ]
+  },
+  {
+    "id": "ogre_axe",
+    "name": "Ogre Axe",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6190,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 67,
+      "str": 8,
+      "vit": 4
+    },
+    "description": "Heavy axe for Beastmasters and Jobs that consider subtlety optional.",
+    "gear_family": "axe"
+  },
+  {
+    "id": "assassins_dagger",
+    "name": "Assassin Dagger",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6140,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 62,
+      "dex": 8,
+      "lck": 4
+    },
+    "description": "A lethal dagger with a chance to inflict Blind on basic attacks.",
+    "gear_family": "dagger",
+    "on_hit_status": {
+      "status": "blind",
+      "chance": 0.14,
+      "turns": 2,
+      "magnitude": 0.25
+    }
+  },
+  {
+    "id": "cerberus_carbine",
+    "name": "Cerberus Carbine",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6220,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 65,
+      "dex": 8,
+      "lck": 4
+    },
+    "description": "Precision firearm tuned for Machinist combat.",
+    "gear_family": "firearm"
+  },
+  {
+    "id": "lamia_harp",
+    "name": "Lamia Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6120,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 59,
+      "magic_power": 59,
+      "spr": 8,
+      "dex": 4
+    },
+    "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
+    "gear_family": "instrument"
+  },
+  {
+    "id": "kiku_ichimonji",
+    "name": "Kiku-ichimonji",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6200,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 65,
+      "str": 7,
+      "dex": 8
+    },
+    "description": "Balanced eastern blade for Samurai and Ninja.",
+    "gear_family": "katana"
+  },
+  {
+    "id": "tiger_fangs",
+    "name": "Tiger Fangs",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6100,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 64,
+      "str": 6,
+      "dex": 4
+    },
+    "description": "Hand-to-hand weapon favored by Monks.",
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "rune_rapier",
+    "name": "Rune Rapier",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6170,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 62,
+      "magic_power": 57,
+      "dex": 4,
+      "mag": 4
+    },
+    "description": "Spell-friendly dueling blade for hybrid casters.",
+    "gear_family": "rapier"
+  },
+  {
+    "id": "partisan",
+    "name": "Partisan",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6180,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 66,
+      "str": 8,
+      "dex": 4
+    },
+    "description": "Long-reach polearm designed for Dragoon assaults.",
+    "gear_family": "spear"
+  },
+  {
+    "id": "wizard_rod",
+    "name": "Wizard Rod",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6160,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 66,
+      "mag": 8,
+      "spr": 4
+    },
+    "description": "Arcane focus for dedicated spellcasting Jobs.",
+    "gear_family": "staff"
+  },
+  {
+    "id": "diamond_sword",
+    "name": "Diamond Sword",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6200,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 66,
+      "str": 5,
+      "vit": 2
+    },
+    "description": "Reliable high-grade sword for martial and spellblade Jobs.",
+    "gear_family": "sword"
+  },
+  {
+    "id": "morbol_lash",
+    "name": "Morbol Lash",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 9000,
+    "shop": false,
+    "min_level": 38,
+    "bonuses": {
+      "attack": 70,
+      "mag": 8,
+      "lck": 8
+    },
+    "gear_family": "unrestricted"
+  },
+  {
+    "id": "magitek_edge",
+    "name": "Magitek Edge",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 9800,
+    "shop": false,
+    "min_level": 42,
+    "bonuses": {
+      "attack": 78,
+      "dex": 10,
+      "lck": 5
+    },
+    "gear_family": "sword"
+  },
+  {
+    "id": "last_knife_dormant",
+    "name": "Last Knife \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 74,
+      "dex": 13,
+      "lck": 12
+    },
+    "relic_id": "last_knife",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "dagger"
+  },
+  {
+    "id": "magitek_cannon",
+    "name": "Magitek Hand Cannon",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 11000,
+    "shop": false,
+    "min_level": 45,
+    "bonuses": {
+      "attack": 84,
+      "dex": 10,
+      "lck": 5
+    },
+    "gear_family": "firearm"
+  },
+  {
+    "id": "masamune_dormant",
+    "name": "Masamune \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 84,
+      "str": 10,
+      "dex": 10
+    },
+    "relic_id": "masamune",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "katana"
+  },
+  {
+    "id": "godhand_dormant",
+    "name": "Godhand \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 76,
+      "str": 11,
+      "dex": 10
+    },
+    "relic_id": "godhand",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "gae_bolg_dormant",
+    "name": "Gae Bolg \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 82,
+      "str": 10,
+      "dex": 8
+    },
+    "relic_id": "gae_bolg",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "spear"
+  },
+  {
+    "id": "nirvana_dormant",
+    "name": "Nirvana \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "whitemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 78,
+      "spr": 13,
+      "mag": 5
+    },
+    "relic_id": "nirvana",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "staff"
+  },
+  {
+    "id": "stardust_rod_dormant",
+    "name": "Stardust Rod \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "blackmage",
+      "summoner",
+      "timemage"
+    ],
+    "bonuses": {
+      "magic_power": 88,
+      "mag": 12,
+      "spr": 5
+    },
+    "relic_id": "stardust_rod",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "staff"
+  },
+  {
+    "id": "apocalypse_dormant",
+    "name": "Apocalypse \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 86,
+      "str": 12,
+      "vit": 5
+    },
+    "relic_id": "apocalypse",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "sword"
+  },
+  {
+    "id": "excalibur_dormant",
+    "name": "Excalibur \u2014 Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "bonuses": {
+      "attack": 80,
+      "str": 8,
+      "vit": 10
+    },
+    "relic_id": "excalibur",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "sword"
+  },
+  {
+    "id": "demon_axe",
+    "name": "Demon Axe",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10390,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 83,
+      "str": 10,
+      "vit": 5
+    },
+    "description": "Heavy axe for Beastmasters and Jobs that consider subtlety optional.",
+    "gear_family": "axe"
+  },
+  {
+    "id": "zwill_crossblade",
+    "name": "Zwill Crossblade",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10340,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 78,
+      "dex": 10,
+      "lck": 5
+    },
+    "description": "Fast blade built for nimble Jobs and opportunistic critical strikes.",
+    "gear_family": "dagger"
+  },
+  {
+    "id": "machina_repeater",
+    "name": "Machina Repeater",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10420,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 81,
+      "dex": 10,
+      "lck": 5
+    },
+    "description": "Precision firearm tuned for Machinist combat.",
+    "gear_family": "firearm"
+  },
+  {
+    "id": "apollo_harp",
+    "name": "Apollo Harp",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10320,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 75,
+      "magic_power": 75,
+      "spr": 10,
+      "dex": 5
+    },
+    "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
+    "gear_family": "instrument"
+  },
+  {
+    "id": "murasame",
+    "name": "Murasame",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10400,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 81,
+      "str": 9,
+      "dex": 10
+    },
+    "description": "Balanced eastern blade for Samurai and Ninja.",
+    "gear_family": "katana"
+  },
+  {
+    "id": "kaiser_knuckles",
+    "name": "Kaiser Knuckles",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10300,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 80,
+      "str": 8,
+      "dex": 5
+    },
+    "description": "Hand-to-hand weapon favored by Monks.",
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "enhancer",
+    "name": "Enhancer",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10370,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 78,
+      "magic_power": 73,
+      "dex": 5,
+      "mag": 5
+    },
+    "description": "Spell-friendly dueling blade for hybrid casters.",
+    "gear_family": "rapier"
+  },
+  {
+    "id": "holy_lance",
+    "name": "Holy Lance",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10380,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 82,
+      "str": 10,
+      "dex": 5
+    },
+    "description": "Long-reach polearm designed for Dragoon assaults.",
+    "gear_family": "spear"
+  },
+  {
+    "id": "magus_staff",
+    "name": "Magus Staff",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10360,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 82,
+      "mag": 10,
+      "spr": 5
+    },
+    "description": "Arcane focus for dedicated spellcasting Jobs.",
+    "gear_family": "staff"
+  },
+  {
+    "id": "defender_blade",
+    "name": "Defender",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10600,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 82,
+      "str": 7,
+      "vit": 2
+    },
+    "description": "Reliable high-grade sword for martial and spellblade Jobs.",
+    "gear_family": "sword"
+  },
+  {
+    "id": "last_knife_awakened",
+    "name": "Last Knife \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 108,
+      "dex": 20,
+      "lck": 18,
+      "str": 6
+    },
+    "relic_id": "last_knife",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "dagger"
+  },
+  {
+    "id": "masamune_awakened",
+    "name": "Masamune \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 120,
+      "str": 16,
+      "dex": 16,
+      "lck": 6
+    },
+    "relic_id": "masamune",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "katana"
+  },
+  {
+    "id": "godhand_awakened",
+    "name": "Godhand \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 110,
+      "str": 17,
+      "dex": 15,
+      "lck": 6
+    },
+    "relic_id": "godhand",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "gae_bolg_awakened",
+    "name": "Gae Bolg \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 118,
+      "str": 15,
+      "dex": 12,
+      "lck": 5
+    },
+    "relic_id": "gae_bolg",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "spear"
+  },
+  {
+    "id": "nirvana_awakened",
+    "name": "Nirvana \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "whitemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 112,
+      "spr": 20,
+      "mag": 9,
+      "vit": 5
+    },
+    "relic_id": "nirvana",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "staff"
+  },
+  {
+    "id": "stardust_rod_awakened",
+    "name": "Stardust Rod \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "blackmage",
+      "summoner",
+      "timemage"
+    ],
+    "bonuses": {
+      "magic_power": 126,
+      "mag": 18,
+      "spr": 9,
+      "lck": 5
+    },
+    "relic_id": "stardust_rod",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "staff"
+  },
+  {
+    "id": "apocalypse_awakened",
+    "name": "Apocalypse \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 124,
+      "str": 18,
+      "vit": 9,
+      "lck": 4
+    },
+    "relic_id": "apocalypse",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "sword"
+  },
+  {
+    "id": "excalibur_awakened",
+    "name": "Excalibur \u2014 Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "bonuses": {
+      "attack": 114,
+      "str": 13,
+      "vit": 16,
+      "spr": 6
+    },
+    "relic_id": "excalibur",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "sword"
+  },
+  {
+    "id": "rift_lance",
+    "name": "Rift Lance",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 24000,
+    "shop": false,
+    "min_level": 62,
+    "bonuses": {
+      "attack": 120,
+      "str": 15,
+      "dex": 12,
+      "lck": 8
+    },
+    "gear_family": "spear"
+  },
+  {
+    "id": "titan_axe",
+    "name": "Titan Axe",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15890,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 101,
+      "str": 12,
+      "vit": 6
+    },
+    "description": "Heavy axe for Beastmasters and Jobs that consider subtlety optional.",
+    "gear_family": "axe"
+  },
+  {
+    "id": "last_knife_zenith",
+    "name": "Last Knife \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 145,
+      "dex": 27,
+      "lck": 24,
+      "str": 10
+    },
+    "relic_id": "last_knife",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "dagger"
+  },
+  {
+    "id": "platinum_dirk",
+    "name": "Platinum Dirk",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15840,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 96,
+      "dex": 12,
+      "lck": 6
+    },
+    "description": "Fast blade built for nimble Jobs and opportunistic critical strikes.",
+    "gear_family": "dagger"
+  },
+  {
+    "id": "cerulean_rifle",
+    "name": "Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15920,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 99,
+      "dex": 12,
+      "lck": 6
+    },
+    "description": "Precision firearm tuned for Machinist combat.",
+    "gear_family": "firearm"
+  },
+  {
+    "id": "seraph_harp",
+    "name": "Seraph Harp",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15820,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 93,
+      "magic_power": 93,
+      "spr": 12,
+      "dex": 6
+    },
+    "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
+    "gear_family": "instrument"
+  },
+  {
+    "id": "heavens_cloud",
+    "name": "Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15900,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 99,
+      "str": 11,
+      "dex": 12
+    },
+    "description": "Balanced eastern blade for Samurai and Ninja.",
+    "gear_family": "katana"
+  },
+  {
+    "id": "masamune_zenith",
+    "name": "Masamune \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 160,
+      "str": 21,
+      "dex": 22,
+      "lck": 11
+    },
+    "relic_id": "masamune",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "katana"
+  },
+  {
+    "id": "dragon_claws",
+    "name": "Dragon Claws",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15800,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 98,
+      "str": 10,
+      "dex": 6
+    },
+    "description": "Hand-to-hand weapon favored by Monks.",
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "godhand_zenith",
+    "name": "Godhand \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 148,
+      "str": 23,
+      "dex": 20,
+      "lck": 10
+    },
+    "relic_id": "godhand",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "knuckles"
+  },
+  {
+    "id": "crystal_rapier",
+    "name": "Crystal Rapier",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15870,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 96,
+      "magic_power": 91,
+      "dex": 6,
+      "mag": 6
+    },
+    "description": "Spell-friendly dueling blade for hybrid casters.",
+    "gear_family": "rapier"
+  },
+  {
+    "id": "dragon_lance",
+    "name": "Dragon Lance",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15880,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 100,
+      "str": 12,
+      "dex": 6
+    },
+    "description": "Long-reach polearm designed for Dragoon assaults.",
+    "gear_family": "spear"
+  },
+  {
+    "id": "gae_bolg_zenith",
+    "name": "Gae Bolg \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 158,
+      "str": 20,
+      "dex": 16,
+      "lck": 8
+    },
+    "relic_id": "gae_bolg",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "spear"
+  },
+  {
+    "id": "astral_staff",
+    "name": "Astral Staff",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 15860,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 100,
+      "mag": 12,
+      "spr": 6
+    },
+    "description": "Arcane focus for dedicated spellcasting Jobs.",
+    "gear_family": "staff"
+  },
+  {
+    "id": "nirvana_zenith",
+    "name": "Nirvana \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "whitemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 150,
+      "spr": 28,
+      "mag": 13,
+      "vit": 8
+    },
+    "relic_id": "nirvana",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "staff"
+  },
+  {
+    "id": "stardust_rod_zenith",
+    "name": "Stardust Rod \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "blackmage",
+      "summoner",
+      "timemage"
+    ],
+    "bonuses": {
+      "magic_power": 168,
+      "mag": 25,
+      "spr": 13,
+      "lck": 8
+    },
+    "relic_id": "stardust_rod",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "staff"
+  },
+  {
+    "id": "apocalypse_zenith",
+    "name": "Apocalypse \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 166,
+      "str": 25,
+      "vit": 12,
+      "lck": 7
+    },
+    "relic_id": "apocalypse",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "sword"
+  },
+  {
+    "id": "crystal_sword",
+    "name": "Crystal Sword",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 16200,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 100,
+      "str": 8,
+      "vit": 3
+    },
+    "description": "Reliable high-grade sword for martial and spellblade Jobs.",
+    "gear_family": "sword"
+  },
+  {
+    "id": "excalibur_zenith",
+    "name": "Excalibur \u2014 Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "bonuses": {
+      "attack": 152,
+      "str": 18,
+      "vit": 22,
+      "spr": 10
+    },
+    "relic_id": "excalibur",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "sword"
+  },
+  {
+    "id": "scale_vest",
+    "name": "Scale Vest",
+    "type": "armor",
+    "rarity": "common",
+    "price": 200,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 4,
+      "spr": 2,
+      "dex": 1,
+      "hp": 30
+    },
+    "description": "Balanced field armor for hybrid and mobile Jobs.",
+    "gear_family": "coat"
+  },
+  {
+    "id": "chain_mail",
+    "name": "Chain Mail",
+    "type": "armor",
+    "rarity": "common",
+    "price": 240,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 5,
+      "spr": 0,
+      "hp": 40
+    },
+    "description": "Heavy protection for front-line Jobs.",
+    "gear_family": "heavy"
+  },
+  {
+    "id": "leather_vest",
+    "name": "Leather Vest",
+    "type": "armor",
+    "rarity": "common",
+    "price": 160,
+    "shop": true,
+    "shop_level": 1,
+    "bonuses": {
+      "vit": 3,
+      "hp": 20
+    },
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster",
+      "warrior"
+    ],
+    "gear_family": "light"
+  },
+  {
+    "id": "travelers_garb",
+    "name": "Traveler's Garb",
+    "type": "armor",
+    "rarity": "common",
+    "price": 160,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 3,
+      "dex": 2,
+      "lck": 1,
+      "hp": 20
+    },
+    "description": "Light armor that favors mobility and precision.",
+    "gear_family": "light"
+  },
+  {
+    "id": "novice_robe",
+    "name": "Novice Robe",
+    "type": "armor",
+    "rarity": "common",
+    "price": 180,
+    "shop": true,
+    "shop_level": 1,
+    "min_level": 1,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 2,
+      "spr": 5,
+      "mag": 2,
+      "hp": 15
+    },
+    "description": "Caster robes woven for magical power and spiritual defense.",
+    "gear_family": "robe"
+  },
+  {
+    "id": "scale_coat",
+    "name": "Scale Coat",
+    "type": "armor",
+    "rarity": "common",
+    "price": 415,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "coat",
+    "bonuses": {
+      "vit": 5,
+      "spr": 3,
+      "dex": 2,
+      "hp": 40
+    },
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ]
+  },
+  {
+    "id": "bronze_hauberk",
+    "name": "Bronze Hauberk",
+    "type": "armor",
+    "rarity": "common",
+    "price": 430,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "heavy",
+    "bonuses": {
+      "vit": 6,
+      "spr": 1,
+      "hp": 45
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "leather_jerkin",
+    "name": "Leather Jerkin",
+    "type": "armor",
+    "rarity": "common",
+    "price": 400,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "light",
+    "bonuses": {
+      "vit": 5,
+      "dex": 3,
+      "lck": 1,
+      "hp": 35
+    },
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "cotton_robe",
+    "name": "Cotton Robe",
+    "type": "armor",
+    "rarity": "common",
+    "price": 405,
+    "shop": true,
+    "shop_level": 5,
+    "min_level": 5,
+    "gear_family": "robe",
+    "bonuses": {
+      "vit": 3,
+      "spr": 7,
+      "mag": 3,
+      "hp": 30
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "scale_mail",
+    "name": "Scale Mail",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 740,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 9,
+      "spr": 4,
+      "dex": 2,
+      "hp": 65
+    },
+    "description": "Balanced field armor for hybrid and mobile Jobs.",
+    "gear_family": "coat"
+  },
+  {
+    "id": "iron_armor",
+    "name": "Iron Armor",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 700,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "bonuses": {
+      "vit": 8,
+      "hp": 55
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "gear_family": "heavy"
+  },
+  {
+    "id": "steel_plate",
+    "name": "Steel Plate",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 780,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 10,
+      "spr": 2,
+      "hp": 75
+    },
+    "description": "Heavy protection for front-line Jobs.",
+    "gear_family": "heavy"
+  },
+  {
+    "id": "brigandine",
+    "name": "Brigandine",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 700,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 8,
+      "dex": 4,
+      "lck": 2,
+      "hp": 55
+    },
+    "description": "Light armor that favors mobility and precision.",
+    "gear_family": "light"
+  },
+  {
+    "id": "mage_robe",
+    "name": "Mage Robe",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 720,
+    "shop": true,
+    "shop_level": 8,
+    "min_level": 8,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 5,
+      "spr": 10,
+      "mag": 4,
+      "hp": 45
+    },
+    "description": "Caster robes woven for magical power and spiritual defense.",
+    "gear_family": "robe"
+  },
+  {
+    "id": "brigand_coat",
+    "name": "Brigand Coat",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1180,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "coat",
+    "bonuses": {
+      "vit": 10,
+      "spr": 5,
+      "dex": 3,
+      "hp": 78
+    },
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ]
+  },
+  {
+    "id": "iron_cuirass",
+    "name": "Iron Cuirass",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1200,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "heavy",
+    "bonuses": {
+      "vit": 11,
+      "spr": 3,
+      "hp": 85
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "scouts_vest",
+    "name": "Scout's Vest",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1150,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "light",
+    "bonuses": {
+      "vit": 9,
+      "dex": 5,
+      "lck": 2,
+      "hp": 70
+    },
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "linen_robe",
+    "name": "Linen Robe",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1170,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "gear_family": "robe",
+    "bonuses": {
+      "vit": 7,
+      "spr": 13,
+      "mag": 5,
+      "hp": 60
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "mythril_jacket",
+    "name": "Mythril Jacket",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1790,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "coat",
+    "bonuses": {
+      "vit": 13,
+      "spr": 6,
+      "dex": 4,
+      "hp": 98
+    },
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ]
+  },
+  {
+    "id": "mythril_mail",
+    "name": "Mythril Mail",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1810,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "heavy",
+    "bonuses": {
+      "vit": 14,
+      "spr": 3,
+      "hp": 105
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "rangers_garb",
+    "name": "Ranger's Garb",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1750,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "light",
+    "bonuses": {
+      "vit": 12,
+      "dex": 6,
+      "lck": 3,
+      "hp": 90
+    },
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "aether_robe",
+    "name": "Aether Robe",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 1770,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "gear_family": "robe",
+    "bonuses": {
+      "vit": 9,
+      "spr": 15,
+      "mag": 6,
+      "hp": 80
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "mythril_coat",
+    "name": "Mythril Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 2640,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 16,
+      "spr": 6,
+      "dex": 3,
+      "hp": 120
+    },
+    "description": "Balanced field armor for hybrid and mobile Jobs.",
+    "gear_family": "coat"
+  },
+  {
+    "id": "mythril_cuirass",
+    "name": "Mythril Cuirass",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 2600,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "bonuses": {
+      "vit": 15,
+      "spr": 5,
+      "hp": 110
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "gear_family": "heavy"
+  },
+  {
+    "id": "mythril_plate",
+    "name": "Mythril Plate",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 2680,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 17,
+      "spr": 4,
+      "hp": 130
+    },
+    "description": "Heavy protection for front-line Jobs.",
+    "gear_family": "heavy"
+  },
+  {
+    "id": "ninja_garb",
+    "name": "Ninja Garb",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 2600,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 15,
+      "dex": 6,
+      "lck": 3,
+      "hp": 110
+    },
+    "description": "Light armor that favors mobility and precision.",
+    "gear_family": "light"
+  },
+  {
+    "id": "scholars_robe",
+    "name": "Scholar's Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 2620,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 12,
+      "spr": 17,
+      "mag": 6,
+      "hp": 100
+    },
+    "description": "Caster robes woven for magical power and spiritual defense.",
+    "gear_family": "robe"
+  },
+  {
+    "id": "wyvern_coat",
+    "name": "Wyvern Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 3560,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "coat",
+    "bonuses": {
+      "vit": 17,
+      "spr": 7,
+      "dex": 4,
+      "hp": 135
+    },
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ]
+  },
+  {
+    "id": "knights_cuirass",
+    "name": "Knight's Cuirass",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 3580,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "heavy",
+    "bonuses": {
+      "vit": 18,
+      "spr": 5,
+      "hp": 145
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "shadow_vest",
+    "name": "Shadow Vest",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 3520,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "light",
+    "bonuses": {
+      "vit": 16,
+      "dex": 7,
+      "lck": 4,
+      "hp": 125
+    },
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "black_robe",
+    "name": "Black Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 4400,
+    "shop": false,
+    "min_level": 25,
+    "bonuses": {
+      "mag": 10,
+      "spr": 8,
+      "hp": 80
+    },
+    "gear_family": "robe"
+  },
+  {
+    "id": "magicians_robe",
+    "name": "Magician's Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 3540,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "gear_family": "robe",
+    "bonuses": {
+      "vit": 13,
+      "spr": 19,
+      "mag": 7,
+      "hp": 115
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "white_robe",
+    "name": "White Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 4400,
+    "shop": false,
+    "min_level": 25,
+    "bonuses": {
+      "spr": 12,
+      "mag": 5,
+      "hp": 100
+    },
+    "gear_family": "robe"
+  },
+  {
+    "id": "runic_coat",
+    "name": "Runic Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 4600,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "coat",
+    "bonuses": {
+      "vit": 19,
+      "spr": 8,
+      "dex": 5,
+      "hp": 155
+    },
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ]
+  },
+  {
+    "id": "platinum_plate",
+    "name": "Platinum Plate",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 4620,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "heavy",
+    "bonuses": {
+      "vit": 20,
+      "spr": 6,
+      "hp": 165
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "duelists_garb",
+    "name": "Duelist's Garb",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 4560,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "light",
+    "bonuses": {
+      "vit": 18,
+      "dex": 8,
+      "lck": 4,
+      "hp": 145
+    },
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "high_mage_robe",
+    "name": "High Mage Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 4580,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "gear_family": "robe",
+    "bonuses": {
+      "vit": 15,
+      "spr": 20,
+      "mag": 8,
+      "hp": 135
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "giants_aegis",
+    "name": "Giant's Aegis",
+    "type": "armor",
+    "rarity": "relic",
+    "price": 7600,
+    "shop": false,
+    "min_level": 32,
+    "bonuses": {
+      "vit": 18,
+      "hp": 150,
+      "spr": 6
+    },
+    "gear_family": "heavy"
+  },
+  {
+    "id": "dragonhide_coat",
+    "name": "Dragonhide Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 5640,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 20,
+      "spr": 8,
+      "dex": 4,
+      "hp": 175
+    },
+    "description": "Balanced field armor for hybrid and mobile Jobs.",
+    "gear_family": "coat"
+  },
+  {
+    "id": "diamond_armor",
+    "name": "Diamond Armor",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 5680,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 21,
+      "spr": 6,
+      "hp": 185
+    },
+    "description": "Heavy protection for front-line Jobs.",
+    "gear_family": "heavy"
+  },
+  {
+    "id": "mirage_vest",
+    "name": "Mirage Vest",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 5600,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 19,
+      "dex": 8,
+      "lck": 4,
+      "hp": 165
+    },
+    "description": "Light armor that favors mobility and precision.",
+    "gear_family": "light"
+  },
+  {
+    "id": "wizard_robe",
+    "name": "Wizard Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 5620,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 16,
+      "spr": 21,
+      "mag": 8,
+      "hp": 155
+    },
+    "description": "Caster robes woven for magical power and spiritual defense.",
+    "gear_family": "robe"
+  },
+  {
+    "id": "crystal_cuirass",
+    "name": "Crystal Cuirass",
+    "type": "armor",
+    "rarity": "relic",
+    "price": 9000,
+    "shop": false,
+    "min_level": 40,
+    "bonuses": {
+      "vit": 22,
+      "spr": 10,
+      "hp": 220
+    },
+    "gear_family": "heavy"
+  },
+  {
+    "id": "aegis_coat",
+    "name": "Aegis Coat",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 9240,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 24,
+      "spr": 10,
+      "dex": 5,
+      "hp": 225
+    },
+    "description": "Balanced field armor for hybrid and mobile Jobs.",
+    "gear_family": "coat"
+  },
+  {
+    "id": "crystal_plate",
+    "name": "Crystal Plate",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 9280,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 25,
+      "spr": 8,
+      "hp": 235
+    },
+    "description": "Heavy protection for front-line Jobs.",
+    "gear_family": "heavy"
+  },
+  {
+    "id": "shadow_weave",
+    "name": "Shadow Weave",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 9200,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 23,
+      "dex": 10,
+      "lck": 5,
+      "hp": 215
+    },
+    "description": "Light armor that favors mobility and precision.",
+    "gear_family": "light"
+  },
+  {
+    "id": "sorcerers_robe",
+    "name": "Sorcerer's Robe",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 9220,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 20,
+      "spr": 25,
+      "mag": 10,
+      "hp": 205
+    },
+    "description": "Caster robes woven for magical power and spiritual defense.",
+    "gear_family": "robe"
+  },
+  {
+    "id": "dragon_mail",
+    "name": "Dragon Mail",
+    "type": "armor",
+    "rarity": "artifact",
+    "price": 16000,
+    "shop": false,
+    "min_level": 55,
+    "bonuses": {
+      "vit": 27,
+      "spr": 18,
+      "hp": 280
+    },
+    "gear_family": "heavy"
+  },
+  {
+    "id": "adamant_plates",
+    "name": "Adamant Plates",
+    "type": "armor",
+    "rarity": "artifact",
+    "price": 19000,
+    "shop": false,
+    "min_level": 58,
+    "bonuses": {
+      "vit": 30,
+      "spr": 15,
+      "hp": 300
+    },
+    "gear_family": "heavy"
+  },
+  {
+    "id": "adamant_guard",
+    "name": "Adamant Guard",
+    "type": "armor",
+    "rarity": "artifact",
+    "price": 18000,
+    "shop": false,
+    "min_level": 58,
+    "bonuses": {
+      "vit": 34,
+      "spr": 14,
+      "hp": 340
+    },
+    "gear_family": "unrestricted"
+  },
+  {
+    "id": "crystal_coat",
+    "name": "Crystal Coat",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 14240,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 28,
+      "spr": 12,
+      "dex": 6,
+      "hp": 275
+    },
+    "description": "Balanced field armor for hybrid and mobile Jobs.",
+    "gear_family": "coat"
+  },
+  {
+    "id": "adamant_plate_shop",
+    "name": "Adamant Plate",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 14280,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 29,
+      "spr": 10,
+      "hp": 285
+    },
+    "description": "Heavy protection for front-line Jobs.",
+    "gear_family": "heavy"
+  },
+  {
+    "id": "black_garb",
+    "name": "Black Garb",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 14200,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 27,
+      "dex": 12,
+      "lck": 6,
+      "hp": 265
+    },
+    "description": "Light armor that favors mobility and precision.",
+    "gear_family": "light"
+  },
+  {
+    "id": "oracle_robe",
+    "name": "Oracle Robe",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 14220,
+    "shop": true,
+    "shop_level": 65,
+    "min_level": 65,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 24,
+      "spr": 29,
+      "mag": 12,
+      "hp": 255
+    },
+    "description": "Caster robes woven for magical power and spiritual defense.",
+    "gear_family": "robe"
+  },
+  {
+    "id": "ribbon",
+    "name": "Ribbon",
+    "type": "accessory",
+    "rarity": "artifact",
+    "price": 20000,
+    "shop": false,
+    "min_level": 25,
+    "bonuses": {
+      "vit": 8,
+      "spr": 12,
+      "lck": 8
+    },
+    "description": "A legendary charm that prevents all currently supported harmful Active Battle statuses.",
+    "status_immune": [
+      "vulnerable",
+      "weaken",
+      "slow",
+      "stun",
+      "poison",
+      "silence",
+      "blind"
+    ]
+  },
+  {
+    "id": "hermes_sandals",
+    "name": "Hermes Sandals",
+    "type": "accessory",
+    "rarity": "relic",
+    "price": 10000,
+    "shop": false,
+    "min_level": 10,
+    "bonuses": {
+      "dex": 15,
+      "lck": 4
+    },
+    "description": "Lightweight relic sandals built for speed and resistance to temporal interference.",
+    "status_resist": {
+      "slow": 0.75
+    }
+  },
+  {
+    "id": "power_wrist",
+    "name": "Power Wrist",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 900,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "bonuses": {
+      "str": 7
+    }
+  },
+  {
+    "id": "magic_ring",
+    "name": "Magic Ring",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 900,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "bonuses": {
+      "mag": 7
+    }
+  },
+  {
+    "id": "wolf_fang",
+    "name": "Wolf Fang",
+    "type": "material",
+    "rarity": "common",
+    "price": 20,
+    "shop": false
+  },
+  {
+    "id": "bomb_fragment",
+    "name": "Bomb Fragment",
+    "type": "material",
+    "rarity": "common",
+    "price": 35,
+    "shop": false,
+    "description": "A volatile Bomb fragment. Can be thrown in Active Battle for 220 Fire damage.",
+    "use": {
+      "target": "enemy",
+      "field": false,
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 220,
+          "element": "Fire"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bomb_core",
+    "name": "Bomb Core",
+    "type": "material",
+    "rarity": "rare",
+    "price": 250,
+    "shop": false
+  },
+  {
+    "id": "cactuar_needle",
+    "name": "Cactuar Needle",
+    "type": "material",
+    "rarity": "rare",
+    "price": 400,
+    "shop": false
+  },
+  {
+    "id": "bone_chip",
+    "name": "Bone Chip",
+    "type": "material",
+    "rarity": "common",
+    "price": 30,
+    "shop": false
+  },
+  {
+    "id": "iron_ore",
+    "name": "Iron Ore",
+    "type": "material",
+    "rarity": "common",
+    "price": 45,
+    "shop": false
+  },
+  {
+    "id": "mythril_ore",
+    "name": "Mythril Ore",
+    "type": "material",
+    "rarity": "rare",
+    "price": 260,
+    "shop": false
+  },
+  {
+    "id": "fish_scale",
+    "name": "Fish Scale",
+    "type": "material",
+    "rarity": "common",
+    "price": 45,
+    "shop": false
+  },
+  {
+    "id": "coeurl_whisker",
+    "name": "Coeurl Whisker",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 130,
+    "shop": false
+  },
+  {
+    "id": "chimera_scale",
+    "name": "Chimera Scale",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 150,
+    "shop": false
+  },
+  {
+    "id": "malboro_tendril",
+    "name": "Malboro Tendril",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 170,
+    "shop": false
+  },
+  {
+    "id": "magitek_scrap",
+    "name": "Magitek Scrap",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 180,
+    "shop": false
+  },
+  {
+    "id": "iron_giant_plate",
+    "name": "Iron Giant Plate",
+    "type": "material",
+    "rarity": "rare",
+    "price": 450,
+    "shop": false
+  },
+  {
+    "id": "behemoth_horn",
+    "name": "Behemoth Horn",
+    "type": "material",
+    "rarity": "rare",
+    "price": 650,
+    "shop": false
+  },
+  {
+    "id": "magitek_core",
+    "name": "Magitek Core",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1200,
+    "shop": false
+  },
+  {
+    "id": "bomb_kings_fuse",
+    "name": "Bomb King's Fuse",
+    "type": "material",
+    "rarity": "rare",
+    "price": 500,
+    "shop": false
+  },
+  {
+    "id": "needle_charm",
+    "name": "Needle Charm",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 2400,
+    "shop": false,
+    "min_level": 16,
+    "bonuses": {
+      "dex": 8,
+      "lck": 7
+    }
+  },
+  {
+    "id": "coeurl_crown",
+    "name": "Coeurl Crown",
+    "type": "accessory",
+    "rarity": "relic",
+    "price": 5200,
+    "shop": false,
+    "min_level": 24,
+    "bonuses": {
+      "dex": 10,
+      "lck": 10
+    }
+  },
+  {
+    "id": "masamune_fragment",
+    "name": "Masamune Fragment",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1500,
+    "shop": false
+  },
+  {
+    "id": "morbol_bulb",
+    "name": "Morbol Bulb",
+    "type": "material",
+    "rarity": "rare",
+    "price": 850,
+    "shop": false
+  },
+  {
+    "id": "triple_chimera_fang",
+    "name": "Triple Chimera Fang",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1200,
+    "shop": false
+  },
+  {
+    "id": "grudge_lantern",
+    "name": "Grudge Lantern",
+    "type": "accessory",
+    "rarity": "artifact",
+    "price": 9000,
+    "shop": false,
+    "min_level": 42,
+    "bonuses": {
+      "attack": 18,
+      "magic_power": 18,
+      "lck": 12
+    }
+  },
+  {
+    "id": "behemoth_crown",
+    "name": "Behemoth Crown",
+    "type": "accessory",
+    "rarity": "artifact",
+    "price": 16000,
+    "shop": false,
+    "min_level": 52,
+    "bonuses": {
+      "str": 12,
+      "vit": 12,
+      "hp": 180
+    }
+  },
+  {
+    "id": "crystal_shard",
+    "name": "Crystal Shard",
+    "type": "material",
+    "rarity": "rare",
+    "price": 420,
+    "shop": false
+  },
+  {
+    "id": "crystal_core",
+    "name": "Crystal Core",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1250,
+    "shop": false
+  },
+  {
+    "id": "rift_crystal",
+    "name": "Rift Crystal",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "dark_matter",
+    "name": "Dark Matter",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 5000,
+    "shop": false
+  },
+  {
+    "id": "dragon_scale",
+    "name": "Dragon Scale",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1300,
+    "shop": false
+  },
+  {
+    "id": "eidolon_shard",
+    "name": "Eidolon Shard",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 4200,
+    "shop": false
+  },
+  {
+    "id": "adamantite",
+    "name": "Adamantite",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 3800,
+    "shop": false
+  },
+  {
+    "id": "void_essence",
+    "name": "Void Essence",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 4800,
+    "shop": false
+  },
+  {
+    "id": "ancient_cloth",
+    "name": "Ancient Cloth",
+    "type": "material",
+    "rarity": "rare",
+    "price": 600,
+    "shop": false
+  },
+  {
+    "id": "celestial_thread",
+    "name": "Celestial Thread",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1500,
+    "shop": false
+  },
+  {
+    "id": "thieves_gloves",
+    "name": "Thief's Gloves",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 3900,
+    "shop": false,
+    "min_level": 22,
+    "bonuses": {
+      "dex": 11,
+      "lck": 10
+    }
+  },
+  {
+    "id": "crystal_focus",
+    "name": "Crystal Focus",
+    "type": "accessory",
+    "rarity": "relic",
+    "price": 8600,
+    "shop": false,
+    "min_level": 40,
+    "bonuses": {
+      "mag": 12,
+      "spr": 12,
+      "lck": 6
+    }
+  },
+  {
+    "id": "void_charm",
+    "name": "Void Charm",
+    "type": "accessory",
+    "rarity": "artifact",
+    "price": 17500,
+    "shop": false,
+    "min_level": 60,
+    "bonuses": {
+      "str": 8,
+      "mag": 8,
+      "dex": 8,
+      "lck": 12
+    }
+  },
+  {
+    "id": "artisan_hammer",
+    "name": "Artisan's Hammer",
+    "type": "accessory",
+    "rarity": "relic",
+    "price": 8000,
+    "shop": false,
+    "min_level": 35,
+    "bonuses": {
+      "str": 6,
+      "vit": 6,
+      "lck": 8
+    }
+  },
+  {
+    "id": "imp_wing",
+    "name": "Imp Wing",
+    "type": "material",
+    "rarity": "common",
+    "price": 45,
+    "shop": false
+  },
+  {
+    "id": "cockatrice_pinion",
+    "name": "Cockatrice Pinion",
+    "type": "material",
+    "rarity": "common",
+    "price": 60,
+    "shop": false
+  },
+  {
+    "id": "ochu_vine",
+    "name": "Ochu Vine",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 90,
+    "shop": false
+  },
+  {
+    "id": "basilisk_eye",
+    "name": "Basilisk Eye",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 110,
+    "shop": false
+  },
+  {
+    "id": "lamia_scale",
+    "name": "Lamia Scale",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 130,
+    "shop": false
+  },
+  {
+    "id": "mindflayer_tentacle",
+    "name": "Mindflayer Tentacle",
+    "type": "material",
+    "rarity": "rare",
+    "price": 280,
+    "shop": false
+  },
+  {
+    "id": "antlion_mandible",
+    "name": "Antlion Mandible",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 140,
+    "shop": false
+  },
+  {
+    "id": "sandworm_fang",
+    "name": "Sand Worm Fang",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 150,
+    "shop": false
+  },
+  {
+    "id": "garuda_feather",
+    "name": "Garuda Feather",
+    "type": "material",
+    "rarity": "rare",
+    "price": 350,
+    "shop": false
+  },
+  {
+    "id": "death_claw_pincer",
+    "name": "Death Claw Pincer",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 190,
+    "shop": false
+  },
+  {
+    "id": "ironclad_plate",
+    "name": "Ironclad Plate",
+    "type": "material",
+    "rarity": "rare",
+    "price": 480,
+    "shop": false
+  },
+  {
+    "id": "dragon_fang",
+    "name": "Dragon Fang",
+    "type": "material",
+    "rarity": "rare",
+    "price": 520,
+    "shop": false
+  },
+  {
+    "id": "magic_pot_shard",
+    "name": "Magic Pot Shard",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1200,
+    "shop": false
+  },
+  {
+    "id": "mover_core",
+    "name": "Mover Core",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1450,
+    "shop": false
+  },
+  {
+    "id": "demonolith_shard",
+    "name": "Demonolith Shard",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "summoners_ember",
+    "name": "Summoner's Ember",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "glacial_crystal",
+    "name": "Glacial Crystal",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "judgment_spark",
+    "name": "Judgment Spark",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "gale_feather",
+    "name": "Gale Feather",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "tidal_scale",
+    "name": "Tidal Scale",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "earth_heart",
+    "name": "Earth Heart",
+    "type": "material",
+    "rarity": "relic",
+    "price": 1800,
+    "shop": false
+  },
+  {
+    "id": "ultros_tentacle",
+    "name": "Ultros Tentacle",
+    "type": "material",
+    "rarity": "rare",
+    "price": 850,
+    "shop": false
+  },
+  {
+    "id": "demon_wall_fragment",
+    "name": "Demon Wall Fragment",
+    "type": "material",
+    "rarity": "rare",
+    "price": 900,
+    "shop": false
+  },
+  {
+    "id": "genji_token",
+    "name": "Genji Token",
+    "type": "material",
+    "rarity": "relic",
+    "price": 2000,
+    "shop": false
+  },
+  {
+    "id": "deathgaze_plume",
+    "name": "Deathgaze Plume",
+    "type": "material",
+    "rarity": "relic",
+    "price": 2100,
+    "shop": false
+  },
+  {
+    "id": "ultima_core",
+    "name": "Ultima Core",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 5000,
+    "shop": false
+  },
+  {
+    "id": "omega_core",
+    "name": "Omega Core",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 8000,
+    "shop": false
+  },
+  {
+    "id": "shinryu_scale",
+    "name": "Shinryu Scale",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 8500,
+    "shop": false
+  },
+  {
+    "id": "earth_harp",
+    "name": "Earth Harp",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false
+  },
+  {
+    "id": "desert_rose",
+    "name": "Desert Rose",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false
+  },
+  {
+    "id": "ozma_shard",
+    "name": "Ozma Shard",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 12500,
+    "shop": false
+  },
+  {
+    "id": "nemesis_mark",
+    "name": "Nemesis Mark",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 13000,
+    "shop": false
+  },
+  {
+    "id": "penance_core",
+    "name": "Penance Core",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 16000,
+    "shop": false
+  },
+  {
+    "id": "yiazmat_scale",
+    "name": "Yiazmat Scale",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 17000,
+    "shop": false
+  },
+  {
+    "id": "kaiser_scale",
+    "name": "Kaiser Dragon Scale",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 15000,
+    "shop": false
+  },
+  {
+    "id": "proto_babil_core",
+    "name": "Proto-Babil Core",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 15500,
+    "shop": false
+  },
+  {
+    "id": "warmech_component",
+    "name": "Warmech Component",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 10000,
+    "shop": false
+  },
+  {
+    "id": "long_gui_plate",
+    "name": "Long Gui Plate",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 14500,
+    "shop": false
+  },
+  {
+    "id": "absolute_crystal",
+    "name": "Absolute Crystal",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 17500,
+    "shop": false
+  },
+  {
+    "id": "knights_gauntlet",
+    "name": "Knight's Gauntlet",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 950,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "str": 5,
+      "vit": 5
+    },
+    "description": "Front-line accessory balancing strength and defense."
+  },
+  {
+    "id": "thiefs_gloves",
+    "name": "Thief's Gloves",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 950,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "dex": 6,
+      "lck": 5
+    },
+    "description": "Quick hands, quicker exits."
+  },
+  {
+    "id": "mage_earring",
+    "name": "Mage Earring",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 950,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "mag": 6,
+      "spr": 5
+    },
+    "description": "Arcane accessory favored by spellcasters."
+  },
+  {
+    "id": "dragoon_boots",
+    "name": "Dragoon Boots",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 3200,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "str": 6,
+      "dex": 8
+    },
+    "description": "Reinforced boots that definitely make Jump safer. Probably."
+  },
+  {
+    "id": "bardic_charm",
+    "name": "Bardic Charm",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 3000,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "dex": 5,
+      "spr": 8,
+      "lck": 4
+    },
+    "description": "A polished charm for performers who insist combat is an audience-participation event."
+  },
+  {
+    "id": "machinists_goggles",
+    "name": "Machinist's Goggles",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 3100,
+    "shop": true,
+    "shop_level": 25,
+    "min_level": 25,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "dex": 9,
+      "lck": 5
+    },
+    "description": "Precision optics for identifying which part of a monster is most expensive to replace."
+  },
+  {
+    "id": "mega_potion",
+    "name": "Mega-Potion",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 850,
+    "shop": true,
+    "shop_level": 20,
+    "description": "Restores 500 HP to one conscious hero.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "amount": 500
+        }
+      ]
+    }
+  },
+  {
+    "id": "hi_ether",
+    "name": "Hi-Ether",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 900,
+    "shop": true,
+    "shop_level": 20,
+    "description": "A concentrated aetheric restorative intended for longer expeditions and heavier spell use. Restores 65% of maximum MP and can be used in or out of Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "restore_mp",
+          "fraction": 0.65
+        }
+      ]
+    }
+  },
+  {
+    "id": "turbo_ether",
+    "name": "Turbo Ether",
+    "type": "consumable",
+    "rarity": "epic",
+    "price": 2600,
+    "shop": false,
+    "shop_level": 40,
+    "description": "An exceptionally potent aether concentrate saved for emergencies when a caster is completely spent. Fully restores MP and can be used in or out of Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "restore_mp",
+          "fraction": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "stamina_draught",
+    "name": "Stamina Draught",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 320,
+    "shop": true,
+    "shop_level": 8,
+    "description": "A sharp, invigorating draught carried by martial adventurers when technique reserves run low. Restores 40% of maximum AP and can be used in or out of Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "restore_ap",
+          "fraction": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "id": "warriors_tonic",
+    "name": "Warrior\u2019s Tonic",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 950,
+    "shop": true,
+    "shop_level": 20,
+    "description": "A stronger combat tonic brewed for prolonged engagements where physical techniques are being pushed hard. Restores 65% of maximum AP and can be used in or out of Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "restore_ap",
+          "fraction": 0.65
+        }
+      ]
+    }
+  },
+  {
+    "id": "heros_brew",
+    "name": "Hero\u2019s Brew",
+    "type": "consumable",
+    "rarity": "epic",
+    "price": 2700,
+    "shop": false,
+    "shop_level": 40,
+    "description": "A rare restorative brew that floods an exhausted fighter with enough vigor to rejoin the fray at full strength. Fully restores AP and can be used in or out of Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "restore_ap",
+          "fraction": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "eye_drops",
+    "name": "Eye Drops",
+    "type": "consumable",
+    "rarity": "common",
+    "price": 90,
+    "shop": true,
+    "shop_level": 4,
+    "description": "Removes Blind during Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "statuses": [
+            "blind"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "chronos_tear",
+    "name": "Chronos Tear",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 240,
+    "shop": true,
+    "shop_level": 15,
+    "description": "Removes Slow during Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "statuses": [
+            "slow"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "smelling_salts",
+    "name": "Smelling Salts",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 260,
+    "shop": true,
+    "shop_level": 15,
+    "description": "Removes Stun during Active Battle.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "statuses": [
+            "stun"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "panacea",
+    "name": "Panacea",
+    "type": "consumable",
+    "rarity": "epic",
+    "price": 3500,
+    "shop": false,
+    "shop_level": 45,
+    "description": "Removes all harmful Active Battle statuses from one hero.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "cleanse",
+          "all_harmful": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "iron_tonic",
+    "name": "Iron Tonic",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 380,
+    "shop": true,
+    "shop_level": 12,
+    "description": "Grants Protect for 2 rounds.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "status",
+          "status": "protect",
+          "turns": 2,
+          "magnitude": 0.18
+        }
+      ]
+    }
+  },
+  {
+    "id": "swiftwater",
+    "name": "Swiftwater",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 620,
+    "shop": true,
+    "shop_level": 18,
+    "description": "Grants Haste for 2 rounds.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "status",
+          "status": "haste",
+          "turns": 2,
+          "magnitude": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "regen_tonic",
+    "name": "Regen Tonic",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 640,
+    "shop": true,
+    "shop_level": 18,
+    "description": "Grants Regen for 3 rounds.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "status",
+          "status": "regen",
+          "turns": 3,
+          "magnitude": 0.07
+        }
+      ]
+    }
+  },
+  {
+    "id": "war_horn",
+    "name": "War Horn",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 760,
+    "shop": true,
+    "shop_level": 22,
+    "description": "Grants Power Up for 2 rounds.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "status",
+          "status": "power_up",
+          "turns": 2,
+          "magnitude": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "mages_incense",
+    "name": "Mage\u2019s Incense",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 760,
+    "shop": true,
+    "shop_level": 22,
+    "description": "Grants Focus for 2 rounds.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "status",
+          "status": "focus",
+          "turns": 2,
+          "magnitude": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "id": "smoke_bomb",
+    "name": "Smoke Bomb",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 420,
+    "shop": true,
+    "shop_level": 14,
+    "description": "Raises Evasion for 2 rounds.",
+    "use": {
+      "target": "ally",
+      "field": false,
+      "effects": [
+        {
+          "type": "status",
+          "status": "evade",
+          "turns": 2,
+          "magnitude": 0.18
+        }
+      ]
+    }
+  },
+  {
+    "id": "elixir",
+    "name": "Elixir",
+    "type": "consumable",
+    "rarity": "artifact",
+    "price": 8000,
+    "shop": false,
+    "shop_level": 40,
+    "description": "Fully restores HP, MP and AP to one hero. Not sold in normal shops.",
+    "use": {
+      "target": "ally",
+      "field": true,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "fraction": 1.0
+        },
+        {
+          "type": "restore_mp",
+          "fraction": 1.0
+        },
+        {
+          "type": "restore_ap",
+          "fraction": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "megalixir",
+    "name": "Megalixir",
+    "type": "consumable",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "shop_level": 50,
+    "description": "Fully restores HP, MP and AP to every living hero in Active Battle. Exceptionally rare.",
+    "use": {
+      "target": "party",
+      "field": false,
+      "effects": [
+        {
+          "type": "heal_hp",
+          "fraction": 1.0
+        },
+        {
+          "type": "restore_mp",
+          "fraction": 1.0
+        },
+        {
+          "type": "restore_ap",
+          "fraction": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "arctic_wind",
+    "name": "Arctic Wind",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 500,
+    "shop": true,
+    "shop_level": 16,
+    "description": "Deals 300 Ice damage to the enemy in Active Battle.",
+    "use": {
+      "target": "enemy",
+      "field": false,
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 300,
+          "element": "Ice"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lightning_marble",
+    "name": "Lightning Marble",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 500,
+    "shop": true,
+    "shop_level": 16,
+    "description": "Deals 300 Lightning damage to the enemy in Active Battle.",
+    "use": {
+      "target": "enemy",
+      "field": false,
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 300,
+          "element": "Lightning"
+        }
+      ]
+    }
+  },
+  {
+    "id": "water_gem",
+    "name": "Water Gem",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 900,
+    "shop": true,
+    "shop_level": 25,
+    "description": "Deals 450 Water damage to the enemy in Active Battle.",
+    "use": {
+      "target": "enemy",
+      "field": false,
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 450,
+          "element": "Water"
+        }
+      ]
+    }
+  },
+  {
+    "id": "earth_drum",
+    "name": "Earth Drum",
+    "type": "consumable",
+    "rarity": "rare",
+    "price": 900,
+    "shop": true,
+    "shop_level": 25,
+    "description": "Deals 450 Earth damage to the enemy in Active Battle.",
+    "use": {
+      "target": "enemy",
+      "field": false,
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 450,
+          "element": "Earth"
+        }
+      ]
+    }
+  },
+  {
+    "id": "shadow_gem",
+    "name": "Shadow Gem",
+    "type": "consumable",
+    "rarity": "epic",
+    "price": 1800,
+    "shop": false,
+    "shop_level": 38,
+    "description": "Deals 700 Dark damage to the enemy in Active Battle.",
+    "use": {
+      "target": "enemy",
+      "field": false,
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 700,
+          "element": "Dark"
+        }
+      ]
+    }
+  },
+  {
+    "id": "star_pendant",
+    "name": "Star Pendant",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 850,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "bonuses": {
+      "spr": 3,
+      "lck": 2
+    },
+    "status_immune": [
+      "poison"
+    ],
+    "description": "Prevents Poison in Active Battle."
+  },
+  {
+    "id": "silver_pendant",
+    "name": "Silver Pendant",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 900,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "bonuses": {
+      "spr": 4
+    },
+    "status_immune": [
+      "silence"
+    ],
+    "description": "Prevents Silence in Active Battle."
+  },
+  {
+    "id": "blindfold",
+    "name": "Blindfold",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 900,
+    "shop": true,
+    "shop_level": 12,
+    "min_level": 12,
+    "bonuses": {
+      "dex": 3,
+      "lck": 2
+    },
+    "status_immune": [
+      "blind"
+    ],
+    "description": "Prevents Blind in Active Battle."
+  },
+  {
+    "id": "chronos_charm",
+    "name": "Chronos Charm",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 1800,
+    "shop": true,
+    "shop_level": 22,
+    "min_level": 22,
+    "bonuses": {
+      "dex": 5,
+      "spr": 3
+    },
+    "status_resist": {
+      "slow": 0.75
+    },
+    "description": "Greatly reduces the chance of Slow."
+  },
+  {
+    "id": "steadfast_charm",
+    "name": "Steadfast Charm",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 1900,
+    "shop": true,
+    "shop_level": 24,
+    "min_level": 24,
+    "bonuses": {
+      "vit": 5,
+      "spr": 3
+    },
+    "status_resist": {
+      "stun": 0.75
+    },
+    "description": "Greatly reduces the chance of Stun."
+  },
+  {
+    "id": "ward_ring",
+    "name": "Ward Ring",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 2300,
+    "shop": true,
+    "shop_level": 28,
+    "min_level": 28,
+    "bonuses": {
+      "vit": 4,
+      "spr": 5
+    },
+    "status_resist": {
+      "weaken": 0.5,
+      "vulnerable": 0.5
+    },
+    "description": "Reduces the chance of Weaken and Vulnerable."
+  },
+  {
+    "id": "ribbon_fragment",
+    "name": "Ribbon Fragment",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 5000,
+    "shop": false,
+    "min_level": 35,
+    "bonuses": {
+      "vit": 5,
+      "spr": 7,
+      "lck": 5
+    },
+    "status_resist": {
+      "poison": 0.5,
+      "silence": 0.5,
+      "blind": 0.5,
+      "slow": 0.5,
+      "stun": 0.35
+    },
+    "description": "A torn piece of a true Ribbon; broadly resists common ailments."
+  },
+  {
+    "id": "guard_belt",
+    "name": "Guard Belt",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 950,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "bonuses": {
+      "vit": 7,
+      "hp": 35
+    }
+  },
+  {
+    "id": "spirit_charm",
+    "name": "Spirit Charm",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 950,
+    "shop": true,
+    "shop_level": 10,
+    "min_level": 10,
+    "bonuses": {
+      "spr": 7,
+      "hp": 20
+    }
+  },
+  {
+    "id": "speed_boots",
+    "name": "Speed Boots",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "price": 1100,
+    "shop": true,
+    "shop_level": 14,
+    "min_level": 14,
+    "bonuses": {
+      "dex": 7,
+      "lck": 2
+    }
+  },
+  {
+    "id": "sniper_eye",
+    "name": "Sniper Eye",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 1800,
+    "shop": true,
+    "shop_level": 20,
+    "min_level": 20,
+    "bonuses": {
+      "dex": 9,
+      "lck": 4
+    }
+  },
+  {
+    "id": "critical_band",
+    "name": "Critical Band",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 1950,
+    "shop": true,
+    "shop_level": 22,
+    "min_level": 22,
+    "bonuses": {
+      "lck": 10,
+      "dex": 3
+    }
+  },
+  {
+    "id": "knights_crest",
+    "name": "Knight\u2019s Crest",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 2700,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "bonuses": {
+      "vit": 9,
+      "str": 4,
+      "hp": 80
+    },
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon"
+    ]
+  },
+  {
+    "id": "mages_crest",
+    "name": "Mage\u2019s Crest",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 2700,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "bonuses": {
+      "mag": 9,
+      "spr": 6,
+      "magic_power": 10
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "warriors_crest",
+    "name": "Warrior\u2019s Crest",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 2700,
+    "shop": true,
+    "shop_level": 30,
+    "min_level": 30,
+    "bonuses": {
+      "str": 9,
+      "dex": 4,
+      "attack": 10
+    },
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster"
+    ]
+  },
+  {
+    "id": "mana_charm",
+    "name": "Mana Charm",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 3100,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "bonuses": {
+      "mag": 7,
+      "spr": 7,
+      "magic_power": 14
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage",
+      "bard"
+    ]
+  },
+  {
+    "id": "adrenaline_charm",
+    "name": "Adrenaline Charm",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 3100,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "bonuses": {
+      "str": 6,
+      "dex": 7,
+      "attack": 14
+    },
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "thief",
+      "dragoon",
+      "samurai",
+      "ninja",
+      "darkknight",
+      "machinist",
+      "beastmaster",
+      "bard",
+      "paladin"
+    ]
+  },
+  {
+    "id": "crystal_guard",
+    "name": "Crystal Guard",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 6200,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "bonuses": {
+      "vit": 12,
+      "spr": 12,
+      "hp": 110
+    }
+  },
+  {
+    "id": "sages_emblem",
+    "name": "Sage\u2019s Emblem",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 6200,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "bonuses": {
+      "mag": 12,
+      "spr": 10,
+      "magic_power": 18
+    },
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "champions_emblem",
+    "name": "Champion\u2019s Emblem",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 6200,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "bonuses": {
+      "str": 12,
+      "dex": 8,
+      "attack": 18
+    },
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ]
+  },
+  {
+    "id": "darksteel_axe",
+    "name": "Darksteel Axe",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7500,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 72,
+      "str": 9,
+      "vit": 4
+    },
+    "gear_family": "axe",
+    "description": "Lv.40 axe progression gear for compatible Jobs."
+  },
+  {
+    "id": "shadow_dirk",
+    "name": "Shadow Dirk",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7525,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 67,
+      "dex": 9,
+      "lck": 4
+    },
+    "gear_family": "dagger",
+    "description": "Lv.40 dagger progression gear for compatible Jobs."
+  },
+  {
+    "id": "magitek_rifle",
+    "name": "Magitek Rifle",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7550,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 70,
+      "dex": 9,
+      "lck": 4
+    },
+    "gear_family": "firearm",
+    "description": "Lv.40 firearm progression gear for compatible Jobs."
+  },
+  {
+    "id": "celestial_harp",
+    "name": "Celestial Harp",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7575,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 64,
+      "magic_power": 64,
+      "spr": 9,
+      "dex": 4
+    },
+    "gear_family": "instrument",
+    "description": "Lv.40 instrument progression gear for compatible Jobs."
+  },
+  {
+    "id": "murakumo",
+    "name": "Murakumo",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7600,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 70,
+      "str": 8,
+      "dex": 9
+    },
+    "gear_family": "katana",
+    "description": "Lv.40 katana progression gear for compatible Jobs."
+  },
+  {
+    "id": "hell_claws",
+    "name": "Hell Claws",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7625,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 69,
+      "str": 7,
+      "dex": 5
+    },
+    "gear_family": "knuckles",
+    "description": "Lv.40 knuckles progression gear for compatible Jobs."
+  },
+  {
+    "id": "diamond_rapier",
+    "name": "Diamond Rapier",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7650,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 67,
+      "magic_power": 62,
+      "dex": 5,
+      "mag": 5
+    },
+    "gear_family": "rapier",
+    "description": "Lv.40 rapier progression gear for compatible Jobs."
+  },
+  {
+    "id": "dragon_spear",
+    "name": "Dragon Spear",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7675,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 71,
+      "str": 9,
+      "dex": 4
+    },
+    "gear_family": "spear",
+    "description": "Lv.40 spear progression gear for compatible Jobs."
+  },
+  {
+    "id": "sage_staff",
+    "name": "Sage Staff",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7700,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 71,
+      "mag": 9,
+      "spr": 5
+    },
+    "gear_family": "staff",
+    "description": "Lv.40 staff progression gear for compatible Jobs."
+  },
+  {
+    "id": "rune_blade",
+    "name": "Rune Blade",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7725,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 71,
+      "str": 6,
+      "vit": 3
+    },
+    "gear_family": "sword",
+    "description": "Lv.40 sword progression gear for compatible Jobs."
+  },
+  {
+    "id": "magus_wand",
+    "name": "Magus Wand",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 7750,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 72,
+      "mag": 9,
+      "spr": 5
+    },
+    "gear_family": "wand",
+    "description": "Lv.40 wand progression gear for compatible Jobs."
+  },
+  {
+    "id": "giants_axe",
+    "name": "Giant\u2019s Axe",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 8900,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 78,
+      "str": 10,
+      "vit": 5
+    },
+    "gear_family": "axe",
+    "description": "Lv.45 axe progression gear for compatible Jobs."
+  },
+  {
+    "id": "dancing_dagger",
+    "name": "Dancing Dagger",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 8925,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 73,
+      "dex": 10,
+      "lck": 5
+    },
+    "gear_family": "dagger",
+    "description": "Lv.45 dagger progression gear for compatible Jobs."
+  },
+  {
+    "id": "mythril_repeater",
+    "name": "Mythril Repeater",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 8950,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 76,
+      "dex": 10,
+      "lck": 5
+    },
+    "gear_family": "firearm",
+    "description": "Lv.45 firearm progression gear for compatible Jobs."
+  },
+  {
+    "id": "minstrels_harp",
+    "name": "Minstrel\u2019s Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 8975,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 70,
+      "magic_power": 70,
+      "spr": 10,
+      "dex": 5
+    },
+    "gear_family": "instrument",
+    "description": "Lv.45 instrument progression gear for compatible Jobs."
+  },
+  {
+    "id": "ame_no_murakumo",
+    "name": "Ame-no-Murakumo",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9000,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 76,
+      "str": 9,
+      "dex": 10
+    },
+    "gear_family": "katana",
+    "description": "Lv.45 katana progression gear for compatible Jobs."
+  },
+  {
+    "id": "demon_claws",
+    "name": "Demon Claws",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9025,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 75,
+      "str": 8,
+      "dex": 5
+    },
+    "gear_family": "knuckles",
+    "description": "Lv.45 knuckles progression gear for compatible Jobs."
+  },
+  {
+    "id": "crystal_foil",
+    "name": "Crystal Foil",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9050,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 73,
+      "magic_power": 68,
+      "dex": 5,
+      "mag": 5
+    },
+    "gear_family": "rapier",
+    "description": "Lv.45 rapier progression gear for compatible Jobs."
+  },
+  {
+    "id": "wyvern_lance",
+    "name": "Wyvern Lance",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9075,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 77,
+      "str": 10,
+      "dex": 5
+    },
+    "gear_family": "spear",
+    "description": "Lv.45 spear progression gear for compatible Jobs."
+  },
+  {
+    "id": "astral_rod",
+    "name": "Astral Rod",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9100,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 77,
+      "mag": 10,
+      "spr": 5
+    },
+    "gear_family": "staff",
+    "description": "Lv.45 staff progression gear for compatible Jobs."
+  },
+  {
+    "id": "breaker_blade",
+    "name": "Breaker Blade",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9125,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 77,
+      "str": 7,
+      "vit": 3
+    },
+    "gear_family": "sword",
+    "description": "Lv.45 sword progression gear for compatible Jobs."
+  },
+  {
+    "id": "starfall_wand",
+    "name": "Starfall Wand",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 9150,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 78,
+      "mag": 10,
+      "spr": 5
+    },
+    "gear_family": "wand",
+    "description": "Lv.45 wand progression gear for compatible Jobs."
+  },
+  {
+    "id": "mystic_wand",
+    "name": "Mystic Wand",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 6180,
+    "shop": true,
+    "shop_level": 35,
+    "min_level": 35,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 67,
+      "mag": 8,
+      "spr": 5
+    },
+    "gear_family": "wand",
+    "description": "A Lv.35 caster wand that preserves the wand progression path."
+  },
+  {
+    "id": "stardust_wand",
+    "name": "Stardust Wand",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 10380,
+    "shop": true,
+    "shop_level": 50,
+    "min_level": 50,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 83,
+      "mag": 10,
+      "spr": 6
+    },
+    "gear_family": "wand",
+    "description": "A high-tier wand suffused with concentrated aether."
+  },
+  {
+    "id": "coral_sword",
+    "name": "Coral Sword",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 5200,
+    "shop": false,
+    "min_level": 30,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 61,
+      "dex": 5,
+      "spr": 3
+    },
+    "gear_family": "sword",
+    "element": "Lightning",
+    "description": "A crackling blade whose basic attacks exploit Lightning weakness."
+  },
+  {
+    "id": "poison_fang",
+    "name": "Poison Fang",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3900,
+    "shop": false,
+    "min_level": 25,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 53,
+      "dex": 7,
+      "lck": 5
+    },
+    "gear_family": "dagger",
+    "on_hit_status": {
+      "status": "poison",
+      "chance": 0.18,
+      "turns": 3,
+      "magnitude": 0.05
+    },
+    "description": "A venomous dagger with a chance to inflict Poison on basic attacks."
+  },
+  {
+    "id": "fire_rod",
+    "name": "Fire Rod",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3000,
+    "shop": false,
+    "min_level": 20,
+    "allowed_jobs": [
+      "blackmage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 52,
+      "mag": 7,
+      "spr": 2
+    },
+    "gear_family": "staff",
+    "element": "Fire",
+    "description": "A fire-aspected caster weapon for exploiting Fire weakness."
+  },
+  {
+    "id": "frost_rod",
+    "name": "Frost Rod",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 3900,
+    "shop": false,
+    "min_level": 25,
+    "allowed_jobs": [
+      "blackmage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 58,
+      "mag": 8,
+      "spr": 3
+    },
+    "gear_family": "staff",
+    "element": "Ice",
+    "description": "An ice-aspected caster weapon for exploiting Ice weakness."
+  },
+  {
+    "id": "thunder_rod",
+    "name": "Thunder Rod",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 4900,
+    "shop": false,
+    "min_level": 30,
+    "allowed_jobs": [
+      "blackmage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 64,
+      "mag": 9,
+      "spr": 3
+    },
+    "gear_family": "staff",
+    "element": "Lightning",
+    "description": "A lightning-aspected caster weapon for exploiting Lightning weakness."
+  },
+  {
+    "id": "zweihander",
+    "name": "Zweihander",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "price": 2900,
+    "shop": true,
+    "shop_level": 16,
+    "min_level": 16,
+    "allowed_jobs": [
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 45,
+      "str": 8,
+      "vit": 1
+    },
+    "gear_family": "sword",
+    "description": "A heavy two-handed blade trading defense for raw physical pressure."
+  },
+  {
+    "id": "dragon_slayer",
+    "name": "Dragon Slayer",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 7400,
+    "shop": false,
+    "min_level": 35,
+    "allowed_jobs": [
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 71,
+      "str": 10,
+      "vit": 3
+    },
+    "gear_family": "sword",
+    "description": "A massive blade recovered from dragon country."
+  },
+  {
+    "id": "gungnir_fragment",
+    "name": "Gungnir Fragment",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 9600,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 80,
+      "str": 11,
+      "dex": 7
+    },
+    "gear_family": "spear",
+    "description": "A broken but still formidable fragment of a legendary Dragoon spear."
+  },
+  {
+    "id": "blood_sword",
+    "name": "Blood Sword",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 9000,
+    "shop": false,
+    "min_level": 40,
+    "allowed_jobs": [
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 73,
+      "str": 8,
+      "vit": 4
+    },
+    "gear_family": "sword",
+    "lifesteal": 0.1,
+    "description": "Basic Active Battle attacks restore 10% of damage dealt as HP."
+  },
+  {
+    "id": "wyrmhide_coat",
+    "name": "Wyrmhide Coat",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 6900,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 22,
+      "spr": 9,
+      "dex": 5,
+      "hp": 195
+    },
+    "gear_family": "coat",
+    "description": "Lv.40 coat progression armor."
+  },
+  {
+    "id": "darksteel_plate",
+    "name": "Darksteel Plate",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 6900,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 23,
+      "spr": 7,
+      "hp": 205
+    },
+    "gear_family": "heavy",
+    "description": "Lv.40 heavy progression armor."
+  },
+  {
+    "id": "shadow_garb",
+    "name": "Shadow Garb",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 6900,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 21,
+      "dex": 9,
+      "lck": 5,
+      "hp": 185
+    },
+    "gear_family": "light",
+    "description": "Lv.40 light progression armor."
+  },
+  {
+    "id": "sage_robe",
+    "name": "Sage Robe",
+    "type": "armor",
+    "rarity": "uncommon",
+    "price": 6900,
+    "shop": true,
+    "shop_level": 40,
+    "min_level": 40,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 18,
+      "spr": 23,
+      "mag": 9,
+      "hp": 175
+    },
+    "gear_family": "robe",
+    "description": "Lv.40 robe progression armor."
+  },
+  {
+    "id": "dragon_coat",
+    "name": "Dragon Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 8100,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 23,
+      "spr": 10,
+      "dex": 5,
+      "hp": 210
+    },
+    "gear_family": "coat",
+    "description": "Lv.45 coat progression armor."
+  },
+  {
+    "id": "dragon_plate",
+    "name": "Dragon Plate",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 8100,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 24,
+      "spr": 8,
+      "hp": 220
+    },
+    "gear_family": "heavy",
+    "description": "Lv.45 heavy progression armor."
+  },
+  {
+    "id": "nightshade_garb",
+    "name": "Nightshade Garb",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 8100,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 22,
+      "dex": 10,
+      "lck": 5,
+      "hp": 200
+    },
+    "gear_family": "light",
+    "description": "Lv.45 light progression armor."
+  },
+  {
+    "id": "astral_robe",
+    "name": "Astral Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 8100,
+    "shop": true,
+    "shop_level": 45,
+    "min_level": 45,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 19,
+      "spr": 24,
+      "mag": 10,
+      "hp": 190
+    },
+    "gear_family": "robe",
+    "description": "Lv.45 robe progression armor."
+  },
+  {
+    "id": "wyrm_mail",
+    "name": "Wyrm Mail",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 9000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 26,
+      "spr": 11,
+      "str": 5,
+      "hp": 230
+    },
+    "gear_family": "heavy",
+    "description": "Rare Lv.45 armor fashioned from wyvern scale and tempered plate."
+  },
+  {
+    "id": "genji_armor",
+    "name": "Genji Armor",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 9200,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "vit": 23,
+      "dex": 11,
+      "str": 7,
+      "lck": 5,
+      "hp": 205
+    },
+    "gear_family": "coat",
+    "description": "Rare eastern armor balancing strength, speed and defense."
+  },
+  {
+    "id": "aegis_plate",
+    "name": "Aegis Plate",
+    "type": "armor",
+    "rarity": "artifact",
+    "price": 12500,
+    "shop": false,
+    "min_level": 50,
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "bonuses": {
+      "vit": 29,
+      "spr": 15,
+      "hp": 270
+    },
+    "gear_family": "heavy",
+    "description": "Treasure-only Paladin plate built to anchor the front line."
+  },
+  {
+    "id": "ancient_coin",
+    "name": "Ancient Coin",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 180,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "wyvern_scale",
+    "name": "Wyvern Scale",
+    "type": "material",
+    "rarity": "rare",
+    "price": 340,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "demon_horn",
+    "name": "Demon Horn",
+    "type": "material",
+    "rarity": "rare",
+    "price": 420,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "elemental_crystal",
+    "name": "Elemental Crystal",
+    "type": "material",
+    "rarity": "rare",
+    "price": 520,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "goblin_medallion",
+    "name": "Goblin Medallion",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 90,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "gigas_brace",
+    "name": "Gigas Brace",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 170,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "ahriman_lens",
+    "name": "Ahriman Lens",
+    "type": "material",
+    "rarity": "rare",
+    "price": 260,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "morbol_spore",
+    "name": "Morbol Spore",
+    "type": "material",
+    "rarity": "rare",
+    "price": 300,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "magitek_capacitor",
+    "name": "Magitek Capacitor",
+    "type": "material",
+    "rarity": "rare",
+    "price": 420,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "behemoth_hide",
+    "name": "Behemoth Hide",
+    "type": "material",
+    "rarity": "rare",
+    "price": 520,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "tonberry_lantern",
+    "name": "Tonberry Lantern",
+    "type": "material",
+    "rarity": "epic",
+    "price": 700,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "dragon_heart",
+    "name": "Dragon Heart",
+    "type": "material",
+    "rarity": "epic",
+    "price": 900,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "holy_scale",
+    "name": "Holy Scale",
+    "type": "material",
+    "rarity": "epic",
+    "price": 950,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "mimic_lock",
+    "name": "Mimic Lock",
+    "type": "material",
+    "rarity": "rare",
+    "price": 400,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "archon_shard",
+    "name": "Archon Shard",
+    "type": "material",
+    "rarity": "epic",
+    "price": 850,
+    "shop": false,
+    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+  },
+  {
+    "id": "chocobo_writ",
+    "name": "Chocobo Registration Writ",
+    "type": "material",
+    "rarity": "uncommon",
+    "price": 0,
+    "shop": false,
+    "unsellable": true,
+    "description": "A provisional Fellowship Stable writ. It activates one hour after issue and is consumed when a Chocobo is registered."
+  }
+]

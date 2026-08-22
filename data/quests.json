@@ -1,0 +1,230 @@
+[
+  {
+    "id": "oath_of_light",
+    "name": "Oath of Light",
+    "description": "Prove you can protect people before the Guild gives you shiny armor and responsibilities.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 20
+      },
+      {
+        "type": "job_level",
+        "job_id": "whitemage",
+        "amount": 10
+      },
+      {
+        "type": "hunt_clear",
+        "hunt_id": "prince_of_the_tide",
+        "amount": 1
+      }
+    ],
+    "rewards": {
+      "job": "paladin",
+      "title": "oathkeeper",
+      "gil": 1200
+    }
+  },
+  {
+    "id": "abyssal_oath",
+    "name": "Abyssal Oath",
+    "description": "Walk into the dark on purpose. Apparently this counts as career development.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 20
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "skeleton",
+        "amount": 10
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "tonberry",
+        "amount": 1
+      }
+    ],
+    "rewards": {
+      "job": "darkknight",
+      "title": "abyss_walker",
+      "gil": 1200
+    }
+  },
+  {
+    "id": "skybound_trial",
+    "name": "Skybound Trial",
+    "description": "Earn the right to jump off perfectly good terrain while holding a spear.",
+    "requirements": [
+      {
+        "type": "character_level",
+        "amount": 20
+      },
+      {
+        "type": "job_level",
+        "job_id": "warrior",
+        "amount": 15
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "zu",
+        "amount": 5
+      }
+    ],
+    "rewards": {
+      "job": "dragoon",
+      "title": "skybound",
+      "gil": 1200
+    }
+  },
+  {
+    "id": "shadow_of_the_guild",
+    "name": "Shadow of the Guild",
+    "description": "Demonstrate subtlety, speed, and at least a little suspicious behavior.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "thief",
+        "amount": 25
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "cactuar",
+        "amount": 3
+      }
+    ],
+    "rewards": {
+      "job": "ninja",
+      "title": "shadowstep",
+      "gil": 1400
+    }
+  },
+  {
+    "id": "call_of_the_eikons",
+    "name": "Call of the Eikons",
+    "description": "Balance destructive and restorative aether without detonating the guildhall.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "blackmage",
+        "amount": 20
+      },
+      {
+        "type": "job_level",
+        "job_id": "whitemage",
+        "amount": 20
+      },
+      {
+        "type": "bestiary_unique",
+        "amount": 20
+      }
+    ],
+    "rewards": {
+      "job": "summoner",
+      "title": "aethercaller",
+      "gil": 1600
+    }
+  },
+  {
+    "id": "aetheric_fieldwork",
+    "name": "Aetheric Fieldwork",
+    "description": "Study monsters closely enough that the Guild begins questioning your hobbies.",
+    "requirements": [
+      {
+        "type": "bestiary_unique",
+        "amount": 20
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "coeurl",
+        "amount": 2
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "malboro",
+        "amount": 1
+      }
+    ],
+    "rewards": {
+      "job": "bluemage",
+      "title": "field_researcher",
+      "gil": 1500
+    }
+  },
+  {
+    "id": "song_of_the_wanderer",
+    "name": "Song of the Wanderer",
+    "description": "Travel enough to have stories worth turning into songs.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "redmage",
+        "amount": 15
+      },
+      {
+        "type": "ventures",
+        "amount": 30
+      }
+    ],
+    "rewards": {
+      "job": "bard",
+      "title": "wandering_minstrel",
+      "gil": 1200
+    }
+  },
+  {
+    "id": "salvage_rights",
+    "name": "Salvage Rights",
+    "description": "Bring back enough Magitek junk that someone reluctantly hands you a firearm.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "thief",
+        "amount": 15
+      },
+      {
+        "type": "monster_kills",
+        "monster_id": "magitek_drone",
+        "amount": 10
+      }
+    ],
+    "rewards": {
+      "job": "machinist",
+      "title": "licensed_tinkerer",
+      "gil": 1800
+    }
+  },
+  {
+    "id": "wisdom_of_the_crystal",
+    "name": "Wisdom of the Crystal",
+    "description": "Master opposing schools of magic and prove the Crystal has not made a terrible choice.",
+    "requirements": [
+      {
+        "type": "job_level",
+        "job_id": "blackmage",
+        "amount": 35
+      },
+      {
+        "type": "job_level",
+        "job_id": "whitemage",
+        "amount": 35
+      },
+      {
+        "type": "mastery_count",
+        "amount": 2
+      },
+      {
+        "type": "hunt_rank_clears",
+        "rank": "A",
+        "amount": 2
+      }
+    ],
+    "rewards": {
+      "job": "sage",
+      "title": "crystal_scholar",
+      "gil": 3000
+    }
+  }
+]

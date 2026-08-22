@@ -1,0 +1,57 @@
+[
+  {
+    "level": 1,
+    "gil": 500,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      }
+    ],
+    "bonus_per_level": 0.08
+  },
+  {
+    "level": 2,
+    "gil": 1400,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      }
+    ],
+    "bonus_per_level": 0.08
+  },
+  {
+    "level": 3,
+    "gil": 3200,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      }
+    ],
+    "bonus_per_level": 0.08
+  },
+  {
+    "level": 4,
+    "gil": 6500,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      }
+    ],
+    "bonus_per_level": 0.08
+  },
+  {
+    "level": 5,
+    "gil": 12000,
+    "materials": [
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "bonus_per_level": 0.08
+  }
+]

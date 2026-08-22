@@ -1,0 +1,2107 @@
+[
+  {
+    "id": "goblin",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "wolf",
+    "profile": "skirmisher",
+    "ability": null
+  },
+  {
+    "id": "mandragora",
+    "profile": "controller",
+    "ability": {
+      "id": "shriek",
+      "name": "Shriek",
+      "chance": 0.16,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.72,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 0.35,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "hornet",
+    "profile": "skirmisher",
+    "ability": null
+  },
+  {
+    "id": "flan",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "bomb",
+    "profile": "berserker",
+    "ability": {
+      "id": "self_destruct",
+      "name": "Self-Destruct",
+      "chance": 0.16,
+      "cooldown": 4,
+      "target": "party",
+      "scaling": "physical",
+      "power": 1.05,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "recoil",
+          "fraction": 0.34
+        }
+      ]
+    }
+  },
+  {
+    "id": "cactuar",
+    "profile": "skirmisher",
+    "ability": {
+      "id": "1000_needles",
+      "name": "1000 Needles",
+      "chance": 0.267,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.062,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bat",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "skeleton",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "gigas",
+    "profile": "berserker",
+    "ability": {
+      "id": "haymaker",
+      "name": "Haymaker",
+      "chance": 0.201,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.941,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mimic",
+    "profile": "balanced",
+    "ability": {
+      "id": "chomp",
+      "name": "Chomp",
+      "chance": 0.212,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.952,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "drain",
+          "fraction": 0.26
+        }
+      ]
+    }
+  },
+  {
+    "id": "tonberry",
+    "profile": "balanced",
+    "ability": {
+      "id": "everyone_s_grudge",
+      "name": "Everyone's Grudge",
+      "chance": 0.245,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.018,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "sahagin",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "killer_fish",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "zu",
+    "profile": "balanced",
+    "ability": {
+      "id": "wing_buffet",
+      "name": "Wing Buffet",
+      "chance": 0.179,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.919,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "blind",
+          "turns": 2,
+          "magnitude": 0.28,
+          "chance": 0.34,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "coeurl",
+    "profile": "controller",
+    "ability": {
+      "id": "blaster",
+      "name": "Blaster",
+      "chance": 0.19,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.952,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "chimera",
+    "profile": "caster",
+    "ability": {
+      "id": "aqua_breath",
+      "name": "Aqua Breath",
+      "chance": 0.212,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.64,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 0.24,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "malboro",
+    "profile": "controller",
+    "ability": {
+      "id": "bad_breath",
+      "name": "Bad Breath",
+      "chance": 0.234,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.67,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "magitek_drone",
+    "profile": "balanced",
+    "ability": null
+  },
+  {
+    "id": "ahriman",
+    "profile": "controller",
+    "ability": {
+      "id": "death_gaze",
+      "name": "Death Gaze",
+      "chance": 0.201,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.974,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "iron_giant",
+    "profile": "berserker",
+    "ability": {
+      "id": "grand_sword",
+      "name": "Grand Sword",
+      "chance": 0.223,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.963,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "behemoth",
+    "profile": "caster",
+    "ability": {
+      "id": "meteor",
+      "name": "Meteor",
+      "chance": 0.179,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.707,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "malboro_great",
+    "profile": "controller",
+    "ability": {
+      "id": "really_bad_breath",
+      "name": "Really Bad Breath",
+      "chance": 0.245,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.7,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "death_machine",
+    "profile": "caster",
+    "ability": {
+      "id": "atomic_ray",
+      "name": "Atomic Ray",
+      "chance": 0.223,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.715,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tonberry_king",
+    "profile": "balanced",
+    "ability": {
+      "id": "royal_grudge",
+      "name": "Royal Grudge",
+      "chance": 0.267,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.073,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "crimson_detonator",
+    "profile": "berserker",
+    "ability": {
+      "id": "king_s_detonation",
+      "name": "King's Detonation",
+      "chance": 0.223,
+      "cooldown": 4,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.996,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "recoil",
+          "fraction": 0.34
+        }
+      ]
+    }
+  },
+  {
+    "id": "sahagin_prince",
+    "profile": "balanced",
+    "ability": {
+      "id": "tidal_spear",
+      "name": "Tidal Spear",
+      "chance": 0.201,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.941,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "cactuar_jack",
+    "profile": "skirmisher",
+    "ability": {
+      "id": "3000_needles",
+      "name": "3000 Needles",
+      "chance": 0.245,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.073,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "king_coeurl",
+    "profile": "controller",
+    "ability": {
+      "id": "royal_blaster",
+      "name": "Royal Blaster",
+      "chance": 0.245,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.985,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "riven_ronin",
+    "profile": "balanced",
+    "ability": {
+      "id": "iaijutsu",
+      "name": "Iaijutsu",
+      "chance": 0.245,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.007,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "malboro_overlord",
+    "profile": "caster",
+    "ability": {
+      "id": "catastrophic_breath",
+      "name": "Catastrophic Breath",
+      "chance": 0.267,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.692,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "iron_giant_exile",
+    "profile": "berserker",
+    "ability": {
+      "id": "exile_s_grand_sword",
+      "name": "Exile's Grand Sword",
+      "chance": 0.245,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.029,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "three_moon_chimera",
+    "profile": "controller",
+    "ability": {
+      "id": "tri_disaster",
+      "name": "Tri-Disaster",
+      "chance": 0.267,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.707,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.28,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tonberry_executioner",
+    "profile": "balanced",
+    "ability": {
+      "id": "sentence_everyone_s_grudge",
+      "name": "Sentence: Everyone's Grudge",
+      "chance": 0.289,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.095,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "magitek_juggernaut",
+    "profile": "caster",
+    "ability": {
+      "id": "ultima_cannon",
+      "name": "Ultima Cannon",
+      "chance": 0.267,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.737,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "behemoth_tyrant",
+    "profile": "caster",
+    "ability": {
+      "id": "tyrant_meteor",
+      "name": "Tyrant Meteor",
+      "chance": 0.289,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.76,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ancient_adamantoise",
+    "profile": "defensive",
+    "ability": {
+      "id": "earthshaker",
+      "name": "Earthshaker",
+      "chance": 0.245,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.745,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "rift_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "dimensional_collapse",
+      "name": "Dimensional Collapse",
+      "chance": 0.3,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.782,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "crystal_wolf",
+    "profile": "skirmisher",
+    "ability": null
+  },
+  {
+    "id": "crystal_golem",
+    "profile": "defensive",
+    "ability": {
+      "id": "prismatic_slam",
+      "name": "Prismatic Slam",
+      "chance": 0.223,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.707,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "elemental_archon",
+    "profile": "caster",
+    "ability": {
+      "id": "elemental_convergence",
+      "name": "Elemental Convergence",
+      "chance": 0.245,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.715,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ancient_mimic",
+    "profile": "balanced",
+    "ability": {
+      "id": "devour_fortune",
+      "name": "Devour Fortune",
+      "chance": 0.223,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.073,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "drain",
+          "fraction": 0.26
+        }
+      ]
+    }
+  },
+  {
+    "id": "wyrm",
+    "profile": "berserker",
+    "ability": {
+      "id": "dragonfire",
+      "name": "Dragonfire",
+      "chance": 0.245,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.073,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "rift_hound",
+    "profile": "aggressive",
+    "ability": null
+  },
+  {
+    "id": "void_mage",
+    "profile": "caster",
+    "ability": {
+      "id": "dark_flare",
+      "name": "Dark Flare",
+      "chance": 0.256,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.095,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "rift_behemoth",
+    "profile": "caster",
+    "ability": {
+      "id": "rift_meteor",
+      "name": "Rift Meteor",
+      "chance": 0.245,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.76,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "adamant_golem",
+    "profile": "defensive",
+    "ability": {
+      "id": "adamant_crush",
+      "name": "Adamant Crush",
+      "chance": 0.234,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.106,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "rift_drake",
+    "profile": "caster",
+    "ability": {
+      "id": "dimensional_breath",
+      "name": "Dimensional Breath",
+      "chance": 0.267,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.767,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "void_tonberry",
+    "profile": "aggressive",
+    "ability": {
+      "id": "grudge_across_worlds",
+      "name": "Grudge Across Worlds",
+      "chance": 0.289,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.161,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "astral_construct",
+    "profile": "caster",
+    "ability": {
+      "id": "astral_rupture",
+      "name": "Astral Rupture",
+      "chance": 0.278,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.797,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "omega_fragment",
+    "profile": "caster",
+    "ability": {
+      "id": "wave_cannon",
+      "name": "Wave Cannon",
+      "chance": 0.289,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.804,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "void_avatar",
+    "profile": "caster",
+    "ability": {
+      "id": "event_horizon",
+      "name": "Event Horizon",
+      "chance": 0.3,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.827,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "goblin_guard",
+    "profile": "balanced",
+    "ability": {
+      "id": "shield_bash",
+      "name": "Shield Bash",
+      "chance": 0.16,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.893,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "imp",
+    "profile": "controller",
+    "ability": {
+      "id": "impish_hex",
+      "name": "Impish Hex",
+      "chance": 0.16,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.895,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.32,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "cockatrice",
+    "profile": "controller",
+    "ability": {
+      "id": "petrifying_peck",
+      "name": "Petrifying Peck",
+      "chance": 0.16,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.904,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ochu",
+    "profile": "balanced",
+    "ability": {
+      "id": "tentacle_lash",
+      "name": "Tentacle Lash",
+      "chance": 0.16,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.912,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "spriggan",
+    "profile": "balanced",
+    "ability": {
+      "id": "stone_toss",
+      "name": "Stone Toss",
+      "chance": 0.16,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.921,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "basilisk",
+    "profile": "controller",
+    "ability": {
+      "id": "stone_gaze",
+      "name": "Stone Gaze",
+      "chance": 0.16,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.926,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lamia",
+    "profile": "controller",
+    "ability": {
+      "id": "enticing_song",
+      "name": "Enticing Song",
+      "chance": 0.165,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.934,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.32,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "gargoyle",
+    "profile": "skirmisher",
+    "ability": {
+      "id": "stone_wing",
+      "name": "Stone Wing",
+      "chance": 0.167,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.937,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mindflayer",
+    "profile": "controller",
+    "ability": {
+      "id": "mind_blast",
+      "name": "Mind Blast",
+      "chance": 0.172,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.95,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.32,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "piscodemon",
+    "profile": "controller",
+    "ability": {
+      "id": "mind_rend",
+      "name": "Mind Rend",
+      "chance": 0.177,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 0.959,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.32,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "black_flan",
+    "profile": "balanced",
+    "ability": {
+      "id": "dark_sludge",
+      "name": "Dark Sludge",
+      "chance": 0.179,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.963,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "magic_pot",
+    "profile": "balanced",
+    "ability": {
+      "id": "gimme_elixir",
+      "name": "Gimme Elixir!",
+      "chance": 0.188,
+      "cooldown": 3,
+      "target": "self",
+      "scaling": "magic",
+      "power": 0.0,
+      "effects": [
+        {
+          "type": "heal_self",
+          "fraction": 0.18
+        }
+      ]
+    }
+  },
+  {
+    "id": "gigantoad",
+    "profile": "balanced",
+    "ability": {
+      "id": "sticky_tongue",
+      "name": "Sticky Tongue",
+      "chance": 0.172,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.95,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "antlion",
+    "profile": "balanced",
+    "ability": {
+      "id": "sandstorm",
+      "name": "Sandstorm",
+      "chance": 0.177,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.652,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "blind",
+          "turns": 2,
+          "magnitude": 0.28,
+          "chance": 0.34,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "sand_worm",
+    "profile": "balanced",
+    "ability": {
+      "id": "swallow",
+      "name": "Swallow",
+      "chance": 0.181,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.967,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "drain",
+          "fraction": 0.26
+        }
+      ]
+    }
+  },
+  {
+    "id": "remora",
+    "profile": "skirmisher",
+    "ability": {
+      "id": "ramming_speed",
+      "name": "Ramming Speed",
+      "chance": 0.183,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 0.972,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "sea_serpent",
+    "profile": "caster",
+    "ability": {
+      "id": "aqua_breath",
+      "name": "Aqua Breath",
+      "chance": 0.188,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.667,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 0.24,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "adamantoise",
+    "profile": "defensive",
+    "ability": {
+      "id": "earthshaker",
+      "name": "Earthshaker",
+      "chance": 0.193,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.674,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "garuda",
+    "profile": "caster",
+    "ability": {
+      "id": "aerial_blast",
+      "name": "Aerial Blast",
+      "chance": 0.198,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.68,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "death_claw",
+    "profile": "skirmisher",
+    "ability": {
+      "id": "claw_crush",
+      "name": "Claw Crush",
+      "chance": 0.2,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.005,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ironclad",
+    "profile": "defensive",
+    "ability": {
+      "id": "mighty_guard",
+      "name": "Mighty Guard",
+      "chance": 0.207,
+      "cooldown": 3,
+      "target": "self",
+      "scaling": "magic",
+      "power": 0.0,
+      "effects": [
+        {
+          "type": "status",
+          "status": "protect",
+          "turns": 3,
+          "magnitude": 0.32,
+          "chance": 1.0,
+          "recipient": "self"
+        },
+        {
+          "type": "status",
+          "status": "power_up",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 1.0,
+          "recipient": "self"
+        }
+      ]
+    }
+  },
+  {
+    "id": "chimera_brain",
+    "profile": "caster",
+    "ability": {
+      "id": "aqua_breath",
+      "name": "Aqua Breath",
+      "chance": 0.21,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.697,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 0.24,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "evil_eye",
+    "profile": "controller",
+    "ability": {
+      "id": "dread_gaze",
+      "name": "Dread Gaze",
+      "chance": 0.214,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.033,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "magitek_armor",
+    "profile": "balanced",
+    "ability": {
+      "id": "magitek_laser",
+      "name": "Magitek Laser",
+      "chance": 0.219,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.042,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mover",
+    "profile": "caster",
+    "ability": {
+      "id": "delta_attack",
+      "name": "Delta Attack",
+      "chance": 0.223,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.715,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "red_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "atomic_ray",
+      "name": "Atomic Ray",
+      "chance": 0.229,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.722,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "blue_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "aqua_breath",
+      "name": "Aqua Breath",
+      "chance": 0.231,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.725,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 0.24,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "gold_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "thunderbolt",
+      "name": "Thunderbolt",
+      "chance": 0.235,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.731,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.16,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "holy_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "saintly_beam",
+      "name": "Saintly Beam",
+      "chance": 0.24,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.737,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "skull_dragon",
+    "profile": "berserker",
+    "ability": {
+      "id": "bone_storm",
+      "name": "Bone Storm",
+      "chance": 0.244,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.743,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "storm_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "cyclonic",
+      "name": "Cyclonic",
+      "chance": 0.248,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.749,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "blind",
+          "turns": 2,
+          "magnitude": 0.28,
+          "chance": 0.34,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "brachosaur",
+    "profile": "controller",
+    "ability": {
+      "id": "disaster",
+      "name": "Disaster",
+      "chance": 0.252,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "physical",
+      "power": 0.754,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.28,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "catoblepas",
+    "profile": "aggressive",
+    "ability": {
+      "id": "demon_eye",
+      "name": "Demon Eye",
+      "chance": 0.254,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.113,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "death_rider",
+    "profile": "aggressive",
+    "ability": {
+      "id": "reaper_scythe",
+      "name": "Reaper Scythe",
+      "chance": 0.258,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.121,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "master_tonberry",
+    "profile": "aggressive",
+    "ability": {
+      "id": "everyone_s_grudge",
+      "name": "Everyone's Grudge",
+      "chance": 0.265,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.135,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "abaddon",
+    "profile": "controller",
+    "ability": {
+      "id": "curse_breath",
+      "name": "Curse Breath",
+      "chance": 0.269,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.778,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "land_worm",
+    "profile": "aggressive",
+    "ability": {
+      "id": "crush",
+      "name": "Crush",
+      "chance": 0.273,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.15,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "great_wyrm",
+    "profile": "caster",
+    "ability": {
+      "id": "flare_breath",
+      "name": "Flare Breath",
+      "chance": 0.277,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.788,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "crystal_dragon",
+    "profile": "caster",
+    "ability": {
+      "id": "crystal_flare",
+      "name": "Crystal Flare",
+      "chance": 0.286,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.176,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "archeodemon",
+    "profile": "caster",
+    "ability": {
+      "id": "meteor",
+      "name": "Meteor",
+      "chance": 0.293,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.81,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "varuna",
+    "profile": "aggressive",
+    "ability": {
+      "id": "emblem_of_fate",
+      "name": "Emblem of Fate",
+      "chance": 0.3,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.205,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "demonolith",
+    "profile": "controller",
+    "ability": {
+      "id": "pharaoh_s_curse",
+      "name": "Pharaoh’s Curse",
+      "chance": 0.307,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.218,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "floating_death",
+    "profile": "controller",
+    "ability": {
+      "id": "death_gaze",
+      "name": "Death Gaze",
+      "chance": 0.311,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.227,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "machea",
+    "profile": "aggressive",
+    "ability": {
+      "id": "devour_soul",
+      "name": "Devour Soul",
+      "chance": 0.313,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.231,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "drain",
+          "fraction": 0.26
+        }
+      ]
+    }
+  },
+  {
+    "id": "master_coeurl",
+    "profile": "controller",
+    "ability": {
+      "id": "blaster",
+      "name": "Blaster",
+      "chance": 0.314,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.234,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "turns": 1,
+          "magnitude": 0.0,
+          "chance": 0.24,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "dark_element",
+    "profile": "caster",
+    "ability": {
+      "id": "darkga",
+      "name": "Darkga",
+      "chance": 0.317,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.842,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "malboro_menace",
+    "profile": "controller",
+    "ability": {
+      "id": "bad_breath",
+      "name": "Bad Breath",
+      "chance": 0.321,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.78,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "spirit",
+    "profile": "controller",
+    "ability": {
+      "id": "doom",
+      "name": "Doom",
+      "chance": 0.323,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "magic",
+      "power": 1.251,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "vulnerable",
+          "turns": 2,
+          "magnitude": 0.16,
+          "chance": 0.45,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "great_malboro_omega",
+    "profile": "controller",
+    "ability": {
+      "id": "putrid_breath",
+      "name": "Putrid Breath",
+      "chance": 0.328,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.78,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mimic_king",
+    "profile": "aggressive",
+    "ability": {
+      "id": "grand_devour",
+      "name": "Grand Devour",
+      "chance": 0.332,
+      "cooldown": 1,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.26,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "drain",
+          "fraction": 0.26
+        }
+      ]
+    }
+  },
+  {
+    "id": "omega_sentinel",
+    "profile": "caster",
+    "ability": {
+      "id": "wave_cannon",
+      "name": "Wave Cannon",
+      "chance": 0.333,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.857,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  }
+]

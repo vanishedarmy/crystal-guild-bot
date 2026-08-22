@@ -1,0 +1,826 @@
+[
+  {
+    "id": "gae_bolg",
+    "name": "Gae Bolg",
+    "job_id": "dragoon",
+    "description": "A three-stage relic weapon questline for Dragoon.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "dragoon",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "gae_bolg_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "wyrm",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "dragon_beyond_the_veil",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "gae_bolg_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "gae_bolg_zenith"
+      }
+    ]
+  },
+  {
+    "id": "excalibur",
+    "name": "Excalibur",
+    "job_id": "paladin",
+    "description": "A three-stage relic weapon questline for Paladin.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "paladin",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "excalibur_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "iron_giant",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "the_mountain_moves",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "excalibur_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "excalibur_zenith"
+      }
+    ]
+  },
+  {
+    "id": "apocalypse",
+    "name": "Apocalypse",
+    "job_id": "darkknight",
+    "description": "A three-stage relic weapon questline for Darkknight.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "darkknight",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "apocalypse_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "malboro_great",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "tyrant_of_the_rift",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "apocalypse_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "apocalypse_zenith"
+      }
+    ]
+  },
+  {
+    "id": "godhand",
+    "name": "Godhand",
+    "job_id": "monk",
+    "description": "A three-stage relic weapon questline for Monk.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "monk",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "godhand_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "cactuar",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "king_of_the_coeurls",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "godhand_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "godhand_zenith"
+      }
+    ]
+  },
+  {
+    "id": "masamune",
+    "name": "Masamune",
+    "job_id": "samurai",
+    "description": "A three-stage relic weapon questline for Samurai.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "samurai",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "masamune_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "riven_ronin",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "the_riven_ronin",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "masamune_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "masamune_zenith"
+      }
+    ]
+  },
+  {
+    "id": "stardust_rod",
+    "name": "Stardust Rod",
+    "job_id": "blackmage",
+    "description": "A three-stage relic weapon questline for Blackmage.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "blackmage",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "stardust_rod_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "elemental_archon",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "three_moons",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "stardust_rod_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "stardust_rod_zenith"
+      }
+    ]
+  },
+  {
+    "id": "nirvana",
+    "name": "Nirvana",
+    "job_id": "whitemage",
+    "description": "A three-stage relic weapon questline for Whitemage.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "whitemage",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "nirvana_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "ahriman",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "breath_of_regret",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "nirvana_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "nirvana_zenith"
+      }
+    ]
+  },
+  {
+    "id": "last_knife",
+    "name": "Last Knife",
+    "job_id": "thief",
+    "description": "A three-stage relic weapon questline for Thief.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Dormant Relic",
+        "requirements": [
+          {
+            "type": "job_level",
+            "job_id": "thief",
+            "amount": 50
+          },
+          {
+            "type": "character_level",
+            "amount": 45
+          }
+        ],
+        "cost": {
+          "gil": 5000,
+          "hunt_seals": 40,
+          "items": [
+            {
+              "item_id": "mythril_ore",
+              "quantity": 8
+            },
+            {
+              "item_id": "crystal_shard",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "last_knife_dormant"
+      },
+      {
+        "stage": 2,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "monster_kills",
+            "monster_id": "tonberry",
+            "amount": 10
+          },
+          {
+            "type": "hunt_clear",
+            "hunt_id": "the_lantern_draws_near",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 10000,
+          "hunt_seals": 90,
+          "items": [
+            {
+              "item_id": "crystal_core",
+              "quantity": 2
+            },
+            {
+              "item_id": "rift_crystal",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "last_knife_awakened"
+      },
+      {
+        "stage": 3,
+        "name": "Zenith",
+        "requirements": [
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 2
+          },
+          {
+            "type": "character_level",
+            "amount": 65
+          }
+        ],
+        "cost": {
+          "gil": 25000,
+          "hunt_seals": 220,
+          "items": [
+            {
+              "item_id": "dark_matter",
+              "quantity": 1
+            },
+            {
+              "item_id": "eidolon_shard",
+              "quantity": 1
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 1
+            }
+          ]
+        },
+        "reward_item": "last_knife_zenith"
+      }
+    ]
+  }
+]

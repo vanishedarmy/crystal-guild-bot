@@ -1,0 +1,966 @@
+[
+  {
+    "id": "first_blood",
+    "name": "First Blood",
+    "description": "Defeat your first monster.",
+    "condition": {
+      "type": "stat",
+      "field": "monsters_defeated",
+      "amount": 1
+    },
+    "reward_title": "monster_botherer",
+    "category": "Combat",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "ten_ventures",
+    "name": "Frequent Flyer",
+    "description": "Complete 10 ventures.",
+    "condition": {
+      "type": "stat",
+      "field": "ventures",
+      "amount": 10
+    },
+    "category": "Adventure",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "slayer_50",
+    "name": "Occupational Hazard",
+    "description": "Defeat 50 monsters.",
+    "condition": {
+      "type": "stat",
+      "field": "monsters_defeated",
+      "amount": 50
+    },
+    "category": "Combat",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "floor_inspector",
+    "name": "Certified Floor Inspector",
+    "description": "Get KO'd 10 times.",
+    "condition": {
+      "type": "stat",
+      "field": "deaths",
+      "amount": 10
+    },
+    "reward_title": "certified_floor_inspector",
+    "category": "Comedy",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "bestiary_10",
+    "name": "Field Researcher",
+    "description": "Discover 10 monster species.",
+    "condition": {
+      "type": "bestiary_unique",
+      "amount": 10
+    },
+    "category": "Bestiary",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "job_10",
+    "name": "Career Path",
+    "description": "Reach Job Level 10.",
+    "condition": {
+      "type": "job_level",
+      "amount": 10
+    },
+    "category": "Jobs",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "bomb_squad",
+    "name": "Bomb Disposal Expert",
+    "description": "Defeat 10 Bombs.",
+    "condition": {
+      "type": "monster_kills",
+      "monster_id": "bomb",
+      "amount": 10
+    },
+    "category": "Bestiary",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "cactuar_chaser",
+    "name": "Cactuar Chaser",
+    "description": "Catch and defeat 5 Cactuars.",
+    "condition": {
+      "type": "monster_kills",
+      "monster_id": "cactuar",
+      "amount": 5
+    },
+    "reward_title": "needle_dodger",
+    "category": "Bestiary",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "tonberry_problem",
+    "name": "This Seems Personal",
+    "description": "Defeat 3 Tonberries.",
+    "condition": {
+      "type": "monster_kills",
+      "monster_id": "tonberry",
+      "amount": 3
+    },
+    "reward_title": "grudge_survivor",
+    "category": "Comedy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "wealthy",
+    "name": "Gilgamesh Would Approve",
+    "description": "Hold 10,000 gil.",
+    "condition": {
+      "type": "stat",
+      "field": "gil",
+      "amount": 10000
+    },
+    "category": "Economy",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "first_hunt",
+    "name": "Marked for Trouble",
+    "description": "Clear your first Hunt.",
+    "condition": {
+      "type": "hunt_total",
+      "amount": 1
+    },
+    "category": "Hunts",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "hunt_10",
+    "name": "Hunt Board Menace",
+    "description": "Clear 10 Hunts.",
+    "condition": {
+      "type": "hunt_total",
+      "amount": 10
+    },
+    "reward_title": "mark_hunter",
+    "category": "Hunts",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "s_rank_clear",
+    "name": "Why Is The Music Changing?",
+    "description": "Defeat an S-Rank Hunt.",
+    "condition": {
+      "type": "hunt_rank_clears",
+      "rank": "S",
+      "amount": 1
+    },
+    "reward_title": "s_rank_problem",
+    "category": "Hunts",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "first_mastery",
+    "name": "Master of One",
+    "description": "Master any Job at Job Level 50.",
+    "condition": {
+      "type": "mastery_count",
+      "amount": 1
+    },
+    "reward_title": "master_of_one",
+    "category": "Jobs",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "quest_5",
+    "name": "Career Counselor's Nightmare",
+    "description": "Complete 5 Job quests.",
+    "condition": {
+      "type": "quest_count",
+      "amount": 5
+    },
+    "category": "Jobs",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "artisan_25",
+    "name": "Union Approved",
+    "description": "Craft 25 items without setting the Guild on fire.",
+    "condition": {
+      "type": "stat",
+      "field": "crafts",
+      "amount": 25
+    },
+    "reward_title": "guild_artisan",
+    "category": "Crafting",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "forge_10",
+    "name": "Percussive Maintenance",
+    "description": "Complete 10 item upgrades.",
+    "condition": {
+      "type": "stat",
+      "field": "forge_upgrades",
+      "amount": 10
+    },
+    "reward_title": "hammer_time",
+    "category": "Crafting",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "first_relic",
+    "name": "This Seems Important",
+    "description": "Complete a Zenith Relic weapon.",
+    "condition": {
+      "type": "stat",
+      "field": "relics_completed",
+      "amount": 1
+    },
+    "reward_title": "relic_bearer",
+    "category": "Relics",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "rift_delver",
+    "name": "Past the Edge of Reason",
+    "description": "Reach Character Lv.70 and become ready for the Interdimensional Rift.",
+    "condition": {
+      "type": "character_level",
+      "amount": 70
+    },
+    "reward_title": "rift_delver",
+    "category": "Adventure",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "happy_camper",
+    "name": "Happy Camper",
+    "description": "Rest at camp 10 times. At this point the tent is basically real estate.",
+    "condition": {
+      "type": "stat",
+      "field": "rests",
+      "amount": 10
+    },
+    "reward_title": "certified_tent_inspector",
+    "category": "Comedy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "party_people",
+    "name": "Party People",
+    "description": "Join or start 25 random party encounters.",
+    "condition": {
+      "type": "stat",
+      "field": "party_encounters",
+      "amount": 25
+    },
+    "reward_title": "strength_in_numbers",
+    "category": "Social",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "battlefield_medic",
+    "name": "Battlefield Medic",
+    "description": "Revive 10 heroes during live raids.",
+    "condition": {
+      "type": "stat",
+      "field": "raid_revives",
+      "amount": 10
+    },
+    "reward_title": "phoenix_wrangler",
+    "category": "Raids",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "breaking_limits",
+    "name": "Breaking Limits",
+    "description": "Unleash 25 Limit Breaks in raids.",
+    "condition": {
+      "type": "stat",
+      "field": "limit_breaks",
+      "amount": 25
+    },
+    "reward_title": "limit_break_enthusiast",
+    "category": "Raids",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "venture_50",
+    "name": "Road Warrior",
+    "description": "Complete 50 ventures.",
+    "condition": {
+      "type": "stat",
+      "field": "ventures",
+      "amount": 50
+    },
+    "reward_title": "seasoned_wayfarer",
+    "category": "Adventure",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "venture_250",
+    "name": "Professional Wanderer",
+    "description": "Complete 250 ventures.",
+    "condition": {
+      "type": "stat",
+      "field": "ventures",
+      "amount": 250
+    },
+    "reward_title": "world_worn",
+    "category": "Adventure",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "level_50",
+    "name": "Halfway to Trouble",
+    "description": "Reach Character Level 50.",
+    "condition": {
+      "type": "character_level",
+      "amount": 50
+    },
+    "reward_title": "crystal_veteran",
+    "category": "Adventure",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "level_99",
+    "name": "Level Cap? What Level Cap?",
+    "description": "Reach Character Level 99.",
+    "condition": {
+      "type": "character_level",
+      "amount": 99
+    },
+    "reward_title": "legend_in_residence",
+    "category": "Adventure",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "slayer_250",
+    "name": "Monster Menace",
+    "description": "Defeat 250 monsters.",
+    "condition": {
+      "type": "stat",
+      "field": "monsters_defeated",
+      "amount": 250
+    },
+    "reward_title": "monster_menace",
+    "category": "Combat",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "slayer_1000",
+    "name": "Ecological Incident",
+    "description": "Defeat 1,000 monsters.",
+    "condition": {
+      "type": "stat",
+      "field": "monsters_defeated",
+      "amount": 1000
+    },
+    "reward_title": "ecological_incident",
+    "category": "Combat",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "damage_100k",
+    "name": "Damage Is a Love Language",
+    "description": "Deal 100,000 lifetime damage.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "damage_dealt",
+      "amount": 100000
+    },
+    "reward_title": "damage_dealer",
+    "category": "Combat",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "damage_1m",
+    "name": "Spreadsheet Hazard",
+    "description": "Deal 1,000,000 lifetime damage.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "damage_dealt",
+      "amount": 1000000
+    },
+    "reward_title": "walking_calculation_error",
+    "category": "Combat",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "best_hit_5000",
+    "name": "One Big Number",
+    "description": "Land a single hit for at least 5,000 damage.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "best_hit",
+      "amount": 5000
+    },
+    "reward_title": "big_number_enjoyer",
+    "category": "Combat",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "healing_100k",
+    "name": "Please Sign Here",
+    "description": "Restore 100,000 lifetime HP.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "healing_done",
+      "amount": 100000
+    },
+    "reward_title": "guild_paramedic",
+    "category": "Combat",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "floor_tank_25",
+    "name": "Floor Tank",
+    "description": "Get KO’d 25 times.",
+    "condition": {
+      "type": "stat",
+      "field": "deaths",
+      "amount": 25
+    },
+    "reward_title": "floor_tank",
+    "category": "Comedy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "floor_tank_100",
+    "name": "OSHA Would Like a Word",
+    "description": "Get KO’d 100 times.",
+    "condition": {
+      "type": "stat",
+      "field": "deaths",
+      "amount": 100
+    },
+    "reward_title": "professional_floor_tank",
+    "category": "Comedy",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "bestiary_50",
+    "name": "Monster Librarian",
+    "description": "Discover 50 monster species.",
+    "condition": {
+      "type": "bestiary_unique",
+      "amount": 50
+    },
+    "reward_title": "monster_librarian",
+    "category": "Bestiary",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "bestiary_all",
+    "name": "No Stone Unstabbed",
+    "description": "Discover every monster species in the Bestiary.",
+    "condition": {
+      "type": "bestiary_unique",
+      "amount": 103
+    },
+    "reward_title": "walking_bestiary",
+    "category": "Bestiary",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "tonberry_100",
+    "name": "Everybody’s Grudge",
+    "description": "Defeat 100 Tonberries.",
+    "condition": {
+      "type": "monster_kills",
+      "monster_id": "tonberry",
+      "amount": 100
+    },
+    "reward_title": "everyones_grudge",
+    "category": "Comedy",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "malboro_25",
+    "name": "Fresh Air Is a Right",
+    "description": "Defeat 25 Malboros.",
+    "condition": {
+      "type": "monster_kills",
+      "monster_id": "malboro",
+      "amount": 25
+    },
+    "reward_title": "breath_taker",
+    "category": "Bestiary",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "hunt_50",
+    "name": "Hunt Board Terror",
+    "description": "Clear 50 Hunts.",
+    "condition": {
+      "type": "hunt_total",
+      "amount": 50
+    },
+    "reward_title": "hunt_board_terror",
+    "category": "Hunts",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "hunt_100",
+    "name": "Mark of Marks",
+    "description": "Clear 100 Hunts.",
+    "condition": {
+      "type": "hunt_total",
+      "amount": 100
+    },
+    "reward_title": "mark_of_marks",
+    "category": "Hunts",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "s_rank_10",
+    "name": "S-Rank Repeat Offender",
+    "description": "Clear S-Rank Hunts 10 total times.",
+    "condition": {
+      "type": "hunt_rank_total",
+      "rank": "S",
+      "amount": 10
+    },
+    "reward_title": "s_rank_repeat_offender",
+    "category": "Hunts",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "mastery_5",
+    "name": "Career Commitment Issues",
+    "description": "Master five Jobs.",
+    "condition": {
+      "type": "mastery_count",
+      "amount": 5
+    },
+    "reward_title": "polymath",
+    "category": "Jobs",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "mastery_all",
+    "name": "Who Needs a Main?",
+    "description": "Master all 18 Jobs.",
+    "condition": {
+      "type": "mastery_count",
+      "amount": 18
+    },
+    "reward_title": "every_job_is_main_job",
+    "category": "Jobs",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "job_battles_100",
+    "name": "Punch the Clock",
+    "description": "Fight 100 battles on a single Job.",
+    "condition": {
+      "type": "job_battles",
+      "amount": 100
+    },
+    "reward_title": "career_adventurer",
+    "category": "Jobs",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "gil_100k",
+    "name": "Pocket Change",
+    "description": "Hold 100,000 gil.",
+    "condition": {
+      "type": "gil",
+      "amount": 100000
+    },
+    "reward_title": "gil_hoarder",
+    "category": "Economy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "gil_1m",
+    "name": "Moogle Venture Capital",
+    "description": "Hold 1,000,000 gil.",
+    "condition": {
+      "type": "gil",
+      "amount": 1000000
+    },
+    "reward_title": "gil_tycoon",
+    "category": "Economy",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "gil_spent_100k",
+    "name": "Stimulating the Economy",
+    "description": "Spend 100,000 lifetime gil.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "gil_spent",
+      "amount": 100000
+    },
+    "reward_title": "economic_stimulus",
+    "category": "Economy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "craft_100",
+    "name": "Made by Hand, Allegedly",
+    "description": "Craft 100 items.",
+    "condition": {
+      "type": "stat",
+      "field": "crafts",
+      "amount": 100
+    },
+    "reward_title": "master_artisan",
+    "category": "Crafting",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "forge_50",
+    "name": "Anvil Abuse",
+    "description": "Complete 50 forge upgrades.",
+    "condition": {
+      "type": "stat",
+      "field": "forge_upgrades",
+      "amount": 50
+    },
+    "reward_title": "anvil_abuser",
+    "category": "Crafting",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "relic_3",
+    "name": "Shiny Object Problem",
+    "description": "Complete three Zenith Relics.",
+    "condition": {
+      "type": "stat",
+      "field": "relics_completed",
+      "amount": 3
+    },
+    "reward_title": "relic_collector",
+    "category": "Relics",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "relic_all",
+    "name": "This Shelf Is Load-Bearing",
+    "description": "Complete all eight Zenith Relics.",
+    "condition": {
+      "type": "stat",
+      "field": "relics_completed",
+      "amount": 8
+    },
+    "reward_title": "arsenal_of_legend",
+    "category": "Relics",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "raid_10",
+    "name": "Raid Regular",
+    "description": "Win 10 raids.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "raid_wins",
+      "amount": 10
+    },
+    "reward_title": "raid_regular",
+    "category": "Raids",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "raid_50",
+    "name": "Another World Saved",
+    "description": "Win 50 raids.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "raid_wins",
+      "amount": 50
+    },
+    "reward_title": "world_saver_part_time",
+    "category": "Raids",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "summon_25",
+    "name": "Ancient Power, Casual Usage",
+    "description": "Call 25 raid summons.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "summons_called",
+      "amount": 25
+    },
+    "reward_title": "eikon_speed_dial",
+    "category": "Raids",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "limit_100",
+    "name": "Gauge Dependency",
+    "description": "Use 100 Limit Breaks.",
+    "condition": {
+      "type": "stat",
+      "field": "limit_breaks",
+      "amount": 100
+    },
+    "reward_title": "gauge_watcher",
+    "category": "Raids",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "revives_50",
+    "name": "Please Stop Dying",
+    "description": "Revive 50 raid allies.",
+    "condition": {
+      "type": "stat",
+      "field": "raid_revives",
+      "amount": 50
+    },
+    "reward_title": "phoenix_dispatcher",
+    "category": "Raids",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "boss_unique_5",
+    "name": "Boss Botherer",
+    "description": "Defeat five unique raid bosses.",
+    "condition": {
+      "type": "boss_unique",
+      "amount": 5
+    },
+    "reward_title": "boss_botherer",
+    "category": "Boss",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "boss_unique_15",
+    "name": "Professional Problem",
+    "description": "Defeat fifteen unique raid bosses.",
+    "condition": {
+      "type": "boss_unique",
+      "amount": 15
+    },
+    "reward_title": "professional_problem",
+    "category": "Boss",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "penance_clear",
+    "name": "Judgment Appealed",
+    "description": "Defeat Penance.",
+    "condition": {
+      "type": "boss_clear",
+      "boss_id": "penance",
+      "amount": 1
+    },
+    "reward_title": "judged_and_found_annoying",
+    "category": "Boss",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "yiazmat_clear",
+    "name": "Terms and Conditions Ignored",
+    "description": "Defeat Yiazmat.",
+    "condition": {
+      "type": "boss_clear",
+      "boss_id": "yiazmat",
+      "amount": 1
+    },
+    "reward_title": "contract_violator",
+    "category": "Boss",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "absolute_virtue_clear",
+    "name": "Absolutely Not",
+    "description": "Defeat Absolute Virtue.",
+    "condition": {
+      "type": "boss_clear",
+      "boss_id": "absolute_virtue",
+      "amount": 1
+    },
+    "reward_title": "absolutely_unreasonable",
+    "category": "Boss",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "tonberry_ko_10",
+    "name": "???",
+    "description": "Be KO’d by Tonberry 10 times.",
+    "condition": {
+      "type": "monster_record_defeats",
+      "monster_id": "tonberry",
+      "amount": 10
+    },
+    "reward_title": "grudge_magnet",
+    "category": "Secret",
+    "tier": "gold",
+    "points": 50,
+    "secret": true,
+    "reveal_name": "Grudge Magnet"
+  },
+  {
+    "id": "malboro_ko_5",
+    "name": "???",
+    "description": "Be KO’d by Malboro 5 times.",
+    "condition": {
+      "type": "monster_record_defeats",
+      "monster_id": "malboro",
+      "amount": 5
+    },
+    "reward_title": "breath_test_failure",
+    "category": "Secret",
+    "tier": "silver",
+    "points": 25,
+    "secret": true,
+    "reveal_name": "Breath Test Failure"
+  },
+  {
+    "id": "camp_50",
+    "name": "This Is My Tent Now",
+    "description": "Rest at camp 50 times.",
+    "condition": {
+      "type": "stat",
+      "field": "rests",
+      "amount": 50
+    },
+    "reward_title": "tent_landlord",
+    "category": "Comedy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "party_100",
+    "name": "There Is No Solo in Party",
+    "description": "Join or start 100 random party encounters.",
+    "condition": {
+      "type": "stat",
+      "field": "party_encounters",
+      "amount": 100
+    },
+    "reward_title": "party_animal",
+    "category": "Social",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  }
+]

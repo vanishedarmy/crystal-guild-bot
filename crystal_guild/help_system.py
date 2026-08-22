@@ -1,0 +1,113 @@
+from __future__ import annotations
+
+HELP_TOPICS = {
+    "start": (
+        "START HERE — !recruit creates your hero. Then choose a starter Job with !job warrior, monk, thief, blackmage, whitemage, or redmage.",
+        "After choosing a Job, use !venture to adventure, !hero to inspect yourself, and !next whenever you are unsure what to do next.",
+    ),
+    "character": (
+        "CHARACTER — !hero shows your live character summary. Aliases: !me, !profile, !status.",
+        "Use !next for a contextual suggestion, !daily for your daily reward, !titles to browse titles, and !title <name> to equip one.",
+    ),
+    "jobs": (
+        "JOBS — !job lists Jobs or switches Job. !jobinfo <job> shows requirements; !abilities [job] shows passive milestones and Active Battle abilities.",
+        "Master a Job at JLv.50, then use !mastery and !mastery <job> <1|2> to equip cross-Job Masteries. !stance still modifies battle math.",
+    ),
+    "adventure": (
+        "VENTURES — !venture rolls an adventure event: usually an ENCOUNTER, or sometimes a TREASURE CHEST with a level-appropriate item. Encounter monsters are capped at 10 levels above the starter; chest loot is drawn from roughly 5 levels below through 2 levels above the venturing hero.",
+        "ACTIVE BATTLE — ENCOUNTER Ventures open a rally and !join enters it. When combat begins, each living hero queues one action per round: !attack, !ability <name> [target], !defend, or !use <item> [target].",
+        "!encounter shows a compact battle dashboard with enemy HP, party HP/MP/AP, statuses, queued actions and the timer. Ordinary enemy attacks target one hero; explicit party skills can hit multiple heroes. !battlelog shows recent resolved rounds without adding automatic chat spam.",
+    ),
+    "recovery": (
+        "RECOVERY — !rest starts a free camp recovery; use !rest again to check the timer. !use tent restores you immediately outside combat.",
+        "In Active Battle, healing/Ether/Phoenix Down plus Antidote, Echo Herbs, and Remedy can be queued. Poison, Silence, and Blind are real battle statuses; items are consumed only on successful resolution.",
+    ),
+    "inventory": (
+        "INVENTORY — !inventory lists items. Filter with !inventory weapon, armor, accessory, consumable, or material. Alias: !inv.",
+        "!gear shows equipped items and active stats. Alias: !equipment. Use !equip <item>, !item <name>, !shop, !buy, and !sell to manage gear and supplies.",
+    ),
+    "shop": (
+        "SHOP — !shop shows your personal Moogle Emporium rotation. Buy with !buy <slot or item> [qty]; consumables can be bought in quantity.",
+        "Stock is Job- and level-aware and does not reroll every time you type !shop. Use !item <name> to inspect something you own or discover.",
+    ),
+    "hunts": (
+        "ACTIVE HUNTS — !hunts shows C/B/A/S progress; !hunts C (or B/A/S) lists that board. !hunt <name> starts a solo timed Active Battle immediately—there is no Hunt rally.",
+        "Use !attack, !ability, !defend and battle items exactly as in Venture combat. Hunt rewards and first-clear prizes are committed only on victory; spend Hunt Seals with !sealshop and !sealbuy <item> [qty].",
+    ),
+    "quests": (
+        "QUESTS — !quests lists available Job-unlock quests. !quest <name> attempts one after its requirements are met.",
+        "Use !jobinfo <job> to see what an advanced Job still needs. Many unlocks combine Character Level, Job Levels, Hunts and quests.",
+    ),
+    "crafting": (
+        "CRAFTING — !blacksmith opens the forge overview. !recipes lists discoveries; !recipe <name> inspects one; !craft <recipe> [qty] crafts it.",
+        "Use !upgrade <item> to forge equipment toward +5. Recipe discoveries and materials come from adventuring, Hunts, raids and the Seal shop.",
+    ),
+    "relics": (
+        "RELICS — !relics shows your Relic lines; !relic <name> shows stage requirements; !awaken <name> advances a completed stage.",
+        "Relics are long-term Job-specific weapons and intentionally sit above ordinary shop gear. Expect Hunts, crafting, boss loot and poor life choices.",
+    ),
+    "raids": (
+        "RAIDS — when a boss rally is active, !raid joins it and !boss shows status. Combat advances automatically after the rally closes.",
+        "During raids use !limit, !summon [name], !revive <hero>, and !raidstats. Browse the catalog with !bosses and !bossinfo <name>.",
+    ),
+    "bestiary": (
+        "BESTIARY — !bestiary shows discovery progress. !monsters [region] browses encounters and !monster <name> inspects a creature.",
+        "Bestiary discoveries feed progression, achievements and unlock requirements. The Portal/Player Guide also show each discovered enemy's Active Battle temperament and named skill.",
+    ),
+    "achievements": (
+        "ACHIEVEMENTS — !achievements shows Achievement Points and unlocks. Filter by category, such as !achievements combat, raids, jobs, hunts, or comedy.",
+        "Use !achievement <name> for exact progress. !titles [category|rarity] browses earned titles; !title <name> equips one. Secret achievements stay hidden until unlocked.",
+    ),
+    "records": (
+        "RECORDS — !records shows lifetime career, combat, economy and rivalry highlights. Aliases: !career and !stats.",
+        "The Adventurer Portal Records tab has the full dossier: damage, healing, boss history, favorite Job, Nemesis and progression totals.",
+    ),
+    "fellowship": (
+        "FELLOWSHIP — !fellowship shows the shared Guild LVL, your personal Guild Rank, active project, and weekly progress. !rank shows your personal standing and next promotion.",
+        "Use !project for the current project, !contribute gil <amount> or !contribute <amount> <item> to donate, !orders for weekly objectives, !deeds for permanent milestones, !facilities for Guild upgrades, and !contributions for your Fellowship record.",
+    ),
+    "chocobos": (
+        "CHOCOBOS — the Fellowship first builds the Chocobo Stable. Then complete !chocoboquest, purchase a 500 Gil Registration Writ with !chocobowrit, and wait one hour for it to activate.",
+        "Use !registerchocobo <name> to register your companion, !chocobo to view Bond Level/traits/readiness, and !chocoboname <name> to rename it. Chocobos gain Bond XP from Ventures, treasure, and Hunts; Chocobo traits currently add no combat bonus.",
+    ),
+    "portal": (
+        "PLAYER PORTAL — the hosted Crystal Guild site shows live heroes, Jobs, equipment, inventory, Adventure Board, Chocobo Stable, Bestiary, Relics, achievements and records. The Adventure Board also offers Portal-only Solo Venture: 7-minute separate cooldown, 50% ENCOUNTER / 50% TREASURE, +3 enemy cap, no rally, and half normal Venture Fellowship Renown.",
+        "Use the Player Guide link on the Adventurer Portal for the full command and progression reference. The website receives sanitized game-only data.",
+    ),
+}
+
+ALIASES = {
+    "recruit": "start", "begin": "start", "new": "start",
+    "hero": "character", "profile": "character", "status": "character", "me": "character",
+    "job": "jobs", "jobinfo": "jobs", "abilities": "jobs", "mastery": "jobs", "stance": "jobs",
+    "venture": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
+    "rest": "recovery", "camp": "recovery", "use": "recovery",
+    "inv": "inventory", "gear": "inventory", "equipment": "inventory", "equip": "inventory", "item": "inventory",
+    "buy": "shop", "sell": "shop",
+    "hunt": "hunts", "huntboard": "hunts", "marks": "hunts", "sealshop": "hunts", "sealbuy": "hunts",
+    "quest": "quests",
+    "blacksmith": "crafting", "forge": "crafting", "recipes": "crafting", "recipe": "crafting", "craft": "crafting", "upgrade": "crafting",
+    "relic": "relics", "awaken": "relics",
+    "raid": "raids", "boss": "raids", "bosses": "raids", "bossinfo": "raids", "limit": "raids", "summon": "raids", "revive": "raids",
+    "monster": "bestiary", "monsters": "bestiary",
+    "achievement": "achievements", "achievements": "achievements", "ach": "achievements", "titles": "achievements", "title": "achievements",
+    "records": "records", "career": "records", "stats": "records",
+    "fellowship": "fellowship", "guildinfo": "fellowship", "project": "fellowship", "contribute": "fellowship", "orders": "fellowship", "deeds": "fellowship", "facilities": "fellowship", "contributions": "fellowship", "guildrecord": "fellowship", "rank": "fellowship", "guildrank": "fellowship",
+    "chocobo": "chocobos", "stable": "chocobos", "chocoboquest": "chocobos", "chocobowrit": "chocobos", "writ": "chocobos", "registerchocobo": "chocobos", "chocoboname": "chocobos",
+    "web": "portal", "website": "portal", "guide": "portal",
+}
+
+
+def help_messages(topic: str | None = None) -> tuple[str, ...]:
+    if topic:
+        key = topic.strip().lower().lstrip("!")
+        key = ALIASES.get(key, key)
+        if key in HELP_TOPICS:
+            return HELP_TOPICS[key]
+        return (
+            f"No help topic named '{topic}'. Try !guild start, jobs, adventure, recovery, inventory, shop, hunts, crafting, relics, raids, fellowship, chocobos, achievements, records, or portal.",
+        )
+    return (
+        "MOGNET COMMAND MAP — !guild start | character | jobs | adventure | recovery | inventory | shop | hunts | quests | crafting | relics | raids | fellowship | chocobos",
+        "More: !guild bestiary | achievements | records | portal — or use !next for exactly what your hero should do now. Aliases: !cghelp jobs or !cgcommands jobs.",
+    )

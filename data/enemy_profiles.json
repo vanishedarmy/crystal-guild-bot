@@ -1,0 +1,116 @@
+[
+  {
+    "id": "balanced",
+    "name": "Balanced",
+    "description": "Steady attacker with occasional technique use.",
+    "ability_bias": 1.0,
+    "damage_mult": 1.0,
+    "status_bonus": 0.0,
+    "utility": {
+      "chance": 0.04,
+      "hp_below": 0.45,
+      "name": "Steady Breath",
+      "status": "focus",
+      "turns": 2,
+      "magnitude": 0.06
+    }
+  },
+  {
+    "id": "aggressive",
+    "name": "Aggressive",
+    "description": "Presses damage and favors direct techniques.",
+    "ability_bias": 1.05,
+    "damage_mult": 1.06,
+    "status_bonus": 0.0,
+    "utility": {
+      "chance": 0.05,
+      "hp_below": 0.4,
+      "name": "Battle Fury",
+      "status": "power_up",
+      "turns": 2,
+      "magnitude": 0.1
+    }
+  },
+  {
+    "id": "defensive",
+    "name": "Defensive",
+    "description": "Trades some pressure for protective turns when wounded.",
+    "ability_bias": 0.9,
+    "damage_mult": 0.96,
+    "status_bonus": 0.0,
+    "utility": {
+      "chance": 0.25,
+      "hp_below": 0.55,
+      "name": "Brace",
+      "status": "protect",
+      "turns": 2,
+      "magnitude": 0.28
+    }
+  },
+  {
+    "id": "caster",
+    "name": "Caster",
+    "description": "Leans on magical or area techniques more often.",
+    "ability_bias": 1.28,
+    "damage_mult": 0.98,
+    "magic_mult": 1.08,
+    "status_bonus": 0.02,
+    "utility": {
+      "chance": 0.1,
+      "hp_below": 0.6,
+      "name": "Arcane Focus",
+      "status": "power_up",
+      "turns": 2,
+      "magnitude": 0.1
+    }
+  },
+  {
+    "id": "controller",
+    "name": "Controller",
+    "description": "Sacrifices some raw damage to inflict disruptive statuses.",
+    "ability_bias": 1.22,
+    "damage_mult": 0.94,
+    "status_bonus": 0.12,
+    "utility": {
+      "chance": 0.07,
+      "hp_below": 0.55,
+      "name": "Cruel Focus",
+      "status": "haste",
+      "turns": 2,
+      "magnitude": 0.06
+    }
+  },
+  {
+    "id": "skirmisher",
+    "name": "Skirmisher",
+    "description": "Quick, evasive enemy that mixes attacks with bursts of speed.",
+    "ability_bias": 1.04,
+    "damage_mult": 1.0,
+    "status_bonus": 0.03,
+    "utility": {
+      "chance": 0.11,
+      "hp_below": 0.5,
+      "name": "Quickstep",
+      "status": "evade",
+      "turns": 2,
+      "magnitude": 0.18
+    }
+  },
+  {
+    "id": "berserker",
+    "name": "Berserker",
+    "description": "Becomes more dangerous as its HP falls.",
+    "ability_bias": 1.08,
+    "damage_mult": 1.03,
+    "low_hp_damage_bonus": 0.2,
+    "status_bonus": 0.0,
+    "utility": {
+      "chance": 0.24,
+      "hp_below": 0.42,
+      "name": "Enrage",
+      "status": "power_up",
+      "turns": 2,
+      "magnitude": 0.18
+    }
+  }
+]

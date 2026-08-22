@@ -1,0 +1,470 @@
+[
+  {
+    "id": "greenwind_plains",
+    "name": "Greenwind Plains",
+    "min_level": 1,
+    "description": "Rolling fields where even the rabbits seem judgmental.",
+    "encounters": [
+      {
+        "monster_id": "goblin",
+        "weight": 24
+      },
+      {
+        "monster_id": "wolf",
+        "weight": 22
+      },
+      {
+        "monster_id": "mandragora",
+        "weight": 18
+      },
+      {
+        "monster_id": "hornet",
+        "weight": 14
+      },
+      {
+        "monster_id": "flan",
+        "weight": 10
+      },
+      {
+        "monster_id": "bomb",
+        "weight": 7
+      },
+      {
+        "monster_id": "cactuar",
+        "weight": 1
+      },
+      {
+        "monster_id": "goblin_guard",
+        "weight": 12
+      },
+      {
+        "monster_id": "imp",
+        "weight": 11
+      },
+      {
+        "monster_id": "cockatrice",
+        "weight": 9
+      },
+      {
+        "monster_id": "ochu",
+        "weight": 7
+      },
+      {
+        "monster_id": "spriggan",
+        "weight": 5
+      }
+    ]
+  },
+  {
+    "id": "whispering_caverns",
+    "name": "Whispering Caverns",
+    "min_level": 8,
+    "description": "Dark tunnels full of bats, crystals, and avoidable life choices.",
+    "encounters": [
+      {
+        "monster_id": "bat",
+        "weight": 22
+      },
+      {
+        "monster_id": "skeleton",
+        "weight": 18
+      },
+      {
+        "monster_id": "flan",
+        "weight": 16
+      },
+      {
+        "monster_id": "bomb",
+        "weight": 16
+      },
+      {
+        "monster_id": "gigas",
+        "weight": 9
+      },
+      {
+        "monster_id": "mimic",
+        "weight": 7
+      },
+      {
+        "monster_id": "tonberry",
+        "weight": 2
+      },
+      {
+        "monster_id": "basilisk",
+        "weight": 11
+      },
+      {
+        "monster_id": "lamia",
+        "weight": 10
+      },
+      {
+        "monster_id": "gargoyle",
+        "weight": 9
+      },
+      {
+        "monster_id": "mindflayer",
+        "weight": 7
+      },
+      {
+        "monster_id": "piscodemon",
+        "weight": 6
+      },
+      {
+        "monster_id": "black_flan",
+        "weight": 5
+      },
+      {
+        "monster_id": "magic_pot",
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "sable_coast",
+    "name": "Sable Coast",
+    "min_level": 16,
+    "description": "Salt spray, ruined docks, and Sahagin who absolutely saw you coming.",
+    "encounters": [
+      {
+        "monster_id": "sahagin",
+        "weight": 25
+      },
+      {
+        "monster_id": "killer_fish",
+        "weight": 20
+      },
+      {
+        "monster_id": "zu",
+        "weight": 15
+      },
+      {
+        "monster_id": "coeurl",
+        "weight": 13
+      },
+      {
+        "monster_id": "chimera",
+        "weight": 8
+      },
+      {
+        "monster_id": "malboro",
+        "weight": 5
+      },
+      {
+        "monster_id": "cactuar",
+        "weight": 1
+      },
+      {
+        "monster_id": "gigantoad",
+        "weight": 11
+      },
+      {
+        "monster_id": "antlion",
+        "weight": 8
+      },
+      {
+        "monster_id": "sand_worm",
+        "weight": 7
+      },
+      {
+        "monster_id": "remora",
+        "weight": 8
+      },
+      {
+        "monster_id": "sea_serpent",
+        "weight": 6
+      },
+      {
+        "monster_id": "adamantoise",
+        "weight": 4
+      },
+      {
+        "monster_id": "garuda",
+        "weight": 3
+      }
+    ]
+  },
+  {
+    "id": "magitek_wastes",
+    "name": "Magitek Wastes",
+    "min_level": 28,
+    "description": "A scarred mechanical deadland humming with deeply irresponsible technology.",
+    "encounters": [
+      {
+        "monster_id": "magitek_drone",
+        "weight": 24
+      },
+      {
+        "monster_id": "iron_giant",
+        "weight": 18
+      },
+      {
+        "monster_id": "death_machine",
+        "weight": 8
+      },
+      {
+        "monster_id": "ahriman",
+        "weight": 15
+      },
+      {
+        "monster_id": "behemoth",
+        "weight": 9
+      },
+      {
+        "monster_id": "malboro_great",
+        "weight": 6
+      },
+      {
+        "monster_id": "tonberry_king",
+        "weight": 1
+      },
+      {
+        "monster_id": "death_claw",
+        "weight": 10
+      },
+      {
+        "monster_id": "ironclad",
+        "weight": 8
+      },
+      {
+        "monster_id": "chimera_brain",
+        "weight": 7
+      },
+      {
+        "monster_id": "evil_eye",
+        "weight": 7
+      },
+      {
+        "monster_id": "magitek_armor",
+        "weight": 8
+      },
+      {
+        "monster_id": "mover",
+        "weight": 3
+      }
+    ]
+  },
+  {
+    "id": "crystal_expanse",
+    "name": "Crystal Expanse",
+    "min_level": 42,
+    "description": "A glittering wasteland where the crystals are beautiful, valuable, and occasionally homicidal.",
+    "encounters": [
+      {
+        "monster_id": "crystal_wolf",
+        "weight": 24
+      },
+      {
+        "monster_id": "crystal_golem",
+        "weight": 20
+      },
+      {
+        "monster_id": "elemental_archon",
+        "weight": 18
+      },
+      {
+        "monster_id": "ancient_mimic",
+        "weight": 10
+      },
+      {
+        "monster_id": "wyrm",
+        "weight": 9
+      },
+      {
+        "monster_id": "tonberry_king",
+        "weight": 2
+      },
+      {
+        "monster_id": "red_dragon",
+        "weight": 8
+      },
+      {
+        "monster_id": "blue_dragon",
+        "weight": 8
+      },
+      {
+        "monster_id": "gold_dragon",
+        "weight": 6
+      },
+      {
+        "monster_id": "holy_dragon",
+        "weight": 5
+      },
+      {
+        "monster_id": "skull_dragon",
+        "weight": 5
+      },
+      {
+        "monster_id": "storm_dragon",
+        "weight": 4
+      },
+      {
+        "monster_id": "brachosaur",
+        "weight": 2
+      }
+    ]
+  },
+  {
+    "id": "riftlands",
+    "name": "Riftlands",
+    "min_level": 55,
+    "description": "Reality is optional here. The monsters have noticed and are taking advantage of it.",
+    "encounters": [
+      {
+        "monster_id": "rift_hound",
+        "weight": 24
+      },
+      {
+        "monster_id": "void_mage",
+        "weight": 19
+      },
+      {
+        "monster_id": "rift_behemoth",
+        "weight": 15
+      },
+      {
+        "monster_id": "adamant_golem",
+        "weight": 12
+      },
+      {
+        "monster_id": "rift_drake",
+        "weight": 10
+      },
+      {
+        "monster_id": "void_tonberry",
+        "weight": 3
+      },
+      {
+        "monster_id": "catoblepas",
+        "weight": 8
+      },
+      {
+        "monster_id": "death_rider",
+        "weight": 7
+      },
+      {
+        "monster_id": "master_tonberry",
+        "weight": 4
+      },
+      {
+        "monster_id": "abaddon",
+        "weight": 6
+      },
+      {
+        "monster_id": "land_worm",
+        "weight": 5
+      },
+      {
+        "monster_id": "great_wyrm",
+        "weight": 4
+      }
+    ]
+  },
+  {
+    "id": "interdimensional_rift",
+    "name": "Interdimensional Rift",
+    "min_level": 70,
+    "description": "Endgame territory. Geometry has resigned and the encounter table is actively hostile.",
+    "encounters": [
+      {
+        "monster_id": "astral_construct",
+        "weight": 23
+      },
+      {
+        "monster_id": "omega_fragment",
+        "weight": 16
+      },
+      {
+        "monster_id": "void_avatar",
+        "weight": 11
+      },
+      {
+        "monster_id": "rift_drake",
+        "weight": 14
+      },
+      {
+        "monster_id": "void_tonberry",
+        "weight": 8
+      },
+      {
+        "monster_id": "rift_behemoth",
+        "weight": 4
+      },
+      {
+        "monster_id": "crystal_dragon",
+        "weight": 7
+      },
+      {
+        "monster_id": "archeodemon",
+        "weight": 5
+      },
+      {
+        "monster_id": "varuna",
+        "weight": 4
+      },
+      {
+        "monster_id": "demonolith",
+        "weight": 3
+      },
+      {
+        "monster_id": "floating_death",
+        "weight": 3
+      },
+      {
+        "monster_id": "machea",
+        "weight": 3
+      }
+    ]
+  },
+  {
+    "id": "omega_ruins",
+    "name": "Omega Ruins",
+    "min_level": 82,
+    "description": "A sealed ruin where the Guild handbook simply says: perhaps do not.",
+    "encounters": [
+      {
+        "monster_id": "demonolith",
+        "weight": 12
+      },
+      {
+        "monster_id": "floating_death",
+        "weight": 10
+      },
+      {
+        "monster_id": "machea",
+        "weight": 10
+      },
+      {
+        "monster_id": "master_coeurl",
+        "weight": 12
+      },
+      {
+        "monster_id": "dark_element",
+        "weight": 11
+      },
+      {
+        "monster_id": "malboro_menace",
+        "weight": 9
+      },
+      {
+        "monster_id": "spirit",
+        "weight": 9
+      },
+      {
+        "monster_id": "great_malboro_omega",
+        "weight": 6
+      },
+      {
+        "monster_id": "mimic_king",
+        "weight": 5
+      },
+      {
+        "monster_id": "omega_sentinel",
+        "weight": 2
+      },
+      {
+        "monster_id": "magic_pot",
+        "weight": 1
+      }
+    ]
+  }
+]

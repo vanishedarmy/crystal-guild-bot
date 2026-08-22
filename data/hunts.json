@@ -1,0 +1,287 @@
+[
+  {
+    "id": "red_hot_problem",
+    "name": "Red Hot Problem",
+    "rank": "C",
+    "monster_id": "crimson_detonator",
+    "min_level": 10,
+    "requirements": [],
+    "cooldown_seconds": 1200,
+    "rewards": {
+      "xp": 420,
+      "jp": 55,
+      "gil": 450,
+      "seals": 8
+    },
+    "first_clear_item": "bomb_kings_fuse",
+    "first_clear_title": "bomb_disposal_officer"
+  },
+  {
+    "id": "prince_of_the_tide",
+    "name": "Prince of the Tide",
+    "rank": "C",
+    "monster_id": "sahagin_prince",
+    "min_level": 14,
+    "requirements": [],
+    "cooldown_seconds": 1200,
+    "rewards": {
+      "xp": 500,
+      "jp": 60,
+      "gil": 520,
+      "seals": 9
+    },
+    "first_clear_item": "coral_trident",
+    "first_clear_title": "tidebreaker"
+  },
+  {
+    "id": "needle_in_the_wind",
+    "name": "Needle in the Wind",
+    "rank": "C",
+    "monster_id": "cactuar_jack",
+    "min_level": 16,
+    "requirements": [],
+    "cooldown_seconds": 1200,
+    "rewards": {
+      "xp": 720,
+      "jp": 80,
+      "gil": 1600,
+      "seals": 10
+    },
+    "first_clear_item": "needle_charm",
+    "first_clear_title": "needle_threader"
+  },
+  {
+    "id": "king_of_the_coeurls",
+    "name": "King of the Coeurls",
+    "rank": "B",
+    "monster_id": "king_coeurl",
+    "min_level": 22,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "C",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 1800,
+    "rewards": {
+      "xp": 900,
+      "jp": 95,
+      "gil": 850,
+      "seals": 18
+    },
+    "first_clear_item": "coeurl_crown",
+    "first_clear_title": "cat_problem_solver"
+  },
+  {
+    "id": "the_riven_ronin",
+    "name": "The Riven Ronin",
+    "rank": "B",
+    "monster_id": "riven_ronin",
+    "min_level": 25,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "C",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 1800,
+    "rewards": {
+      "xp": 1050,
+      "jp": 105,
+      "gil": 950,
+      "seals": 20
+    },
+    "first_clear_item": "ronin_katana",
+    "first_clear_title": "blade_witness"
+  },
+  {
+    "id": "breath_of_regret",
+    "name": "Breath of Regret",
+    "rank": "B",
+    "monster_id": "malboro_overlord",
+    "min_level": 28,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "C",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 1800,
+    "rewards": {
+      "xp": 1180,
+      "jp": 115,
+      "gil": 1050,
+      "seals": 22
+    },
+    "first_clear_item": "morbol_bulb",
+    "first_clear_title": "fresh_air_advocate"
+  },
+  {
+    "id": "the_exiled_giant",
+    "name": "The Exiled Giant",
+    "rank": "B",
+    "monster_id": "iron_giant_exile",
+    "min_level": 32,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "C",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 1800,
+    "rewards": {
+      "xp": 1350,
+      "jp": 125,
+      "gil": 1200,
+      "seals": 24
+    },
+    "first_clear_item": "giants_aegis",
+    "first_clear_title": "giant_feller"
+  },
+  {
+    "id": "three_moons",
+    "name": "Three Moons, One Problem",
+    "rank": "A",
+    "monster_id": "three_moon_chimera",
+    "min_level": 37,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "B",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 2700,
+    "rewards": {
+      "xp": 1850,
+      "jp": 155,
+      "gil": 1700,
+      "seals": 40
+    },
+    "first_clear_item": "triple_chimera_fang",
+    "first_clear_title": "moonbreaker"
+  },
+  {
+    "id": "the_lantern_draws_near",
+    "name": "The Lantern Draws Near",
+    "rank": "A",
+    "monster_id": "tonberry_executioner",
+    "min_level": 41,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "B",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 2700,
+    "rewards": {
+      "xp": 2150,
+      "jp": 170,
+      "gil": 2050,
+      "seals": 45
+    },
+    "first_clear_item": "grudge_lantern",
+    "first_clear_title": "still_not_stabbed"
+  },
+  {
+    "id": "machine_without_mercy",
+    "name": "Machine Without Mercy",
+    "rank": "A",
+    "monster_id": "magitek_juggernaut",
+    "min_level": 45,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "B",
+        "amount": 4
+      }
+    ],
+    "cooldown_seconds": 2700,
+    "rewards": {
+      "xp": 2450,
+      "jp": 185,
+      "gil": 2400,
+      "seals": 50
+    },
+    "first_clear_item": "magitek_cannon",
+    "first_clear_title": "warranty_voider"
+  },
+  {
+    "id": "tyrant_of_the_rift",
+    "name": "Tyrant of the Rift",
+    "rank": "S",
+    "monster_id": "behemoth_tyrant",
+    "min_level": 52,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "A",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 3600,
+    "rewards": {
+      "xp": 3600,
+      "jp": 240,
+      "gil": 3600,
+      "seals": 80
+    },
+    "first_clear_item": "behemoth_crown",
+    "first_clear_title": "behemoth_botherer"
+  },
+  {
+    "id": "the_mountain_moves",
+    "name": "The Mountain Moves",
+    "rank": "S",
+    "monster_id": "ancient_adamantoise",
+    "min_level": 58,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "A",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 3600,
+    "rewards": {
+      "xp": 4300,
+      "jp": 280,
+      "gil": 4200,
+      "seals": 90
+    },
+    "first_clear_item": "adamant_plates",
+    "first_clear_title": "geological_incident"
+  },
+  {
+    "id": "dragon_beyond_the_veil",
+    "name": "Dragon Beyond the Veil",
+    "rank": "S",
+    "monster_id": "rift_dragon",
+    "min_level": 62,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "A",
+        "amount": 3
+      },
+      {
+        "type": "mastery_count",
+        "amount": 1
+      }
+    ],
+    "cooldown_seconds": 3600,
+    "rewards": {
+      "xp": 5200,
+      "jp": 320,
+      "gil": 5200,
+      "seals": 100
+    },
+    "first_clear_item": "rift_lance",
+    "first_clear_title": "riftwalker"
+  }
+]

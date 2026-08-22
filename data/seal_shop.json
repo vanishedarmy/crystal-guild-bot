@@ -1,0 +1,82 @@
+[
+  {
+    "id": "seal_mythril_ore",
+    "name": "Mythril Ore Crate",
+    "item_id": "mythril_ore",
+    "quantity": 2,
+    "cost": 12,
+    "min_level": 15
+  },
+  {
+    "id": "seal_bomb_core",
+    "name": "Bomb Core",
+    "item_id": "bomb_core",
+    "quantity": 1,
+    "cost": 18,
+    "min_level": 15
+  },
+  {
+    "id": "seal_crystal_shard",
+    "name": "Crystal Shard",
+    "item_id": "crystal_shard",
+    "quantity": 1,
+    "cost": 20,
+    "min_level": 35
+  },
+  {
+    "id": "seal_magitek_core",
+    "name": "Magitek Core",
+    "item_id": "magitek_core",
+    "quantity": 1,
+    "cost": 45,
+    "min_level": 38
+  },
+  {
+    "id": "seal_crystal_core",
+    "name": "Crystal Core",
+    "item_id": "crystal_core",
+    "quantity": 1,
+    "cost": 55,
+    "min_level": 42
+  },
+  {
+    "id": "seal_rift_crystal",
+    "name": "Rift Crystal",
+    "item_id": "rift_crystal",
+    "quantity": 1,
+    "cost": 70,
+    "min_level": 52
+  },
+  {
+    "id": "seal_dragon_scale",
+    "name": "Dragon Scale",
+    "item_id": "dragon_scale",
+    "quantity": 1,
+    "cost": 75,
+    "min_level": 52
+  },
+  {
+    "id": "seal_adamantite",
+    "name": "Adamantite",
+    "item_id": "adamantite",
+    "quantity": 1,
+    "cost": 120,
+    "min_level": 58
+  },
+  {
+    "id": "seal_eidolon_shard",
+    "name": "Eidolon Shard",
+    "item_id": "eidolon_shard",
+    "quantity": 1,
+    "cost": 180,
+    "min_level": 65
+  },
+  {
+    "id": "seal_dark_matter",
+    "name": "Dark Matter",
+    "item_id": "dark_matter",
+    "quantity": 1,
+    "cost": 220,
+    "min_level": 65
+  }
+]

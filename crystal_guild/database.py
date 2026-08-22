@@ -1,0 +1,984 @@
+from __future__ import annotations
+
+import sqlite3
+import threading
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Iterator
+
+
+SCHEMA = """
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS players (
+    twitch_id TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    level INTEGER NOT NULL DEFAULT 1,
+    xp INTEGER NOT NULL DEFAULT 0,
+    gil INTEGER NOT NULL DEFAULT 250,
+    hunt_seals INTEGER NOT NULL DEFAULT 0,
+    current_job TEXT NOT NULL DEFAULT 'adventurer',
+    current_region TEXT NOT NULL DEFAULT 'greenwind_plains',
+    title TEXT NOT NULL DEFAULT 'Fresh Meat',
+    stance TEXT NOT NULL DEFAULT 'balanced',
+    ventures INTEGER NOT NULL DEFAULT 0,
+    monsters_defeated INTEGER NOT NULL DEFAULT 0,
+    deaths INTEGER NOT NULL DEFAULT 0,
+    current_hp INTEGER NOT NULL DEFAULT 0,
+    current_mp INTEGER,
+    current_ap INTEGER,
+    camp_until INTEGER NOT NULL DEFAULT 0,
+    rests INTEGER NOT NULL DEFAULT 0,
+    party_encounters INTEGER NOT NULL DEFAULT 0,
+    raid_revives INTEGER NOT NULL DEFAULT 0,
+    limit_breaks INTEGER NOT NULL DEFAULT 0,
+    crafts INTEGER NOT NULL DEFAULT 0,
+    forge_upgrades INTEGER NOT NULL DEFAULT 0,
+    relics_completed INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS player_jobs (
+    player_id TEXT NOT NULL,
+    job_id TEXT NOT NULL,
+    level INTEGER NOT NULL DEFAULT 1,
+    jp INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (player_id, job_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS inventory (
+    player_id TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (player_id, item_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS equipment (
+    player_id TEXT PRIMARY KEY,
+    weapon_id TEXT,
+    armor_id TEXT,
+    accessory_id TEXT,
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS bestiary (
+    player_id TEXT NOT NULL,
+    monster_id TEXT NOT NULL,
+    defeats INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (player_id, monster_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS achievements (
+    player_id TEXT NOT NULL,
+    achievement_id TEXT NOT NULL,
+    unlocked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, achievement_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_hunts (
+    player_id TEXT NOT NULL,
+    hunt_id TEXT NOT NULL,
+    clears INTEGER NOT NULL DEFAULT 0,
+    first_cleared_at TEXT,
+    last_cleared_at TEXT,
+    PRIMARY KEY (player_id, hunt_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_quests (
+    player_id TEXT NOT NULL,
+    quest_id TEXT NOT NULL,
+    completed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, quest_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_titles (
+    player_id TEXT NOT NULL,
+    title_id TEXT NOT NULL,
+    unlocked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, title_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS mastery_slots (
+    player_id TEXT NOT NULL,
+    slot INTEGER NOT NULL,
+    job_id TEXT NOT NULL,
+    PRIMARY KEY (player_id, slot),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS player_recipes (
+    player_id TEXT NOT NULL,
+    recipe_id TEXT NOT NULL,
+    learned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, recipe_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS item_upgrades (
+    player_id TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    upgrade_level INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (player_id, item_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_relics (
+    player_id TEXT NOT NULL,
+    relic_id TEXT NOT NULL,
+    stage INTEGER NOT NULL DEFAULT 0,
+    completed_at TEXT,
+    PRIMARY KEY (player_id, relic_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS drop_pity (
+    player_id TEXT NOT NULL,
+    pity_key TEXT NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (player_id, pity_key),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cooldowns (
+    player_id TEXT NOT NULL,
+    action TEXT NOT NULL,
+    available_at INTEGER NOT NULL,
+    PRIMARY KEY (player_id, action),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_shops (
+    player_id TEXT PRIMARY KEY,
+    job_id TEXT NOT NULL,
+    level_at_roll INTEGER NOT NULL,
+    stock_json TEXT NOT NULL,
+    generated_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL,
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_player_shops_expires ON player_shops(expires_at);
+
+CREATE TABLE IF NOT EXISTS player_boss_clears (
+    player_id TEXT NOT NULL,
+    boss_id TEXT NOT NULL,
+    clears INTEGER NOT NULL DEFAULT 0,
+    best_damage INTEGER NOT NULL DEFAULT 0,
+    last_cleared_at TEXT,
+    PRIMARY KEY (player_id, boss_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_players_level ON players(level DESC);
+CREATE INDEX IF NOT EXISTS idx_players_gil ON players(gil DESC);
+CREATE INDEX IF NOT EXISTS idx_players_monsters ON players(monsters_defeated DESC);
+CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    asset_id TEXT NOT NULL,
+    amount INTEGER NOT NULL,
+    source TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_player_created ON transactions(player_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_kind_created ON transactions(kind, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS player_record_stats (
+    player_id TEXT NOT NULL,
+    metric TEXT NOT NULL,
+    value INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, metric),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_monster_records (
+    player_id TEXT NOT NULL,
+    monster_id TEXT NOT NULL,
+    victories INTEGER NOT NULL DEFAULT 0,
+    defeats INTEGER NOT NULL DEFAULT 0,
+    damage_dealt INTEGER NOT NULL DEFAULT 0,
+    damage_taken INTEGER NOT NULL DEFAULT 0,
+    healing_done INTEGER NOT NULL DEFAULT 0,
+    best_hit INTEGER NOT NULL DEFAULT 0,
+    last_result TEXT,
+    last_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, monster_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_job_records (
+    player_id TEXT NOT NULL,
+    job_id TEXT NOT NULL,
+    battles INTEGER NOT NULL DEFAULT 0,
+    victories INTEGER NOT NULL DEFAULT 0,
+    damage_dealt INTEGER NOT NULL DEFAULT 0,
+    healing_done INTEGER NOT NULL DEFAULT 0,
+    boss_damage INTEGER NOT NULL DEFAULT 0,
+    knockouts INTEGER NOT NULL DEFAULT 0,
+    last_used_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, job_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_record_stats_metric ON player_record_stats(metric, value DESC);
+CREATE INDEX IF NOT EXISTS idx_monster_records_rivalry ON player_monster_records(player_id, defeats DESC);
+CREATE INDEX IF NOT EXISTS idx_job_records_usage ON player_job_records(player_id, battles DESC);
+
+-- Small authoritative runtime checkpoint. This stores live combat coordination
+-- state plus bounded Portal-action replay receipts; player progression remains normalized above.
+CREATE TABLE IF NOT EXISTS runtime_state (
+    state_key TEXT PRIMARY KEY,
+    value_json TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sequential local database migrations. Version 1 represents the legacy
+-- pre-migration Crystal Guild schema; version 2 adds persistent MP/AP;
+-- version 3 adds additive Fellowship progression tables; version 4 adds
+-- persistent Chocobo companion and registration-writ state.
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    version INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+DATABASE_SCHEMA_VERSION = 4
+
+
+class Database:
+    def __init__(self, path: str | Path):
+        self.path = str(path)
+        Path(self.path).parent.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.RLock()
+        self._closed = False
+        self._tx_local = threading.local()
+        self._tx_commits = 0
+        self._tx_rollbacks = 0
+        self._tx_savepoint_rollbacks = 0
+        self.conn = sqlite3.connect(
+            self.path,
+            timeout=10.0,
+            check_same_thread=False,
+        )
+        self.conn.row_factory = sqlite3.Row
+        # Detect a legacy on-disk Guild before CREATE TABLE statements add the
+        # migration ledger. This lets schema upgrades create a verified backup
+        # before ALTER TABLE touches player data.
+        self._preexisting_players_table = bool(
+            self.conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='players'"
+            ).fetchone()
+        )
+        self.pre_migration_backup_path: Path | None = None
+        # WAL keeps readers responsive while the daemon writes encounter/raid
+        # rewards. A single RLock still serializes this process's writes.
+        self.conn.execute("PRAGMA foreign_keys = ON")
+        self.conn.execute("PRAGMA busy_timeout = 10000")
+        self.conn.execute("PRAGMA journal_mode = WAL")
+        self.conn.execute("PRAGMA synchronous = NORMAL")
+        self.conn.execute("PRAGMA temp_store = MEMORY")
+        self.conn.execute("PRAGMA cache_size = -16384")
+        self.conn.execute("PRAGMA wal_autocheckpoint = 1000")
+        self.conn.executescript(SCHEMA)
+        self.conn.commit()
+        self._run_schema_migrations()
+        self._backfill_player_records()
+
+
+    def _run_schema_migrations(self) -> None:
+        """Apply sequential, idempotent local DB migrations in place.
+
+        Existing pre-migration Guilds are treated as schema 1. Before the first
+        structural change to a populated legacy database, a transactionally
+        consistent SQLite backup is created and verified. Future migrations can
+        append versions here without requiring players to hop through releases.
+        """
+        self.conn.execute(
+            "INSERT OR IGNORE INTO schema_migrations(version,name) VALUES (1,'legacy_baseline')"
+        )
+        # Close the tiny metadata transaction before SQLite's backup API runs;
+        # backup cannot progress while this same source connection owns an
+        # uncommitted write transaction.
+        self.conn.commit()
+        columns = {str(row[1]) for row in self.conn.execute("PRAGMA table_info(players)").fetchall()}
+        needs_v2 = "current_mp" not in columns or "current_ap" not in columns
+        already_v2 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=2").fetchone()
+        )
+
+        if needs_v2 and self._preexisting_players_table:
+            self.pre_migration_backup_path = self._verified_pre_migration_backup(2)
+
+        if needs_v2:
+            self.conn.execute("BEGIN IMMEDIATE")
+            try:
+                if "current_mp" not in columns:
+                    self.conn.execute("ALTER TABLE players ADD COLUMN current_mp INTEGER")
+                if "current_ap" not in columns:
+                    self.conn.execute("ALTER TABLE players ADD COLUMN current_ap INTEGER")
+                self.conn.execute(
+                    "INSERT OR REPLACE INTO schema_migrations(version,name,applied_at) "
+                    "VALUES (2,'persistent_mp_ap',CURRENT_TIMESTAMP)"
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+        elif not already_v2:
+            self.conn.execute(
+                "INSERT INTO schema_migrations(version,name) VALUES (2,'persistent_mp_ap')"
+            )
+        self.conn.commit()
+
+        already_v3 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=3").fetchone()
+        )
+        if not already_v3:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(3)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS fellowship_state (
+                        singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1),
+                        level INTEGER NOT NULL DEFAULT 1,
+                        renown INTEGER NOT NULL DEFAULT 0,
+                        active_project_id TEXT,
+                        expedition_board_complete INTEGER NOT NULL DEFAULT 0,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_members (
+                        player_id TEXT PRIMARY KEY,
+                        renown INTEGER NOT NULL DEFAULT 0,
+                        founding_member INTEGER NOT NULL DEFAULT 0,
+                        projects_contributed INTEGER NOT NULL DEFAULT 0,
+                        gil_donated INTEGER NOT NULL DEFAULT 0,
+                        materials_donated INTEGER NOT NULL DEFAULT 0,
+                        orders_participated INTEGER NOT NULL DEFAULT 0,
+                        deeds_assisted INTEGER NOT NULL DEFAULT 0,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_facilities (
+                        facility_id TEXT PRIMARY KEY,
+                        tier INTEGER NOT NULL DEFAULT 0,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_project_progress (
+                        project_id TEXT NOT NULL,
+                        requirement_key TEXT NOT NULL,
+                        current INTEGER NOT NULL DEFAULT 0,
+                        PRIMARY KEY (project_id, requirement_key)
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_project_members (
+                        project_id TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        PRIMARY KEY (project_id, player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_contributions (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id TEXT NOT NULL,
+                        project_id TEXT NOT NULL,
+                        kind TEXT NOT NULL,
+                        asset_id TEXT NOT NULL,
+                        amount INTEGER NOT NULL,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_fellowship_contrib_recent
+                    ON fellowship_contributions(created_at DESC);
+                    CREATE TABLE IF NOT EXISTS fellowship_orders (
+                        period_key TEXT NOT NULL,
+                        order_id TEXT NOT NULL,
+                        progress INTEGER NOT NULL DEFAULT 0,
+                        target INTEGER NOT NULL,
+                        completed_at TEXT,
+                        PRIMARY KEY (period_key, order_id)
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_order_members (
+                        period_key TEXT NOT NULL,
+                        order_id TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        PRIMARY KEY (period_key, order_id, player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_deeds (
+                        deed_id TEXT PRIMARY KEY,
+                        progress INTEGER NOT NULL DEFAULT 0,
+                        target INTEGER NOT NULL,
+                        completed_at TEXT
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_deed_members (
+                        deed_id TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        PRIMARY KEY (deed_id, player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_events (
+                        event_key TEXT PRIMARY KEY,
+                        player_id TEXT,
+                        activity TEXT NOT NULL,
+                        renown INTEGER NOT NULL DEFAULT 0,
+                        amount INTEGER NOT NULL DEFAULT 1,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE SET NULL
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_activity (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id TEXT,
+                        kind TEXT NOT NULL,
+                        label TEXT NOT NULL,
+                        amount INTEGER NOT NULL DEFAULT 0,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE SET NULL
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_fellowship_activity_recent
+                    ON fellowship_activity(created_at DESC);
+                    """
+                )
+                self.conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_state(singleton_id,level,renown) VALUES (1,1,0)"
+                )
+                self.conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_facilities(facility_id,tier) VALUES ('guild_hall',1)"
+                )
+                for facility_id in ('infirmary','workshop','training_hall','archives','quartermaster'):
+                    self.conn.execute(
+                        "INSERT OR IGNORE INTO fellowship_facilities(facility_id,tier) VALUES (?,0)",
+                        (facility_id,),
+                    )
+                if self._preexisting_players_table:
+                    self.conn.execute(
+                        "INSERT OR IGNORE INTO fellowship_members(player_id,founding_member) "
+                        "SELECT twitch_id,1 FROM players"
+                    )
+                self.conn.execute(
+                    "INSERT INTO schema_migrations(version,name) VALUES (3,'fellowship')"
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+        already_v4 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=4").fetchone()
+        )
+        if not already_v4:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(4)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_chocobos (
+                        player_id TEXT PRIMARY KEY,
+                        name TEXT,
+                        level INTEGER NOT NULL DEFAULT 1,
+                        xp INTEGER NOT NULL DEFAULT 0,
+                        writ_purchased_at INTEGER NOT NULL DEFAULT 0,
+                        writ_ready_at INTEGER NOT NULL DEFAULT 0,
+                        registered_at TEXT,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_chocobo_traits (
+                        player_id TEXT NOT NULL,
+                        trait_id TEXT NOT NULL,
+                        unlocked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (player_id, trait_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_chocobos_level
+                    ON player_chocobos(level DESC, xp DESC);
+                    INSERT OR IGNORE INTO fellowship_facilities(facility_id,tier) VALUES ('chocobo_stable',0);
+                    INSERT INTO schema_migrations(version,name) VALUES (4,'chocobo_companions');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # INSERT OR IGNORE for the baseline opens a transaction even when no
+        # structural migration is necessary; always close it before normal
+        # database helpers begin their own composable transactions.
+        self.conn.commit()
+
+    def _verified_pre_migration_backup(self, target_version: int) -> Path | None:
+        """Create and verify an automatic backup before a schema migration."""
+        if self.path == ":memory:":
+            return None
+        source = Path(self.path)
+        if not source.exists():
+            return None
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        target = source.parent / "backups" / f"pre_schema_{target_version}_{stamp}.db"
+        saved = self.backup(target)
+        verify = sqlite3.connect(saved, timeout=10.0)
+        try:
+            quick = str(verify.execute("PRAGMA quick_check").fetchone()[0])
+            if quick.lower() != "ok":
+                raise RuntimeError(f"Pre-migration backup failed quick_check: {quick}")
+            backup_players = int(verify.execute("SELECT COUNT(*) FROM players").fetchone()[0])
+            live_players = int(self.conn.execute("SELECT COUNT(*) FROM players").fetchone()[0])
+            if backup_players != live_players:
+                raise RuntimeError(
+                    f"Pre-migration backup player-count mismatch: {backup_players} != {live_players}"
+                )
+        finally:
+            verify.close()
+        return saved
+
+    def schema_version(self) -> int:
+        row = self.one("SELECT COALESCE(MAX(version),1) AS version FROM schema_migrations")
+        return int(row["version"]) if row else 1
+
+    def _backfill_player_records(self) -> None:
+        legacy = {
+            "ventures_started": "ventures",
+            "monsters_defeated": "monsters_defeated",
+            "times_ko": "deaths",
+            "camp_rests": "rests",
+            "party_encounters": "party_encounters",
+            "raid_revives": "raid_revives",
+            "limit_breaks": "limit_breaks",
+            "crafts": "crafts",
+            "forge_upgrades": "forge_upgrades",
+            "relics_completed": "relics_completed",
+        }
+        with self.tx() as conn:
+            for metric, column in legacy.items():
+                conn.execute(
+                    f"""
+                    INSERT OR IGNORE INTO player_record_stats(player_id, metric, value)
+                    SELECT twitch_id, ?, {column} FROM players
+                    """,
+                    (metric,),
+                )
+            derived = {
+                "gil_earned": ("gil", ">", 0),
+                "gil_spent": ("gil", "<", 0),
+                "items_acquired": ("item", ">", 0),
+                "items_spent": ("item", "<", 0),
+                "hunt_seals_earned": ("hunt_seals", ">", 0),
+                "hunt_seals_spent": ("hunt_seals", "<", 0),
+            }
+            for metric, (kind, op, zero) in derived.items():
+                amount = "SUM(amount)" if op == ">" else "-SUM(amount)"
+                conn.execute(
+                    f"""
+                    INSERT OR IGNORE INTO player_record_stats(player_id, metric, value)
+                    SELECT player_id, ?, COALESCE({amount}, 0)
+                    FROM transactions
+                    WHERE kind=? AND amount {op} ?
+                    GROUP BY player_id
+                    """,
+                    (metric, kind, zero),
+                )
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO player_record_stats(player_id, metric, value)
+                SELECT player_id, 'hunt_clears', COALESCE(SUM(clears), 0)
+                FROM player_hunts GROUP BY player_id
+                """
+            )
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO player_record_stats(player_id, metric, value)
+                SELECT player_id, 'boss_clears', COALESCE(SUM(clears), 0)
+                FROM player_boss_clears GROUP BY player_id
+                """
+            )
+
+    def update_record_stats(
+        self,
+        player_id: str,
+        increments: dict[str, int] | None = None,
+        maxima: dict[str, int] | None = None,
+    ) -> None:
+        increments = {key: int(value) for key, value in (increments or {}).items() if int(value)}
+        maxima = {key: int(value) for key, value in (maxima or {}).items()}
+        if not increments and not maxima:
+            return
+        with self.tx() as conn:
+            for metric, amount in increments.items():
+                conn.execute(
+                    """
+                    INSERT INTO player_record_stats(player_id, metric, value) VALUES (?, ?, ?)
+                    ON CONFLICT(player_id, metric) DO UPDATE SET
+                        value=player_record_stats.value+excluded.value,
+                        updated_at=CURRENT_TIMESTAMP
+                    """,
+                    (player_id, metric, amount),
+                )
+            for metric, value in maxima.items():
+                conn.execute(
+                    """
+                    INSERT INTO player_record_stats(player_id, metric, value) VALUES (?, ?, ?)
+                    ON CONFLICT(player_id, metric) DO UPDATE SET
+                        value=MAX(player_record_stats.value, excluded.value),
+                        updated_at=CURRENT_TIMESTAMP
+                    """,
+                    (player_id, metric, value),
+                )
+
+    def add_record_stat(self, player_id: str, metric: str, amount: int = 1) -> None:
+        if not amount:
+            return
+        with self.tx() as conn:
+            conn.execute(
+                """
+                INSERT INTO player_record_stats(player_id, metric, value) VALUES (?, ?, ?)
+                ON CONFLICT(player_id, metric) DO UPDATE SET
+                    value=player_record_stats.value+excluded.value,
+                    updated_at=CURRENT_TIMESTAMP
+                """,
+                (player_id, metric, int(amount)),
+            )
+
+    def max_record_stat(self, player_id: str, metric: str, value: int) -> None:
+        with self.tx() as conn:
+            conn.execute(
+                """
+                INSERT INTO player_record_stats(player_id, metric, value) VALUES (?, ?, ?)
+                ON CONFLICT(player_id, metric) DO UPDATE SET
+                    value=MAX(player_record_stats.value, excluded.value),
+                    updated_at=CURRENT_TIMESTAMP
+                """,
+                (player_id, metric, int(value)),
+            )
+
+    def record_monster_result(
+        self,
+        player_id: str,
+        monster_id: str,
+        *,
+        won: bool,
+        knocked_out: bool = False,
+        damage_dealt: int = 0,
+        damage_taken: int = 0,
+        healing_done: int = 0,
+        best_hit: int = 0,
+    ) -> None:
+        victories = 1 if won else 0
+        defeats = 1 if knocked_out or not won else 0
+        with self.tx() as conn:
+            conn.execute(
+                """
+                INSERT INTO player_monster_records(
+                    player_id, monster_id, victories, defeats, damage_dealt,
+                    damage_taken, healing_done, best_hit, last_result
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(player_id, monster_id) DO UPDATE SET
+                    victories=player_monster_records.victories+excluded.victories,
+                    defeats=player_monster_records.defeats+excluded.defeats,
+                    damage_dealt=player_monster_records.damage_dealt+excluded.damage_dealt,
+                    damage_taken=player_monster_records.damage_taken+excluded.damage_taken,
+                    healing_done=player_monster_records.healing_done+excluded.healing_done,
+                    best_hit=MAX(player_monster_records.best_hit, excluded.best_hit),
+                    last_result=excluded.last_result,
+                    last_seen_at=CURRENT_TIMESTAMP
+                """,
+                (
+                    player_id, monster_id, victories, defeats, int(damage_dealt),
+                    int(damage_taken), int(healing_done), int(best_hit),
+                    "victory" if won else "defeat",
+                ),
+            )
+
+    def record_job_battle(
+        self,
+        player_id: str,
+        job_id: str,
+        *,
+        won: bool,
+        knocked_out: bool = False,
+        damage_dealt: int = 0,
+        healing_done: int = 0,
+        boss_damage: int = 0,
+    ) -> None:
+        with self.tx() as conn:
+            conn.execute(
+                """
+                INSERT INTO player_job_records(
+                    player_id, job_id, battles, victories, damage_dealt,
+                    healing_done, boss_damage, knockouts
+                ) VALUES (?, ?, 1, ?, ?, ?, ?, ?)
+                ON CONFLICT(player_id, job_id) DO UPDATE SET
+                    battles=player_job_records.battles+1,
+                    victories=player_job_records.victories+excluded.victories,
+                    damage_dealt=player_job_records.damage_dealt+excluded.damage_dealt,
+                    healing_done=player_job_records.healing_done+excluded.healing_done,
+                    boss_damage=player_job_records.boss_damage+excluded.boss_damage,
+                    knockouts=player_job_records.knockouts+excluded.knockouts,
+                    last_used_at=CURRENT_TIMESTAMP
+                """,
+                (
+                    player_id, job_id, 1 if won else 0, int(damage_dealt),
+                    int(healing_done), int(boss_damage), 1 if knocked_out else 0,
+                ),
+            )
+
+    @contextmanager
+    def tx(self) -> Iterator[sqlite3.Connection]:
+        """Open a composable SQLite transaction.
+
+        Nested write helpers are atomic. The outermost scope
+        owns COMMIT/ROLLBACK; inner scopes use SAVEPOINTs so a helper can fail
+        without accidentally committing the caller's larger game operation.
+        """
+        with self._lock:
+            if self._closed:
+                raise RuntimeError("Database connection is closed.")
+            depth = int(getattr(self._tx_local, "depth", 0))
+            outermost = depth == 0
+            savepoint = f"cg_sp_{threading.get_ident()}_{depth}"
+            if outermost:
+                self.conn.execute("BEGIN")
+            else:
+                self.conn.execute(f"SAVEPOINT {savepoint}")
+            self._tx_local.depth = depth + 1
+            try:
+                yield self.conn
+                if outermost:
+                    self.conn.commit()
+                    self._tx_commits += 1
+                else:
+                    self.conn.execute(f"RELEASE SAVEPOINT {savepoint}")
+            except Exception:
+                if outermost:
+                    self.conn.rollback()
+                    self._tx_rollbacks += 1
+                else:
+                    self.conn.execute(f"ROLLBACK TO SAVEPOINT {savepoint}")
+                    self.conn.execute(f"RELEASE SAVEPOINT {savepoint}")
+                    self._tx_savepoint_rollbacks += 1
+                raise
+            finally:
+                self._tx_local.depth = depth
+
+    def runtime_state(self, key: str) -> sqlite3.Row | None:
+        return self.one(
+            "SELECT state_key, value_json, updated_at FROM runtime_state WHERE state_key=?",
+            (str(key),),
+        )
+
+    def set_runtime_state(self, key: str, value_json: str) -> None:
+        with self.tx() as conn:
+            conn.execute(
+                """
+                INSERT INTO runtime_state(state_key, value_json, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(state_key) DO UPDATE SET
+                    value_json=excluded.value_json,
+                    updated_at=CURRENT_TIMESTAMP
+                """,
+                (str(key), str(value_json)),
+            )
+
+    def delete_runtime_state(self, key: str) -> None:
+        self.execute("DELETE FROM runtime_state WHERE state_key=?", (str(key),))
+
+    def transaction_stats(self) -> dict[str, int]:
+        with self._lock:
+            return {
+                "depth": int(getattr(self._tx_local, "depth", 0)),
+                "commits": int(self._tx_commits),
+                "rollbacks": int(self._tx_rollbacks),
+                "savepoint_rollbacks": int(self._tx_savepoint_rollbacks),
+            }
+
+    def economy_snapshot(self, days: int = 7) -> dict[str, object]:
+        """Return a compact authoritative gil source/sink pulse.
+
+        The ledger is already the source of truth for player Records. Gold
+        Saucer reuses it for owner diagnostics rather than creating a second
+        accounting system. Source IDs are grouped by their prefix (monster,
+        hunt, boss, shop, craft, forge, relic, daily, sell, ...).
+        """
+        window = max(1, min(90, int(days)))
+        since = f"-{window} days"
+        with self._lock:
+            players_row = self.conn.execute(
+                "SELECT COUNT(*) AS players, COALESCE(SUM(gil),0) AS circulating FROM players"
+            ).fetchone()
+            totals = self.conn.execute(
+                """
+                SELECT
+                    COUNT(*) AS tx_count,
+                    COALESCE(SUM(CASE WHEN amount>0 THEN amount ELSE 0 END),0) AS earned,
+                    COALESCE(-SUM(CASE WHEN amount<0 THEN amount ELSE 0 END),0) AS spent
+                FROM transactions
+                WHERE kind='gil' AND created_at >= datetime('now', ?)
+                """,
+                (since,),
+            ).fetchone()
+            rows = self.conn.execute(
+                """
+                SELECT source, SUM(amount) AS amount
+                FROM transactions
+                WHERE kind='gil' AND created_at >= datetime('now', ?)
+                GROUP BY source
+                """,
+                (since,),
+            ).fetchall()
+
+        earned_by: dict[str, int] = {}
+        spent_by: dict[str, int] = {}
+        for row in rows:
+            source = str(row["source"] or "unknown")
+            family = source.split(":", 1)[0] or "unknown"
+            amount = int(row["amount"] or 0)
+            if amount > 0:
+                earned_by[family] = earned_by.get(family, 0) + amount
+            elif amount < 0:
+                spent_by[family] = spent_by.get(family, 0) + abs(amount)
+
+        top_source = max(earned_by.items(), key=lambda item: item[1], default=None)
+        top_sink = max(spent_by.items(), key=lambda item: item[1], default=None)
+        return {
+            "days": window,
+            "players": int(players_row["players"] or 0),
+            "circulating_gil": int(players_row["circulating"] or 0),
+            "earned": int(totals["earned"] or 0),
+            "spent": int(totals["spent"] or 0),
+            "transactions": int(totals["tx_count"] or 0),
+            "top_source": top_source,
+            "top_sink": top_sink,
+            "earned_by_source": earned_by,
+            "spent_by_source": spent_by,
+        }
+
+    def one(self, sql: str, params: tuple = ()) -> sqlite3.Row | None:
+        with self._lock:
+            return self.conn.execute(sql, params).fetchone()
+
+    def all(self, sql: str, params: tuple = ()) -> list[sqlite3.Row]:
+        with self._lock:
+            return list(self.conn.execute(sql, params).fetchall())
+
+    def execute(self, sql: str, params: tuple = ()) -> None:
+        with self.tx() as conn:
+            conn.execute(sql, params)
+
+    def health_check(self) -> bool:
+        with self._lock:
+            if self._closed:
+                return False
+            row = self.conn.execute("SELECT 1").fetchone()
+            return bool(row and row[0] == 1)
+
+    def quick_check(self) -> list[str]:
+        """Return SQLite quick-check results; an empty list means healthy."""
+        with self._lock:
+            if self._closed:
+                return ["database connection is closed"]
+            rows = self.conn.execute("PRAGMA quick_check").fetchall()
+            messages = [str(row[0]) for row in rows]
+            return [] if messages == ["ok"] else messages
+
+    def integrity_report(self) -> dict[str, object]:
+        """Return release-readiness diagnostics without mutating data.
+
+        ``quick_check`` catches SQLite page/index corruption while
+        ``foreign_key_check`` catches orphaned progression rows. The PRAGMA
+        values make it easy to verify that the live database still has the
+        concurrency settings Crystal Guild expects after an upgrade.
+        """
+        with self._lock:
+            if self._closed:
+                return {
+                    "ok": False,
+                    "quick_check": ["database connection is closed"],
+                    "foreign_key_violations": ["database connection is closed"],
+                    "journal_mode": "closed",
+                    "synchronous": -1,
+                    "busy_timeout_ms": 0,
+                    "players": 0,
+                    "transactions": 0,
+                }
+            quick_rows = self.conn.execute("PRAGMA quick_check").fetchall()
+            quick_messages = [str(row[0]) for row in quick_rows]
+            quick_failures = [] if quick_messages == ["ok"] else quick_messages
+            fk_rows = self.conn.execute("PRAGMA foreign_key_check").fetchall()
+            fk_failures = [
+                f"{row[0]} rowid={row[1]} parent={row[2]} fk={row[3]}" for row in fk_rows
+            ]
+            journal_mode = str(self.conn.execute("PRAGMA journal_mode").fetchone()[0]).lower()
+            synchronous = int(self.conn.execute("PRAGMA synchronous").fetchone()[0])
+            busy_timeout = int(self.conn.execute("PRAGMA busy_timeout").fetchone()[0])
+            players = int(self.conn.execute("SELECT COUNT(*) FROM players").fetchone()[0])
+            transactions = int(self.conn.execute("SELECT COUNT(*) FROM transactions").fetchone()[0])
+            return {
+                "ok": not quick_failures and not fk_failures and journal_mode == "wal" and busy_timeout >= 1000,
+                "quick_check": quick_failures,
+                "foreign_key_violations": fk_failures,
+                "journal_mode": journal_mode,
+                "synchronous": synchronous,
+                "busy_timeout_ms": busy_timeout,
+                "players": players,
+                "transactions": transactions,
+            }
+
+    def backup(self, destination: str | Path) -> Path:
+        """Create a transactionally consistent SQLite backup, including WAL data."""
+        target = Path(destination).resolve()
+        source = Path(self.path).resolve()
+        if target == source:
+            raise ValueError("Backup destination must differ from the live database path.")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with self._lock:
+            if self._closed:
+                raise RuntimeError("Cannot back up a closed database.")
+            backup_conn = sqlite3.connect(target, timeout=10.0)
+            try:
+                self.conn.backup(backup_conn)
+                backup_conn.commit()
+            finally:
+                backup_conn.close()
+        return target
+
+    def optimize(self) -> None:
+        with self._lock:
+            if self._closed:
+                return
+            self.conn.execute("PRAGMA wal_checkpoint(PASSIVE)")
+            self.conn.execute("PRAGMA optimize")
+
+    def checkpoint(self) -> None:
+        with self._lock:
+            if not self._closed:
+                self.conn.execute("PRAGMA wal_checkpoint(PASSIVE)")
+
+    def close(self) -> None:
+        with self._lock:
+            if self._closed:
+                return
+            try:
+                self.conn.execute("PRAGMA optimize")
+                self.conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            except sqlite3.Error:
+                # Shutdown must remain best-effort; the connection is still closed.
+                pass
+            self.conn.close()
+            self._closed = True

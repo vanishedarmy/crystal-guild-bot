@@ -1,0 +1,650 @@
+[
+  {
+    "id": "fresh_meat",
+    "name": "Fresh Meat",
+    "description": "Newly recruited. The paperwork is still damp.",
+    "category": "Guild",
+    "rarity": "common",
+    "source": "Recruitment"
+  },
+  {
+    "id": "monster_botherer",
+    "name": "Monster Botherer",
+    "description": "Defeated something that probably wanted to be left alone.",
+    "category": "Combat",
+    "rarity": "uncommon",
+    "source": "Achievement"
+  },
+  {
+    "id": "certified_floor_inspector",
+    "name": "Certified Floor Inspector",
+    "description": "Extensive professional experience with the ground.",
+    "category": "Comedy",
+    "rarity": "uncommon",
+    "source": "Achievement"
+  },
+  {
+    "id": "needle_dodger",
+    "name": "Needle Dodger",
+    "description": "Mostly successful at not becoming a pincushion.",
+    "category": "Bestiary",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "grudge_survivor",
+    "name": "Grudge Survivor",
+    "description": "A Tonberry remembers. Unfortunately, so do you.",
+    "category": "Comedy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "bomb_disposal_officer",
+    "name": "Bomb Disposal Officer",
+    "description": "The Guild's definition of disposal is surprisingly violent.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "tidebreaker",
+    "name": "Tidebreaker",
+    "description": "Sahagin royalty has filed a formal complaint.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "needle_threader",
+    "name": "Needle Threader",
+    "description": "Caught the fast green bastard.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "cat_problem_solver",
+    "name": "Cat Problem Solver",
+    "description": "Solved a very large, electrified cat problem.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "blade_witness",
+    "name": "Blade Witness",
+    "description": "Saw the Riven Ronin draw. Somehow still here.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "fresh_air_advocate",
+    "name": "Fresh Air Advocate",
+    "description": "Has opinions about Malboro breath.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "giant_feller",
+    "name": "Giant Feller",
+    "description": "Turns out they do fall down.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "moonbreaker",
+    "name": "Moonbreaker",
+    "description": "Three heads. Still not enough.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "still_not_stabbed",
+    "name": "Still Not Stabbed",
+    "description": "The lantern got close. Too close.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "warranty_voider",
+    "name": "Warranty Voider",
+    "description": "Magitek maintenance declined to comment.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "behemoth_botherer",
+    "name": "Behemoth Botherer",
+    "description": "A lifestyle choice with poor actuarial outcomes.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "geological_incident",
+    "name": "Geological Incident",
+    "description": "Defeated something that was basically terrain.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "riftwalker",
+    "name": "Riftwalker",
+    "description": "Went beyond the veil and came back with loot.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Hunt"
+  },
+  {
+    "id": "oathkeeper",
+    "name": "Oathkeeper",
+    "description": "Completed the Oath of Light.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "abyss_walker",
+    "name": "Abyss Walker",
+    "description": "Stared into the abyss. It asked you to stop staring.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "skybound",
+    "name": "Skybound",
+    "description": "Gravity is now more of a suggestion.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "shadowstep",
+    "name": "Shadowstep",
+    "description": "Definitely standing behind you right now.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "aethercaller",
+    "name": "Aethercaller",
+    "description": "Has extremely powerful imaginary friends.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "field_researcher",
+    "name": "Aetheric Field Researcher",
+    "description": "Monster science, with considerably more hitting.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "wandering_minstrel",
+    "name": "Wandering Minstrel",
+    "description": "Has enough road stories to make the rest of the tavern nervous.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "licensed_tinkerer",
+    "name": "Licensed Tinkerer",
+    "description": "The license is mostly decorative.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "crystal_scholar",
+    "name": "Crystal Scholar",
+    "description": "Knows enough magic to become everyone else's problem.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Job Quest"
+  },
+  {
+    "id": "master_of_one",
+    "name": "Master of One",
+    "description": "Mastered a Job to level 50.",
+    "category": "Jobs",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "mark_hunter",
+    "name": "Mark Hunter",
+    "description": "Cleared ten Hunts.",
+    "category": "Hunts",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "s_rank_problem",
+    "name": "S-Rank Problem",
+    "description": "Defeated an S-Rank mark. Concerningly enthusiastic about doing it again.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "guild_artisan",
+    "name": "Guild Artisan",
+    "description": "Craft 25 items.",
+    "category": "Crafting",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "hammer_time",
+    "name": "Hammer Time",
+    "description": "Complete 10 forge upgrades.",
+    "category": "Crafting",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "relic_bearer",
+    "name": "Relic Bearer",
+    "description": "Complete your first Zenith Relic.",
+    "category": "Relics",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "rift_delver",
+    "name": "Rift Delver",
+    "description": "Reach the Interdimensional Rift.",
+    "category": "Adventure",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "certified_tent_inspector",
+    "name": "Certified Tent Inspector",
+    "description": "Has spent enough time at camp to have opinions about tent stakes.",
+    "category": "Comedy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "strength_in_numbers",
+    "name": "Strength in Numbers",
+    "description": "Answers enough encounter rallies that solo adventuring now feels suspicious.",
+    "category": "Social",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "phoenix_wrangler",
+    "name": "Phoenix Wrangler",
+    "description": "Has revived enough raid members to qualify as emergency services.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "limit_break_enthusiast",
+    "name": "Limit Break Enthusiast",
+    "description": "Believes every problem can be solved by waiting for the gauge to glow.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "seasoned_wayfarer",
+    "name": "Seasoned Wayfarer",
+    "description": "Has been outside so long the Guild stopped expecting a timely return.",
+    "category": "Adventure",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "world_worn",
+    "name": "World-Worn",
+    "description": "Every road has a story. Most of them involve monsters and questionable snacks.",
+    "category": "Adventure",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "crystal_veteran",
+    "name": "Crystal Veteran",
+    "description": "Has survived enough adventures to become part of the scenery.",
+    "category": "Adventure",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "legend_in_residence",
+    "name": "Legend in Residence",
+    "description": "Reached the level cap. The Guild has run out of sensible advice.",
+    "category": "Adventure",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "monster_menace",
+    "name": "Monster Menace",
+    "description": "Local wildlife has begun filing incident reports.",
+    "category": "Combat",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "ecological_incident",
+    "name": "Ecological Incident",
+    "description": "A statistically concerning number of monsters are no longer with us.",
+    "category": "Combat",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "damage_dealer",
+    "name": "Damage Dealer",
+    "description": "Numbers go up. Monsters go down. Accounting remains nervous.",
+    "category": "Combat",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "walking_calculation_error",
+    "name": "Walking Calculation Error",
+    "description": "Damage totals have become a threat to spreadsheet stability.",
+    "category": "Combat",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "big_number_enjoyer",
+    "name": "Big Number Enjoyer",
+    "description": "Believes punctuation in damage numbers is a moral victory.",
+    "category": "Combat",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "guild_paramedic",
+    "name": "Guild Paramedic",
+    "description": "Has restored enough HP to qualify for extremely unofficial medical credentials.",
+    "category": "Combat",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "floor_tank",
+    "name": "Floor Tank",
+    "description": "Aggressively controls the horizontal plane.",
+    "category": "Comedy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "professional_floor_tank",
+    "name": "Professional Floor Tank",
+    "description": "The floor knows you by name.",
+    "category": "Comedy",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "monster_librarian",
+    "name": "Monster Librarian",
+    "description": "Catalogues wildlife by repeatedly hitting it.",
+    "category": "Bestiary",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "walking_bestiary",
+    "name": "Walking Bestiary",
+    "description": "Knows every monster in the catalog and several of their legal representatives.",
+    "category": "Bestiary",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "everyones_grudge",
+    "name": "Everyone’s Grudge",
+    "description": "Has made the Tonberry community collectively aware of their existence.",
+    "category": "Comedy",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "breath_taker",
+    "name": "Breath Taker",
+    "description": "Has spent far too much time near Malboros and somehow still has opinions.",
+    "category": "Bestiary",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "hunt_board_terror",
+    "name": "Hunt Board Terror",
+    "description": "The Hunt Board updates itself when you walk into the room.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "mark_of_marks",
+    "name": "Mark of Marks",
+    "description": "The marks are beginning to post bounties on you.",
+    "category": "Hunts",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "s_rank_repeat_offender",
+    "name": "S-Rank Repeat Offender",
+    "description": "One S-Rank was apparently not enough evidence.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "polymath",
+    "name": "Polymath",
+    "description": "Mastered enough Jobs to make specialization look optional.",
+    "category": "Jobs",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "every_job_is_main_job",
+    "name": "Every Job Is My Main Job",
+    "description": "Mastered the entire Job roster. Please choose a personality.",
+    "category": "Jobs",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "career_adventurer",
+    "name": "Career Adventurer",
+    "description": "Has put in enough combat hours to request benefits. Request denied.",
+    "category": "Jobs",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "gil_hoarder",
+    "name": "Gil Hoarder",
+    "description": "Can hear a dropped coin from three regions away.",
+    "category": "Economy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "gil_tycoon",
+    "name": "Gil Tycoon",
+    "description": "Has enough gil to begin making deeply irresponsible purchasing decisions.",
+    "category": "Economy",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "economic_stimulus",
+    "name": "Economic Stimulus",
+    "description": "Personally responsible for keeping several Moogles employed.",
+    "category": "Economy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "master_artisan",
+    "name": "Master Artisan",
+    "description": "Crafted enough equipment to start criticizing other people’s hammer technique.",
+    "category": "Crafting",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "anvil_abuser",
+    "name": "Anvil Abuser",
+    "description": "The blacksmith has asked you to stop making eye contact with the forge.",
+    "category": "Crafting",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "relic_collector",
+    "name": "Relic Collector",
+    "description": "One legendary weapon was not sufficiently dramatic.",
+    "category": "Relics",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "arsenal_of_legend",
+    "name": "Arsenal of Legend",
+    "description": "Completed every Relic line. Storage space has become theoretical.",
+    "category": "Relics",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "raid_regular",
+    "name": "Raid Regular",
+    "description": "Shows up when the boss music starts instead of leaving like a sensible person.",
+    "category": "Raids",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "world_saver_part_time",
+    "name": "World Saver, Part-Time",
+    "description": "Has saved the world often enough that it should really be salaried.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "eikon_speed_dial",
+    "name": "Eikon on Speed Dial",
+    "description": "Summons ancient powers with the casual confidence of ordering takeout.",
+    "category": "Raids",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "gauge_watcher",
+    "name": "Gauge Watcher",
+    "description": "Has stared at the Limit bar long enough to see through time.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "phoenix_dispatcher",
+    "name": "Phoenix Dispatcher",
+    "description": "Runs an unofficial resurrection logistics department.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "boss_botherer",
+    "name": "Boss Botherer",
+    "description": "Has defeated enough bosses that dramatic entrances are losing their effect.",
+    "category": "Boss",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "professional_problem",
+    "name": "Professional Problem",
+    "description": "Supernatural threats have begun recognizing the username.",
+    "category": "Boss",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "judged_and_found_annoying",
+    "name": "Judged and Found Annoying",
+    "description": "Penance rendered judgment. You objected successfully.",
+    "category": "Boss",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "contract_violator",
+    "name": "Contract Violator",
+    "description": "Yiazmat had a health bar. You treated it as a suggestion.",
+    "category": "Boss",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "absolutely_unreasonable",
+    "name": "Absolutely Unreasonable",
+    "description": "Defeated Absolute Virtue. The name of this title is also the diagnosis.",
+    "category": "Boss",
+    "rarity": "legendary",
+    "source": "Achievement"
+  },
+  {
+    "id": "grudge_magnet",
+    "name": "Grudge Magnet",
+    "description": "Tonberries keep finding you. At this point, consider changing your number.",
+    "category": "Secret",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "breath_test_failure",
+    "name": "Breath Test Failure",
+    "description": "Has been KO’d by Malboro enough times to identify Bad Breath by vintage.",
+    "category": "Secret",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "tent_landlord",
+    "name": "Tent Landlord",
+    "description": "Has spent enough nights camping to demand zoning rights.",
+    "category": "Comedy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "party_animal",
+    "name": "Party Animal",
+    "description": "Has joined enough rallies to make solo play feel suspicious.",
+    "category": "Social",
+    "rarity": "rare",
+    "source": "Achievement"
+  }
+]

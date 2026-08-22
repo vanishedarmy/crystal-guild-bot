@@ -1,0 +1,419 @@
+[
+  {
+    "id": "hi_potion_batch",
+    "name": "Hi-Potion Batch",
+    "known_by_default": true,
+    "min_level": 8,
+    "gil": 120,
+    "materials": [
+      {
+        "item_id": "potion",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "hi_potion",
+      "quantity": 2
+    }
+  },
+  {
+    "id": "ether_bundle",
+    "name": "Ether Bundle",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 180,
+    "materials": [
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 2
+      },
+      {
+        "item_id": "potion",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "ether",
+      "quantity": 2
+    }
+  },
+  {
+    "id": "flame_tongue",
+    "name": "Flametongue",
+    "known_by_default": true,
+    "min_level": 22,
+    "gil": 1800,
+    "materials": [
+      {
+        "item_id": "mythril_sword",
+        "quantity": 1
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 8
+      },
+      {
+        "item_id": "bomb_core",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "flame_tongue",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "icebrand",
+    "name": "Icebrand",
+    "known_by_default": true,
+    "min_level": 22,
+    "gil": 1800,
+    "materials": [
+      {
+        "item_id": "mythril_sword",
+        "quantity": 1
+      },
+      {
+        "item_id": "fish_scale",
+        "quantity": 8
+      },
+      {
+        "item_id": "chimera_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "icebrand",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "thunder_spear",
+    "name": "Thunder Spear",
+    "known_by_default": true,
+    "min_level": 26,
+    "gil": 2200,
+    "materials": [
+      {
+        "item_id": "coral_trident",
+        "quantity": 1
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 6
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 4
+      }
+    ],
+    "output": {
+      "item_id": "thunder_spear",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "mythril_knuckles",
+    "name": "Mythril Knuckles",
+    "known_by_default": true,
+    "min_level": 22,
+    "gil": 1600,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "iron_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mythril_knuckles",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "black_robe",
+    "name": "Black Robe",
+    "known_by_default": true,
+    "min_level": 24,
+    "gil": 1700,
+    "materials": [
+      {
+        "item_id": "malboro_tendril",
+        "quantity": 3
+      },
+      {
+        "item_id": "bone_chip",
+        "quantity": 6
+      },
+      {
+        "item_id": "ether",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "black_robe",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "white_robe",
+    "name": "White Robe",
+    "known_by_default": true,
+    "min_level": 24,
+    "gil": 1700,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 6
+      },
+      {
+        "item_id": "echo_herbs",
+        "quantity": 3
+      },
+      {
+        "item_id": "remedy",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "white_robe",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "thieves_gloves",
+    "name": "Thief's Gloves",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 1400,
+    "materials": [
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 5
+      },
+      {
+        "item_id": "cactuar_needle",
+        "quantity": 2
+      },
+      {
+        "item_id": "leather_vest",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "thieves_gloves",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "crystal_cuirass",
+    "name": "Crystal Cuirass",
+    "known_by_default": false,
+    "min_level": 38,
+    "gil": 4200,
+    "materials": [
+      {
+        "item_id": "mythril_cuirass",
+        "quantity": 1
+      },
+      {
+        "item_id": "crystal_shard",
+        "quantity": 8
+      },
+      {
+        "item_id": "iron_giant_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "crystal_cuirass",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "crystal_focus",
+    "name": "Crystal Focus",
+    "known_by_default": false,
+    "min_level": 38,
+    "gil": 4000,
+    "materials": [
+      {
+        "item_id": "magic_ring",
+        "quantity": 1
+      },
+      {
+        "item_id": "crystal_shard",
+        "quantity": 6
+      },
+      {
+        "item_id": "crystal_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "crystal_focus",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "magitek_edge",
+    "name": "Magitek Edge",
+    "known_by_default": false,
+    "min_level": 40,
+    "gil": 5200,
+    "materials": [
+      {
+        "item_id": "iron_blade",
+        "quantity": 1
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 12
+      },
+      {
+        "item_id": "magitek_core",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "magitek_edge",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "morbol_lash",
+    "name": "Morbol Lash",
+    "known_by_default": false,
+    "min_level": 36,
+    "gil": 4600,
+    "materials": [
+      {
+        "item_id": "malboro_tendril",
+        "quantity": 10
+      },
+      {
+        "item_id": "morbol_bulb",
+        "quantity": 2
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "morbol_lash",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "dragon_mail",
+    "name": "Dragon Mail",
+    "known_by_default": false,
+    "min_level": 52,
+    "gil": 8500,
+    "seal_cost": 80,
+    "materials": [
+      {
+        "item_id": "crystal_cuirass",
+        "quantity": 1
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 5
+      },
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "dragon_mail",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "adamant_guard",
+    "name": "Adamant Guard",
+    "known_by_default": false,
+    "min_level": 56,
+    "gil": 9500,
+    "seal_cost": 100,
+    "materials": [
+      {
+        "item_id": "giants_aegis",
+        "quantity": 1
+      },
+      {
+        "item_id": "adamantite",
+        "quantity": 4
+      },
+      {
+        "item_id": "crystal_core",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "adamant_guard",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "void_charm",
+    "name": "Void Charm",
+    "known_by_default": false,
+    "min_level": 58,
+    "gil": 9000,
+    "seal_cost": 100,
+    "materials": [
+      {
+        "item_id": "grudge_lantern",
+        "quantity": 1
+      },
+      {
+        "item_id": "void_essence",
+        "quantity": 4
+      },
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "void_charm",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "artisan_hammer",
+    "name": "Artisan's Hammer",
+    "known_by_default": true,
+    "min_level": 34,
+    "gil": 3600,
+    "seal_cost": 30,
+    "materials": [
+      {
+        "item_id": "iron_giant_plate",
+        "quantity": 2
+      },
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 4
+      }
+    ],
+    "output": {
+      "item_id": "artisan_hammer",
+      "quantity": 1
+    }
+  }
+]
