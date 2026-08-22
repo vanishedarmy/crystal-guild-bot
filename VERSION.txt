@@ -1,0 +1,7 @@
+Crystal Guild Bot v1.1.14 — Cloud Continuity
+Runtime: 1.1.14-cloud-continuity
+Local DB schema: 4
+Hosted sync schema: 1
+Portal Action protocol: 12
+Twitch prefix: !
+Matching Web asset revision: 1.1.14-continuity1

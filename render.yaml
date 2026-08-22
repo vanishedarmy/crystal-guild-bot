@@ -1,0 +1,60 @@
+services:
+  - type: worker
+    name: crystal-guild-bot
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run_bot.py
+    disk:
+      name: crystal-guild-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: CRYSTAL_GUILD_RUNTIME_MODE
+        value: cloud
+      - key: BOT_PREFIX
+        value: "!"
+      - key: DATABASE_PATH
+        value: /var/data/crystal_guild.db
+      - key: DATA_DIR
+        value: data
+      - key: LOG_DIR
+        value: /var/data/logs
+      - key: OVERLAY_STATE_PATH
+        value: /var/data/overlay/state.json
+      - key: TWITCH_TOKEN_DB
+        value: /var/data/twitch_tokens.db
+      - key: CLOUD_REQUIRE_EXISTING_DATABASE
+        value: "true"
+      - key: CLOUD_BOOTSTRAP_WAIT_SECONDS
+        value: "30"
+      - key: PORTAL_SYNC_IN_PROCESS
+        value: "true"
+      - key: PORTAL_SYNC_SECONDS
+        value: "5"
+      - key: PORTAL_SYNC_HEARTBEAT_SECONDS
+        value: "30"
+      - key: PORTAL_SYNC_TIMEOUT_SECONDS
+        value: "10"
+      - key: PORTAL_SYNC_VERIFY_TLS
+        value: "true"
+      - key: PORTAL_ACTION_POLL_SECONDS
+        value: "3"
+      - key: PORTAL_ACTION_TIMEOUT_SECONDS
+        value: "10"
+      - key: PORTAL_ACTION_VERIFY_TLS
+        value: "true"
+      - key: TWITCH_CLIENT_ID
+        sync: false
+      - key: TWITCH_CLIENT_SECRET
+        sync: false
+      - key: TWITCH_BOT_ID
+        sync: false
+      - key: TWITCH_OWNER_ID
+        sync: false
+      - key: PORTAL_PUBLIC_URL
+        sync: false
+      - key: PORTAL_SYNC_KEY
+        sync: false
