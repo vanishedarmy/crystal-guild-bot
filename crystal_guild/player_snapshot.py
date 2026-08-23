@@ -691,9 +691,26 @@ class PortalRepository:
             row = conn.execute("SELECT COUNT(*) AS n FROM player_quests WHERE player_id=?", (player_id,)).fetchone()
             return int(row["n"] or 0)
         if kind == "record_stat":
+            metric = str(condition["metric"])
+            transaction_metrics = {
+                "gil_earned": ("gil", ">"),
+                "gil_spent": ("gil", "<"),
+                "items_acquired": ("item", ">"),
+                "items_spent": ("item", "<"),
+                "hunt_seals_earned": ("hunt_seals", ">"),
+                "hunt_seals_spent": ("hunt_seals", "<"),
+            }
+            if metric in transaction_metrics:
+                asset_kind, direction = transaction_metrics[metric]
+                amount_sql = "SUM(amount)" if direction == ">" else "-SUM(amount)"
+                row = conn.execute(
+                    f"SELECT COALESCE({amount_sql},0) AS value FROM transactions WHERE player_id=? AND kind=? AND amount {direction} 0",
+                    (player_id, asset_kind),
+                ).fetchone()
+                return int(row["value"] or 0) if row else 0
             row = conn.execute(
                 "SELECT value FROM player_record_stats WHERE player_id=? AND metric=?",
-                (player_id, condition["metric"]),
+                (player_id, metric),
             ).fetchone()
             return int(row["value"]) if row else 0
         if kind == "monster_record_defeats":

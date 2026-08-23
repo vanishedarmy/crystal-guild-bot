@@ -3944,7 +3944,11 @@ class CrystalGuildEngine:
             conn.execute("INSERT INTO inventory(player_id, item_id, quantity) VALUES (?, ?, ?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity", (twitch_id, item["id"], quantity))
             conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'gil', 'gil', ?, 'shop')", (twitch_id, -cost))
             conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'item', ?, ?, 'shop')", (twitch_id, item["id"], quantity))
-        return GameResult.success(f"Purchased {item['name']} x{quantity} for {cost:,} gil from your current shop rotation.")
+        result = GameResult.success(f"Purchased {item['name']} x{quantity} for {cost:,} gil from your current shop rotation.")
+        unlocked = self._check_achievements(twitch_id)
+        if unlocked:
+            result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
+        return result
 
     def _portal_character_state_data(self, twitch_id: str) -> dict[str, Any]:
         p = self._player(twitch_id)
@@ -4696,10 +4700,14 @@ class CrystalGuildEngine:
                 "ON CONFLICT(player_id) DO UPDATE SET writ_purchased_at=excluded.writ_purchased_at,writ_ready_at=excluded.writ_ready_at,updated_at=CURRENT_TIMESTAMP",
                 (twitch_id, now, ready_at),
             )
-        return GameResult.success(
+        result = GameResult.success(
             f"WRIT ISSUED — Chocobo Registration Writ purchased for {CHOCOBO_WRIT_COST_GIL:,} Gil. "
             "The Stable must validate it for 1 hour before registration."
         )
+        unlocked = self._check_achievements(twitch_id)
+        if unlocked:
+            result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
+        return result
 
     def register_chocobo(self, twitch_id: str, name: str) -> GameResult:
         p = self._player(twitch_id)
@@ -5545,8 +5553,16 @@ class CrystalGuildEngine:
                 f"Purchased {item['name']} x{quantity} for {cost:,} gil from your current shop rotation.",
                 item_id=item["id"], quantity=quantity, cost=cost, gil=gil - cost,
             )
+            # Store the mutation result in the same transaction first so replay
+            # protection remains atomic even if post-purchase presentation work fails.
             self._portal_action_store_sql(conn, action_id, result)
-            return result
+
+        unlocked = self._check_achievements(twitch_id)
+        if unlocked:
+            result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
+            with self.db.tx() as conn:
+                self._portal_action_store_sql(conn, action_id, result)
+        return result
 
     def portal_sell(self, twitch_id: str, item_id: str, quantity: int, action_id: str) -> GameResult:
         """Replay-safe Portal sale with equipped-copy and item-safety validation."""
@@ -5727,7 +5743,11 @@ class CrystalGuildEngine:
         ok, message, notes = self.fellowship_system.contribute(twitch_id, contribution)
         if not ok:
             return GameResult.fail(message)
-        return GameResult.success(message, *notes[:2])
+        result = GameResult.success(message, *notes[:2])
+        unlocked = self._check_achievements(twitch_id)
+        if unlocked:
+            result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
+        return result
 
     def set_fellowship_project(self, project_query: str) -> GameResult:
         ok, message, project = self.fellowship_system.set_active_project(project_query)
@@ -7387,9 +7407,26 @@ class CrystalGuildEngine:
         if kind == "stat":
             return int(p[req["field"]])
         if kind == "record_stat":
+            metric = str(req["metric"])
+            transaction_metrics = {
+                "gil_earned": ("gil", ">"),
+                "gil_spent": ("gil", "<"),
+                "items_acquired": ("item", ">"),
+                "items_spent": ("item", "<"),
+                "hunt_seals_earned": ("hunt_seals", ">"),
+                "hunt_seals_spent": ("hunt_seals", "<"),
+            }
+            if metric in transaction_metrics:
+                asset_kind, direction = transaction_metrics[metric]
+                amount_sql = "SUM(amount)" if direction == ">" else "-SUM(amount)"
+                row = self.db.one(
+                    f"SELECT COALESCE({amount_sql},0) AS value FROM transactions WHERE player_id=? AND kind=? AND amount {direction} 0",
+                    (player_id, asset_kind),
+                )
+                return int(row["value"] or 0) if row else 0
             row = self.db.one(
                 "SELECT value FROM player_record_stats WHERE player_id=? AND metric=?",
-                (player_id, req["metric"]),
+                (player_id, metric),
             )
             return int(row["value"]) if row else 0
         if kind == "monster_record_defeats":
