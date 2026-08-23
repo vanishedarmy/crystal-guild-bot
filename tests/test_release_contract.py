@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_wayfarer_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.1.15-wayfarer")
+        self.assertEqual(__version__, "1.1.15-wayfarer-h3")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 

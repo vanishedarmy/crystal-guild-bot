@@ -76,6 +76,28 @@ class PortalActionWorkerTests(unittest.TestCase):
         row = self.db.one("SELECT weapon_id FROM equipment WHERE player_id='100'")
         self.assertIsNone(row["weapon_id"])
 
+    def test_title_action_equips_only_earned_titles(self):
+        self.db.execute("INSERT OR IGNORE INTO player_titles(player_id,title_id) VALUES ('100','monster_botherer')")
+        ok, message, _ = self.worker._execute(self.action(
+            id="pa_title", type="SET_TITLE", payload={"title_id": "monster_botherer"}
+        ))
+        self.assertTrue(ok)
+        self.assertIn("title equipped", message.lower())
+        self.assertEqual(self.game._player("100")["title"], "Monster Botherer")
+
+        ok, message, _ = self.worker._execute(self.action(
+            id="pa_locked_title", type="SET_TITLE", payload={"title_id": "needle_dodger"}
+        ))
+        self.assertFalse(ok)
+        self.assertIn("haven't unlocked", message.lower())
+        self.assertEqual(self.game._player("100")["title"], "Monster Botherer")
+
+        ok, message, _ = self.worker._execute(self.action(
+            id="pa_bad_title_payload", type="SET_TITLE", payload={"title_id": "monster_botherer", "extra": True}
+        ))
+        self.assertFalse(ok)
+        self.assertIn("unsupported", message.lower())
+
     def test_phase_two_revalidates_job_and_rejects_unsafe_action_types(self):
         ok, message, _ = self.worker._execute(self.action(type="EQUIP_ITEM", payload={"item_id": "copper_pistol"}))
         self.assertFalse(ok)
