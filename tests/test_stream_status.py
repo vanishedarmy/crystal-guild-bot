@@ -62,11 +62,15 @@ class StreamStatusTests(unittest.TestCase):
             '"Rally Venture"',
             '"Rally participation"',
             '"Active Hunt"',
-            '"Active Battle actions"',
+            '"Combat actions"',
             '"Raid participation"',
             '"Raid actions"',
         ):
             self.assertIn(f"_require_stream_live(ctx, {activity})", source)
+        self.assertIn('in_timed_combat = (', source)
+        self.assertIn('self.game.active_boss', source)
+        self.assertIn('self.game.active_encounter', source)
+        self.assertIn('if in_timed_combat and not await self._require_stream_live(ctx, "Combat actions")', source)
         # Read-only status/catalog commands and Portal actions are intentionally
         # not routed through this Twitch chat gate.
         self.assertIn("async def encounter(self", source)

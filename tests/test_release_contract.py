@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_cloud_continuity_without_sync_schema_break(self):
-        self.assertEqual(__version__, "1.1.14-cloud-continuity-h2")
+        self.assertEqual(__version__, "1.1.14-cloud-continuity-h3")
         self.assertEqual(SYNC_VERSION, "1.1.14-cloud-continuity")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.14-cloud-continuity")
 

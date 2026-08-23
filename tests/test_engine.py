@@ -672,6 +672,108 @@ class EngineTests(unittest.TestCase):
             self.assertLess(self.game.active_boss["current_hp"], before)
             self.assertEqual(self.game.active_boss["round"], 1)
 
+    def test_hotfix3_raid_accepts_and_resolves_queued_ability(self):
+        self.game.choose_job("1", "warrior")
+        self.db.execute("UPDATE players SET level=60 WHERE twitch_id='1'")
+        self.game.choose_job("1", "warrior")
+        self.game.spawn_boss("ifrit")
+        self.game.raid_join("1")
+        self.game.start_raid()
+        self.game.active_boss["current_hp"] = 999999
+        self.game.active_boss["max_hp"] = 999999
+        self.game.active_boss["attacks_per_round"] = 0
+        before_ap = self.game.raid_roster["1"]["ap"]
+
+        queued = self.game.battle_ability("1", "Power Break")
+        self.assertTrue(queued.ok, queued.messages)
+        self.assertIn("RAID QUEUED R1", queued.messages[0])
+        self.assertEqual(self.game.raid_roster["1"]["action"]["ability_id"], "power_break")
+
+        resolved = self.game.raid_round()
+        self.assertTrue(resolved.ok, resolved.messages)
+        self.assertLess(self.game.raid_roster["1"]["ap"], before_ap)
+        self.assertIsNone(self.game.raid_roster["1"]["action"])
+        self.assertTrue(any("Power Break" in line for line in resolved.messages))
+        self.assertIn("weaken", self.game.active_boss.get("statuses", {}))
+
+    def test_hotfix3_recovered_legacy_raid_hydrates_before_accepting_actions(self):
+        self.game.choose_job("1", "warrior")
+        self.game.spawn_boss("ifrit")
+        self.game.raid_join("1")
+        self.game.start_raid()
+        meta = self.game.raid_roster["1"]
+        for key in ("stats", "effects", "job_level", "mp", "max_mp", "ap", "max_ap"):
+            meta.pop(key, None)
+
+        queued = self.game.battle_attack("1")
+        self.assertTrue(queued.ok, queued.messages)
+        self.assertIn("stats", self.game.raid_roster["1"])
+        self.assertIn("effects", self.game.raid_roster["1"])
+        self.assertEqual(self.game.raid_roster["1"]["action"]["kind"], "attack")
+
+    def test_hotfix3_raid_use_queues_and_consumes_item_on_resolution(self):
+        self.game.choose_job("1", "warrior")
+        self.game._change_item("1", "potion", 1, "test")
+        self.game.spawn_boss("ifrit")
+        self.game.raid_join("1")
+        self.game.start_raid()
+        self.game.active_boss["current_hp"] = 999999
+        self.game.active_boss["max_hp"] = 999999
+        self.game.active_boss["attacks_per_round"] = 0
+        meta = self.game.raid_roster["1"]
+        meta["hp"] = max(1, int(meta["max_hp"]) - 60)
+        self.game._save_hp("1", meta["hp"])
+        before_qty = self.game._inventory_qty("1", "potion")
+        before_hp = meta["hp"]
+
+        queued = self.game.use_item("1", "Potion")
+        self.assertTrue(queued.ok, queued.messages)
+        self.assertIn("RAID QUEUED R1", queued.messages[0])
+        self.assertEqual(meta["action"]["kind"], "item")
+
+        resolved = self.game.raid_round()
+        self.assertTrue(resolved.ok, resolved.messages)
+        self.assertEqual(self.game._inventory_qty("1", "potion"), before_qty - 1)
+        self.assertGreater(meta["hp"], before_hp)
+        self.assertIsNone(meta["action"])
+        self.assertTrue(any("Potion" in line for line in resolved.messages))
+
+    def test_hotfix3_raid_killing_ability_persists_resource_spend(self):
+        self.game.choose_job("1", "warrior")
+        self.game.spawn_boss("ifrit")
+        self.game.raid_join("1")
+        self.game.start_raid()
+        self.game.active_boss["attacks_per_round"] = 0
+        before_ap = int(self.game.raid_roster["1"]["ap"])
+        queued = self.game.battle_ability("1", "Power Break")
+        self.assertTrue(queued.ok, queued.messages)
+        cost = int(self.game.raid_roster["1"]["action"]["cost"])
+        self.game.active_boss["current_hp"] = 1
+        self.game.active_boss["max_hp"] = 1
+
+        resolved = self.game.raid_round()
+        self.assertTrue(resolved.ok, resolved.messages)
+        self.assertTrue(resolved.data.get("raid_finished"))
+        self.assertIsNone(self.game.active_boss)
+        self.assertEqual(int(self.game._player("1")["current_ap"]), before_ap - cost)
+
+    def test_hotfix3_raid_defend_is_a_real_round_action(self):
+        self.game.choose_job("1", "warrior")
+        self.game.spawn_boss("ifrit")
+        self.game.raid_join("1")
+        self.game.start_raid()
+        self.game.active_boss["current_hp"] = 999999
+        self.game.active_boss["max_hp"] = 999999
+        self.game.active_boss["attacks_per_round"] = 0
+        queued = self.game.battle_defend("1")
+        self.assertTrue(queued.ok, queued.messages)
+        self.assertEqual(self.game.raid_roster["1"]["action"]["kind"], "defend")
+        resolved = self.game.raid_round()
+        self.assertTrue(resolved.ok, resolved.messages)
+        self.assertGreaterEqual(self.game.raid_roster["1"]["defends"], 1)
+        self.assertIsNone(self.game.raid_roster["1"]["action"])
+        self.assertTrue(any("Defends" in line for line in resolved.messages))
+
     def test_v4_limit_break_can_be_armed_and_used(self):
         self.game.choose_job("1", "warrior")
         self.db.execute("UPDATE players SET level=80 WHERE twitch_id='1'")
