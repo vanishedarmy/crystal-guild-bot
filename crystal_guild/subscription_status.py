@@ -28,7 +28,7 @@ class TwitchSubscriptionStatus:
     """
 
     SUBSCRIPTIONS_URL = "https://api.twitch.tv/helix/subscriptions"
-    USER_AGENT = "CrystalGuild/1.1.14-CloudContinuity-H2"
+    USER_AGENT = "CrystalGuild/1.1.15-Wayfarer"
 
     def __init__(
         self,

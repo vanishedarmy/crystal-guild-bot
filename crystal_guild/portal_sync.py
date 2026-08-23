@@ -17,7 +17,7 @@ from .config import load_dotenv
 from .player_snapshot import PortalRepository
 
 
-SYNC_VERSION = "1.1.14-cloud-continuity"
+SYNC_VERSION = "1.1.15-wayfarer"
 LOGGER = logging.getLogger("CrystalGuild.PortalSync")
 SCHEMA_VERSION = 1
 MODULES = (

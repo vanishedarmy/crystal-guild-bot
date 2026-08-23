@@ -55,7 +55,7 @@ class TwitchRESTChatSender:
 
     TOKEN_URL = "https://id.twitch.tv/oauth2/token"
     CHAT_URL = "https://api.twitch.tv/helix/chat/messages"
-    USER_AGENT = "CrystalGuild/1.1.14-CloudContinuity"
+    USER_AGENT = "CrystalGuild/1.1.15-Wayfarer"
 
     def __init__(
         self,

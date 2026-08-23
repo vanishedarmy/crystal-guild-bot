@@ -63,6 +63,9 @@ from .balance import (
     SOLO_VENTURE_COOLDOWN_SECONDS,
     SOLO_VENTURE_TREASURE_CHANCE,
     SOLO_VENTURE_FELLOWSHIP_RENOWN,
+    SOLO_EXPEDITION_MAX_STAGES,
+    SOLO_EXPEDITION_STAGE_BONUS,
+    SOLO_EXPEDITION_DEFEAT_GIL_KEEP,
     VENTURE_TREASURE_CHANCE,
     VENTURE_TREASURE_LEVEL_BELOW_PLAYER,
     VENTURE_TREASURE_LEVEL_ABOVE_PLAYER,
@@ -528,6 +531,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change Jobs while resting at camp.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Jobs after committing to an active encounter or raid.")
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before changing Jobs.")
         if p["current_job"] != "adventurer" and p["current_hp"] <= 0:
             return GameResult.fail("You are KO'd. Recover before attempting a dramatic career change.")
         job = self._find_by_name_or_id(self.data.jobs, job_id)
@@ -615,6 +620,8 @@ class CrystalGuildEngine:
             return GameResult.success(f"Mastered Jobs: {mastered_text}", f"Equipped Masteries: {equipped_text}. Equip with !mastery <job> <1|2>")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before changing Masteries.")
         job = self._find_by_name_or_id(self.data.jobs, job_query)
         if not job:
             return GameResult.fail("Job not found.")
@@ -635,6 +642,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before changing Masteries.")
         if slot not in {1, 2}:
             return GameResult.fail("Choose mastery slot 1 or 2.")
         current = self.db.one("SELECT job_id FROM mastery_slots WHERE player_id=? AND slot=?", (twitch_id, slot))
@@ -651,6 +660,8 @@ class CrystalGuildEngine:
             return GameResult.success(f"Current stance: {p['stance']}. Options: balanced, aggressive, defensive, magical, cautious.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change stance after committing to an active encounter or raid.")
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before changing stance.")
         stance = self._norm(stance)
         if stance not in STANCES:
             return GameResult.fail("Unknown stance. Use balanced, aggressive, defensive, magical, or cautious.")
@@ -663,6 +674,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before setting up camp.")
         if twitch_id in self.encounter_roster:
             return GameResult.fail("You are already committed to the active encounter. Survive that before setting up camp.")
         if twitch_id in self.raid_roster:
@@ -715,6 +728,8 @@ class CrystalGuildEngine:
             return self.battle_item(twitch_id, item_query)
         if twitch_id in self.raid_roster and self.active_boss and self.active_boss.get("state") == "combat":
             return self.battle_item(twitch_id, item_query)
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("While on a Solo Venture, use battle items through the Adventure Board. Return or retreat before using field items.")
         item = self._find_by_name_or_id(self.data.items, item_query)
         use = item.get("use") if item else None
         if not item or not isinstance(use, dict) or not use.get("field"):
@@ -978,76 +993,642 @@ class CrystalGuildEngine:
             "summary": copy.deepcopy(summary),
         }
 
-    def _resolve_solo_venture_treasure(self, twitch_id: str, p: Any, region: dict[str, Any]) -> GameResult | None:
-        """Resolve Portal-only Solo Venture treasure using the normal chest table.
-
-        Character/inventory/Chocobo progression remains identical to a normal
-        treasure Venture. Only the Solo Venture cooldown and Fellowship Renown
-        award differ.
-        """
-        rolled = self._roll_venture_treasure(int(p["level"]))
-        if not rolled:
+    # ---------- Wayfarer Solo Ventures ----------
+    def _solo_expedition_load(self, twitch_id: str) -> dict[str, Any] | None:
+        row = self.db.one("SELECT state_json FROM solo_expeditions WHERE player_id=?", (str(twitch_id),))
+        if not row:
+            return None
+        try:
+            state = json.loads(str(row["state_json"]))
+            return state if isinstance(state, dict) else None
+        except (TypeError, ValueError, json.JSONDecodeError):
             return None
 
-        item, item_level, min_level, max_level = rolled
-        self._set_cooldown(twitch_id, "solo_venture", SOLO_VENTURE_COOLDOWN_SECONDS)
+    def _solo_expedition_save(self, twitch_id: str, state: dict[str, Any]) -> None:
+        now = int(time.time())
+        started = int(state.get("started_at") or now)
+        state["updated_at"] = now
         self.db.execute(
-            "UPDATE players SET ventures=ventures+1, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
-            (twitch_id,),
+            "INSERT INTO solo_expeditions(player_id,state_json,started_at,updated_at) VALUES (?,?,?,?) "
+            "ON CONFLICT(player_id) DO UPDATE SET state_json=excluded.state_json,updated_at=excluded.updated_at",
+            (str(twitch_id), json.dumps(state, separators=(",", ":"), sort_keys=True), started, now),
         )
-        self.db.update_record_stats(twitch_id, {"solo_ventures": 1, "solo_venture_treasures": 1})
-        self._change_item(twitch_id, item["id"], 1, "solo_venture_treasure")
-        venture_no = int(p["ventures"]) + 1
-        fellowship_notes = self.fellowship_system.record_activity(
-            twitch_id,
-            "venture_complete",
-            renown=SOLO_VENTURE_FELLOWSHIP_RENOWN,
-            event_key=f"solo_venture_treasure:{twitch_id}:{venture_no}",
-        )
-        fellowship_notes.extend(self.fellowship_system.record_activity(
-            twitch_id, "treasure", renown=0, event_key=f"solo_treasure:{twitch_id}:{venture_no}"
-        ))
-        chocobo_notes = self._award_chocobo_xp(twitch_id, 8)
 
-        rarity = str(item.get("rarity", "common")).title()
-        category = str(item.get("type", "item")).replace("_", " ").title()
-        solo_result = {
-            "type": "treasure",
-            "outcome": "treasure",
-            "title": "Treasure Found",
-            "region_name": str(region.get("name") or "Unknown Region"),
-            "item": {
+    def _solo_expedition_delete(self, twitch_id: str) -> None:
+        self.db.execute("DELETE FROM solo_expeditions WHERE player_id=?", (str(twitch_id),))
+
+    @staticmethod
+    def _solo_stage_multiplier(stage: int) -> float:
+        return 1.0 + max(0, int(stage) - 1) * SOLO_EXPEDITION_STAGE_BONUS
+
+    def _roll_solo_expedition_treasure(self, player_level: int, stage: int) -> tuple[dict[str, Any], int, int, int] | None:
+        """Roll Solo Venture treasure with deeper-stage quality bias.
+
+        The event odds remain the player-facing 60% Encounter / 40% Treasure at
+        every stage. Pressing on improves the *quality* of a chest rather than
+        quietly changing those published odds.
+        """
+        min_level, max_level, candidates = self._venture_treasure_candidates(player_level)
+        available_categories = [category for category, items in candidates.items() if items]
+        if not available_categories:
+            return None
+        category = self.rng.choices(
+            available_categories,
+            weights=[VENTURE_TREASURE_CATEGORY_WEIGHTS[category] for category in available_categories],
+            k=1,
+        )[0]
+        items = candidates[category]
+        stage = max(1, min(SOLO_EXPEDITION_MAX_STAGES, int(stage)))
+        rarity_bias = {
+            1: {},
+            2: {"common": 0.88, "uncommon": 1.08, "rare": 1.30, "epic": 1.45, "relic": 1.55, "artifact": 1.70, "legendary": 1.80},
+            3: {"common": 0.68, "uncommon": 1.05, "rare": 1.65, "epic": 2.00, "relic": 2.20, "artifact": 2.45, "legendary": 2.70},
+        }[stage]
+        item = self.rng.choices(
+            items,
+            weights=[
+                VENTURE_TREASURE_RARITY_WEIGHTS.get(str(row.get("rarity", "common")).lower(), 1)
+                * float(rarity_bias.get(str(row.get("rarity", "common")).lower(), 1.0))
+                for row in items
+            ],
+            k=1,
+        )[0]
+        item_level = self._venture_item_level(item)
+        if item_level is None:
+            return None
+        return item, item_level, min_level, max_level
+
+    def _solo_owned_battle_items(self, twitch_id: str, meta: dict[str, Any]) -> list[dict[str, Any]]:
+        rows = self.db.all(
+            "SELECT item_id,quantity FROM inventory WHERE player_id=? AND quantity>0 ORDER BY item_id",
+            (str(twitch_id),),
+        )
+        result: list[dict[str, Any]] = []
+        for row in rows:
+            item = self.data.items.get(str(row["item_id"]))
+            use = item.get("use") if item and isinstance(item.get("use"), dict) else None
+            if not item or not use or item.get("id") == "tent" or not use.get("battle", True):
+                continue
+            effects = list(use.get("effects") or [])
+            requires_revive = any(effect.get("type") == "revive" for effect in effects)
+            target = str(use.get("target", "ally"))
+            usable = not requires_revive and int(meta.get("hp", 0)) > 0
+            reason = "Revive items cannot target the acting hero while they are conscious." if requires_revive else ""
+            if usable and any(effect.get("type") == "restore_mp" for effect in effects) and int(meta.get("max_mp", 0)) <= 0:
+                usable = False
+                reason = "Your current Job does not use MP."
+            if usable and any(effect.get("type") == "restore_ap" for effect in effects) and int(meta.get("max_ap", 0)) <= 0:
+                usable = False
+                reason = "Your current Job does not use AP."
+            result.append({
                 "id": str(item["id"]),
-                "name": str(item["name"]),
-                "category": category,
-                "level": int(item_level),
-                "rarity": rarity,
-            },
+                "name": str(item.get("name") or item["id"]),
+                "quantity": int(row["quantity"] or 0),
+                "description": str(item.get("description") or ""),
+                "target": target,
+                "usable": bool(usable),
+                "reason": reason,
+            })
+        return result
+
+    def _solo_ability_rows(self, meta: dict[str, Any]) -> list[dict[str, Any]]:
+        job = self.data.jobs.get(str(meta.get("job_id"))) or {}
+        job_level = int(meta.get("job_level", 0))
+        rows: list[dict[str, Any]] = []
+        for ability in self.data.active_abilities.get(str(meta.get("job_id")), []):
+            unlocked = int(ability.get("level", 1)) <= job_level
+            resource = ability_resource(ability, job)
+            cost = ability_cost(ability)
+            enough = int(meta.get(resource, 0)) >= cost
+            silenced = resource == "mp" and has_status(meta.get("statuses", {}), "silence")
+            revive = any(effect.get("type") == "revive" for effect in ability.get("effects", []))
+            usable = unlocked and enough and not silenced and not revive
+            reason = ""
+            if not unlocked:
+                reason = f"Unlocks at JLv.{int(ability.get('level', 1))}."
+            elif revive:
+                reason = "Revive abilities need another KO'd ally."
+            elif silenced:
+                reason = "Silence prevents MP abilities."
+            elif not enough:
+                reason = f"Needs {cost} {resource.upper()}."
+            rows.append({
+                "id": str(ability["id"]),
+                "name": str(ability.get("name") or ability["id"]),
+                "level": int(ability.get("level", 1)),
+                "resource": resource,
+                "cost": cost,
+                "target": str(ability.get("target") or "enemy"),
+                "description": str(ability.get("description") or ""),
+                "usable": bool(usable),
+                "reason": reason,
+            })
+        return rows
+
+    def _solo_enemy_intent(self, monster: dict[str, Any], encounter: dict[str, Any]) -> dict[str, Any]:
+        statuses = encounter.setdefault("monster_statuses", {})
+        if has_status(statuses, "stun"):
+            return {"kind": "stunned", "label": f"{monster['name']} is stunned."}
+        behavior = self.data.enemy_actions.get(monster["id"], {"profile": "balanced"})
+        profile = self.data.enemy_profiles.get(
+            behavior.get("profile"), self.data.enemy_profiles.get("balanced", {})
+        )
+        round_no = int(encounter.get("round", 1))
+        action = choose_enemy_action(
+            behavior,
+            profile,
+            hp_ratio=int(encounter.get("monster_hp", 0)) / max(1, int(encounter.get("monster_max_hp", 1))),
+            round_no=round_no,
+            special_ready_round=int(encounter.get("enemy_special_ready_round", 1)),
+            monster_statuses=statuses,
+            rng=self.rng,
+        )
+        kind = str(action.get("kind") or "attack")
+        if kind == "special":
+            ability = dict(action.get("ability") or {})
+            return {"kind": "special", "ability": ability, "label": f"Preparing: {ability.get('name', 'special attack')}"}
+        if kind == "utility":
+            utility = dict(action.get("utility") or {})
+            return {"kind": "utility", "utility": utility, "label": f"Preparing: {utility.get('name', 'defensive technique')}"}
+        return {"kind": "attack", "label": "Preparing: Attack"}
+
+    def _solo_resolve_enemy_intent(self, monster: dict[str, Any], encounter: dict[str, Any], log: list[str]) -> None:
+        statuses = encounter.setdefault("monster_statuses", {})
+        if has_status(statuses, "stun"):
+            log.append(f"{monster['name']} is stunned and loses its turn.")
+            return
+        intent = dict(encounter.get("enemy_intent") or {"kind": "attack"})
+        kind = str(intent.get("kind") or "attack")
+        behavior = self.data.enemy_actions.get(monster["id"], {"profile": "balanced"})
+        profile = self.data.enemy_profiles.get(
+            behavior.get("profile"), self.data.enemy_profiles.get("balanced", {})
+        )
+        target_id = self._enemy_target_id()
+        if not target_id:
+            return
+        if kind == "special" and intent.get("ability"):
+            ability = dict(intent["ability"])
+            self._resolve_enemy_special(monster, profile, ability, log)
+            encounter["enemy_special_ready_round"] = int(encounter.get("round", 1)) + int(ability.get("cooldown", 1)) + 1
+            return
+        if kind == "utility" and intent.get("utility"):
+            utility = dict(intent["utility"])
+            status_id = str(utility.get("status", ""))
+            apply_status(statuses, status_id, int(utility.get("turns", 1)), float(utility.get("magnitude", 0.0)))
+            log.append(f"{monster['name']} uses {utility.get('name', 'Brace')} — {status_id.replace('_', ' ').title()}.")
+            return
+        target = self.encounter_roster[target_id]
+        damage = self._apply_enemy_hit(monster, target, profile, scaling="physical", power=1.0)
+        log.append(f"{target['name']} evades {monster['name']}'s attack." if damage == 0 else f"{monster['name']} attacks {target['name']} for {damage}.")
+
+    def _solo_select_monster(self, p: Any, region: dict[str, Any], stage: int) -> dict[str, Any] | None:
+        level = int(p["level"])
+        minimum = max(1, level - 2)
+        maximum = level + SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER
+        candidates = []
+        weights = []
+        for encounter in region.get("encounters", []):
+            monster = self.data.monsters.get(encounter.get("monster_id"))
+            if not monster:
+                continue
+            monster_level = int(monster.get("level", 1))
+            if minimum <= monster_level <= maximum:
+                delta = monster_level - level
+                stage_bias = {
+                    1: {-2: 0.85, -1: 1.20, 0: 1.45, 1: 1.15, 2: 0.75, 3: 0.40},
+                    2: {-2: 0.45, -1: 0.85, 0: 1.25, 1: 1.45, 2: 1.10, 3: 0.70},
+                    3: {-2: 0.20, -1: 0.55, 0: 0.95, 1: 1.35, 2: 1.55, 3: 1.25},
+                }.get(int(stage), {})
+                candidates.append(monster)
+                weights.append(max(0.01, float(encounter.get("weight", 1.0)) * float(stage_bias.get(delta, 1.0))))
+        if not candidates:
+            for encounter in region.get("encounters", []):
+                monster = self.data.monsters.get(encounter.get("monster_id"))
+                if monster and int(monster.get("level", 1)) <= maximum:
+                    candidates.append(monster)
+                    weights.append(max(0.01, float(encounter.get("weight", 1.0))))
+        return self.rng.choices(candidates, weights=weights, k=1)[0] if candidates else None
+
+    def _solo_begin_stage(self, twitch_id: str, expedition: dict[str, Any]) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        region = self.data.regions.get(str(expedition.get("region_id"))) or self.data.regions[p["current_region"]]
+        stage = int(expedition.get("stage", 1))
+        expedition["status"] = "event"
+        expedition["event"] = None
+        expedition["combat"] = None
+        treasure_roll = SOLO_VENTURE_TREASURE_CHANCE >= 1.0 or (
+            SOLO_VENTURE_TREASURE_CHANCE > 0.0 and self.rng.random() < SOLO_VENTURE_TREASURE_CHANCE
+        )
+        if treasure_roll:
+            rolled = self._roll_solo_expedition_treasure(int(p["level"]), stage)
+            if rolled:
+                item, item_level, _, _ = rolled
+                spoil = {"id": str(item["id"]), "name": str(item["name"]), "quantity": 1, "kind": "treasure"}
+                expedition.setdefault("spoils", {}).setdefault("items", []).append(spoil)
+                expedition.setdefault("history", []).append({"stage": stage, "type": "treasure", "label": f"Found {item['name']}"})
+                expedition["event"] = {
+                    "type": "treasure",
+                    "item": {"id": str(item["id"]), "name": str(item["name"]), "level": int(item_level), "rarity": str(item.get("rarity", "common")).title(), "category": str(item.get("type", "item")).replace("_", " ").title()},
+                }
+                expedition["status"] = "choice"
+                self.db.update_record_stats(twitch_id, {"solo_venture_treasures": 1})
+                self._solo_expedition_save(twitch_id, expedition)
+                if stage >= SOLO_EXPEDITION_MAX_STAGES:
+                    return self._solo_bank_spoils(twitch_id, expedition, outcome="complete")
+                return GameResult.success(f"SOLO VENTURE · STAGE {stage} — Treasure found: {item['name']}.", solo_expedition_stage_complete=True)
+
+        monster = self._solo_select_monster(p, region, stage)
+        if not monster:
+            # A malformed/custom region should not strand a newly started run.
+            # Only the first stage can be rolled before the player has received
+            # anything, so unwind its cooldown/counter cleanly.
+            if stage == 1 and not expedition.get("history"):
+                self._solo_expedition_delete(twitch_id)
+                self.db.execute("DELETE FROM cooldowns WHERE player_id=? AND action='solo_venture'", (twitch_id,))
+                self.db.execute("UPDATE players SET ventures=MAX(0,ventures-1) WHERE twitch_id=?", (twitch_id,))
+                self.db.update_record_stats(twitch_id, {"solo_ventures": -1})
+            return GameResult.fail(f"No level-appropriate Solo Venture monsters are available in {region['name']} right now.")
+        encounter = {
+            "id": int(expedition.get("started_at", time.time())) * 10 + stage,
+            "kind": "solo_expedition",
+            "state": "combat",
+            "monster_id": str(monster["id"]),
+            "region_id": str(region["id"]),
+            "created_at": int(time.time()),
+            "starter_id": str(twitch_id),
+        }
+        roster = {str(twitch_id): {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}}
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter, self.encounter_roster = encounter, roster
+            combatants, _, _ = self._initialize_active_combat(encounter)
+            if combatants == 0:
+                return GameResult.fail("Solo Venture cannot continue while your hero is unable to fight.")
+            encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+            expedition["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(roster)}
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
+        expedition["event"] = {"type": "encounter", "monster_id": str(monster["id"])}
+        expedition["status"] = "combat"
+        expedition.setdefault("history", []).append({"stage": stage, "type": "encounter", "label": f"Encountered {monster['name']}"})
+        self.db.update_record_stats(twitch_id, {"solo_venture_encounters": 1})
+        self._solo_expedition_save(twitch_id, expedition)
+        return GameResult.success(f"SOLO VENTURE · STAGE {stage} — {monster['name']} (Lv.{monster['level']}) blocks the road.", solo_expedition_battle=True)
+
+    def _solo_roll_stage_rewards(self, twitch_id: str, monster: dict[str, Any], stage: int) -> dict[str, Any]:
+        p = self._player(twitch_id)
+        multiplier = self._solo_stage_multiplier(stage)
+        level_factor = encounter_reward_factor(p["level"], monster["level"])
+        job_level = self._job_level(twitch_id, p["current_job"])
+        jp_factor = jp_reward_factor(p["level"], job_level, monster["level"])
+        xp = max(5, int(monster["xp"] * level_factor * multiplier * self.rng.uniform(0.92, 1.08)))
+        jp = self.fellowship_system.apply_jp_bonus(max(2, int(monster["jp"] * jp_factor * multiplier * self.rng.uniform(0.95, 1.10))))
+        gil = max(1, int(monster["gil"] * level_factor * multiplier * self.rng.uniform(0.85, 1.18)))
+        job = self.data.jobs[p["current_job"]]
+        effects = self._effects(twitch_id, p["current_job"])
+        gil = int(gil * (1 + job.get("gil_bonus", 0) + effects.get("gil_bonus", 0)))
+        loot_bonus = job.get("loot_bonus", 0) + effects.get("loot_bonus", 0)
+        pending_items: list[dict[str, Any]] = []
+        for drop in monster.get("drops", []):
+            chance = min(0.95, float(drop["chance"]) * (1 + loot_bonus))
+            if self.rng.random() <= chance:
+                qty = self.rng.randint(int(drop.get("min", 1)), int(drop.get("max", 1)))
+                item_id = str(drop["item_id"])
+                pending_items.append({"id": item_id, "name": str(self.data.items[item_id]["name"]), "quantity": qty, "kind": "drop"})
+        with self.db.tx() as conn:
+            conn.execute("UPDATE players SET xp=xp+?, monsters_defeated=monsters_defeated+1 WHERE twitch_id=?", (xp, twitch_id))
+            conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (jp, twitch_id, p["current_job"]))
+            conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (twitch_id, monster["id"]))
+        # Rare pity drops and recipe discoveries are progression systems rather
+        # than ordinary loose expedition cargo. Preserve their existing combat
+        # semantics by securing them immediately; normal drops remain at risk.
+        secured_loot = self._roll_pity_drops(twitch_id, monster, source=f"solo_expedition:{monster['id']}", loot_bonus=loot_bonus)
+        secured_loot.extend(self._roll_recipe_drops(twitch_id, monster, source=f"solo_expedition:{monster['id']}", loot_bonus=loot_bonus))
+        levelups = self._process_levels(twitch_id, p["current_job"])
+        return {"xp": xp, "jp": jp, "gil": gil, "items": pending_items, "secured_loot": secured_loot, "levelups": levelups, "multiplier_percent": int(round((multiplier - 1.0) * 100))}
+
+    def _solo_bank_spoils(self, twitch_id: str, expedition: dict[str, Any], *, outcome: str = "returned") -> GameResult:
+        spoils = expedition.setdefault("spoils", {"gil": 0, "items": []})
+        gil = max(0, int(spoils.get("gil", 0)))
+        items = list(spoils.get("items") or [])
+        if gil:
+            with self.db.tx() as conn:
+                conn.execute("UPDATE players SET gil=gil+? WHERE twitch_id=?", (gil, twitch_id))
+                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'solo_expedition')", (twitch_id, gil))
+        for item in items:
+            self._change_item(twitch_id, str(item["id"]), max(1, int(item.get("quantity", 1))), "solo_expedition")
+        stage = int(expedition.get("stage", 1))
+        renown = min(6, SOLO_VENTURE_FELLOWSHIP_RENOWN + max(0, stage - 1))
+        fellowship_notes = self.fellowship_system.record_activity(
+            twitch_id, "venture_complete", renown=renown,
+            event_key=f"solo_expedition:{twitch_id}:{int(expedition.get('started_at', 0))}",
+        )
+        chocobo_notes = self._award_chocobo_xp(twitch_id, 8 + stage * 4)
+        achievements = self._check_achievements(twitch_id)
+        secured = expedition.get("secured") or {}
+        item_labels = [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in items]
+        secured_loot = [str(value) for value in expedition.get("secured_loot", [])]
+        summary = {
+            "type": "expedition",
+            "outcome": outcome,
+            "title": "Solo Venture Complete" if stage >= SOLO_EXPEDITION_MAX_STAGES else "Returned to Guild",
+            "region_name": str((self.data.regions.get(str(expedition.get("region_id"))) or {}).get("name") or "Unknown Region"),
+            "stages": stage,
             "rewards": {
-                "xp": 0, "jp": 0, "gil": 0, "loot": [str(item["name"])],
-                "fellowship_renown": SOLO_VENTURE_FELLOWSHIP_RENOWN,
-                "achievements": [],
+                "xp": int(secured.get("xp", 0)), "jp": int(secured.get("jp", 0)), "gil": gil,
+                "loot": [*secured_loot, *item_labels], "secured_loot": secured_loot, "fellowship_renown": renown, "achievements": [str(x) for x in achievements[:4]],
             },
-            "notes": [str(value) for value in chocobo_notes[:2]],
+            "history": list(expedition.get("history") or [])[-8:],
+            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2]]],
             "player": self._solo_result_vitals(twitch_id),
             "cooldown_seconds": SOLO_VENTURE_COOLDOWN_SECONDS,
-            "resolved_immediately": True,
+            "interactive": True,
         }
-        self._remember_adventure_result(twitch_id, solo_result)
+        self._remember_adventure_result(twitch_id, summary)
+        self._solo_expedition_delete(twitch_id)
         return GameResult.success(
-            f"SOLO VENTURE — Treasure found: {item['name']}.",
-            f"{category} · Lv.{item_level} · {rarity} · +{SOLO_VENTURE_FELLOWSHIP_RENOWN} Fellowship Renown.",
-            *chocobo_notes[:1],
-            solo_venture=True,
-            solo_venture_event="treasure",
-            venture_event="solo_treasure",
-            resolved_immediately=True,
-            solo_result=solo_result,
-            treasure_item_id=item["id"],
-            treasure_item_level=item_level,
-            treasure_level_min=min_level,
-            treasure_level_max=max_level,
+            f"SOLO VENTURE — {stage} stage{'s' if stage != 1 else ''} complete. Banked {gil} Gil"
+            + (f" and {len(items)} spoil stack{'s' if len(items) != 1 else ''}." if items else "."),
+            solo_result=summary, solo_expedition_finished=True,
         )
+
+    def _solo_finish_defeat(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
+        self._save_hp(twitch_id, int(meta.get("hp", 0)))
+        self._save_resources_from_meta(twitch_id, meta)
+        knocked_out = int(meta.get("hp", 0)) <= 0
+        if knocked_out:
+            self.db.execute("UPDATE players SET deaths=deaths+1 WHERE twitch_id=?", (twitch_id,))
+        self._record_combat_metrics(
+            twitch_id, meta.get("job_id"), monster["id"], battle_type="venture", won=False, knocked_out=knocked_out,
+            damage_dealt=int(meta.get("damage", 0)), damage_taken=int(meta.get("damage_taken", 0)), healing_done=int(meta.get("healing", 0)), best_hit=int(meta.get("best_hit", 0)),
+        )
+        self.db.update_record_stats(twitch_id, {"active_actions": int(meta.get("actions", 0)), "active_abilities": int(meta.get("abilities_used", 0)), "active_items": int(meta.get("items_used", 0)), "active_defends": int(meta.get("defends", 0))})
+        spoils = expedition.setdefault("spoils", {"gil": 0, "items": []})
+        kept_gil = int(max(0, int(spoils.get("gil", 0))) * SOLO_EXPEDITION_DEFEAT_GIL_KEEP)
+        if kept_gil:
+            with self.db.tx() as conn:
+                conn.execute("UPDATE players SET gil=gil+? WHERE twitch_id=?", (kept_gil, twitch_id))
+                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'solo_expedition_recovery')", (twitch_id, kept_gil))
+        achievements = self._check_achievements(twitch_id)
+        secured = expedition.get("secured") or {}
+        summary = {
+            "type": "expedition", "outcome": "defeat", "title": "Solo Venture Defeat",
+            "region_name": str((self.data.regions.get(str(expedition.get("region_id"))) or {}).get("name") or "Unknown Region"),
+            "stages": int(expedition.get("stage", 1)), "rounds": int(round_no),
+            "enemy": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])},
+            "rewards": {"xp": int(secured.get("xp", 0)), "jp": int(secured.get("jp", 0)), "gil": kept_gil, "loot": [str(x) for x in expedition.get("secured_loot", [])], "secured_loot": [str(x) for x in expedition.get("secured_loot", [])], "fellowship_renown": 0, "achievements": [str(x) for x in achievements[:4]]},
+            "lost_spoils": {"gil": max(0, int(spoils.get("gil", 0)) - kept_gil), "items": [str(x.get("name") or x.get("id")) for x in list(spoils.get("items") or [])]},
+            "history": list(expedition.get("history") or [])[-8:], "last_round": list(log), "player": self._solo_result_vitals(twitch_id), "interactive": True,
+        }
+        self._remember_adventure_result(twitch_id, summary)
+        self._solo_expedition_delete(twitch_id)
+        return GameResult.success(f"SOLO VENTURE DEFEAT — {monster['name']} ends the run. {kept_gil} Gil was recovered; loose item spoils were lost.", solo_result=summary, solo_expedition_finished=True, won=False)
+
+    def _advance_solo_expedition_round(self, twitch_id: str, expedition: dict[str, Any]) -> GameResult:
+        combat = expedition.get("combat") or {}
+        encounter = self.active_encounter or {}
+        meta = self.encounter_roster.get(str(twitch_id))
+        if not meta or not encounter:
+            return GameResult.fail("That Solo Venture battle state is unavailable. Return to the Adventure Board and refresh.")
+        monster = self.data.monsters[encounter["monster_id"]]
+        round_no = int(encounter.get("round", 1))
+        action = meta.get("action")
+        if not action:
+            return GameResult.fail("Choose Attack, Ability, Use Item, or Defend for this round.")
+        log: list[str] = []
+        meta["actions"] = int(meta.get("actions", 0)) + 1
+        if has_status(meta.get("statuses", {}), "stun"):
+            log.append(f"{meta['name']} is stunned and loses their action.")
+        elif action["kind"] == "defend":
+            meta["defending"] = True
+            meta["defends"] = int(meta.get("defends", 0)) + 1
+            recovered = []
+            if int(meta.get("max_ap", 0)) > 0:
+                before = int(meta.get("ap", 0)); meta["ap"] = min(int(meta["max_ap"]), before + defend_ap_restore(int(meta["max_ap"])))
+                if int(meta["ap"]) > before: recovered.append(f"{int(meta['ap'])-before} AP")
+            if int(meta.get("max_mp", 0)) > 0:
+                before = int(meta.get("mp", 0)); meta["mp"] = min(int(meta["max_mp"]), before + defend_mp_restore(int(meta["max_mp"])))
+                if int(meta["mp"]) > before: recovered.append(f"{int(meta['mp'])-before} MP")
+            log.append(f"{meta['name']} Defends" + (f" and recovers {' and '.join(recovered)}." if recovered else "."))
+        elif action["kind"] == "item":
+            self._resolve_active_item(str(twitch_id), meta, action, log)
+        elif action["kind"] == "ability":
+            self._resolve_active_ability(meta, action, monster, log)
+        else:
+            self._resolve_active_attack(meta, monster, log)
+
+        if int(encounter.get("monster_hp", 0)) <= 0:
+            return self._finish_solo_stage_victory(twitch_id, expedition, monster, meta, round_no, log)
+
+        self._solo_resolve_enemy_intent(monster, encounter, log)
+        if int(encounter.get("monster_hp", 0)) <= 0:
+            return self._finish_solo_stage_victory(twitch_id, expedition, monster, meta, round_no, log)
+
+        if has_status(meta.get("statuses", {}), "poison") and int(meta.get("hp", 0)) > 0:
+            poison = max(1, int(int(meta.get("max_hp", 1)) * max(0.03, status_magnitude(meta.get("statuses", {}), "poison"))))
+            meta["hp"] = max(0, int(meta["hp"]) - poison); meta["damage_taken"] = int(meta.get("damage_taken", 0)) + poison
+            log.append(f"{meta['name']} suffers {poison} Poison damage.")
+        if has_status(meta.get("statuses", {}), "regen") and int(meta.get("hp", 0)) > 0:
+            healed = self._apply_battle_heal(meta, meta, status_magnitude(meta.get("statuses", {}), "regen"))
+            if healed: log.append(f"{meta['name']} regenerates {healed} HP.")
+        tick_statuses(meta.setdefault("statuses", {}))
+        meta["action"] = None; meta["defending"] = False
+        self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
+
+        monster_statuses = encounter.setdefault("monster_statuses", {})
+        if has_status(monster_statuses, "regen") and int(encounter.get("monster_hp", 0)) > 0:
+            before = int(encounter["monster_hp"]); heal = max(1, int(int(encounter["monster_max_hp"]) * status_magnitude(monster_statuses, "regen")))
+            encounter["monster_hp"] = min(int(encounter["monster_max_hp"]), before + heal)
+            if int(encounter["monster_hp"]) > before: log.append(f"{monster['name']} regenerates {int(encounter['monster_hp'])-before} HP.")
+        tick_statuses(monster_statuses)
+
+        expedition["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+        expedition.setdefault("round_history", []).append(copy.deepcopy(expedition["last_round"])); expedition["round_history"] = expedition["round_history"][-4:]
+        if int(meta.get("hp", 0)) <= 0:
+            return self._solo_finish_defeat(twitch_id, expedition, monster, meta, round_no, log)
+        if round_no >= int(encounter.get("max_rounds", 12)):
+            return self._solo_finish_defeat(twitch_id, expedition, monster, meta, round_no, log + ["The battle reaches the round safety limit."])
+        encounter["round"] = round_no + 1
+        encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+        combat["encounter"] = copy.deepcopy(encounter); combat["roster"] = copy.deepcopy(self.encounter_roster)
+        expedition["combat"] = combat
+        return GameResult.success(f"ROUND {round_no} — {round_summary(log)}", solo_expedition_round=True, round_log=list(log))
+
+    def _finish_solo_stage_victory(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
+        self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
+        rewards = self._solo_roll_stage_rewards(twitch_id, monster, int(expedition.get("stage", 1)))
+        secured = expedition.setdefault("secured", {"xp": 0, "jp": 0})
+        secured["xp"] = int(secured.get("xp", 0)) + int(rewards["xp"]); secured["jp"] = int(secured.get("jp", 0)) + int(rewards["jp"])
+        spoils = expedition.setdefault("spoils", {"gil": 0, "items": []})
+        spoils["gil"] = int(spoils.get("gil", 0)) + int(rewards["gil"]); spoils.setdefault("items", []).extend(rewards["items"])
+        expedition.setdefault("secured_loot", []).extend(str(value) for value in rewards.get("secured_loot", []))
+        self._record_combat_metrics(
+            twitch_id, meta.get("job_id"), monster["id"], battle_type="venture", won=True, knocked_out=False,
+            damage_dealt=int(meta.get("damage", 0)), damage_taken=int(meta.get("damage_taken", 0)), healing_done=int(meta.get("healing", 0)), best_hit=int(meta.get("best_hit", 0)),
+        )
+        self.db.update_record_stats(twitch_id, {"active_actions": int(meta.get("actions", 0)), "active_abilities": int(meta.get("abilities_used", 0)), "active_items": int(meta.get("items_used", 0)), "active_defends": int(meta.get("defends", 0))})
+        achievements = self._check_achievements(twitch_id)
+        expedition["last_stage"] = {"type": "victory", "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])}, "rounds": round_no, "rewards": rewards, "achievements": achievements[:4]}
+        expedition["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+        expedition.setdefault("history", []).append({"stage": int(expedition.get("stage", 1)), "type": "victory", "label": f"Defeated {monster['name']}"})
+        expedition["combat"] = None; expedition["event"] = {"type": "victory", "monster_id": str(monster["id"])}; expedition["status"] = "choice"
+        if int(expedition.get("stage", 1)) >= SOLO_EXPEDITION_MAX_STAGES:
+            return self._solo_bank_spoils(twitch_id, expedition, outcome="complete")
+        return GameResult.success(
+            f"STAGE {int(expedition.get('stage', 1))} VICTORY — {monster['name']} defeated. +{rewards['xp']} XP / +{rewards['jp']} JP secured; {rewards['gil']} Gil added to expedition spoils.",
+            solo_expedition_stage_complete=True,
+        )
+
+    def _solo_expedition_public(self, twitch_id: str) -> dict[str, Any] | None:
+        expedition = self._solo_expedition_load(twitch_id)
+        if not expedition:
+            return None
+        stage = int(expedition.get("stage", 1))
+        payload: dict[str, Any] = {
+            "active": True, "status": str(expedition.get("status") or "event"), "stage": stage,
+            "max_stages": SOLO_EXPEDITION_MAX_STAGES, "stage_bonus_percent": int(round((self._solo_stage_multiplier(stage)-1.0)*100)),
+            "region": {"id": str(expedition.get("region_id") or ""), "name": str((self.data.regions.get(str(expedition.get("region_id"))) or {}).get("name") or "Unknown Region")},
+            "secured": copy.deepcopy(expedition.get("secured") or {"xp": 0, "jp": 0}),
+            "secured_loot": [str(value) for value in expedition.get("secured_loot", [])],
+            "spoils": {"gil": int((expedition.get("spoils") or {}).get("gil", 0)), "items": copy.deepcopy((expedition.get("spoils") or {}).get("items", []))},
+            "history": copy.deepcopy(list(expedition.get("history") or [])[-6:]),
+            "last_round": copy.deepcopy(expedition.get("last_round")), "last_stage": copy.deepcopy(expedition.get("last_stage")),
+            "can_press_on": str(expedition.get("status")) == "choice" and stage < SOLO_EXPEDITION_MAX_STAGES,
+            "can_return": str(expedition.get("status")) == "choice", "can_retreat": str(expedition.get("status")) == "combat",
+        }
+        if str(expedition.get("status")) == "choice" and (expedition.get("event") or {}).get("type") == "treasure":
+            payload["treasure"] = copy.deepcopy((expedition.get("event") or {}).get("item"))
+        combat = expedition.get("combat") or {}
+        encounter = combat.get("encounter") or {}
+        roster = combat.get("roster") or {}
+        meta = roster.get(str(twitch_id)) if isinstance(roster, dict) else None
+        if encounter and meta:
+            monster = self.data.monsters.get(str(encounter.get("monster_id"))) or {}
+            payload["combat"] = {
+                "round": int(encounter.get("round", 1)),
+                "enemy": {"id": str(monster.get("id") or ""), "name": str(monster.get("name") or "Unknown Enemy"), "level": int(monster.get("level", 1)), "hp": int(encounter.get("monster_hp", 0)), "max_hp": int(encounter.get("monster_max_hp", 0)), "statuses": status_text(encounter.get("monster_statuses", {}), limit=3), "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action")},
+                "player": {"name": str(meta.get("name") or "Hero"), "job_id": str(meta.get("job_id") or ""), "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"), "hp": int(meta.get("hp", 0)), "max_hp": int(meta.get("max_hp", 0)), "mp": int(meta.get("mp", 0)), "max_mp": int(meta.get("max_mp", 0)), "ap": int(meta.get("ap", 0)), "max_ap": int(meta.get("max_ap", 0)), "statuses": status_text(meta.get("statuses", {}), limit=4)},
+                "abilities": self._solo_ability_rows(meta), "items": self._solo_owned_battle_items(twitch_id, meta),
+            }
+        return payload
+
+    @_state_guard
+    def solo_venture(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
+        """Begin a persistent, player-paced Wayfarer Solo Venture."""
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        existing = self._solo_expedition_load(twitch_id)
+        if existing:
+            return GameResult.success("Your Solo Venture is already in progress. Continue it from the Adventure Board.", solo_expedition_active=True)
+        if p["current_job"] == "adventurer":
+            return GameResult.fail("Choose a Job before starting a Solo Venture.")
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return GameResult.fail("Finish your active encounter or raid before starting a Solo Venture.")
+        blocked = self._activity_block(twitch_id)
+        if blocked:
+            return GameResult.fail(blocked)
+        remaining = self._cooldown_remaining(twitch_id, "solo_venture")
+        if remaining > 0 and not bypass_cooldown:
+            return GameResult.fail(f"Solo Venture ready in {self._format_seconds(remaining)}.")
+        p = self._player(twitch_id)
+        now = int(time.time())
+        expedition = {
+            "version": 1, "started_at": now, "updated_at": now, "stage": 1, "max_stages": SOLO_EXPEDITION_MAX_STAGES,
+            "region_id": str(p["current_region"]), "status": "event", "secured": {"xp": 0, "jp": 0}, "secured_loot": [],
+            "spoils": {"gil": 0, "items": []}, "history": [], "round_history": [], "event": None, "combat": None,
+        }
+        self._set_cooldown(twitch_id, "solo_venture", SOLO_VENTURE_COOLDOWN_SECONDS)
+        self.db.execute("UPDATE players SET ventures=ventures+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (twitch_id,))
+        self.db.update_record_stats(twitch_id, {"solo_ventures": 1})
+        self._solo_expedition_save(twitch_id, expedition)
+        return self._solo_begin_stage(twitch_id, expedition)
+
+    @_state_guard
+    def solo_expedition_action(self, twitch_id: str, action_kind: str, action_id: str | None = None) -> GameResult:
+        expedition = self._solo_expedition_load(twitch_id)
+        if not expedition or str(expedition.get("status")) != "combat":
+            return GameResult.fail("No Solo Venture battle is waiting for an action.")
+        combat = expedition.get("combat") or {}; encounter = copy.deepcopy(combat.get("encounter") or {}); roster = copy.deepcopy(combat.get("roster") or {})
+        meta = roster.get(str(twitch_id))
+        if not encounter or not meta or int(meta.get("hp", 0)) <= 0:
+            return GameResult.fail("Your Solo Venture combat state cannot accept an action.")
+        action_kind = str(action_kind or "").lower().strip()
+        if action_kind == "attack":
+            meta["action"] = {"kind": "attack"}
+        elif action_kind == "defend":
+            meta["action"] = {"kind": "defend"}
+        elif action_kind.startswith("ability:"):
+            ability_id = action_kind.split(":", 1)[1]
+            ability = next((row for row in self.data.active_abilities.get(str(meta.get("job_id")), []) if str(row.get("id")) == ability_id), None)
+            job = self.data.jobs.get(str(meta.get("job_id"))) or {}
+            if not ability or int(ability.get("level", 1)) > int(meta.get("job_level", 0)):
+                return GameResult.fail("That ability is not available to your current Job level.")
+            resource = ability_resource(ability, job); cost = ability_cost(ability)
+            if int(meta.get(resource, 0)) < cost:
+                return GameResult.fail(f"{ability['name']} needs {cost} {resource.upper()}.")
+            if resource == "mp" and has_status(meta.get("statuses", {}), "silence"):
+                return GameResult.fail("Silence prevents that MP ability.")
+            if any(effect.get("type") == "revive" for effect in ability.get("effects", [])):
+                return GameResult.fail("Revive abilities need another KO'd ally and cannot be used in a Solo Venture.")
+            target_mode = str(ability.get("target") or "enemy")
+            target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+            meta["action"] = {"kind": "ability", "ability_id": str(ability["id"]), "target_id": target_id, "resource": resource, "cost": cost}
+        elif action_kind.startswith("item:"):
+            item_id = action_kind.split(":", 1)[1]
+            item = self.data.items.get(item_id); use = item.get("use") if item and isinstance(item.get("use"), dict) else None
+            if not item or not use or self._inventory_qty(twitch_id, item_id) <= 0:
+                return GameResult.fail("That battle item is not available.")
+            if any(effect.get("type") == "revive" for effect in use.get("effects", [])):
+                return GameResult.fail("Revive items cannot be used on your conscious hero in a Solo Venture.")
+            target_mode = str(use.get("target", "ally")); target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+            meta["action"] = {"kind": "item", "item_id": item_id, "target_id": target_id}
+        else:
+            return GameResult.fail("Choose Attack, Ability, Use Item, or Defend.")
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter, self.encounter_roster = encounter, roster
+            result = self._advance_solo_expedition_round(twitch_id, expedition)
+            if self._solo_expedition_load(twitch_id) is not None:
+                expedition["combat"] = {"encounter": copy.deepcopy(self.active_encounter), "roster": copy.deepcopy(self.encounter_roster)} if expedition.get("status") == "combat" else None
+                self._solo_expedition_save(twitch_id, expedition)
+            return result
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
+
+    @_state_guard
+    def solo_expedition_continue(self, twitch_id: str) -> GameResult:
+        expedition = self._solo_expedition_load(twitch_id)
+        if not expedition or str(expedition.get("status")) != "choice":
+            return GameResult.fail("There is no cleared Solo Venture stage to continue from.")
+        if int(expedition.get("stage", 1)) >= SOLO_EXPEDITION_MAX_STAGES:
+            return self._solo_bank_spoils(twitch_id, expedition, outcome="complete")
+        expedition["stage"] = int(expedition.get("stage", 1)) + 1
+        expedition["last_round"] = None; expedition["last_stage"] = None
+        self._solo_expedition_save(twitch_id, expedition)
+        return self._solo_begin_stage(twitch_id, expedition)
+
+    @_state_guard
+    def solo_expedition_return(self, twitch_id: str) -> GameResult:
+        expedition = self._solo_expedition_load(twitch_id)
+        if not expedition or str(expedition.get("status")) != "choice":
+            return GameResult.fail("You can return safely after clearing the current Solo Venture stage.")
+        return self._solo_bank_spoils(twitch_id, expedition, outcome="returned")
+
+    @_state_guard
+    def solo_expedition_retreat(self, twitch_id: str) -> GameResult:
+        expedition = self._solo_expedition_load(twitch_id)
+        if not expedition or str(expedition.get("status")) != "combat":
+            return GameResult.fail("There is no active Solo Venture battle to retreat from.")
+        combat = expedition.get("combat") or {}; roster = combat.get("roster") or {}; meta = roster.get(str(twitch_id)) or {}
+        if meta:
+            self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
+        secured = expedition.get("secured") or {}; lost = expedition.get("spoils") or {}
+        summary = {"type": "expedition", "outcome": "retreat", "title": "Solo Venture Retreat", "region_name": str((self.data.regions.get(str(expedition.get("region_id"))) or {}).get("name") or "Unknown Region"), "stages": int(expedition.get("stage", 1)), "rewards": {"xp": int(secured.get("xp", 0)), "jp": int(secured.get("jp", 0)), "gil": 0, "loot": [str(x) for x in expedition.get("secured_loot", [])], "secured_loot": [str(x) for x in expedition.get("secured_loot", [])], "fellowship_renown": 0, "achievements": []}, "lost_spoils": {"gil": int(lost.get("gil", 0)), "items": [str(x.get("name") or x.get("id")) for x in list(lost.get("items") or [])]}, "history": list(expedition.get("history") or [])[-8:], "player": self._solo_result_vitals(twitch_id), "interactive": True}
+        self._remember_adventure_result(twitch_id, summary); self._solo_expedition_delete(twitch_id)
+        return GameResult.success("SOLO VENTURE — You retreat safely. Secured XP/JP remain; expedition Gil and loose spoils are abandoned.", solo_result=summary, solo_expedition_finished=True)
 
     @_state_guard
     def venture(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
@@ -1156,124 +1737,6 @@ class CrystalGuildEngine:
             encounter_id=encounter_id,
             closes_at=self.active_encounter["closes_at"],
         )
-
-    @_state_guard
-    def solo_venture(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
-        """Start one Portal-only private Venture with no rally.
-
-        Solo Venture intentionally shares the normal combat/reward engine but
-        uses a separate seven-minute cooldown, a +3 enemy cap, a 50/50
-        Encounter/Treasure split, and half normal Venture Fellowship Renown.
-        """
-        p = self._player(twitch_id)
-        if not p:
-            return self._need_recruit()
-        if self.active_boss:
-            return GameResult.fail(
-                f"A raid against {self.active_boss['name']} is active. Finish it before starting a Solo Venture."
-            )
-        if self.active_encounter:
-            if twitch_id in self.encounter_roster:
-                return self.encounter_status()
-            return GameResult.fail("Another field battle is already active. Solo Venture can begin when it resolves.")
-        if p["current_job"] == "adventurer":
-            return GameResult.fail("Choose a Job before starting a Solo Venture.")
-        blocked = self._activity_block(twitch_id)
-        if blocked:
-            return GameResult.fail(blocked)
-        remaining = self._cooldown_remaining(twitch_id, "solo_venture")
-        if remaining > 0 and not bypass_cooldown:
-            return GameResult.fail(f"Solo Venture ready in {self._format_seconds(remaining)}.")
-
-        p = self._player(twitch_id)
-        region = self.data.regions[p["current_region"]]
-        treasure_roll = SOLO_VENTURE_TREASURE_CHANCE >= 1.0 or (
-            SOLO_VENTURE_TREASURE_CHANCE > 0.0 and self.rng.random() < SOLO_VENTURE_TREASURE_CHANCE
-        )
-        if treasure_roll:
-            treasure = self._resolve_solo_venture_treasure(twitch_id, p, region)
-            if treasure is not None:
-                return treasure
-
-        max_monster_level = int(p["level"]) + SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER
-        eligible_encounters = [
-            encounter
-            for encounter in region["encounters"]
-            if int(self.data.monsters[encounter["monster_id"]]["level"]) <= max_monster_level
-        ]
-        if not eligible_encounters:
-            return GameResult.fail(
-                f"No Solo Venture monsters within +{SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER} levels are available in {region['name']} right now."
-            )
-        encounter = self.rng.choices(
-            eligible_encounters,
-            weights=[e["weight"] for e in eligible_encounters],
-            k=1,
-        )[0]
-        monster = self.data.monsters[encounter["monster_id"]]
-        now = time.time()
-        self._encounter_seq += 1
-        encounter_id = self._encounter_seq
-        self.active_encounter = {
-            "id": encounter_id,
-            "kind": "solo_venture",
-            "state": "combat",
-            "monster_id": monster["id"],
-            "region_id": region["id"],
-            "created_at": int(now),
-            "starter_id": twitch_id,
-        }
-        self.encounter_roster = {
-            twitch_id: {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}
-        }
-        combatants, _, monster_max = self._initialize_active_combat(self.active_encounter)
-        if combatants == 0:
-            self._clear_encounter(encounter_id)
-            return GameResult.fail("Solo Venture cannot begin while your hero is unable to fight.")
-
-        self._set_cooldown(twitch_id, "solo_venture", SOLO_VENTURE_COOLDOWN_SECONDS)
-        self.db.execute(
-            "UPDATE players SET ventures=ventures+1, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
-            (twitch_id,),
-        )
-        self.db.update_record_stats(twitch_id, {"solo_ventures": 1, "solo_venture_encounters": 1})
-
-        # Solo Venture is a one-click Portal activity. Encounters use the same
-        # authoritative combat math and reward path as Active Battle, but all
-        # rounds are resolved synchronously with the normal no-input default
-        # action instead of creating a timed battle the player must watch.
-        final_result: GameResult | None = None
-        max_rounds = int(self.active_encounter.get("max_rounds", 12)) if self.active_encounter else 12
-        for _ in range(max_rounds + 1):
-            if not self.active_encounter or int(self.active_encounter.get("id", -1)) != encounter_id:
-                break
-            round_result = self.advance_encounter_round(encounter_id)
-            if not round_result.ok:
-                final_result = round_result
-                break
-            if round_result.data.get("encounter_finished"):
-                final_result = round_result
-                break
-
-        if final_result is None:
-            if self.active_encounter and int(self.active_encounter.get("id", -1)) == encounter_id:
-                self._clear_encounter(encounter_id)
-            return GameResult.fail("Solo Venture could not finish cleanly. No additional action was taken.")
-
-        final_result.data.update({
-            "solo_venture": True,
-            "solo_venture_event": "encounter",
-            "venture_event": "solo_encounter",
-            "resolved_immediately": True,
-            "encounter_started": False,
-            "battle_started": False,
-            "encounter_id": encounter_id,
-            "monster_id": str(monster["id"]),
-            "monster_name": str(monster["name"]),
-            "monster_level": int(monster["level"]),
-            "region_name": str(region["name"]),
-        })
-        return final_result
 
     @_state_guard
     def join_encounter(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
@@ -3714,6 +4177,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change equipment after committing to an active encounter or raid.")
         item = self._find_by_name_or_id(self.data.items, item_query)
@@ -3744,6 +4209,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change equipment after committing to an active encounter or raid.")
         normalized = self._norm(slot)
@@ -3929,6 +4396,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before shopping for new supplies.")
         if quantity < 1 or quantity > 99:
             return GameResult.fail("Quantity must be between 1 and 99.")
         item, _ = self._find_shop_offer(twitch_id, item_query)
@@ -4222,6 +4691,8 @@ class CrystalGuildEngine:
         camp_remaining = self._camp_remaining(twitch_id)
         joined_encounter = twitch_id in self.encounter_roster
         joined_raid = twitch_id in self.raid_roster
+        solo_expedition = self._solo_expedition_public(twitch_id)
+        solo_expedition_active = bool(solo_expedition)
         ko = bool(p["current_job"] != "adventurer" and int(p["current_hp"] or 0) <= 0)
         resting = camp_remaining > 0
         activity_reason = (
@@ -4251,6 +4722,8 @@ class CrystalGuildEngine:
                 reason = activity_reason
             elif joined_encounter or joined_raid:
                 reason = "Finish your active encounter or raid before traveling."
+            elif solo_expedition_active:
+                reason = "Return from your Solo Venture before traveling."
             regions.append({
                 "id": str(region["id"]),
                 "name": str(region["name"]),
@@ -4258,7 +4731,7 @@ class CrystalGuildEngine:
                 "min_level": int(region.get("min_level", 1)),
                 "current": str(region["id"]) == str(p["current_region"]),
                 "unlocked": unlocked,
-                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid),
+                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not solo_expedition_active),
                 "reason": reason,
             })
 
@@ -4351,12 +4824,14 @@ class CrystalGuildEngine:
         venture_ready = not venture_reason
 
         solo_venture_reason = ""
-        if p["current_job"] == "adventurer":
+        if solo_expedition_active:
+            solo_venture_reason = "Solo Venture in progress."
+        elif p["current_job"] == "adventurer":
             solo_venture_reason = "Choose a Job before starting a Solo Venture."
         elif resting or ko:
             solo_venture_reason = activity_reason
-        elif global_battle_reason:
-            solo_venture_reason = global_battle_reason
+        elif joined_encounter or joined_raid:
+            solo_venture_reason = "Finish your active encounter or raid before starting a Solo Venture."
         elif solo_venture_remaining > 0:
             solo_venture_reason = f"Solo Venture ready in {self._format_seconds(solo_venture_remaining)}."
         solo_venture_ready = not solo_venture_reason
@@ -4379,6 +4854,8 @@ class CrystalGuildEngine:
                 reason_parts.append(activity_reason)
             if global_battle_reason:
                 reason_parts.append(global_battle_reason)
+            if solo_expedition_active:
+                reason_parts.append("Return from your Solo Venture before accepting a Hunt.")
             if not met:
                 reason_parts.extend(str(value) for value in missing[:4])
             if remaining > 0:
@@ -4500,7 +4977,11 @@ class CrystalGuildEngine:
                 "fellowship_renown": int(SOLO_VENTURE_FELLOWSHIP_RENOWN),
                 "fellowship_percent": 50,
                 "portal_only": True,
-                "resolves_immediately": True,
+                "interactive": True,
+                "max_stages": int(SOLO_EXPEDITION_MAX_STAGES),
+                "stage_bonus_percent": int(round(SOLO_EXPEDITION_STAGE_BONUS * 100)),
+                "resolves_immediately": False,
+                "expedition": solo_expedition,
             },
             "encounter": encounter_payload,
             "hunts": hunts,
@@ -4870,6 +5351,38 @@ class CrystalGuildEngine:
         if replay is not None:
             return replay
         result = self.solo_venture(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_solo_expedition_action(self, twitch_id: str, action_kind: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.solo_expedition_action(twitch_id, action_kind)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_solo_expedition_continue(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.solo_expedition_continue(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_solo_expedition_return(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.solo_expedition_return(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_solo_expedition_retreat(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.solo_expedition_retreat(twitch_id)
         return self._portal_adventure_mutation_result(action_id, result, twitch_id)
 
     @_state_guard
@@ -5275,12 +5788,14 @@ class CrystalGuildEngine:
         row = self.db.one("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,))
         available_at = int(row["available_at"] or 0) if row else 0
         remaining = max(0, available_at - now)
+        solo_blocked = bool(self._solo_expedition_load(twitch_id))
         base_low, base_high = daily_gil_range(int(p["level"] or 1))
         low, high = daily_gil_with_perk(base_low, base_high, subscriber_tier)
         preview = provision_preview(int(p["level"] or 1), subscriber_tier)
         return {
-            "available": remaining <= 0,
+            "available": remaining <= 0 and not solo_blocked,
             "available_at": available_at if remaining > 0 else 0,
+            "blocked_reason": "Return or retreat from your Solo Venture before collecting new provisions." if solo_blocked else "",
             "remaining_seconds": remaining,
             "gil_min": int(low),
             "gil_max": int(high),
@@ -5344,6 +5859,11 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        if self._solo_expedition_load(twitch_id):
+            return self._portal_store_nonmutating_result(
+                action_id,
+                GameResult.fail("Return or retreat from your Solo Venture before collecting new Daily Guild Provisions.", daily_state=self._portal_daily_state_data(twitch_id, subscriber_tier)),
+            )
         now = int(time.time())
         with self.db.tx() as conn:
             cooldown = conn.execute("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,)).fetchone()
@@ -5868,6 +6388,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before selling inventory.")
         if quantity < 1 or quantity > 99:
             return GameResult.fail("Quantity must be between 1 and 99.")
         item = self._find_by_name_or_id(self.data.items, item_query)
@@ -5937,6 +6459,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before crafting supplies.")
         if quantity < 1 or quantity > 20:
             return GameResult.fail("Craft quantity must be between 1 and 20.")
         recipe = self._find_by_name_or_id(self.data.recipes, recipe_query)
@@ -5980,6 +6504,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before forging equipment.")
         item = self._find_by_name_or_id(self.data.items, item_query)
         if not item or item["type"] not in {"weapon", "armor", "accessory"}:
             return GameResult.fail("Only weapons, armor, and accessories can be forged.")
@@ -6036,6 +6562,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before visiting the Quartermaster.")
         if quantity < 1 or quantity > 20:
             return GameResult.fail("Quantity must be between 1 and 20.")
         entry = self._find_by_name_or_id(self.data.seal_shop, entry_query)
@@ -6098,6 +6626,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before advancing a Relic.")
         relic = self._find_by_name_or_id(self.data.relics, relic_query)
         if not relic:
             return GameResult.fail("Relic not found.")
@@ -6309,6 +6839,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Return or retreat from your Solo Venture before collecting new Daily Guild Provisions.")
         remaining = self._cooldown_remaining(twitch_id, "daily")
         if remaining > 0:
             return GameResult.fail(f"Daily provisions already claimed. Return in {self._format_seconds(remaining)}.")
@@ -7713,6 +8245,8 @@ class CrystalGuildEngine:
             return f"Your hero is resting at camp for another {self._format_seconds(remaining)}. Full HP/MP/AP recovery awaits; patience is apparently a stat now."
         if p["current_hp"] <= 0 and p["current_job"] != "adventurer":
             return "Your hero is KO'd. Use !rest for a 30-minute camp recovery, !use phoenix down, or !use tent."
+        if self._solo_expedition_load(player_id):
+            return "Your hero is currently on a Solo Venture. Return or retreat from the Adventure Board first."
         return None
 
     def _set_cooldown(self, player_id: str, action: str, seconds: int) -> None:

@@ -78,8 +78,11 @@ VENTURE_MAX_LEVEL_ABOVE_PLAYER = 10
 # rally play, while Solo Venture keeps its tighter +3 enemy ceiling.
 SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER = 3
 SOLO_VENTURE_COOLDOWN_SECONDS = 7 * 60
-SOLO_VENTURE_TREASURE_CHANCE = 0.50
+SOLO_VENTURE_TREASURE_CHANCE = 0.40
 SOLO_VENTURE_FELLOWSHIP_RENOWN = 4
+SOLO_EXPEDITION_MAX_STAGES = 3
+SOLO_EXPEDITION_STAGE_BONUS = 0.15
+SOLO_EXPEDITION_DEFEAT_GIL_KEEP = 0.50
 
 # Ventures are now event-driven rather than guaranteed combat. Combat remains
 # the primary result, but treasure discoveries are common enough to make

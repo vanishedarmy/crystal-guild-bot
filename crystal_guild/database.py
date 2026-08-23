@@ -250,7 +250,8 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- Sequential local database migrations. Version 1 represents the legacy
 -- pre-migration Crystal Guild schema; version 2 adds persistent MP/AP;
 -- version 3 adds additive Fellowship progression tables; version 4 adds
--- persistent Chocobo companion and registration-writ state.
+-- persistent Chocobo companion and registration-writ state; version 5 adds
+-- persistent per-player Wayfarer Solo Expedition state.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -258,7 +259,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 4
+DATABASE_SCHEMA_VERSION = 5
 
 
 class Database:
@@ -511,6 +512,35 @@ class Database:
                     ON player_chocobos(level DESC, xp DESC);
                     INSERT OR IGNORE INTO fellowship_facilities(facility_id,tier) VALUES ('chocobo_stable',0);
                     INSERT INTO schema_migrations(version,name) VALUES (4,'chocobo_companions');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+
+        already_v5 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=5").fetchone()
+        )
+        if not already_v5:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(5)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS solo_expeditions (
+                        player_id TEXT PRIMARY KEY,
+                        state_json TEXT NOT NULL,
+                        started_at INTEGER NOT NULL,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_solo_expeditions_updated
+                    ON solo_expeditions(updated_at DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (5,'wayfarer_solo_expeditions');
                     COMMIT;
                     """
                 )

@@ -16,7 +16,7 @@ from .data import GameData
 from .fellowship import (DEEDS, FACILITIES, GUILD_RANKS, PROJECTS, facility_effects, fellowship_level_progress, guild_rank_for_renown, weekly_orders, weekly_period_key)
 
 
-SNAPSHOT_VERSION = "1.1.14-cloud-continuity"
+SNAPSHOT_VERSION = "1.1.15-wayfarer"
 
 
 class PortalRepository:

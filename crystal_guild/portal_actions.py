@@ -14,7 +14,7 @@ from urllib.request import Request, urlopen
 from .engine import CrystalGuildEngine
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 12
+ACTION_PROTOCOL_VERSION = 13
 
 
 class PortalActionWorker:
@@ -366,10 +366,22 @@ class PortalActionWorker:
             return self._game_result(result)
         if action_type == "SOLO_VENTURE":
             action_id = str(action.get("id") or "")
-            # Solo Venture is a Portal-only, one-click activity. Encounter
-            # rounds resolve synchronously inside the engine, so there is no
-            # lingering battle to wake and nothing is bridged into Twitch.
             result = self.game.portal_solo_venture(twitch_id, action_id)
+            return self._game_result(result)
+        if action_type == "SOLO_EXPEDITION_ACTION":
+            action_kind = str(payload.get("action") or "").strip()
+            if not action_kind:
+                return False, "Solo Venture action is missing.", {}
+            result = self.game.portal_solo_expedition_action(twitch_id, action_kind, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "SOLO_EXPEDITION_CONTINUE":
+            result = self.game.portal_solo_expedition_continue(twitch_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "SOLO_EXPEDITION_RETURN":
+            result = self.game.portal_solo_expedition_return(twitch_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "SOLO_EXPEDITION_RETREAT":
+            result = self.game.portal_solo_expedition_retreat(twitch_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "CHALLENGE_HUNT":
             hunt_id = str(payload.get("hunt_id") or "").strip()
