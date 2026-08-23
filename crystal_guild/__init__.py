@@ -1,3 +1,3 @@
 """Crystal Guild Twitch RPG bot."""
 
-__version__ = "1.1.14-cloud-continuity-h2"
+__version__ = "1.1.14-cloud-continuity-h3"

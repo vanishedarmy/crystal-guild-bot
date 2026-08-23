@@ -167,12 +167,12 @@ class RPGCommands(commands.Component):
         # round recaps remain available on demand without affecting timers.
         await send_result(ctx, self.game.battle_log(), limit=4)
 
-    # Active Battle commands intentionally remain thin adapters. All validation,
+    # Active Battle commands (also reused by Raid rounds) intentionally remain thin adapters. All validation,
     # targeting and combat math live in CrystalGuildEngine so Twitch delivery
     # cannot become a second source of gameplay rules.
     @commands.command()
     async def attack(self, ctx: commands.Context) -> None:
-        if not await self._require_stream_live(ctx, "Active Battle actions"):
+        if not await self._require_stream_live(ctx, "Combat actions"):
             return
         uid, _, _ = _identity(ctx)
         # Queue intent only. The scheduler owns the round deadline.
@@ -180,7 +180,7 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["skill", "cast"])
     async def ability(self, ctx: commands.Context, *, ability_name: str | None = None) -> None:
-        if not await self._require_stream_live(ctx, "Active Battle actions"):
+        if not await self._require_stream_live(ctx, "Combat actions"):
             return
         uid, _, _ = _identity(ctx)
         # Queue intent only. Never use chat traffic as a timer callback.
@@ -188,7 +188,7 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["guard"])
     async def defend(self, ctx: commands.Context) -> None:
-        if not await self._require_stream_live(ctx, "Active Battle actions"):
+        if not await self._require_stream_live(ctx, "Combat actions"):
             return
         uid, _, _ = _identity(ctx)
         await send_result(ctx, self.game.battle_defend(uid))
@@ -201,6 +201,12 @@ class RPGCommands(commands.Component):
     @commands.command()
     async def use(self, ctx: commands.Context, *, item_name: str) -> None:
         uid, _, _ = _identity(ctx)
+        in_timed_combat = (
+            bool(self.game.active_encounter and self.game.active_encounter.get("state") == "combat" and uid in self.game.encounter_roster)
+            or bool(self.game.active_boss and self.game.active_boss.get("state") == "combat" and uid in self.game.raid_roster)
+        )
+        if in_timed_combat and not await self._require_stream_live(ctx, "Combat actions"):
+            return
         await send_result(ctx, self.game.use_item(uid, item_name))
 
     @commands.command(aliases=["region"])

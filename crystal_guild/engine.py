@@ -713,6 +713,8 @@ class CrystalGuildEngine:
         # consumed only after their data-driven effects resolve successfully.
         if twitch_id in self.encounter_roster and self.active_encounter and self.active_encounter.get("state") == "combat":
             return self.battle_item(twitch_id, item_query)
+        if twitch_id in self.raid_roster and self.active_boss and self.active_boss.get("state") == "combat":
+            return self.battle_item(twitch_id, item_query)
         item = self._find_by_name_or_id(self.data.items, item_query)
         use = item.get("use") if item else None
         if not item or not isinstance(use, dict) or not use.get("field"):
@@ -1628,8 +1630,157 @@ class CrystalGuildEngine:
         living = [m for m in self.encounter_roster.values() if int(m.get("hp", 0)) > 0]
         return bool(living and all(m.get("action") for m in living))
 
+    def _raid_actor(self, twitch_id: str) -> tuple[dict[str, Any] | None, GameResult | None]:
+        """Return one living raid participant while the current round accepts input."""
+        if not self.active_boss or self.active_boss.get("state") != "combat":
+            return None, GameResult.fail("No active raid is accepting actions right now.")
+        due = float(self.active_boss.get("next_round_at") or 0)
+        if due and time.time() >= due:
+            return None, GameResult.fail(
+                "That raid round timer has closed and resolution is already pending. "
+                "Wait for the next round announcement."
+            )
+        meta = self.raid_roster.get(str(twitch_id))
+        if not meta:
+            return None, GameResult.fail("You are not part of the active raid.")
+        # Hotfix compatibility: a Raid recovered from a pre-action-queue runtime
+        # checkpoint has the legacy contribution fields but not Active Battle
+        # stats/resources. Hydrate it lazily without changing the checkpoint schema.
+        if "stats" not in meta or "effects" not in meta:
+            self._initialize_raid_combat()
+            meta = self.raid_roster.get(str(twitch_id))
+            if not meta:
+                return None, GameResult.fail("You are not part of the active raid.")
+        if int(meta.get("hp", 0)) <= 0:
+            return None, GameResult.fail("You are KO'd and cannot act. An ally can use Raise, a Phoenix Down, or !revive on you.")
+        return meta, None
+
+    def _all_raid_actions_queued(self) -> bool:
+        if not self.active_boss or self.active_boss.get("state") != "combat":
+            return False
+        living = [m for m in self.raid_roster.values() if int(m.get("hp", 0)) > 0]
+        return bool(living and all(m.get("action") for m in living))
+
+    def _raid_target_id(self, query: str, *, default_id: str | None = None) -> str | None:
+        token = normalize_action_text(query)
+        if not token:
+            return default_id
+        exact: list[str] = []
+        partial: list[str] = []
+        for pid, meta in self.raid_roster.items():
+            names = {
+                normalize_action_text(str(meta.get("name", ""))),
+                normalize_action_text(str(meta.get("username", ""))),
+                normalize_action_text(str(pid)),
+            }
+            if token in names:
+                exact.append(pid)
+            elif any(name and (name.startswith(token) or token.startswith(name)) for name in names):
+                partial.append(pid)
+        if len(exact) == 1:
+            return exact[0]
+        if len(partial) == 1:
+            return partial[0]
+        return None
+
+    def _queue_raid_ability(self, twitch_id: str, ability_query: str | None) -> GameResult:
+        meta, error = self._raid_actor(twitch_id)
+        if error:
+            return error
+        catalog = self.data.active_abilities.get(meta["job_id"], [])
+        unlocked = unlocked_abilities(catalog, int(meta.get("job_level", 0)))
+        if not ability_query:
+            job = self.data.jobs.get(meta["job_id"])
+            text = " | ".join(
+                f"{ability['name']} ({ability_cost(ability)}{ability_resource(ability, job).upper()}, {ability['target']})"
+                for ability in unlocked
+            ) or "none"
+            return GameResult.success(f"{self.data.jobs[meta['job_id']]['name']} Raid Abilities — {text}")
+
+        ability, target_query = match_ability(unlocked, ability_query)
+        if not ability:
+            names = ", ".join(row["name"] for row in unlocked) or "none"
+            return GameResult.fail(f"Active ability not found or not unlocked. Available: {names}.")
+        job = self.data.jobs.get(meta["job_id"])
+        resource = ability_resource(ability, job)
+        cost = ability_cost(ability)
+        if resource == "mp" and has_status(meta.get("statuses", {}), "silence"):
+            return GameResult.fail(f"{meta['name']} is Silenced and cannot use MP abilities this raid round.")
+        if int(meta.get(resource, 0)) < cost:
+            return GameResult.fail(f"{ability['name']} costs {cost} {resource.upper()}; you have {meta.get(resource, 0)}.")
+
+        target_type = ability.get("target")
+        needs_ko = any(effect.get("type") == "revive" for effect in ability.get("effects", []))
+        if target_type == "enemy":
+            target_id = "boss"
+        elif target_type == "party":
+            target_id = "party"
+        elif target_type == "self":
+            target_id = str(twitch_id)
+        else:
+            target_id = self._raid_target_id(target_query, default_id=None if needs_ko else str(twitch_id))
+            if not target_id:
+                return GameResult.fail(f"Choose a clear raid ally target. Example: !ability {ability['name']} <hero>.")
+        if needs_ko:
+            target = self.raid_roster.get(target_id)
+            if not target or int(target.get("hp", 0)) > 0:
+                return GameResult.fail(f"{ability['name']} needs a KO'd ally target. Example: !ability {ability['name']} <hero>.")
+
+        meta["action"] = {
+            "kind": "ability", "ability_id": ability["id"], "target_id": target_id,
+            "resource": resource, "cost": cost,
+        }
+        target_name = self.raid_roster.get(target_id, {}).get("name", "boss" if target_id == "boss" else "party")
+        return GameResult.success(
+            f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: "
+            f"{ability['name']} → {target_name} ({cost}{resource.upper()}).",
+            all_actions_queued=self._all_raid_actions_queued(),
+        )
+
+    def _queue_raid_item(self, twitch_id: str, item_query: str) -> GameResult:
+        meta, error = self._raid_actor(twitch_id)
+        if error:
+            return error
+        item, target_query = self._match_battle_item(item_query)
+        if not item:
+            return GameResult.fail("Battle item not found. Use !inventory consumable to see owned combat items.")
+        if self._inventory_qty(twitch_id, item["id"]) <= 0:
+            return GameResult.fail(f"You do not own {item['name']}.")
+        use = item.get("use", {})
+        target_mode = str(use.get("target", "ally"))
+        effects = use.get("effects", [])
+        if target_mode == "enemy":
+            target_id, target_name = "boss", self.active_boss["name"]
+        elif target_mode == "party":
+            target_id, target_name = "party", "raid party"
+        elif target_mode == "self":
+            target_id, target_name = str(twitch_id), meta["name"]
+        else:
+            requires_revive = any(effect.get("type") == "revive" for effect in effects)
+            target_id = self._raid_target_id(target_query, default_id=None if requires_revive else str(twitch_id))
+            if not target_id:
+                return GameResult.fail(f"Choose a clear raid ally target. Example: !use {item['name']} <hero>.")
+            target_name = self.raid_roster[target_id]["name"]
+        target = self.raid_roster.get(target_id) if target_id not in {"boss", "party"} else None
+        if any(effect.get("type") == "revive" for effect in effects) and (not target or int(target.get("hp", 0)) > 0):
+            return GameResult.fail(f"{item['name']} needs a KO'd raid ally target. Example: !use {item['name']} <hero>.")
+        meta["action"] = {"kind": "item", "item_id": item["id"], "target_id": target_id}
+        return GameResult.success(
+            f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: {item['name']} → {target_name}.",
+            all_actions_queued=self._all_raid_actions_queued(),
+        )
+
     @_state_guard
     def battle_attack(self, twitch_id: str) -> GameResult:
+        if self.active_boss and self.active_boss.get("state") == "combat" and str(twitch_id) in self.raid_roster:
+            meta, error = self._raid_actor(twitch_id)
+            if error:
+                return error
+            meta["action"] = {"kind": "attack"}
+            return GameResult.success(
+                f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: Attack.",
+                all_actions_queued=self._all_raid_actions_queued(),
+            )
         meta, error = self._active_actor(twitch_id)
         if error:
             return error
@@ -1642,6 +1793,15 @@ class CrystalGuildEngine:
 
     @_state_guard
     def battle_defend(self, twitch_id: str) -> GameResult:
+        if self.active_boss and self.active_boss.get("state") == "combat" and str(twitch_id) in self.raid_roster:
+            meta, error = self._raid_actor(twitch_id)
+            if error:
+                return error
+            meta["action"] = {"kind": "defend"}
+            return GameResult.success(
+                f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: Defend.",
+                all_actions_queued=self._all_raid_actions_queued(),
+            )
         meta, error = self._active_actor(twitch_id)
         if error:
             return error
@@ -1682,6 +1842,8 @@ class CrystalGuildEngine:
         only spent when the round resolves. A later command may safely replace
         this action without refund bookkeeping.
         """
+        if self.active_boss and self.active_boss.get("state") == "combat" and str(twitch_id) in self.raid_roster:
+            return self._queue_raid_ability(twitch_id, ability_query)
         meta, error = self._active_actor(twitch_id)
         if error:
             return error
@@ -1779,6 +1941,8 @@ class CrystalGuildEngine:
 
     @_state_guard
     def battle_item(self, twitch_id: str, item_query: str) -> GameResult:
+        if self.active_boss and self.active_boss.get("state") == "combat" and str(twitch_id) in self.raid_roster:
+            return self._queue_raid_item(twitch_id, item_query)
         meta, error = self._active_actor(twitch_id)
         if error:
             return error
@@ -6259,9 +6423,12 @@ class CrystalGuildEngine:
         job = self.data.jobs[p["current_job"]]
         max_hp = self._max_hp(p)
         self.raid_roster[twitch_id] = {
-            "name": p["display_name"], "job_id": job["id"], "hp": min(int(p["current_hp"]), max_hp), "max_hp": max_hp,
+            "name": p["display_name"], "username": p["username"], "job_id": job["id"],
+            "hp": min(int(p["current_hp"]), max_hp), "max_hp": max_hp,
             "damage": 0, "healing": 0, "damage_taken": 0, "best_hit": 0,
             "mitigation": 0, "limit": 0, "limit_armed": False, "ko_counted": False,
+            "action": None, "statuses": {}, "defending": False,
+            "actions": 0, "abilities_used": 0, "items_used": 0, "defends": 0,
         }
         self._update_raid_overlay()
         warning = ""
@@ -6283,6 +6450,193 @@ class CrystalGuildEngine:
         enrage = " | ENRAGED" if boss.get("round",0) >= boss.get("enrage_round",99) else ""
         return GameResult.success(f"{boss['name']} | HP {boss['current_hp']:,}/{boss['max_hp']:,} | R{boss['round']} | Phase: {phase['name']} | Heroes {alive}/{len(self.raid_roster)}{enrage}")
 
+    def _initialize_raid_combat(self) -> int:
+        """Hydrate Raid participants with the same action/resource state used by Active Battle."""
+        combatants = 0
+        for pid, meta in list(self.raid_roster.items()):
+            self._finish_rest_if_ready(pid)
+            p = self._player(pid)
+            if not p or p["current_job"] == "adventurer" or int(p["current_hp"]) <= 0:
+                meta.update({"hp": 0, "max_hp": 0, "mp": 0, "max_mp": 0, "ap": 0, "max_ap": 0, "action": None, "statuses": {}})
+                continue
+            job_id = meta.get("job_id") if meta.get("job_id") in self.data.jobs else p["current_job"]
+            job = self.data.jobs[job_id]
+            effects = self._effects(pid, job_id)
+            stats = self._stats(p, job, effects)
+            traits = self._equipment_traits(p, job)
+            resources = self._resource_state_for(p, job, stats)
+            meta.update({
+                "name": p["display_name"], "username": p["username"], "job_id": job_id,
+                "job_level": self._job_level(pid, job_id), "stance": p["stance"],
+                "stats": stats, "effects": effects,
+                "status_immune": traits["status_immune"], "status_resist": traits["status_resist"],
+                "weapon_element": traits["weapon_element"], "on_hit_status": traits["on_hit_status"],
+                "lifesteal": traits["lifesteal"],
+                "hp": min(int(p["current_hp"]), int(stats["hp"])), "max_hp": int(stats["hp"]),
+                "mp": int(resources["mp"]), "max_mp": int(resources["max_mp"]),
+                "ap": int(resources["ap"]), "max_ap": int(resources["max_ap"]),
+                "statuses": {}, "action": None, "defending": False,
+                "actions": int(meta.get("actions", 0)), "abilities_used": int(meta.get("abilities_used", 0)),
+                "items_used": int(meta.get("items_used", 0)), "defends": int(meta.get("defends", 0)),
+            })
+            combatants += 1
+        if self.active_boss is not None:
+            self.active_boss["statuses"] = {}
+        return combatants
+
+    def _raid_base_damage(self, meta: dict[str, Any], *, power: float = 1.0, scaling: str | None = None, support_bonus: float = 0.0) -> int:
+        """Raid damage keeps the established aggregate formula; abilities only scale its power."""
+        stats = meta["stats"]
+        effects = meta["effects"]
+        job = self.data.jobs[meta["job_id"]]
+        base = stats["str"] * 3.0 + stats["mag"] * 2.4 + stats["attack"] * 2.4 + stats["magic_power"] * 2.1
+        multiplier = 1 + effects.get("damage_mult", 0) + support_bonus
+        multiplier *= player_outgoing_status_multiplier(meta.get("statuses", {}))
+        if self.active_boss:
+            multiplier *= incoming_vulnerability_multiplier(self.active_boss.get("statuses", {}))
+        return max(1, int(base * float(job.get("damage_mod", 1.0)) * float(power) * self.rng.uniform(1.05, 1.45) * multiplier))
+
+    def _apply_raid_limit(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str]) -> int:
+        if meta.get("limit_armed") and int(meta.get("limit", 0)) >= 100:
+            job = self.data.jobs[meta["job_id"]]
+            damage = int(damage * 3.25)
+            meta["limit"] = 0
+            meta["limit_armed"] = False
+            limit_users.append(f"{meta['name']} — {job.get('signature', 'Limit Break')}")
+            self.db.execute("UPDATE players SET limit_breaks=limit_breaks+1 WHERE twitch_id=?", (pid,))
+        else:
+            meta["limit"] = min(100, int(meta.get("limit", 0)) + self.rng.randint(10, 18))
+        return damage
+
+    def _raid_damage_boss(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str], *, use_limit: bool = True) -> int:
+        if not self.active_boss:
+            return 0
+        damage = max(0, int(damage))
+        if use_limit:
+            damage = self._apply_raid_limit(pid, meta, damage, limit_users)
+        before = int(self.active_boss.get("current_hp", 0))
+        self.active_boss["current_hp"] = max(0, before - damage)
+        dealt = before - int(self.active_boss["current_hp"])
+        meta["damage"] = int(meta.get("damage", 0)) + dealt
+        meta["best_hit"] = max(int(meta.get("best_hit", 0)), dealt)
+        return dealt
+
+    def _resolve_raid_ability(self, pid: str, meta: dict[str, Any], action: dict[str, Any], support_bonus: float, limit_users: list[str], log: list[str]) -> tuple[int, int]:
+        ability = next((row for row in self.data.active_abilities.get(meta["job_id"], []) if row["id"] == action.get("ability_id")), None)
+        job = self.data.jobs.get(meta["job_id"])
+        resource = ability_resource(ability, job) if ability else "mp"
+        cost = ability_cost(ability) if ability else 0
+        if not ability or int(meta.get(resource, 0)) < cost or (resource == "mp" and has_status(meta.get("statuses", {}), "silence")):
+            damage = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, support_bonus=support_bonus), limit_users)
+            log.append(f"{meta['name']}'s ability cannot resolve; Attack deals {damage:,}.")
+            return damage, 0
+        meta[resource] = int(meta.get(resource, 0)) - cost
+        meta["abilities_used"] = int(meta.get("abilities_used", 0)) + 1
+        target_id = action.get("target_id")
+        target = self.raid_roster.get(target_id) if target_id not in {"boss", "party"} else None
+        damage_total = 0
+        healing_total = 0
+        last_damage = 0
+        parts: list[str] = []
+        for effect in ability.get("effects", []):
+            et = effect.get("type")
+            recipient = effect.get("recipient") or "target"
+            if et == "damage":
+                dealt = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, power=float(effect.get("power", 1.0)), scaling=effect.get("scaling"), support_bonus=support_bonus), limit_users)
+                damage_total += dealt; last_damage = dealt; parts.append(f"{dealt:,} dmg")
+            elif et == "heal":
+                targets = list(self.raid_roster.values()) if recipient == "party" else [meta] if recipient == "self" else ([target] if target else [])
+                healed = sum(self._apply_battle_heal(meta, row, float(effect.get("power", 1.0))) for row in targets if row)
+                healing_total += healed; parts.append(f"{healed:,} heal")
+            elif et in {"restore_mp", "restore_ap"}:
+                key = "mp" if et == "restore_mp" else "ap"
+                targets = list(self.raid_roster.values()) if recipient == "party" else [meta] if recipient == "self" or target is None else [target]
+                restored = 0
+                for row in targets:
+                    maximum = int(row.get(f"max_{key}", 0))
+                    if maximum <= 0: continue
+                    before = int(row.get(key, 0)); amount = max(1, int(maximum * float(effect.get("fraction", 0.0))))
+                    row[key] = min(maximum, before + amount); restored += int(row[key]) - before
+                parts.append(f"{restored} {key.upper()} restored")
+            elif et == "revive":
+                if target and int(target.get("hp", 0)) <= 0:
+                    target["hp"] = max(1, int(int(target["max_hp"]) * float(effect.get("fraction", 0.30))))
+                    target["ko_counted"] = False
+                    parts.append(f"revives {target['name']}")
+            elif et == "cleanse":
+                row = meta if recipient == "self" or not target else target
+                removed = cleanse(row.setdefault("statuses", {}), int(effect.get("count", 1)))
+                parts.append("cleanses " + (", ".join(removed) if removed else "nothing"))
+            elif et == "drain":
+                before = int(meta["hp"]); meta["hp"] = min(int(meta["max_hp"]), before + max(0, int(last_damage * float(effect.get("fraction", 0.0)))))
+                healed = int(meta["hp"]) - before; meta["healing"] = int(meta.get("healing", 0)) + healed; healing_total += healed; parts.append(f"drains {healed} HP")
+            elif et == "status":
+                if self.rng.random() >= float(effect.get("chance", 1.0)): continue
+                status_id = str(effect.get("status")); turns = int(effect.get("turns", 1)); magnitude = float(effect.get("magnitude", 0.0))
+                if recipient == "party":
+                    for row in self.raid_roster.values():
+                        if int(row.get("hp", 0)) > 0: apply_status(row.setdefault("statuses", {}), status_id, turns, magnitude)
+                elif recipient == "self": apply_status(meta.setdefault("statuses", {}), status_id, turns, magnitude)
+                elif target_id == "boss": apply_status(self.active_boss.setdefault("statuses", {}), status_id, turns, magnitude)
+                elif target: apply_status(target.setdefault("statuses", {}), status_id, turns, magnitude)
+                parts.append(status_id.replace("_", " ").title())
+        log.append(f"{meta['name']} uses {ability['name']} — {', '.join(parts[:4]) or 'no effect'}.")
+        return damage_total, healing_total
+
+    def _resolve_raid_item(self, pid: str, meta: dict[str, Any], action: dict[str, Any], limit_users: list[str], log: list[str]) -> tuple[int, int]:
+        item_id = action.get("item_id"); item = self.data.items.get(item_id)
+        if not item or self._inventory_qty(pid, item_id) <= 0:
+            log.append(f"{meta['name']}'s item action fails; the item is not consumed."); return 0, 0
+        use = item.get("use") or {}; target_mode = str(use.get("target", "ally")); target_id = action.get("target_id")
+        target = self.raid_roster.get(target_id)
+        targets = list(self.raid_roster.values()) if target_mode == "party" else [target] if target_mode in {"ally", "self"} and target else []
+        used = False; damage_total = 0; healing_total = 0; parts: list[str] = []
+        for effect in use.get("effects", []):
+            et = effect.get("type")
+            if et == "damage" and target_mode == "enemy":
+                dealt = self._raid_damage_boss(pid, meta, max(0, int(effect.get("amount", 0))), limit_users, use_limit=False); damage_total += dealt
+                if dealt: used = True; parts.append(f"deals {dealt:,} damage")
+            elif et == "heal_hp":
+                healed = 0
+                for row in targets:
+                    if not row or int(row.get("hp", 0)) <= 0: continue
+                    maximum=int(row.get("max_hp",0)); before=int(row.get("hp",0)); amount=max(0,int(effect.get("amount",0)))
+                    if effect.get("fraction") is not None: amount=max(amount,int(maximum*float(effect.get("fraction",0))))
+                    row["hp"]=min(maximum,before+amount); healed += int(row["hp"])-before
+                if healed: used=True; healing_total += healed; meta["healing"] = int(meta.get("healing",0))+healed; parts.append(f"restores {healed} HP")
+            elif et in {"restore_mp", "restore_ap"}:
+                key="mp" if et=="restore_mp" else "ap"; restored=0
+                for row in targets:
+                    if not row or int(row.get("hp",0))<=0: continue
+                    maximum=int(row.get(f"max_{key}",0)); before=int(row.get(key,0)); amount=max(0,int(effect.get("amount",0)))
+                    if maximum<=0: continue
+                    if effect.get("fraction") is not None: amount=max(amount,int(maximum*float(effect.get("fraction",0))))
+                    row[key]=min(maximum,before+amount); restored += int(row[key])-before
+                if restored: used=True; parts.append(f"restores {restored} {key.upper()}")
+            elif et == "revive":
+                revived=0
+                for row in targets:
+                    if row and int(row.get("hp",0))<=0 and int(row.get("max_hp",0))>0:
+                        row["hp"]=max(1,int(int(row["max_hp"])*float(effect.get("fraction",0.30)))); row["ko_counted"]=False; revived += 1
+                if revived: used=True; parts.append(f"revives {revived} hero")
+            elif et == "cleanse":
+                removed=[]; allowed=set(effect.get("statuses",[])) or None; count=99 if effect.get("all_harmful") else int(effect.get("count",1))
+                for row in targets:
+                    if row and int(row.get("hp",0))>0: removed.extend(cleanse(row.setdefault("statuses",{}),count,allowed=allowed))
+                if removed: used=True; parts.append("cleanses " + ", ".join(sorted(set(removed))))
+            elif et == "status":
+                applied=0
+                for row in targets:
+                    if row and int(row.get("hp",0))>0:
+                        apply_status(row.setdefault("statuses",{}),str(effect.get("status")),int(effect.get("turns",1)),float(effect.get("magnitude",0.0))); applied += 1
+                if applied: used=True; parts.append(str(effect.get("status","status")).replace("_"," ").title())
+        if used:
+            self._change_item(pid,item_id,-1,"raid_battle_use"); meta["items_used"]=int(meta.get("items_used",0))+1
+            log.append(f"{meta['name']} uses {item['name']} — {'; '.join(parts)}.")
+        else:
+            log.append(f"{meta['name']} cannot use {item['name']} effectively; it is not consumed.")
+        return damage_total, healing_total
+
     @_state_guard
     def start_raid(self, boss_id: str | None = None) -> GameResult:
         if not self.active_boss:
@@ -6298,6 +6652,9 @@ class CrystalGuildEngine:
             return GameResult.fail(f"Nobody joined the raid against {boss_name}. The boss leaves offended but otherwise thriving.")
         self.active_boss["state"] = "combat"
         self.active_boss["round"] = 0
+        combatants = self._initialize_raid_combat()
+        if combatants <= 0:
+            return self._finish_raid(False, reason="No raid participants are able to fight.")
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -6314,6 +6671,9 @@ class CrystalGuildEngine:
             started = self.start_raid(boss_id)
             if not started.ok:
                 return started
+            boss = self.active_boss
+        elif any("stats" not in row or "effects" not in row for row in self.raid_roster.values()):
+            self._initialize_raid_combat()
             boss = self.active_boss
         boss["round"] += 1
         round_no = boss["round"]
@@ -6334,46 +6694,64 @@ class CrystalGuildEngine:
             round_damage += summon_damage
             summon_message = f"SUMMON — {armed_summon['by']} calls {armed_summon['name']} for {summon_damage:,} damage!"
             boss["summon_armed"] = None
-        # Hero actions
-        for pid in list(alive_ids):
+        # Hero actions. Explicit chat input overrides the anti-stall default Attack.
+        # Queue ownership matches Active Battle: one action per hero per round,
+        # replaceable until the timer closes, with MP/AP/items spent only here.
+        action_log: list[str] = []
+        for pid in alive_ids:
             meta = self.raid_roster[pid]
-            p = self._player(pid)
-            if not p:
+            meta["defending"] = False
+            if not meta.get("action"):
+                meta["action"] = {"kind": "attack", "auto": True}
+
+        ordered = sorted(
+            [(pid, self.raid_roster[pid]) for pid in alive_ids],
+            key=lambda item: (
+                action_priority(item[1].get("action") or {"kind": "attack"}, item[1].get("statuses", {})),
+                -int(item[1].get("stats", {}).get("dex", 0)),
+            ),
+        )
+        for pid, meta in ordered:
+            if int(meta.get("hp", 0)) <= 0:
                 continue
-            job_id = meta["job_id"]
-            job = self.data.jobs[job_id]
-            effects = self._effects(pid, job_id)
-            stats = self._stats(p, job, effects)
-            meta["max_hp"] = stats["hp"]
-            meta["hp"] = min(meta["hp"], meta["max_hp"])
-            living = [m for m in self.raid_roster.values() if m.get("hp",0) > 0]
-            lowest = min(living, key=lambda m:m["hp"]/max(1,m["max_hp"])) if living else meta
-            healer = job_id in HEALER_JOBS or (job_id == "redmage" and self.rng.random() < 0.40)
-            if healer and lowest["hp"] < lowest["max_hp"] * 0.62:
-                amount = max(80, int((stats["mag"]*2.2 + stats["spr"]*1.2 + 60) * (1 + effects.get("heal_bonus",0))))
-                before = lowest["hp"]
-                lowest["hp"] = min(lowest["max_hp"], lowest["hp"] + amount)
-                actual = lowest["hp"] - before
-                meta["healing"] += actual
-                round_healing += actual
+            action = meta.get("action") or {"kind": "attack", "auto": True}
+            meta["actions"] = int(meta.get("actions", 0)) + 1
+            if has_status(meta.get("statuses", {}), "stun"):
+                action_log.append(f"{meta['name']} is stunned and loses the action")
+                continue
+            kind = str(action.get("kind", "attack"))
+            if kind == "defend":
+                meta["defending"] = True
+                meta["defends"] = int(meta.get("defends", 0)) + 1
+                restored: list[str] = []
+                if int(meta.get("max_ap", 0)) > 0:
+                    before_ap = int(meta.get("ap", 0)); meta["ap"] = min(int(meta["max_ap"]), before_ap + defend_ap_restore(int(meta["max_ap"])))
+                    if int(meta["ap"]) > before_ap: restored.append(f"{int(meta['ap']) - before_ap} AP")
+                if int(meta.get("max_mp", 0)) > 0:
+                    before_mp = int(meta.get("mp", 0)); meta["mp"] = min(int(meta["max_mp"]), before_mp + defend_mp_restore(int(meta["max_mp"])))
+                    if int(meta["mp"]) > before_mp: restored.append(f"{int(meta['mp']) - before_mp} MP")
+                action_log.append(f"{meta['name']} Defends" + (f" (+{'/'.join(restored)})" if restored else ""))
+            elif kind == "ability":
+                dealt, healed = self._resolve_raid_ability(pid, meta, action, support_bonus, limit_users, action_log)
+                round_damage += dealt; round_healing += healed
+            elif kind == "item":
+                dealt, healed = self._resolve_raid_item(pid, meta, action, limit_users, action_log)
+                round_damage += dealt; round_healing += healed
             else:
-                base = stats["str"]*3.0 + stats["mag"]*2.4 + stats["attack"]*2.4 + stats["magic_power"]*2.1
-                dmg = max(25, int(base * job.get("damage_mod",1.0) * self.rng.uniform(1.05,1.45) * (1 + effects.get("damage_mult",0) + support_bonus)))
-                if meta.get("limit_armed") and meta.get("limit",0) >= 100:
-                    dmg = int(dmg * 3.25)
-                    meta["limit"] = 0
-                    meta["limit_armed"] = False
-                    limit_users.append(f"{meta['name']} — {job.get('signature','Limit Break')}")
-                    self.db.execute("UPDATE players SET limit_breaks=limit_breaks+1 WHERE twitch_id=?", (pid,))
-                else:
-                    meta["limit"] = min(100, meta.get("limit",0) + self.rng.randint(10,18))
-                meta["damage"] += dmg
-                meta["best_hit"] = max(int(meta.get("best_hit", 0)), dmg)
-                round_damage += dmg
-                boss["current_hp"] = max(0, boss["current_hp"] - dmg)
-                if boss["current_hp"] <= 0:
-                    break
+                dealt = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, support_bonus=support_bonus), limit_users)
+                round_damage += dealt
+                action_log.append(f"{meta['name']} attacks for {dealt:,}")
+            if boss["current_hp"] <= 0:
+                break
+
         if boss["current_hp"] <= 0:
+            # Persist the winning round before clearing Raid runtime state. This
+            # matters when the killing action spent MP/AP or consumed an item.
+            for pid, meta in self.raid_roster.items():
+                meta["action"] = None
+                meta["defending"] = False
+                self._save_hp(pid, meta.get("hp", 0))
+                self._save_resources_from_meta(pid, meta)
             msg = f"R{round_no} — Heroes deal {round_damage:,} damage. " + ("LIMIT BREAK: " + "; ".join(limit_users[:3]) + ". " if limit_users else "")
             finished = self._finish_raid(True)
             extras = [summon_message] if summon_message else []
@@ -6387,11 +6765,20 @@ class CrystalGuildEngine:
         signature_round = round_no % max(1,boss.get("aoe_every",3)) == 0
         total_boss_damage = 0
         ko_names: list[str] = []
-        if signature_round:
+        boss_statuses = boss.setdefault("statuses", {})
+        boss_stunned = has_status(boss_statuses, "stun")
+        boss_pressure = max(0.35, 1.0 - status_magnitude(boss_statuses, "weaken"))
+        boss_pressure *= max(0.55, 1.0 - 0.5 * status_magnitude(boss_statuses, "slow"))
+        if boss_stunned:
+            pass
+        elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
             for pid in targets:
                 meta=self.raid_roster[pid]; p=self._player(pid); job=self.data.jobs[meta["job_id"]]; effects=self._effects(pid,job["id"]); stats=self._stats(p,job,effects)
-                raw=max(1,int((boss.get("recommended_level",50)*7 + 90) * 0.62 * phase_mult * enrage_mult * self.rng.uniform(0.82,1.12)))
+                raw=max(1,int((boss.get("recommended_level",50)*7 + 90) * 0.62 * phase_mult * enrage_mult * boss_pressure * self.rng.uniform(0.82,1.12)))
+                if meta.get("defending"):
+                    raw = max(1, int(raw * 0.55))
+                raw = max(1, int(raw * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
                 reduction = 1 + stats["vit"]*0.006 + effects.get("defense_mult",0)
                 dmg=max(1,int(raw/reduction))
                 before=meta["hp"]; meta["hp"]=max(0,meta["hp"]-dmg); actual=before-meta["hp"]; total_boss_damage += actual
@@ -6400,13 +6787,22 @@ class CrystalGuildEngine:
                 meta["limit"] = min(100, meta.get("limit",0)+max(5,int(actual/max(1,meta["max_hp"])*35)))
                 if meta["hp"]<=0 and not meta.get("ko_counted"):
                     meta["ko_counted"]=True; ko_names.append(meta["name"]); self.db.execute("UPDATE players SET deaths=deaths+1 WHERE twitch_id=?",(pid,))
-        else:
+        elif not boss_stunned:
             for _ in range(boss.get("attacks_per_round",2)):
                 targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
                 if not targets: break
-                weights=[3.0 if self.raid_roster[pid].get("job_id") in TANK_JOBS else 1.0 for pid in targets]
+                weights=[]
+                for candidate_id in targets:
+                    candidate = self.raid_roster[candidate_id]
+                    weight = 3.0 if candidate.get("job_id") in TANK_JOBS else 1.0
+                    if has_status(candidate.get("statuses", {}), "taunt"):
+                        weight *= 1 + status_magnitude(candidate.get("statuses", {}), "taunt")
+                    weights.append(weight)
                 pid=self.rng.choices(targets,weights=weights,k=1)[0]; meta=self.raid_roster[pid]; p=self._player(pid); job=self.data.jobs[meta["job_id"]]; effects=self._effects(pid,job["id"]); stats=self._stats(p,job,effects)
-                raw=max(1,int((boss.get("recommended_level",50)*8+100)*phase_mult*enrage_mult*self.rng.uniform(0.86,1.16)))
+                raw=max(1,int((boss.get("recommended_level",50)*8+100)*phase_mult*enrage_mult*boss_pressure*self.rng.uniform(0.86,1.16)))
+                if meta.get("defending"):
+                    raw = max(1, int(raw * 0.55))
+                raw = max(1, int(raw * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
                 reduction=1+stats["vit"]*0.006+effects.get("defense_mult",0)
                 dmg=max(1,int(raw/reduction)); before=meta["hp"]; meta["hp"]=max(0,meta["hp"]-dmg); actual=before-meta["hp"]; total_boss_damage+=actual
                 meta["damage_taken"] = int(meta.get("damage_taken", 0)) + actual
@@ -6415,13 +6811,24 @@ class CrystalGuildEngine:
                 if meta["hp"]<=0 and not meta.get("ko_counted"):
                     meta["ko_counted"]=True; ko_names.append(meta["name"]); self.db.execute("UPDATE players SET deaths=deaths+1 WHERE twitch_id=?",(pid,))
         for pid,meta in self.raid_roster.items():
+            tick_statuses(meta.setdefault("statuses", {}))
+            meta["action"] = None
+            meta["defending"] = False
             self._save_hp(pid, meta.get("hp",0))
+            self._save_resources_from_meta(pid, meta)
+        tick_statuses(boss_statuses)
         alive=sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0)
         boss["summon_gauge"] = min(100, int(boss.get("summon_gauge",0)) + max(5, min(25, alive * 3)))
         ready_limits=[m["name"] for m in self.raid_roster.values() if m.get("hp",0)>0 and m.get("limit",0)>=100 and not m.get("limit_armed")]
         self._update_raid_overlay()
         messages=[f"R{round_no} [{phase['name']}] — Party deals {round_damage:,}; {boss['name']} has {boss['current_hp']:,}/{boss['max_hp']:,} HP. Boss damage {total_boss_damage:,}. Heroes {alive}/{len(self.raid_roster)}."]
-        if signature_round:
+        if action_log:
+            shown = action_log[:4]
+            suffix = f" | +{len(action_log) - 4} more" if len(action_log) > 4 else ""
+            messages.append("Raid actions — " + " | ".join(shown) + suffix + ".")
+        if boss_stunned:
+            messages.append(f"{boss['name']} is Stunned and loses the boss response this round.")
+        elif signature_round:
             messages.append(f"{boss['name']} unleashes {boss.get('signature','Cataclysm')} across the raid!" + (f" KO: {', '.join(ko_names[:5])}." if ko_names else ""))
         elif ko_names:
             messages.append("KO — " + ", ".join(ko_names[:5]) + ". Another hero can use !revive <name> with a Phoenix Down.")
@@ -6439,7 +6846,11 @@ class CrystalGuildEngine:
             finished=self._finish_raid(False, reason="The entire raid is KO'd.")
             return GameResult.success(*messages,*finished.messages,raid_finished=True,won=False)
         boss["next_round_at"] = time.time() + self.raid_round_seconds
-        return GameResult.success(*messages, raid_finished=False, boss_id=boss["id"])
+        messages.append(
+            f"NEXT RAID R{round_no + 1} · {self._format_seconds(self.raid_round_seconds)} — "
+            "!attack · !ability <name> [target] · !defend · !use <item> [target]"
+        )
+        return GameResult.success(*messages, raid_finished=False, boss_id=boss["id"], next_round_at=boss["next_round_at"])
 
     @_state_guard
     def limit_break(self, twitch_id: str) -> GameResult:
