@@ -630,19 +630,20 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertLess(int(player["current_hp"]), equipped_max)
 
 
-    def test_v111_solo_venture_state_exposes_portal_only_rules(self):
+    def test_v115_wayfarer_state_exposes_interactive_solo_rules(self):
         ok, message, data = self.worker._execute(self.action(id="pa_solo_state", type="ADVENTURE_STATE", payload={}))
         self.assertTrue(ok)
         self.assertIn("adventure board", message.lower())
         solo = data["adventure_state"]["solo_venture"]
         self.assertTrue(solo["portal_only"])
+        self.assertTrue(solo["interactive"])
         self.assertEqual(solo["cooldown_seconds"], 420)
-        self.assertEqual(solo["encounter_chance_percent"], 50)
-        self.assertEqual(solo["treasure_chance_percent"], 50)
+        self.assertEqual(solo["encounter_chance_percent"], 60)
+        self.assertEqual(solo["treasure_chance_percent"], 40)
         self.assertEqual(solo["max_enemy_levels_above_player"], 3)
-        self.assertEqual(solo["fellowship_renown"], 4)
-        self.assertEqual(solo["fellowship_percent"], 50)
-        self.assertTrue(solo["resolves_immediately"])
+        self.assertEqual(solo["max_stages"], 3)
+        self.assertEqual(solo["stage_bonus_percent"], 15)
+        self.assertFalse(solo["resolves_immediately"])
         self.assertEqual(data["adventure_state"]["venture"]["max_enemy_levels_above_player"], 10)
 
     def test_v111h1_regular_venture_allows_enemy_up_to_plus_ten(self):
@@ -654,65 +655,67 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertEqual(self.game.active_encounter["monster_id"], "spriggan")
         self.assertEqual(int(self.game.data.monsters["spriggan"]["level"]), 11)
 
-    def test_v111_solo_treasure_is_replay_safe_and_awards_half_fellowship_renown(self):
+    def test_v115_solo_treasure_is_replay_safe_and_stays_unbanked_until_return(self):
         self.db.execute("UPDATE players SET level=20 WHERE twitch_id='100'")
         before_ventures = int(self.game._player("100")["ventures"])
         before_items = sum(int(row["quantity"]) for row in self.db.all("SELECT quantity FROM inventory WHERE player_id='100'"))
         action = self.action(id="pa_solo_treasure", type="SOLO_VENTURE", payload={})
         with patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 1.0):
             first = self.worker._execute(action)
-            second = self.worker._execute(action)
+            replay = self.worker._execute(action)
         self.assertTrue(first[0])
-        self.assertTrue(second[0])
-        self.assertEqual(first[2], second[2])
-        self.assertEqual(first[2]["solo_venture_event"], "treasure")
+        self.assertEqual(first[2], replay[2])
+        expedition = first[2]["adventure_state"]["solo_venture"]["expedition"]
+        self.assertEqual(expedition["status"], "choice")
+        self.assertEqual(expedition["stage"], 1)
+        self.assertEqual(len(expedition["spoils"]["items"]), 1)
         self.assertEqual(int(self.game._player("100")["ventures"]), before_ventures + 1)
-        after_items = sum(int(row["quantity"]) for row in self.db.all("SELECT quantity FROM inventory WHERE player_id='100'"))
-        self.assertEqual(after_items, before_items + 1)
-        event = self.db.one("SELECT renown,amount FROM fellowship_events WHERE event_key LIKE 'solo_venture_treasure:100:%'")
+        after_start_items = sum(int(row["quantity"]) for row in self.db.all("SELECT quantity FROM inventory WHERE player_id='100'"))
+        self.assertEqual(after_start_items, before_items)
+        self.assertIsNone(self.db.one("SELECT renown FROM fellowship_events WHERE event_key LIKE 'solo_expedition:100:%'"))
+
+        returned = self.worker._execute(self.action(id="pa_solo_return", type="SOLO_EXPEDITION_RETURN", payload={}))
+        self.assertTrue(returned[0])
+        after_return_items = sum(int(row["quantity"]) for row in self.db.all("SELECT quantity FROM inventory WHERE player_id='100'"))
+        self.assertEqual(after_return_items, before_items + 1)
+        event = self.db.one("SELECT renown,amount FROM fellowship_events WHERE event_key LIKE 'solo_expedition:100:%'")
         self.assertIsNotNone(event)
         self.assertEqual(int(event["renown"]), 4)
-        self.assertEqual(int(event["amount"]), 1)
         self.assertGreater(self.game._cooldown_remaining("100", "solo_venture"), 0)
         self.assertEqual(self.game._cooldown_remaining("100", "venture"), 0)
 
-    def test_v1112h1_solo_encounter_resolves_immediately_with_readable_summary(self):
+    def test_v115_solo_encounter_is_player_paced_and_action_replay_safe(self):
         self.db.execute("UPDATE players SET level=20 WHERE twitch_id='100'")
         refreshed = self.game._player("100")
         self.db.execute("UPDATE players SET current_hp=? WHERE twitch_id='100'", (self.game._max_hp(refreshed),))
         action = self.action(id="pa_solo_encounter", type="SOLO_VENTURE", payload={})
-        with patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 0.0), \
-             patch.object(self.game, "_active_enemy_turn", return_value=None):
+        with patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 0.0):
             first = self.worker._execute(action)
             replay = self.worker._execute(action)
         self.assertTrue(first[0])
         self.assertEqual(first[2], replay[2])
-        self.assertTrue(first[2]["resolved_immediately"])
-        self.assertFalse(first[2]["encounter_started"])
-        self.assertFalse(first[2]["battle_started"])
-        self.assertEqual(first[2]["solo_venture_event"], "encounter")
+        expedition = first[2]["adventure_state"]["solo_venture"]["expedition"]
+        self.assertEqual(expedition["status"], "combat")
+        self.assertEqual(expedition["combat"]["round"], 1)
+        self.assertLessEqual(int(expedition["combat"]["enemy"]["level"]), 23)
+        self.assertTrue(expedition["combat"]["enemy"]["intent"])
         self.assertIsNone(self.game.active_encounter)
         self.assertEqual(self.game.encounter_roster, {})
 
-        summary = first[2]["solo_result"]
-        self.assertEqual(summary["type"], "encounter")
-        self.assertEqual(summary["outcome"], "victory")
-        self.assertTrue(summary["resolved_immediately"])
-        self.assertLessEqual(int(summary["enemy"]["level"]), 23)
-        self.assertGreaterEqual(int(summary["rounds"]), 1)
-        self.assertGreater(int(summary["rewards"]["xp"]), 0)
-        self.assertGreater(int(summary["rewards"]["jp"]), 0)
-        self.assertGreater(int(summary["rewards"]["gil"]), 0)
-        self.assertEqual(int(summary["rewards"]["fellowship_renown"]), 4)
-        self.assertIn("hp", summary["player"])
-        self.assertIn("damage_dealt", summary["combat"])
-        self.assertEqual(first[2]["adventure_state"]["recent_result"]["summary"], summary)
-
-        event = self.db.one(
-            "SELECT renown FROM fellowship_events WHERE event_key LIKE 'solo_venture_complete:%:100' LIMIT 1"
-        )
-        self.assertIsNotNone(event)
-        self.assertEqual(int(event["renown"]), 4)
+        # Keep the monster alive so one Portal action demonstrably resolves one round.
+        state = self.game._solo_expedition_load("100")
+        state["combat"]["encounter"]["monster_hp"] = max(99999, int(state["combat"]["encounter"]["monster_hp"]))
+        state["combat"]["encounter"]["monster_max_hp"] = max(99999, int(state["combat"]["encounter"]["monster_max_hp"]))
+        self.game._solo_expedition_save("100", state)
+        attack = self.action(id="pa_solo_attack", type="SOLO_EXPEDITION_ACTION", payload={"action": "attack"})
+        with patch.object(self.game, "_solo_resolve_enemy_intent", return_value=None):
+            acted = self.worker._execute(attack)
+            acted_replay = self.worker._execute(attack)
+        self.assertTrue(acted[0])
+        self.assertEqual(acted[2], acted_replay[2])
+        after = acted[2]["adventure_state"]["solo_venture"]["expedition"]
+        self.assertEqual(after["combat"]["round"], 2)
+        self.assertEqual(after["last_round"]["round"], 1)
 
     def test_v1112h1_solo_venture_stays_silent_and_needs_no_scheduler_wake(self):
         self.db.execute("UPDATE players SET level=5 WHERE twitch_id='100'")

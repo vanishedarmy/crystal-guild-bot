@@ -150,18 +150,20 @@ class ActiveHuntTests(unittest.TestCase):
         hunt_block = source[source.index("async def hunt"):source.index("async def quests")]
         self.assertNotIn("advance_encounter_round", hunt_block)
 
-    def test_solo_venture_encounter_finishes_inside_portal_request(self):
+    def test_solo_venture_encounter_waits_for_portal_action_without_taking_global_battle_slot(self):
         self.db.execute("UPDATE players SET level=20 WHERE twitch_id='1'")
         refreshed = self.game._player("1")
         self.db.execute("UPDATE players SET current_hp=? WHERE twitch_id='1'", (self.game._max_hp(refreshed),))
-        with patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 0.0), \
-             patch.object(self.game, "_active_enemy_turn", return_value=None):
-            result = self.game.portal_solo_venture("1", "solo_instant")
+        with patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 0.0):
+            result = self.game.portal_solo_venture("1", "solo_wayfarer")
         self.assertTrue(result.ok)
-        self.assertTrue(result.data["resolved_immediately"])
-        self.assertEqual(result.data["solo_result"]["outcome"], "victory")
+        expedition = result.data["adventure_state"]["solo_venture"]["expedition"]
+        self.assertEqual(expedition["status"], "combat")
+        self.assertIn("intent", expedition["combat"]["enemy"])
+        self.assertEqual(expedition["combat"]["round"], 1)
         self.assertIsNone(self.game.active_encounter)
         self.assertEqual(self.game.encounter_roster, {})
+        self.assertIsNotNone(self.db.one("SELECT state_json FROM solo_expeditions WHERE player_id='1'"))
 
 
 
