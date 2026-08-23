@@ -1,50 +1,45 @@
-# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 2
+# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 3
 
-## Daily Guild Provisions — randomized supply bundles
+Hotfix 3 is a focused combat/UI correction on the Cloud Continuity Hotfix 2 baseline. It preserves the randomized Daily Guild Provisions and Twitch subscriber-tier work from Hotfix 2.
 
-`!daily` and the signed-in Portal Daily Guild Provisions action still share one authoritative 24-hour cooldown, but the fixed `Gil + 1 Potion` reward is retired.
+## Raid round actions restored
 
-Each successful claim now grants:
+Raid participants can now queue the same core combat choices used by Active Battles:
 
-- level-scaled Gil;
-- at least one randomized, level-appropriate provision roll;
-- practical shop consumables available at the hero's level and/or bounded common/uncommon crafting materials;
-- inventory + transaction writes for every rolled provision so economy/accounting data remains authoritative.
+- `!attack`
+- `!ability <name> [target]`
+- `!defend`
+- `!use <item> [target]`
 
-Rare raid/relic/artifact materials are intentionally excluded from the Daily material pool. Higher-level heroes naturally unlock stronger normal consumables because the Daily pool respects each item's shop level.
+Each living raider gets one action per Raid round. A newer choice replaces that hero's earlier queued choice until the round resolves. A hero who submits no action still defaults to Attack so Raid timers cannot stall.
 
-## Twitch subscriber tiers + first perks
+Raid abilities now use their normal MP/AP costs and supported effects, including damage, healing, resource restoration, revive/cleanse, and combat statuses. Raid item use consumes the item only when its queued effect successfully resolves. Defend is a real Raid action: it restores the normal defensive MP/AP amount and reduces incoming boss damage for that round. Winning-round HP and MP/AP state is persisted before the Raid runtime is cleared.
 
-Crystal Guild now checks the broadcaster's Twitch subscriber list by Twitch user ID and normalizes Twitch tiers `1000`, `2000`, and `3000` to Tier 1, 2, and 3.
+Recovered pre-Hotfix-3 Raid checkpoints are hydrated into the new queue state when first touched, so an already-active Raid can continue without a schema migration.
 
-Initial subscriber perks apply to **Daily Guild Provisions only**:
+## Rally Venture presentation cleanup
 
-| Status | Daily Gil | Provision rolls |
-| --- | ---: | ---: |
-| Standard / non-sub | 100% | 1 |
-| Tier 1 | 110% | 2 |
-| Tier 2 | 120% | 3 |
-| Tier 3 | 130% | 4 |
+The Adventurer Portal no longer renders a live stream Venture as a separate Active Battle card below Current Region. An active `kind=venture` encounter is rendered inside the existing **Rally Venture** panel, keeping the Adventure Board hierarchy together.
 
-Gift subscriptions count at their current Twitch tier. The subscriber service is deliberately reusable by future systems, but Hotfix 2 does not silently alter Venture/Hunt/Raid combat rewards.
+Hunts and legacy non-Rally Active Battle states retain their appropriate standalone presentation.
 
-`!substatus` lets a viewer check the tier Crystal Guild currently sees and the associated Daily perk.
+## Selectable-control readability pass
 
-The Bot caches successful subscriber checks for five minutes per user and can reuse a recent confirmed result for up to fifteen minutes during a temporary Twitch API failure. If verification becomes unavailable beyond that stale window, gameplay continues normally with the standard Daily reward rather than blocking the player.
+Interactive controls received a clarity pass across the Portal:
 
-## Twitch authorization change
+- stronger text/background contrast and selected-state treatment;
+- visible keyboard focus treatment and preserved touch targets;
+- readable disabled controls without making labels disappear;
+- clearer action labels that name their target, such as `Travel to <region>`, `Equip <item>`, `Use <item>`, `Craft <item>`, `Forge <item>`, `Buy <item>`, and `Sell <item>`;
+- clearer Hunt filters and Job/stance selection labels.
 
-Subscriber lookup uses Twitch `GET /helix/subscriptions` with the broadcaster's managed user access token. The broadcaster token must include:
-
-`channel:read:subscriptions`
-
-Existing Bot/chat scopes remain in place. No new Render environment variable is required, but an existing cloud installation must re-authorize the broadcaster once and replace `/var/data/twitch_tokens.db` with the refreshed private token database.
+The Player Guide now explicitly documents Raid round actions and their default-Attack behavior.
 
 ## Compatibility
 
-- Bot runtime: `1.1.14-cloud-continuity-h2`
+- Bot runtime: `1.1.14-cloud-continuity-h3`
 - Hosted sync version/snapshots: `1.1.14-cloud-continuity`
-- Matching Web asset revision: `1.1.14-continuity2`
+- Matching Web asset revision: `1.1.14-continuity3`
 - Local DB schema: 4
 - Hosted sync schema: 1
 - Portal Action protocol: 12
@@ -52,4 +47,6 @@ Existing Bot/chat scopes remain in place. No new Render environment variable is 
 - Database migration: none
 - Player reset: none
 - New Render secrets: none
-- Twitch broadcaster reauthorization: **required once for subscriber perks**
+- New OAuth scope: none
+
+Hotfix 2's subscriber feature still requires `channel:read:subscriptions` on the broadcaster token if that authorization has not already been completed. Hotfix 3 itself introduces no additional Twitch authorization requirement.

@@ -1,45 +1,34 @@
-# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 2 Upgrade
+# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 3 Upgrade
 
-This update keeps DB schema 4 and does not modify player progression. It does require one broadcaster OAuth refresh so Crystal Guild can read subscriber tiers.
+Hotfix 3 is an in-place-safe Bot + Web update for v1.1.14 Cloud Continuity Hotfix 2. Local DB schema 4, hosted sync schema 1, and Portal Action protocol 12 are unchanged.
 
-## 1. Update the Bot source
+## Upgrade from Hotfix 2
 
-1. Back up/commit the current private Bot GitHub repository.
-2. Overlay the Hotfix 2 Bot patch.
-3. Commit and push.
-4. Let Render redeploy.
-5. `!cgversion` should report `1.1.14-cloud-continuity-h2`.
+1. Back up/commit the current private Bot and Web repositories.
+2. Preserve all runtime/private state, especially `.env`, `crystal_guild.db`, `twitch_tokens.db`, and Render persistent-disk contents.
+3. Overlay the **Hotfix 3 Bot Patch from Hotfix 2** into the Bot repository and deploy it.
+4. Overlay the **Hotfix 3 Web Patch from Hotfix 2** into the Web repository and deploy it.
+5. Restart/redeploy the Bot and Web services normally.
+6. Verify `!cgversion` / `!health` reports Bot runtime `1.1.14-cloud-continuity-h3`.
+7. Verify Web `/api/health` reports runtime `1.1.14-cloud-continuity-h3` and frontend revision `1.1.14-continuity3`.
+8. During a live Raid, join a hero and verify `!attack`, `!ability`, `!defend`, and `!use` queue and resolve on the next Raid round.
+9. Start a live Rally Venture and confirm its active encounter information remains inside the existing Rally Venture panel rather than appearing below Current Region.
+10. Check Portal action/filter buttons on desktop and narrow/mobile widths for clear labels, selected states, focus states, and readable disabled states.
 
-Subscriber perks may report UNKNOWN until the broadcaster token is refreshed. Normal gameplay remains available.
+No database migration helper is required and `crystal_guild.db` must not be replaced.
 
-## 2. Refresh the broadcaster Twitch token locally
+## If upgrading from Hotfix 1 or earlier
 
-Use a private local Hotfix 2 Bot folder containing your existing `.env`.
+Use the Complete/Bot/Web packages rather than the surgical Hotfix-2-to-Hotfix-3 patches. Existing player progression remains schema-4 compatible.
 
-If you still have the previous `twitch_tokens.db`, place it in the Bot folder. Otherwise authorize both accounts again.
+Cloud installs that have not yet completed Hotfix 2's Twitch subscriber authorization must still authorize the broadcaster token with `channel:read:subscriptions` and refresh the private `twitch_tokens.db`. That is an inherited Hotfix 2 requirement, not a new Hotfix 3 scope.
 
-1. Stop any local Crystal Guild Bot.
-2. Run `run_cloud_token_authorization.bat` and let the temporary OAuth server start.
-3. Run `open_twitch_authorization.bat` in a second window.
-4. Choose **Authorize BROADCASTER / OWNER account** and approve the requested `channel:read:subscriptions` permission while logged in as the broadcaster.
-5. If the local token DB did not already contain the dedicated bot account, authorize the dedicated Bot account too.
-6. Stop the temporary authorization session cleanly with Ctrl+C.
-7. Run `python prepare_render_migration.py --token-db twitch_tokens.db` if you want the helper to validate/copy the token database.
+## Release identity
 
-Never commit `twitch_tokens.db` to GitHub.
-
-## 3. Replace the private token database on Render
-
-1. Stop/restart-safe the `crystal-guild-bot` worker before replacing token state.
-2. Transfer the refreshed `twitch_tokens.db` privately to Render (the same Magic Wormhole method used for v1.1.13 is fine).
-3. Place it exactly at `/var/data/twitch_tokens.db`.
-4. Restart the worker.
-5. Run `!substatus` from a subscribed account. It should report the Twitch tier instead of UNKNOWN.
-
-Do **not** replace `crystal_guild.db`; there is no player-data migration in Hotfix 2.
-
-## 4. Deploy the matching Web update
-
-Overlay/push the Hotfix 2 Web patch into the existing Web repository. No Web OAuth or secret change is required.
-
-Verify the signed-in Overview Daily Guild Provisions card describes randomized provision bundles and shows the detected subscriber perk when applicable.
+- Bot runtime: `1.1.14-cloud-continuity-h3`
+- Hosted sync version/snapshots: `1.1.14-cloud-continuity`
+- Frontend asset revision: `1.1.14-continuity3`
+- Local DB schema: 4
+- Hosted sync schema: 1
+- Portal Action protocol: 12
+- Twitch prefix: `!`

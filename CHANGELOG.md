@@ -1,5 +1,14 @@
 # Crystal Guild Changelog
 
+## v1.1.14 — Cloud Continuity Hotfix 3
+
+- Restores explicit Raid round actions: `!attack`, `!ability`, `!defend`, and `!use` now queue and resolve for Raid participants; no input still defaults to Attack.
+- Applies normal Raid MP/AP costs, item consumption, healing/status effects, Defend mitigation/resource restoration, and winning-round resource persistence.
+- Hydrates recovered pre-Hotfix-3 active Raid runtime state without a database migration.
+- Embeds live Rally Venture encounter information inside the existing Rally Venture panel instead of rendering a duplicate Active Battle card below Current Region.
+- Adds a Portal selectable-control readability/intent pass and updates the Raid Player Guide.
+- Advances Bot/Web runtime to `1.1.14-cloud-continuity-h3` and frontend revision to `1.1.14-continuity3`; DB schema 4, hosted sync schema 1, Portal Action protocol 12, hosted snapshot version, and Twitch prefix `!` remain unchanged.
+
 ## v1.1.14 — Cloud Continuity Hotfix 2
 
 - Replaces the fixed `Gil + 1 Potion` Daily with randomized level-appropriate provisions plus level-scaled Gil.

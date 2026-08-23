@@ -1,12 +1,16 @@
-# Crystal Guild v1.1.14 Hotfix 2 Manual Check
+# Crystal Guild v1.1.14 Hotfix 3 Manual Check
 
-- [ ] `!cgversion` reports `1.1.14-cloud-continuity-h2`.
+- [ ] `!cgversion` reports `1.1.14-cloud-continuity-h3`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
-- [ ] `!daily` grants Gil plus randomized provisions rather than always one Potion.
-- [ ] `!substatus` reports Standard, Tier 1, Tier 2, or Tier 3 without exposing token data.
-- [ ] A non-subscriber Daily gets 1 provision roll and base Gil.
-- [ ] Tier 1 Daily gets +10% Gil and 2 provision rolls.
-- [ ] Tier 2 Daily gets +20% Gil and 3 provision rolls.
-- [ ] Tier 3 Daily gets +30% Gil and 4 provision rolls.
-- [ ] Portal Daily shows the same tier perk and shared 24-hour cooldown.
+- [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
+- [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
+- [ ] `!defend` resolves as a Raid action, restores defensive MP/AP, and reduces that round's incoming boss damage.
+- [ ] `!use <item> [target]` queues and only consumes the item when the effect successfully resolves.
+- [ ] A living Raider who submits no command defaults to Attack so the Raid cannot stall.
+- [ ] A queued action can be replaced by another action before the round closes.
+- [ ] A killing-blow ability persists its MP/AP spend before the Raid clears.
+- [ ] Existing `!limit`, `!summon`, Raid rewards, Raid timers, and auto-resolution remain functional.
+- [ ] `!daily` randomized provisions and `!substatus` subscriber-tier behavior from Hotfix 2 remain intact.
 - [ ] Existing player progression, Fellowship, Adventure Board, hosted overlay, and stream-live gate remain intact.
+- [ ] On the Portal, an active Rally Venture renders inside the Rally Venture panel, not below Current Region.
+- [ ] Portal buttons/filters are readable, identify their purpose/target, and remain clear when selected, focused, or disabled.

@@ -1,6 +1,6 @@
-Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 2
-Runtime: 1.1.14-cloud-continuity-h2
-Purpose: randomized Daily Guild Provisions + Twitch Tier 1/2/3 subscriber perks
+Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 3
+Runtime: 1.1.14-cloud-continuity-h3
+Purpose: Raid action queue/ability-item-Defend fix + Hotfix 3 compatibility
 Local DB schema: 4
 Hosted sync schema: 1
 Portal Action protocol: 12
@@ -8,5 +8,6 @@ Twitch prefix: !
 Required new Render secrets: none
 Database migration: none
 Player reset: none
-Broadcaster OAuth scope required: channel:read:subscriptions
-Matching Web asset revision: 1.1.14-continuity2
+New OAuth scope: none
+Inherited subscriber scope (Hotfix 2): channel:read:subscriptions
+Matching Web asset revision: 1.1.14-continuity3
