@@ -552,12 +552,12 @@ class PortalActionWorkerTests(unittest.TestCase):
         cooldown = self.db.one("SELECT available_at FROM cooldowns WHERE player_id='100' AND action=?", (f"hunt:{hunt['id']}",))
         self.assertIsNotNone(cooldown)
 
-    def test_phase_seven_daily_claim_is_replay_safe_and_uses_existing_24_hour_reward(self):
+    def test_phase_seven_daily_claim_is_replay_safe_and_uses_randomized_24_hour_reward(self):
         before_gil = int(self.game._player("100")["gil"])
-        before_potions = self.game._inventory_qty("100", "potion")
         state_ok, _, state_data = self.worker._execute(self.action(id="pa_daily_state", type="DAILY_STATE", payload={}))
         self.assertTrue(state_ok)
         self.assertTrue(state_data["daily_state"]["available"])
+        self.assertEqual(state_data["daily_state"]["provision_rolls"], 1)
 
         action = self.action(id="pa_daily_claim", type="CLAIM_DAILY", payload={})
         first = self.worker._execute(action)
@@ -566,19 +566,35 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertGreaterEqual(reward, int(state_data["daily_state"]["gil_min"]))
         self.assertLessEqual(reward, int(state_data["daily_state"]["gil_max"]))
         self.assertEqual(int(self.game._player("100")["gil"]), before_gil + reward)
-        self.assertEqual(self.game._inventory_qty("100", "potion"), before_potions + 1)
+        self.assertTrue(first[2]["provisions"])
+        for provision in first[2]["provisions"]:
+            self.assertGreaterEqual(self.game._inventory_qty("100", provision["item_id"]), int(provision["quantity"]))
         self.assertFalse(first[2]["daily_state"]["available"])
 
+        quantities_after_first = {
+            row["item_id"]: self.game._inventory_qty("100", row["item_id"]) for row in first[2]["provisions"]
+        }
         replay = self.worker._execute(action)
         self.assertTrue(replay[0])
         self.assertEqual(replay[2], first[2])
         self.assertEqual(int(self.game._player("100")["gil"]), before_gil + reward)
-        self.assertEqual(self.game._inventory_qty("100", "potion"), before_potions + 1)
+        self.assertEqual(
+            quantities_after_first,
+            {item_id: self.game._inventory_qty("100", item_id) for item_id in quantities_after_first},
+        )
 
         second_claim = self.worker._execute(self.action(id="pa_daily_claim_again", type="CLAIM_DAILY", payload={}))
         self.assertFalse(second_claim[0])
         self.assertIn("already claimed", second_claim[1].lower())
         self.assertFalse(second_claim[2]["daily_state"]["available"])
+
+    def test_daily_portal_resolves_twitch_subscriber_tier_for_perks(self):
+        self.worker.subscription_lookup = lambda _uid: {"tier": 3, "state": "SUBSCRIBED"}
+        ok, _, data = self.worker._execute(self.action(id="pa_daily_sub", type="DAILY_STATE", payload={}))
+        self.assertTrue(ok)
+        self.assertEqual(data["daily_state"]["subscriber_tier"], 3)
+        self.assertEqual(data["daily_state"]["provision_rolls"], 4)
+        self.assertEqual(data["daily_state"]["subscriber_gil_bonus_percent"], 30)
 
     def test_equipment_actions_are_replay_safe(self):
         first = self.worker._execute(self.action(type="EQUIP_ITEM", payload={"item_id": "hunters_axe"}))
