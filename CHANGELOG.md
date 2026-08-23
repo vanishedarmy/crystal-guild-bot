@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.1.14 — Cloud Continuity — Hotfix 3c
+
+- Adds an at-a-glance Current Loadout summary and stronger equipped-item treatment in the Portal.
+- Corrects transaction-derived achievement metrics so `gil_spent` reflects lifetime ledger spending.
+- Runs achievement checks immediately after shop purchases, Chocobo Writ purchases, and Fellowship contributions.
+- Adds mobile header auto-hide on downward scroll and immediate restore on upward scroll.
+- Advances Bot/Web runtime to `1.1.14-cloud-continuity-h3c` and frontend revision to `1.1.14-continuity3c`; DB schema 4, hosted sync schema 1, Portal Action protocol 12, hosted sync compatibility, and Twitch prefix `!` remain unchanged.
+
 ## v1.1.14 — Cloud Continuity Hotfix 3
 
 - Restores explicit Raid round actions: `!attack`, `!ability`, `!defend`, and `!use` now queue and resolve for Raid participants; no input still defaults to Attack.

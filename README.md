@@ -1,11 +1,9 @@
-# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 3
+# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 3c
 
-Hotfix 3 restores explicit Raid round actions while preserving the Cloud Continuity/stream-presence/Daily subscriber systems already in v1.1.14.
+Hotfix 3c advances from the Hotfix 3b baseline. It preserves the Raid action repair, Rally Venture consolidation, subscriber-aware Daily system, and all existing schema/protocol contracts while correcting lifetime Gil-spent achievement accounting.
 
-During an active Raid, participants can queue `!attack`, `!ability <name> [target]`, `!defend`, or `!use <item> [target]`. The last queued choice before the round closes is used; no input defaults to Attack. MP/AP, items, status effects, healing, Defend, and winning-round resource persistence are handled by the authoritative Raid engine.
+`Stimulating the Economy` and other transaction-derived record conditions now read the authoritative `transactions` ledger instead of relying on a stale cached record value. Successful shop purchases, Chocobo Registration Writ purchases, and Fellowship contributions also run achievement checks immediately.
 
-Recovered pre-Hotfix-3 active Raid state is hydrated on demand without changing the database schema.
+Runtime `1.1.14-cloud-continuity-h3c` · DB schema 4 · hosted sync schema 1 · Portal Action protocol 12 · Twitch prefix `!`.
 
-Runtime `1.1.14-cloud-continuity-h3` · DB schema 4 · hosted sync schema 1 · Portal Action protocol 12 · Twitch prefix `!`.
-
-No new Render secret, database migration, player reset, or OAuth scope is introduced. The existing Hotfix 2 subscriber feature still requires `channel:read:subscriptions` if not already authorized.
+No new Render secret, database migration, player reset, or OAuth scope is introduced. The existing subscriber feature still requires `channel:read:subscriptions` if it was not already authorized.

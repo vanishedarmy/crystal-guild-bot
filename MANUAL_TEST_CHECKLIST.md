@@ -1,6 +1,6 @@
 # Crystal Guild v1.1.14 Hotfix 3 Manual Check
 
-- [ ] `!cgversion` reports `1.1.14-cloud-continuity-h3`.
+- [ ] `!cgversion` reports `1.1.14-cloud-continuity-h3c`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.

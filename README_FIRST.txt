@@ -1,21 +1,18 @@
-CRYSTAL GUILD v1.1.14 — CLOUD CONTINUITY HOTFIX 3
-=================================================
+CRYSTAL GUILD v1.1.14 — CLOUD CONTINUITY HOTFIX 3c
+========================================================
 
-Hotfix 3 fixes three player-facing issues:
-  1. Live Rally Venture encounter information now stays inside the Rally Venture panel.
-  2. Raid participants can queue !attack, !ability, !defend, and !use for each round.
-  3. Portal selectable buttons/filters have clearer labels, contrast, selected states, and focus states.
+Baseline: Hotfix 3b
 
-NO DATA MIGRATION
------------------
-Local DB schema remains 4. Do not replace crystal_guild.db.
-Hosted sync schema remains 1 and Portal Action protocol remains 12.
+This update includes:
+- clearer Current Loadout presentation in Equipment & Inventory;
+- corrected lifetime Gil-spent achievement accounting;
+- reliable mobile header auto-hide / scroll-up recovery.
 
-UPGRADING FROM HOTFIX 2
------------------------
-Use the Bot Patch from Hotfix 2 and Web Patch from Hotfix 2, then redeploy both services.
-No new Render secret or OAuth scope is introduced by Hotfix 3.
+Runtime: 1.1.14-cloud-continuity-h3c
+Frontend: 1.1.14-continuity3c
+DB schema: 4
+Hosted sync schema: 1
+Portal Action protocol: 12
 
-The existing Hotfix 2 subscriber feature still needs channel:read:subscriptions if that broadcaster authorization has not already been completed.
-
-See UPGRADE_GUIDE.md for the deployment sequence and VALIDATION_REPORT.md for test results.
+PRESERVE: .env, .tio.tokens.json, crystal_guild.db, Twitch token database, and runtime state.
+NO PLAYER RESET OR DATABASE MIGRATION IS REQUIRED.
