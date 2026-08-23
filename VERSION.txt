@@ -1,9 +1,9 @@
-Crystal Guild Bot v1.1.15 — Wayfarer
-Runtime: 1.1.15-wayfarer
+Crystal Guild Bot v1.1.15 — Wayfarer Hotfix 3
+Runtime: 1.1.15-wayfarer-h3
 Local DB schema: 5
 Hosted sync schema: 1
 Hosted sync runtime compatibility: 1.1.15-wayfarer
-Portal Action protocol: 13
+Portal Action protocol: 14
 Twitch prefix: !
-Matching Web asset revision: 1.1.15-wayfarer1
+Matching Web asset revision: 1.1.15-wayfarer1h3
 Twitch broadcaster scope required for subscriber perks: channel:read:subscriptions

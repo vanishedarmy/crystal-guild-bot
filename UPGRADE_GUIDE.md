@@ -1,3 +1,28 @@
+# Upgrade to Crystal Guild v1.1.15 — Wayfarer Hotfix 3
+
+## From Wayfarer Hotfix 2
+
+1. Stop the Bot/worker cleanly.
+2. Preserve `.env`, `.tio.tokens.json`, `crystal_guild.db`, `/var/data/twitch_tokens.db`, and other private runtime state.
+3. Apply the **Hotfix 2 → Hotfix 3 Update** package over the installation.
+4. Commit/push the matching Web files and redeploy the Web service.
+5. Restart the Bot/worker.
+6. Verify `!cgversion` / `!health` reports runtime `1.1.15-wayfarer-h3`.
+7. Verify Web `/api/health` reports frontend revision `1.1.15-wayfarer1h3` and Portal Action protocol **14**.
+8. Open your own **Achievements & Titles → Title Collection**, equip an earned Title, and confirm the profile header updates after refresh.
+9. Confirm a locked Title has no equip control and another player's public profile is read-only.
+
+## Database
+
+Hotfix 3 keeps local DB schema **5**. There is no schema migration on this update, so the existing Wayfarer database remains in place unchanged.
+
+## Why Bot + Web both change
+
+Hotfix 3 adds the strict typed `SET_TITLE` Portal action. Portal Action protocol therefore advances **13 → 14**. Matching Bot and Web builds must be deployed together; hosted sync schema remains **1**.
+
+
+---
+
 # Crystal Guild v1.1.15 — Wayfarer Upgrade Guide
 
 Wayfarer upgrades the certified **v1.1.14 Cloud Continuity Hotfix 3c** baseline in place. Player progression is preserved.

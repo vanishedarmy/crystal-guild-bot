@@ -1,24 +1,23 @@
-CRYSTAL GUILD v1.1.15 — WAYFARER
-=================================
+CRYSTAL GUILD v1.1.15 — WAYFARER HOTFIX 3
+==========================================
 
-Baseline: v1.1.14 — Cloud Continuity Hotfix 3c
+Baseline: v1.1.15 — Wayfarer Hotfix 2
 
-Wayfarer includes:
-- interactive, player-paced Solo Venture combat in the Adventurer Portal;
-- up to 3 Solo Venture stages with Return / Press On risk-reward choices;
-- 60% Encounter / 40% Treasure odds per stage;
-- Attack, Ability, Use Item, and Defend Portal combat actions with enemy intent;
-- persistent per-player Solo Venture state that does not occupy the shared Twitch battle slot;
-- Portal profile tabs reordered around the most-used player actions.
+Hotfix 3 adds authoritative Adventurer Portal Title management:
+- earned Titles can be equipped directly from Achievements & Titles → Title Collection;
+- the currently equipped Title is clearly marked;
+- locked Titles remain view-only;
+- public/read-only profiles never receive Title mutation controls;
+- the Bot re-validates that the requested Title is actually unlocked before applying it.
 
-Runtime: 1.1.15-wayfarer
-Frontend: 1.1.15-wayfarer1
-DB schema: 5
-Hosted sync schema: 1
-Portal Action protocol: 13
+Runtime: 1.1.15-wayfarer-h3
+Frontend: 1.1.15-wayfarer1h3
+DB schema: 5 (unchanged)
+Hosted sync schema: 1 (unchanged)
+Hosted sync compatibility: 1.1.15-wayfarer
+Portal Action protocol: 14
+Twitch prefix: !
 
 PRESERVE: .env, .tio.tokens.json, crystal_guild.db, Twitch token database, and private runtime state.
 
-IMPORTANT: Existing schema-4 Guild databases are upgraded automatically to schema 5 on first open.
-Crystal Guild creates and verifies backups/pre_schema_5_<timestamp>.db BEFORE the migration.
-No player reset is required. No new Render secret or Twitch OAuth scope is required.
+Hotfix 3 does NOT run a database migration and does NOT reset players. It does require matching Bot + Web files because Portal Action protocol advances 13 → 14.

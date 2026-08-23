@@ -1,3 +1,30 @@
+# Crystal Guild v1.1.15 — Wayfarer Hotfix 3
+
+Hotfix 3 brings earned Title selection into the authenticated Adventurer Portal.
+
+## Title Collection controls
+
+Open **Achievements & Titles → Title Collection** on your own signed-in profile. Every earned Title now has an **Equip** action. The active Title is highlighted and marked **Equipped Now**. Locked Titles remain visible according to the existing filters but cannot be selected.
+
+The Portal still supports the existing Twitch `!title <name>` command; both surfaces now update the same authoritative `players.title` value.
+
+The Bot re-checks the request against `player_titles`, so a browser cannot equip a Title the character has not earned. Public/read-only profiles never expose Title mutation controls.
+
+## Compatibility
+
+- Bot/Web runtime: `1.1.15-wayfarer-h3`
+- Frontend asset revision: `1.1.15-wayfarer1h3`
+- Local DB schema: **5** (unchanged)
+- Hosted sync schema: **1** (unchanged)
+- Hosted sync compatibility: `1.1.15-wayfarer`
+- Portal Action protocol: **14** (from 13)
+- Twitch prefix: `!`
+
+No database migration, player reset, new Render secret, or new Twitch OAuth scope is required. Because the action protocol changes, deploy the matching Hotfix 3 Bot and Web together.
+
+
+---
+
 # Crystal Guild v1.1.15 — Wayfarer
 
 Wayfarer turns the Portal-only **Solo Venture** into a compact, interactive RPG run while preserving Rally Venture as Crystal Guild's higher-risk live-stream cooperative mode. It also reorganizes the Adventurer Portal so the most frequently used character actions appear first.

@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.1.15 — Wayfarer Hotfix 3
+
+- Adds authenticated Portal Title equipping for earned Titles.
+- Adds strict `SET_TITLE` action validation and authoritative Bot-side unlock revalidation.
+- Advances Bot runtime to `1.1.15-wayfarer-h3` and Portal Action protocol **13 → 14**.
+- Keeps local DB schema 5, hosted sync schema 1, hosted sync compatibility `1.1.15-wayfarer`, and Twitch prefix `!` unchanged.
+- Requires no migration, reset, new secret, or new OAuth scope.
+
 ## v1.1.15 — Wayfarer
 
 - Rebuilds Portal-only Solo Venture as a persistent, player-paced three-stage run with Attack, Ability, Use Item, Defend, enemy intent, and no round timer.
