@@ -1,8 +1,10 @@
-Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 3c
-Runtime: 1.1.14-cloud-continuity-h3c
-Local DB schema: 4
+Crystal Guild Bot v1.1.15 — Wayfarer
+Runtime: 1.1.15-wayfarer
+Local DB schema: 5
 Hosted sync schema: 1
-Portal Action protocol: 12
+Portal Action protocol: 13
 Twitch prefix: !
+Matching Web asset revision: 1.1.15-wayfarer1
 
-Preserve existing .env, .tio.tokens.json, crystal_guild.db, and private token/runtime state when upgrading.
+Preserve existing .env, .tio.tokens.json, crystal_guild.db, Twitch token DB, and private runtime state when upgrading.
+Schema-4 databases receive a verified pre_schema_5 backup before additive migration.

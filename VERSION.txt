@@ -1,9 +1,9 @@
-Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 3c
-Runtime: 1.1.14-cloud-continuity-h3c
-Local DB schema: 4
+Crystal Guild Bot v1.1.15 — Wayfarer
+Runtime: 1.1.15-wayfarer
+Local DB schema: 5
 Hosted sync schema: 1
-Hosted sync runtime compatibility: 1.1.14-cloud-continuity
-Portal Action protocol: 12
+Hosted sync runtime compatibility: 1.1.15-wayfarer
+Portal Action protocol: 13
 Twitch prefix: !
-Matching Web asset revision: 1.1.14-continuity3c
+Matching Web asset revision: 1.1.15-wayfarer1
 Twitch broadcaster scope required for subscriber perks: channel:read:subscriptions

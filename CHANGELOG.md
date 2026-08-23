@@ -1,5 +1,17 @@
 # Crystal Guild Changelog
 
+## v1.1.15 — Wayfarer
+
+- Rebuilds Portal-only Solo Venture as a persistent, player-paced three-stage run with Attack, Ability, Use Item, Defend, enemy intent, and no round timer.
+- Changes Solo Venture stage odds to **60% Encounter / 40% Treasure**.
+- Adds Return / Press On decisions after Stage I and II; encounter reward modifiers increase to +15% at Stage II and +30% at Stage III, while deeper chests receive better rarity weighting.
+- Secures encounter XP/JP immediately while holding normal Gil/item spoils until banked; defeat recovers 50% pending Gil and loses loose items, while Retreat abandons pending spoils.
+- Keeps Solo Venture state per player so an unattended Portal fight cannot occupy the Guild-wide Rally/Hunt battle slot.
+- Reorders Adventurer Portal tabs with Overview first and Adventure Board second, followed by Jobs and Equipment & Inventory.
+- Advances local DB schema **4 → 5** with a verified `pre_schema_5_<timestamp>.db` backup before migration.
+- Advances Portal Action protocol **12 → 13** for strict typed Solo Venture round/continue/return/retreat actions; hosted sync schema remains 1.
+- Runtime: `1.1.15-wayfarer`; frontend asset revision: `1.1.15-wayfarer1`; Twitch prefix remains `!`.
+
 ## v1.1.14 — Cloud Continuity — Hotfix 3c
 
 - Adds an at-a-glance Current Loadout summary and stronger equipped-item treatment in the Portal.

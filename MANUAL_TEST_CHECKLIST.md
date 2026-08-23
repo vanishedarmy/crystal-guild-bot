@@ -1,6 +1,6 @@
-# Crystal Guild v1.1.14 Hotfix 3 Manual Check
+# Crystal Guild v1.1.15 — Wayfarer Hotfix 3 Manual Check
 
-- [ ] `!cgversion` reports `1.1.14-cloud-continuity-h3c`.
+- [ ] `!cgversion` reports `1.1.15-wayfarer`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
@@ -14,3 +14,15 @@
 - [ ] Existing player progression, Fellowship, Adventure Board, hosted overlay, and stream-live gate remain intact.
 - [ ] On the Portal, an active Rally Venture renders inside the Rally Venture panel, not below Current Region.
 - [ ] Portal buttons/filters are readable, identify their purpose/target, and remain clear when selected, focused, or disabled.
+
+## Wayfarer Solo Venture
+
+- [ ] Adventure Board shows 60 / 40 Encounter / Treasure and a 3-stage maximum.
+- [ ] Encounter shows Attack / Ability / Use Item / Defend and Enemy intent.
+- [ ] One click resolves exactly one round; waiting/refreshing does not advance combat.
+- [ ] Current HP/MP/AP and consumed items persist when pressing deeper.
+- [ ] Stage I/II clear offers Return to Guild and Press On.
+- [ ] Stage III banks automatically.
+- [ ] Defeat keeps secured XP/JP, recovers half pending Gil, and loses loose item spoils.
+- [ ] An active Solo Venture does not occupy the shared Rally/Hunt battle slot.
+- [ ] Profile tabs begin Overview → Adventure Board → Jobs → Equipment & Inventory.

@@ -1,59 +1,80 @@
-# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 3c Validation
+# Crystal Guild v1.1.15 — Wayfarer Validation Report
 
 ## Certification summary
 
-**PASS — Current Loadout clarity, authoritative Gil-spent achievement tracking, and recoverable mobile header behavior certified.**
+**PASS — interactive, persistent Solo Venture gameplay and the player-priority Portal navigation are certified on the v1.1.14 Cloud Continuity Hotfix 3c baseline.**
 
-Hotfix 3c is an in-place Bot + Web update from Hotfix 3b. It preserves the existing database, hosted sync schema, Portal Action protocol, Twitch configuration, and player progression.
+Wayfarer advances the local database from schema **4 → 5** and the Portal Action protocol from **12 → 13**. Hosted sync schema remains **1**. Existing player progression is preserved through the guarded additive migration.
 
 ## Automated validation
 
-- Bot automated tests: **345 / 345 PASS**
-- Frontend source/unit/regression tests: **157 / 157 PASS**
+- Bot automated tests: **355 / 355 PASS**
+- Frontend source/unit/regression tests: **158 / 158 PASS**
 - Hosted Portal/API tests: **39 / 39 PASS**
-- JavaScript/JSX independent TypeScript syntax parse: **50 / 50 PASS**
-- Python grammar sweep: **72 / 72 PASS**
+- JavaScript/JSX syntax parse: **97 / 97 PASS**
+- Python grammar sweep: **73 / 73 PASS**
+- Hotfix 3c → schema 5 migration drill: **PASS**
+- Pre-schema-5 backup integrity (`PRAGMA quick_check`): **PASS**
+- Migrated database integrity / foreign-key check: **PASS**
 - Cloud stress: **1,000 players / 10,000 operations / 4 readers PASS**
-- Stress elapsed: **17.30 s**
-- Stress throughput: **578.1 ops/s**
-- Stress Portal reads: **6,954**
-- Stress ledger rows: **12,146**
+- Exact extracted Complete-package Bot tests: **355 / 355 PASS**
+- Exact extracted Complete-package hosted Portal/API tests: **39 / 39 PASS**
+- Exact extracted Complete-package frontend tests: **158 / 158 PASS**
+- Hotfix 3c → Wayfarer single-update overlay: **PASS — final file set and contents match exactly**
+- Bot/Web/Complete/Update archive runtime-state hygiene: **PASS**
+- Stress elapsed: **15.61 s**
+- Stress throughput: **640.6 ops/s**
+- Stress Portal reads: **7,249**
+- Stress ledger rows: **12,112**
 - SQLite quick-check failures: **0**
 - Foreign-key violations: **0**
 - Negative Gil/inventory states: **0**
 - Portal read errors: **0**
 - Transaction rollbacks: **0**
-- Exact extracted Bot/Web/Complete package validation: **PASS**
-- Hotfix 3b → 3c consolidated update overlay: **PASS — byte-for-byte final tree**
 
-## Hotfix 3c regression coverage
+Local Vite production bundling was not run because frontend dependencies are not installed in this execution environment. The dependency versions remain pinned; frontend source/regression tests and independent syntax parsing pass.
+
+## Wayfarer regression coverage
 
 Validation confirms that:
 
-- Items & Equipment now starts with a dedicated **Current Loadout** summary for Weapon, Armor, and Accessory;
-- each equipped slot shows the active item and its effective stat bonuses;
-- empty equipment slots are explicitly identified;
-- equipped inventory entries sort to the top of their equipment group and carry a clear **EQUIPPED NOW** marker and highlighted state;
-- existing equipment detail, comparison, forge-upgrade, equip, and unequip behavior remains available;
-- `gil_spent` achievement progress is derived from the authoritative transaction ledger instead of stale cached record-stat state;
-- historical negative-Gil transactions already recorded for an existing player are recognized automatically without a migration/backfill;
-- Twitch and Portal shop purchases can unlock **Stimulating the Economy** immediately after the qualifying spend;
-- replaying a completed Portal purchase remains idempotent and does not double-spend Gil or duplicate inventory writes;
-- other transaction-derived record metrics use the same authoritative ledger path;
-- on mobile, downward scrolling hides the sticky Portal header once the user has moved away from the top of the page;
-- any upward scroll restores the header immediately;
-- the header is always visible near the top of the page and when keyboard focus moves inside it;
-- the behavior is limited to mobile widths and respects reduced-motion preferences.
+- each Solo Venture stage independently uses **60% Encounter / 40% Treasure** odds;
+- Solo Venture combat is Portal-only, player-paced, and advances exactly one round after **Attack**, **Ability**, **Use Item**, or **Defend**;
+- enemy intent is published before the player's choice;
+- learned ability availability, MP/AP costs, Silence restrictions, battle-item ownership, and item consumption are enforced authoritatively;
+- Defend advances one round and restores the intended small Job resource amount;
+- Solo combat HP/MP/AP/status state persists across rounds and Portal refresh/reconnects;
+- an active Solo Venture is stored per player and does not occupy or overwrite the Guild-wide Rally/Hunt encounter state;
+- Stage II applies **+15%** and Stage III **+30%** encounter XP/JP/Gil modifiers;
+- Treasure remains a 40% event chance at every depth while deeper stages bias chest quality upward;
+- Return banks accumulated Venture Spoils; Press On carries current resources and consumed inventory forward;
+- secured XP/JP survive defeat or retreat;
+- defeat recovers **50%** of unbanked Gil and loses loose item spoils;
+- Retreat abandons unbanked Venture Spoils without deleting secured progression;
+- build/recovery/resupply/economy actions that would bypass Solo Venture attrition are unavailable while a run is active, while battle items remain usable from the combat interface;
+- the existing Rally Venture remains a separate Twitch/live-stream activity;
+- Adventurer Portal navigation begins **Overview → Adventure Board → Jobs → Equipment & Inventory** and keeps all established profile destinations;
+- the hosted action relay strictly carries protocol-13 Solo Venture action/continue/return/retreat operations and existing replay/idempotency handling remains active.
 
-## Compatibility
+## Migration drill
 
-- Bot runtime: `1.1.14-cloud-continuity-h3c`
-- Hosted Web runtime: `1.1.14-cloud-continuity-h3c`
-- Hosted sync runtime compatibility: `1.1.14-cloud-continuity`
-- Frontend asset revision: `1.1.14-continuity3c`
-- Local DB schema: **4**
+A representative schema-4 Hotfix 3c Guild was created with an existing Lv.17 character, XP, Gil, Hunt Seals, HP, inventory, and Solo Venture cooldown state. Opening that same database with Wayfarer:
+
+- created and verified `backups/pre_schema_5_<timestamp>.db` before structural migration;
+- preserved the backup at schema 4 with no `solo_expeditions` table;
+- migrated the active Guild to schema 5;
+- created the per-player `solo_expeditions` table and update index;
+- preserved the representative character and inventory values;
+- passed `PRAGMA quick_check` and `PRAGMA foreign_key_check` after migration.
+
+## Release identity
+
+- Product: **Crystal Guild v1.1.15 — Wayfarer**
+- Bot/Web runtime: `1.1.15-wayfarer`
+- Frontend asset revision: `1.1.15-wayfarer1`
+- Local DB schema: **5**
 - Hosted sync schema: **1**
-- Portal Action protocol: **12**
+- Portal Action protocol: **13**
 - Twitch prefix: `!`
 
-No database migration, player reset, new Render secret, new OAuth scope, hosted sync schema change, or Portal Action protocol change is introduced by Hotfix 3c. Existing Hotfix 2+ subscriber authorization for `channel:read:subscriptions` remains unchanged.
+No player reset, new Render secret, hosted sync schema change, or new Twitch OAuth scope is required. The existing `channel:read:subscriptions` broadcaster authorization remains required only for previously introduced subscriber-tier perks.

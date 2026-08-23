@@ -1,4 +1,12 @@
-# Crystal Guild v1.1.14 — Active Battle & Recovery Guide
+# Crystal Guild v1.1.15 — Wayfarer Battle & Recovery Guide
+
+## Portal Solo Venture — Wayfarer
+
+Solo Venture is a separate Portal-only, player-paced combat mode. Each stage rolls **60% ENCOUNTER / 40% TREASURE** and a run may reach three stages. An Encounter waits for the player to choose **Attack**, **Ability**, **Use Item**, or **Defend**; there is no round timer. The Adventure Board shows the enemy's current intent before the choice is submitted.
+
+After Stage I or II, choose **Return to Guild** to bank Venture Spoils or **Press On** for a deeper stage. Encounter XP/JP are secured immediately, while normal Gil/item spoils remain at risk until banked. Stage II encounter rewards receive +15%; Stage III receives +30%. Defeat preserves secured progression, recovers half of pending Gil, and loses loose item spoils. Retreat preserves secured progression but abandons all pending Venture Spoils.
+
+Solo Venture state is persisted per player and does not occupy the shared Rally/Hunt Active Battle slot. Current HP/MP/AP and consumed battle items carry through the run.
 
 ## Venture events
 

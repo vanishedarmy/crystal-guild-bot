@@ -1,9 +1,9 @@
-# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 3c
+# Crystal Guild v1.1.15 — Wayfarer
 
-Hotfix 3c advances from the Hotfix 3b baseline. It preserves the Raid action repair, Rally Venture consolidation, subscriber-aware Daily system, and all existing schema/protocol contracts while correcting lifetime Gil-spent achievement accounting.
+Wayfarer is the Bot/runtime half of Crystal Guild v1.1.15. It adds persistent per-player interactive Solo Venture state, player-paced Portal combat actions, three-stage risk/reward progression, and the schema-5 migration needed to resume an unfinished Solo Venture safely.
 
-`Stimulating the Economy` and other transaction-derived record conditions now read the authoritative `transactions` ledger instead of relying on a stale cached record value. Successful shop purchases, Chocobo Registration Writ purchases, and Fellowship contributions also run achievement checks immediately.
+Runtime `1.1.15-wayfarer` · local DB schema **5** · hosted sync schema **1** · Portal Action protocol **13** · Twitch prefix `!`.
 
-Runtime `1.1.14-cloud-continuity-h3c` · DB schema 4 · hosted sync schema 1 · Portal Action protocol 12 · Twitch prefix `!`.
+Existing schema-4 databases migrate automatically after a verified `pre_schema_5` backup. No player reset, new Render secret, or new Twitch OAuth scope is required. Deploy the matching Web build (`1.1.15-wayfarer1`) so the Adventure Board can use the protocol-13 Solo Venture controls.
 
-No new Render secret, database migration, player reset, or OAuth scope is introduced. The existing subscriber feature still requires `channel:read:subscriptions` if it was not already authorized.
+See `UPGRADE_GUIDE.md`, `RELEASE_NOTES.md`, and `FULL_SETUP_README.md`.

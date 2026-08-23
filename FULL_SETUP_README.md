@@ -1,11 +1,11 @@
-# Crystal Guild v1.1.14 — Cloud Continuity Full Setup
+# Crystal Guild v1.1.15 — Wayfarer Full Setup
 
 This guide covers both supported operating modes:
 
 1. **Local Windows runtime** — the traditional Crystal Guild setup.
 2. **Render Cloud Continuity** — the authoritative Bot runs continuously online.
 
-v1.1.14 changes infrastructure only. Local database schema stays **4**, hosted sync schema stays **1**, Portal Action protocol stays **12**, and the Twitch prefix remains **`!`**.
+v1.1.15 keeps the established local/cloud deployment model while adding interactive Portal Solo Ventures. Local database schema is **5**, hosted sync schema remains **1**, Portal Action protocol is **13**, and the Twitch prefix remains **`!`**.
 
 ---
 
@@ -119,7 +119,7 @@ Owner diagnostics in Twitch:
 !health
 ```
 
-`!cgversion` should report **v1.1.14 Cloud Continuity**.
+`!cgversion` should report **v1.1.15 Wayfarer**.
 
 ---
 
@@ -213,17 +213,15 @@ The hosted Portal is a sanitized mirror/relay. It does not receive the authorita
 
 ## 8. Database and progression
 
-v1.1.14 adds **no new player-data schema migration**. The current local schema remains version 4.
+v1.1.15 advances the local schema **4 → 5** by adding persistent per-player Solo Venture state. Existing player IDs, levels, XP/JP, Gil, Hunt Seals, HP/MP/AP, Jobs, Masteries, equipment, inventory, crafting and forge progression, cooldowns, region, Bestiary, achievements, titles, records, Relics, Fellowship, Chocobo progression, and runtime state remain authoritative in the same database.
 
-Existing player IDs, levels, XP/JP, Gil, Hunt Seals, HP/MP/AP, Jobs, Masteries, equipment, inventory, crafting and forge progression, cooldowns, region, Bestiary, achievements, titles, records, Relics, Fellowship, Chocobo progression, and saved runtime state remain in the same authoritative database.
-
-The normal `Database` class still supports the project's historical sequential/additive migration path for older supported Guild databases. Cloud Continuity's first-deployment guard simply ensures the file you uploaded is an actual readable Crystal Guild database before that code is allowed to open it.
+For an existing populated schema-4 Guild, the `Database` class creates and verifies `backups/pre_schema_5_<timestamp>.db` before applying the additive migration. Verification includes SQLite `quick_check` and player-count parity. No player reset is required.
 
 ---
 
 ## 9. Portal operation
 
-The public Portal continues to use the same hosted sync schema and Portal Action protocol as v1.1.12.
+The public Portal keeps hosted sync schema **1** and advances Portal Action protocol to **13** for the typed interactive Solo Venture actions.
 
 Local mode:
 
@@ -239,7 +237,7 @@ Render Bot worker --> integrated Portal sync/actions --> hosted Web
 
 Do not run both sync methods against the same authoritative Guild at once.
 
-The consolidated v1.1.14 Complete build includes a matching Web package. The older v1.1.12 Web Hotfix 7/8 remains protocol-compatible with the Cloud Continuity Bot, but deploy the v1.1.14 Web package to align site identity and include the Privacy Policy phone-number removal.
+The consolidated v1.1.15 Complete build includes a matching Web package. Deploy the v1.1.15 Web package with the Wayfarer Bot because Portal Action protocol 13 is required for interactive Solo Venture controls.
 
 ---
 
