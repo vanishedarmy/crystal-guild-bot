@@ -46,6 +46,10 @@ services:
         value: "10"
       - key: PORTAL_ACTION_VERIFY_TLS
         value: "true"
+      - key: SUBSCRIPTION_STATUS_CACHE_SECONDS
+        value: "300"
+      - key: SUBSCRIPTION_STATUS_STALE_SECONDS
+        value: "900"
       - key: TWITCH_CLIENT_ID
         sync: false
       - key: TWITCH_CLIENT_SECRET

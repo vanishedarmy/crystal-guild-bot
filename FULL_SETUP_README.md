@@ -46,7 +46,7 @@ http://localhost:4343/oauth?scopes=user:read:chat%20user:write:chat%20user:bot&f
 For the broadcaster account use:
 
 ```text
-http://localhost:4343/oauth?scopes=channel:bot&force_verify=true
+http://localhost:4343/oauth?scopes=channel:bot%20channel:read:subscriptions&force_verify=true
 ```
 
 Use the authorization helper if desired:

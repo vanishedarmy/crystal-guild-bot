@@ -1,3 +1,13 @@
+# Crystal Guild Changelog
+
+## v1.1.14 — Cloud Continuity Hotfix 2
+
+- Replaces the fixed `Gil + 1 Potion` Daily with randomized level-appropriate provisions plus level-scaled Gil.
+- Adds broadcaster-authoritative Twitch subscription-tier lookup using `channel:read:subscriptions`.
+- Adds initial Tier 1/2/3 Daily perks and public `!substatus` diagnostics.
+- Portal Daily uses the same authoritative tier resolver and 24-hour cooldown as Twitch chat.
+- Runtime advances to `1.1.14-cloud-continuity-h2`; DB schema 4, hosted sync schema 1, Portal Action protocol 12, and Twitch prefix `!` remain unchanged.
+
 # v1.1.14 — Cloud Continuity Hotfix 1
 
 - Adds Twitch stream-presence verification using the existing Twitch application credentials and the Get Streams API.

@@ -1,10 +1,12 @@
-Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 1
-Runtime: 1.1.14-cloud-continuity-h1
-Purpose: Twitch live-stream presence gate for stream-only chat gameplay
+Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 2
+Runtime: 1.1.14-cloud-continuity-h2
+Purpose: randomized Daily Guild Provisions + Twitch Tier 1/2/3 subscriber perks
 Local DB schema: 4
 Hosted sync schema: 1
 Portal Action protocol: 12
 Twitch prefix: !
-Required new secrets: none
+Required new Render secrets: none
 Database migration: none
 Player reset: none
+Broadcaster OAuth scope required: channel:read:subscriptions
+Matching Web asset revision: 1.1.14-continuity2

@@ -1,43 +1,18 @@
-# Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 1
+# Crystal Guild v1.1.14 — Cloud Continuity Hotfix 2
 
-Hotfix 1 adds an authoritative Twitch **stream-presence gate** for chat gameplay that belongs to the live show. Crystal Guild itself remains online 24/7 on Render, while live-stream gameplay is available only when Twitch reports the broadcaster as actively live.
+Hotfix 2 keeps the v1.1.14 cloud runtime and adds two player-facing improvements:
 
-## Live-stream-only Twitch gameplay
+1. **Randomized Daily Guild Provisions** — Daily is no longer permanently `1 Potion + Gil`; it rolls level-appropriate consumables/basic crafting supplies plus Gil.
+2. **Twitch subscriber tiers** — Crystal Guild can verify Tier 1/2/3 from the broadcaster-authoritative Twitch subscription list and use that tier for perks.
 
-The following Twitch chat mutations now require the channel to be LIVE:
+Current subscriber perks are deliberately limited to Daily Guild Provisions:
 
-- `!venture` / Rally Venture
-- `!join` / Rally participation
-- `!hunt <name>` / starting an Active Hunt
-- `!attack`, `!ability`, `!defend` / Active Battle actions
-- `!raid`, `!limit`, `!summon`, `!revive` / Raid participation and actions
+- Tier 1: +10% Daily Gil, 2 provision rolls.
+- Tier 2: +20% Daily Gil, 3 provision rolls.
+- Tier 3: +30% Daily Gil, 4 provision rolls.
 
-Read-only commands remain available while offline, including hero/inventory/catalog/status/help commands. Non-stream progression such as recovery, equipment, shops, crafting, Fellowship contributions, Daily, and Chocobo management also remains available.
+Use `!substatus` to check the detected tier.
 
-The authenticated Portal remains deliberately off-stream capable. **Portal Solo Venture and Portal Challenge Hunt are not blocked by the Twitch live gate.**
+Existing cloud installations must re-authorize the broadcaster once with `channel:read:subscriptions` and replace the private `/var/data/twitch_tokens.db`. See `UPGRADE_GUIDE.md`.
 
-## Twitch live check
-
-Crystal Guild checks Twitch's Get Streams API using the existing `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`. No additional OAuth scopes or Render secrets are required. Results are briefly cached to avoid API spam. If Twitch cannot be checked and the last successful result becomes stale, live-only mutations fail closed until status can be confirmed again.
-
-Streamer diagnostics:
-
-```text
-!streamstatus
-!health
-```
-
-`!health` now includes `stream=LIVE`, `stream=OFFLINE`, or `stream=UNKNOWN`.
-
-## Compatibility
-
-- Runtime: `1.1.14-cloud-continuity-h1`
-- Hosted sync runtime remains compatible with `1.1.14-cloud-continuity`
-- DB schema: 4
-- Hosted sync schema: 1
-- Portal Action protocol: 12
-- Twitch prefix: `!`
-- Database migration: none
-- Player reset: none
-- New required environment variables: none
-- Web redeploy required: no
+Runtime `1.1.14-cloud-continuity-h2` · DB schema 4 · hosted sync schema 1 · Portal Action protocol 12 · Twitch prefix `!`.

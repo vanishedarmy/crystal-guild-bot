@@ -3,15 +3,15 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 set BOT_AUTH=http://localhost:4343/oauth?scopes=user:read:chat%%20user:write:chat%%20user:bot^&force_verify=true
-set OWNER_AUTH=http://localhost:4343/oauth?scopes=channel:bot^&force_verify=true
+set OWNER_AUTH=http://localhost:4343/oauth?scopes=channel:bot%%20channel:read:subscriptions^&force_verify=true
 
 :menu
 cls
 echo ============================================================
-echo       CRYSTAL GUILD v1.1.14 - CLOUD CONTINUITY TWITCH AUTH HELPER
+echo       CRYSTAL GUILD v1.1.14 - CLOUD CONTINUITY H2 TWITCH AUTH HELPER
 echo ============================================================
 echo.
-echo IMPORTANT: run_bot.bat MUST already be running.
+echo IMPORTANT: run_cloud_token_authorization.bat MUST already be running for cloud-token setup.
 echo.
 echo 1. Authorize the DEDICATED BOT account
 echo    Login to Twitch as the bot account before approving.
@@ -45,6 +45,7 @@ goto menu
 echo.
 echo Opening OWNER authorization URL.
 echo Confirm the Twitch account shown by Twitch is your STREAMER/BROADCASTER account.
+echo This authorization also grants channel:read:subscriptions for tier perks.
 start "" "%OWNER_AUTH%"
 pause
 goto menu
@@ -55,7 +56,7 @@ echo BOT ACCOUNT URL:
 echo http://localhost:4343/oauth?scopes=user:read:chat%%20user:write:chat%%20user:bot^&force_verify=true
 echo.
 echo BROADCASTER / OWNER URL:
-echo http://localhost:4343/oauth?scopes=channel:bot^&force_verify=true
+echo http://localhost:4343/oauth?scopes=channel:bot%%20channel:read:subscriptions^&force_verify=true
 echo.
 echo Tip: use a Private/Incognito window for the bot account so you do not
 echo accidentally authorize the wrong Twitch account.

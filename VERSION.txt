@@ -1,8 +1,9 @@
-Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 1
-Runtime: 1.1.14-cloud-continuity-h1
+Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 2
+Runtime: 1.1.14-cloud-continuity-h2
 Local DB schema: 4
 Hosted sync schema: 1
 Hosted sync runtime compatibility: 1.1.14-cloud-continuity
 Portal Action protocol: 12
 Twitch prefix: !
-Matching Web asset revision: 1.1.14-continuity1
+Matching Web asset revision: 1.1.14-continuity2
+Twitch broadcaster scope required for subscriber perks: channel:read:subscriptions

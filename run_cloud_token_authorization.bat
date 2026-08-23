@@ -9,7 +9,7 @@ if not exist ".venv\Scripts\python.exe" (
 )
 
 echo ============================================================
-echo      CRYSTAL GUILD v1.1.14 - CLOUD TOKEN AUTH SESSION
+echo      CRYSTAL GUILD v1.1.14 - CLOUD TOKEN AUTH SESSION - HOTFIX 2
 echo ============================================================
 echo.
 echo This temporary LOCAL session stores Twitch OAuth credentials in:
