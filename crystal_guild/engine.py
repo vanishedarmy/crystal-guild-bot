@@ -69,6 +69,12 @@ from .balance import (
     VENTURE_TREASURE_CATEGORY_WEIGHTS,
     VENTURE_TREASURE_RARITY_WEIGHTS,
 )
+from .daily_provisions import (
+    daily_gil_with_perk,
+    provision_preview,
+    roll_daily_provisions,
+    subscriber_perk,
+)
 from .data import GameData
 from .enemy_combat import (
     choose_enemy_action,
@@ -5089,7 +5095,7 @@ class CrystalGuildEngine:
         result.messages.extend(fellowship_notes[:2])
         return self._portal_crafting_result(action_id, result, twitch_id)
 
-    def _portal_daily_state_data(self, twitch_id: str) -> dict[str, Any]:
+    def _portal_daily_state_data(self, twitch_id: str, subscriber_tier: int = 0) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:
             return {}
@@ -5097,32 +5103,75 @@ class CrystalGuildEngine:
         row = self.db.one("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,))
         available_at = int(row["available_at"] or 0) if row else 0
         remaining = max(0, available_at - now)
-        low, high = daily_gil_range(int(p["level"] or 1))
+        base_low, base_high = daily_gil_range(int(p["level"] or 1))
+        low, high = daily_gil_with_perk(base_low, base_high, subscriber_tier)
+        preview = provision_preview(int(p["level"] or 1), subscriber_tier)
         return {
             "available": remaining <= 0,
             "available_at": available_at if remaining > 0 else 0,
             "remaining_seconds": remaining,
             "gil_min": int(low),
             "gil_max": int(high),
-            "potion_quantity": 1,
+            "base_gil_min": int(base_low),
+            "base_gil_max": int(base_high),
             "current_gil": max(0, int(p["gil"] or 0)),
-            "current_potions": self._inventory_qty(twitch_id, "potion"),
+            **preview,
         }
 
-    def portal_daily_state(self, twitch_id: str) -> GameResult:
+    def portal_daily_state(self, twitch_id: str, subscriber_tier: int = 0) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
-        return GameResult.success("Daily provisions checked.", daily_state=self._portal_daily_state_data(twitch_id))
+        return GameResult.success(
+            "Daily provisions checked.",
+            daily_state=self._portal_daily_state_data(twitch_id, subscriber_tier),
+        )
 
-    def portal_claim_daily(self, twitch_id: str, action_id: str) -> GameResult:
+    def _daily_reward(self, twitch_id: str, subscriber_tier: int = 0) -> tuple[int, list[dict[str, Any]], dict[str, Any]]:
+        p = self._player(twitch_id)
+        if not p:
+            return 0, [], subscriber_perk(0)
+        perk = subscriber_perk(subscriber_tier)
+        base_low, base_high = daily_gil_range(int(p["level"] or 1))
+        low, high = daily_gil_with_perk(base_low, base_high, subscriber_tier)
+        gil = int(self.rng.randint(low, high))
+        provisions = roll_daily_provisions(self.data.items, int(p["level"] or 1), self.rng, subscriber_tier)
+        return gil, provisions, perk
+
+    @staticmethod
+    def _daily_provision_text(provisions: list[dict[str, Any]]) -> str:
+        if not provisions:
+            return "No provision bundle"
+        return " | ".join(f"{row['name']} x{int(row['quantity'])}" for row in provisions)
+
+    def _grant_daily_sql(
+        self,
+        conn: Any,
+        twitch_id: str,
+        gil: int,
+        provisions: list[dict[str, Any]],
+    ) -> None:
+        conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil, twitch_id))
+        conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,'daily')", (twitch_id, gil))
+        for reward in provisions:
+            item_id = str(reward["item_id"])
+            quantity = max(1, int(reward["quantity"]))
+            conn.execute(
+                "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
+                "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity",
+                (twitch_id, item_id, quantity),
+            )
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, 'daily')",
+                (twitch_id, item_id, quantity),
+            )
+
+    def portal_claim_daily(self, twitch_id: str, action_id: str, subscriber_tier: int = 0) -> GameResult:
         replay = self._portal_action_replay(action_id)
         if replay is not None:
             return replay
         p = self._player(twitch_id)
         if not p:
             return self._portal_store_nonmutating_result(action_id, self._need_recruit())
-        low, high = daily_gil_range(int(p["level"] or 1))
-        gil = self.rng.randint(low, high)
         now = int(time.time())
         with self.db.tx() as conn:
             cooldown = conn.execute("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,)).fetchone()
@@ -5131,30 +5180,26 @@ class CrystalGuildEngine:
             if remaining > 0:
                 result = GameResult.fail(
                     f"Daily provisions already claimed. Return in {self._format_seconds(remaining)}.",
-                    daily_state={
-                        "available": False,
-                        "available_at": available_at,
-                        "remaining_seconds": remaining,
-                        "gil_min": int(low),
-                        "gil_max": int(high),
-                        "potion_quantity": 1,
-                        "current_gil": max(0, int(p["gil"] or 0)),
-                        "current_potions": self._inventory_qty(twitch_id, "potion"),
-                    },
+                    daily_state=self._portal_daily_state_data(twitch_id, subscriber_tier),
                 )
                 self._portal_action_store_sql(conn, action_id, result)
                 return result
-            conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil, twitch_id))
-            conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?, 'potion', 1) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+1", (twitch_id,))
-            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,'daily')", (twitch_id, gil))
+            gil, provisions, perk = self._daily_reward(twitch_id, subscriber_tier)
+            self._grant_daily_sql(conn, twitch_id, gil, provisions)
             next_at = now + 24 * 3600
             conn.execute("INSERT INTO cooldowns(player_id,action,available_at) VALUES (?, 'daily', ?) ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at", (twitch_id, next_at))
+            perk_note = ""
+            if int(perk["tier"]) > 0:
+                perk_note = f" [{perk['label']}: +{perk['gil_bonus_percent']}% Gil, {perk['rolls']} provision rolls]"
             result = GameResult.success(
-                f"Daily provisions: +{gil} gil and +1 Potion. The Guild accountant looks mildly concerned.",
+                f"Daily provisions{perk_note}: +{gil} Gil | {self._daily_provision_text(provisions)}.",
                 claimed_gil=gil,
+                provisions=provisions,
+                subscriber_tier=int(perk["tier"]),
+                subscriber_label=str(perk["label"]),
             )
             self._portal_action_store_sql(conn, action_id, result)
-        result.data["daily_state"] = self._portal_daily_state_data(twitch_id)
+        result.data["daily_state"] = self._portal_daily_state_data(twitch_id, subscriber_tier)
         with self.db.tx() as conn:
             self._portal_action_store_sql(conn, action_id, result)
         return result
@@ -6076,21 +6121,27 @@ class CrystalGuildEngine:
         text = " | ".join(f"#{idx} {r['display_name']} {int(r['score'] or 0):,}" for idx, r in enumerate(rows, 1))
         return GameResult.success(f"Leaderboard [{metric}] — {text}")
 
-    def daily(self, twitch_id: str) -> GameResult:
+    def daily(self, twitch_id: str, subscriber_tier: int = 0) -> GameResult:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
         remaining = self._cooldown_remaining(twitch_id, "daily")
         if remaining > 0:
             return GameResult.fail(f"Daily provisions already claimed. Return in {self._format_seconds(remaining)}.")
-        low, high = daily_gil_range(p["level"])
-        gil = self.rng.randint(low, high)
+        gil, provisions, perk = self._daily_reward(twitch_id, subscriber_tier)
         with self.db.tx() as conn:
-            conn.execute("UPDATE players SET gil=gil+? WHERE twitch_id=?", (gil, twitch_id))
-            conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?, 'potion', 1) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+1", (twitch_id,))
-            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,'daily')", (twitch_id, gil))
+            self._grant_daily_sql(conn, twitch_id, gil, provisions)
         self._set_cooldown(twitch_id, "daily", 24 * 3600)
-        return GameResult.success(f"Daily provisions: +{gil} gil and +1 Potion. The Guild accountant looks mildly concerned.")
+        perk_note = ""
+        if int(perk["tier"]) > 0:
+            perk_note = f" [{perk['label']}: +{perk['gil_bonus_percent']}% Gil, {perk['rolls']} provision rolls]"
+        return GameResult.success(
+            f"Daily provisions{perk_note}: +{gil} Gil | {self._daily_provision_text(provisions)}.",
+            claimed_gil=gil,
+            provisions=provisions,
+            subscriber_tier=int(perk["tier"]),
+            subscriber_label=str(perk["label"]),
+        )
 
     # ---------- monster & boss catalog ----------
     def monsters(self, region_query: str | None = None) -> GameResult:

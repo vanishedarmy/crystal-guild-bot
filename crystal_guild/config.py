@@ -82,6 +82,8 @@ class Settings:
     cloud_bootstrap_wait_seconds: int = 30
     stream_status_cache_seconds: float = 15.0
     stream_status_stale_seconds: float = 90.0
+    subscription_status_cache_seconds: float = 300.0
+    subscription_status_stale_seconds: float = 900.0
 
     @property
     def cloud_runtime(self) -> bool:
@@ -150,4 +152,6 @@ class Settings:
             cloud_bootstrap_wait_seconds=_env_int("CLOUD_BOOTSTRAP_WAIT_SECONDS", 30, 5),
             stream_status_cache_seconds=_env_float("STREAM_STATUS_CACHE_SECONDS", 15.0, 2.0),
             stream_status_stale_seconds=_env_float("STREAM_STATUS_STALE_SECONDS", 90.0, 15.0),
+            subscription_status_cache_seconds=_env_float("SUBSCRIPTION_STATUS_CACHE_SECONDS", 300.0, 15.0),
+            subscription_status_stale_seconds=_env_float("SUBSCRIPTION_STATUS_STALE_SECONDS", 900.0, 60.0),
         )

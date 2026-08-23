@@ -22,6 +22,8 @@ from .portal_sync import PortalSyncClient, PortalSyncWorker
 from .player_snapshot import PortalRepository
 from .token_store import TwitchTokenStore
 from .stream_status import TwitchStreamStatus
+from .subscription_status import TwitchSubscriptionStatus
+from .daily_provisions import subscriber_perk
 from .cloud_runtime import ensure_runtime_directories, wait_for_cloud_bootstrap, create_startup_backup
 from .chat_ux import FeedbackGate, format_command_error, should_silence_command_error
 from .time_format import format_duration
@@ -461,7 +463,25 @@ class RPGCommands(commands.Component):
     @commands.command()
     async def daily(self, ctx: commands.Context) -> None:
         uid, _, _ = _identity(ctx)
-        await send_result(ctx, self.game.daily(uid))
+        status = await asyncio.to_thread(self.bot.subscription_status.refresh, uid)
+        await send_result(ctx, self.game.daily(uid, int(status.get("tier") or 0)))
+
+    @commands.command()
+    async def substatus(self, ctx: commands.Context) -> None:
+        uid, _, _ = _identity(ctx)
+        status = await asyncio.to_thread(self.bot.subscription_status.refresh, uid, True)
+        if status["state"] == "UNKNOWN":
+            scope_note = " Broadcaster reauthorization for channel:read:subscriptions may be required." if status.get("scope_required") else ""
+            await ctx.send(("CG SUB — UNKNOWN. Twitch subscriber status could not be verified; standard rewards apply for now." + scope_note)[:480])
+            return
+        perk = subscriber_perk(int(status.get("tier") or 0))
+        if not status.get("subscribed"):
+            await ctx.send("CG SUB — Not currently subscribed | Daily: standard Gil + 1 random provision bundle."[:480])
+            return
+        gifted = " · gifted" if status.get("is_gift") else ""
+        await ctx.send(
+            f"CG SUB — Tier {perk['tier']}{gifted} | Daily perk: +{perk['gil_bonus_percent']}% Gil + {perk['rolls']} random provision rolls."[:480]
+        )
 
     @commands.command()
     async def bosses(self, ctx: commands.Context, tier: str | None = None) -> None:
@@ -679,6 +699,7 @@ class CrystalGuildBot(commands.AutoBot):
         portal_sync: PortalSyncWorker | None = None,
         token_store: TwitchTokenStore | None = None,
         stream_status: TwitchStreamStatus | None = None,
+        subscription_status: TwitchSubscriptionStatus | None = None,
     ) -> None:
         self.settings = settings
         self.db = db
@@ -693,6 +714,11 @@ class CrystalGuildBot(commands.AutoBot):
             settings.client_id, settings.client_secret, settings.owner_id,
             cache_seconds=settings.stream_status_cache_seconds,
             stale_seconds=settings.stream_status_stale_seconds,
+        )
+        self.subscription_status = subscription_status or TwitchSubscriptionStatus(
+            settings.client_id, settings.owner_id, token_store,
+            cache_seconds=settings.subscription_status_cache_seconds,
+            stale_seconds=settings.subscription_status_stale_seconds,
         )
         self.feedback_gate = FeedbackGate(cooldown_seconds=8.0)
         self._ready_count = 0
@@ -847,6 +873,14 @@ def main() -> None:
     )
     notifier = NotificationDispatcher(direct_sender)
     encounter_daemon = EncounterDaemon(game, notifier.enqueue)
+    token_store = TwitchTokenStore(settings.twitch_token_db) if settings.twitch_token_db else None
+    subscription_status = TwitchSubscriptionStatus(
+        settings.client_id,
+        settings.owner_id,
+        token_store,
+        cache_seconds=settings.subscription_status_cache_seconds,
+        stale_seconds=settings.subscription_status_stale_seconds,
+    )
     portal_actions = PortalActionWorker(
         game,
         settings.portal_public_url,
@@ -856,6 +890,7 @@ def main() -> None:
         verify_tls=settings.portal_action_verify_tls,
         notify_result=notifier.enqueue,
         wake_encounter=encounter_daemon.wake,
+        subscription_lookup=subscription_status.refresh,
     )
 
     portal_sync: PortalSyncWorker | None = None
@@ -875,7 +910,6 @@ def main() -> None:
     elif settings.cloud_runtime:
         LOGGER.warning("Cloud runtime has in-process Portal sync disabled or Portal credentials are missing.")
 
-    token_store = TwitchTokenStore(settings.twitch_token_db) if settings.twitch_token_db else None
     stream_status = TwitchStreamStatus(
         settings.client_id,
         settings.client_secret,
@@ -892,7 +926,7 @@ def main() -> None:
 
     async def runner() -> None:
         async with CrystalGuildBot(
-            settings, db, game, encounter_daemon, direct_sender, notifier, portal_actions, portal_sync, token_store, stream_status
+            settings, db, game, encounter_daemon, direct_sender, notifier, portal_actions, portal_sync, token_store, stream_status, subscription_status
         ) as bot:
             await bot.start()
 

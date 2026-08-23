@@ -90,6 +90,15 @@ class TwitchTokenStore:
             row = conn.execute("SELECT COUNT(*) AS n FROM twitch_tokens").fetchone()
         return int(row["n"])
 
+    def get(self, user_id: str) -> dict[str, str] | None:
+        """Return one managed Twitch token row without exposing it elsewhere."""
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT user_id,access_token,refresh_token FROM twitch_tokens WHERE user_id=?",
+                (str(user_id),),
+            ).fetchone()
+        return dict(row) if row else None
+
     def user_ids(self) -> set[str]:
         return {row["user_id"] for row in self.load()}
 

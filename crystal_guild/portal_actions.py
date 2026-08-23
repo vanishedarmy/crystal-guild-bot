@@ -36,6 +36,7 @@ class PortalActionWorker:
         verify_tls: bool = True,
         notify_result: Callable[[Any], None] | None = None,
         wake_encounter: Callable[[], None] | None = None,
+        subscription_lookup: Callable[[str], dict[str, Any]] | None = None,
     ) -> None:
         self.game = game
         self.public_url = str(public_url or "").rstrip("/")
@@ -45,6 +46,7 @@ class PortalActionWorker:
         self.verify_tls = bool(verify_tls)
         self.notify_result = notify_result
         self.wake_encounter = wake_encounter
+        self.subscription_lookup = subscription_lookup
         self._post_ack_notifications: dict[str, Any] = {}
         self.worker_id = f"bot:{socket.gethostname()}:{os.getpid()}"
         self._stop = threading.Event()
@@ -163,6 +165,16 @@ class PortalActionWorker:
             self.wake_encounter()
         except Exception:
             LOGGER.exception("Unable to wake encounter scheduler after Portal gameplay action")
+
+    def _subscriber_tier(self, twitch_id: str) -> int:
+        if not self.subscription_lookup:
+            return 0
+        try:
+            status = self.subscription_lookup(str(twitch_id)) or {}
+            return max(0, min(3, int(status.get("tier") or 0)))
+        except Exception:
+            LOGGER.exception("Unable to resolve Twitch subscriber perk for Portal action; continuing without a perk.")
+            return 0
 
     def _execute(self, action: dict[str, Any]) -> tuple[bool, str, dict[str, Any]]:
         if int(action.get("protocol_version") or 0) != ACTION_PROTOCOL_VERSION:
@@ -317,10 +329,10 @@ class PortalActionWorker:
             result = self.game.portal_forge_item(twitch_id, item_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "DAILY_STATE":
-            result = self.game.portal_daily_state(twitch_id)
+            result = self.game.portal_daily_state(twitch_id, self._subscriber_tier(twitch_id))
             return self._game_result(result)
         if action_type == "CLAIM_DAILY":
-            result = self.game.portal_claim_daily(twitch_id, str(action.get("id") or ""))
+            result = self.game.portal_claim_daily(twitch_id, str(action.get("id") or ""), self._subscriber_tier(twitch_id))
             return self._game_result(result)
         if action_type == "CHOCOBO_STATE":
             result = self.game.portal_chocobo_state(twitch_id)

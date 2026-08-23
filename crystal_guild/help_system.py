@@ -7,7 +7,7 @@ HELP_TOPICS = {
     ),
     "character": (
         "CHARACTER — !hero shows your live character summary. Aliases: !me, !profile, !status.",
-        "Use !next for a contextual suggestion, !daily for your daily reward, !titles to browse titles, and !title <name> to equip one.",
+        "Use !next for a contextual suggestion, !daily for randomized Daily Guild Provisions, !substatus to check subscriber perks, !titles to browse titles, and !title <name> to equip one.",
     ),
     "jobs": (
         "JOBS — !job lists Jobs or switches Job. !jobinfo <job> shows requirements; !abilities [job] shows passive milestones and Active Battle abilities.",
@@ -78,7 +78,7 @@ HELP_TOPICS = {
 
 ALIASES = {
     "recruit": "start", "begin": "start", "new": "start",
-    "hero": "character", "profile": "character", "status": "character", "me": "character",
+    "hero": "character", "profile": "character", "status": "character", "me": "character", "daily": "character", "substatus": "character",
     "job": "jobs", "jobinfo": "jobs", "abilities": "jobs", "mastery": "jobs", "stance": "jobs",
     "venture": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
     "rest": "recovery", "camp": "recovery", "use": "recovery",
