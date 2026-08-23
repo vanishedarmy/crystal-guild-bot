@@ -1,6 +1,10 @@
-Crystal Guild Bot v1.1.14 — Cloud Continuity
-Runtime: 1.1.14-cloud-continuity
-DB schema 4 | Hosted sync schema 1 | Portal Action protocol 12 | Prefix !
-
-Includes Render worker source, persistent-state tooling, tests, local launchers, game data, hosted sync/overlay transport, and setup/upgrade documentation.
-Private `.env`, databases, Twitch tokens, logs and migration bundles are intentionally excluded.
+Crystal Guild Bot v1.1.14 — Cloud Continuity Hotfix 1
+Runtime: 1.1.14-cloud-continuity-h1
+Purpose: Twitch live-stream presence gate for stream-only chat gameplay
+Local DB schema: 4
+Hosted sync schema: 1
+Portal Action protocol: 12
+Twitch prefix: !
+Required new secrets: none
+Database migration: none
+Player reset: none

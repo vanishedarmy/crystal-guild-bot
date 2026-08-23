@@ -1,3 +1,12 @@
+# v1.1.14 — Cloud Continuity Hotfix 1
+
+- Adds Twitch stream-presence verification using the existing Twitch application credentials and the Get Streams API.
+- Gates Twitch Rally Venture, Rally joins, Active Hunt starts, Active Battle actions, and Raid participation/actions to confirmed LIVE stream state.
+- Keeps read-only commands, non-stream progression, Portal Solo Venture, and Portal Challenge Hunt available while offline.
+- Adds streamer-only `!streamstatus` and includes stream presence in `!health`.
+- Uses a short cached status check and fails closed to UNKNOWN after a stale Twitch/API failure.
+- Runtime advances to `1.1.14-cloud-continuity-h1`; hosted sync version, DB schema 4, sync schema 1, Portal Action protocol 12, and Twitch prefix `!` remain unchanged.
+
 # Crystal Guild Changelog
 
 ## v1.1.14 — Cloud Continuity
