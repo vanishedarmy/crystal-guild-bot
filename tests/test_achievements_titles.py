@@ -75,6 +75,77 @@ class AchievementTitleExpansionTests(unittest.TestCase):
         self.assertTrue(equipped.ok)
         self.assertEqual(self.db.one("SELECT title FROM players WHERE twitch_id='1'")["title"], "Damage Dealer")
 
+
+    def test_gil_spent_progress_reads_authoritative_transaction_ledger(self):
+        self.db.execute(
+            "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES ('1','gil','gil',-54321,'test_sink')"
+        )
+        self.db.execute(
+            "INSERT INTO player_record_stats(player_id,metric,value) VALUES ('1','gil_spent',0) "
+            "ON CONFLICT(player_id,metric) DO UPDATE SET value=0"
+        )
+        repo = PortalRepository(self.db_path, ROOT / "data")
+        payload = repo.achievements("van")
+        by_id = {item["id"]: item for item in payload["achievements"]}
+        economy = by_id["gil_spent_100k"]
+        self.assertEqual(economy["progress"]["raw_value"], 54321)
+        self.assertEqual(economy["progress"]["value"], 54321)
+
+    def test_shop_purchase_can_unlock_stimulating_the_economy_from_transaction_history(self):
+        self.db.execute("UPDATE players SET gil=250000 WHERE twitch_id='1'")
+        stock, _ = self.game._shop_stock("1")
+        offer = next(item for item in stock if int(item.get("price", 0) or 0) > 0)
+        price = int(offer["price"])
+        prior_spend = max(0, 100000 - price)
+        if prior_spend:
+            self.db.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,?,?,?,?)",
+                ("1", "gil", "gil", -prior_spend, "historic_test_sink"),
+            )
+        self.db.execute(
+            "INSERT INTO player_record_stats(player_id,metric,value) VALUES ('1','gil_spent',0) "
+            "ON CONFLICT(player_id,metric) DO UPDATE SET value=0"
+        )
+
+        result = self.game.buy("1", offer["name"], 1)
+
+        self.assertTrue(result.ok)
+        self.assertTrue(any("Stimulating the Economy" in message for message in result.messages))
+        unlocked = self.db.one(
+            "SELECT 1 FROM achievements WHERE player_id='1' AND achievement_id='gil_spent_100k'"
+        )
+        self.assertIsNotNone(unlocked)
+        self.assertGreaterEqual(
+            self.game._requirement_value("1", self.game.data.achievements["gil_spent_100k"]["condition"]),
+            100000,
+        )
+
+    def test_portal_shop_purchase_unlocks_and_replays_economy_achievement_safely(self):
+        self.db.execute("UPDATE players SET gil=250000 WHERE twitch_id='1'")
+        stock, _ = self.game._shop_stock("1")
+        offer = next(item for item in stock if int(item.get("price", 0) or 0) > 0)
+        price = int(offer["price"])
+        prior_spend = max(0, 100000 - price)
+        if prior_spend:
+            self.db.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,?,?,?,?)",
+                ("1", "gil", "gil", -prior_spend, "historic_portal_sink"),
+            )
+        action_id = "pa_economy_achievement"
+        before_transactions = int(self.db.one("SELECT COUNT(*) AS n FROM transactions WHERE player_id='1'")["n"])
+
+        result = self.game.portal_buy("1", offer["id"], 1, action_id)
+        replay = self.game.portal_buy("1", offer["id"], 1, action_id)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(replay.messages, result.messages)
+        self.assertTrue(any("Stimulating the Economy" in message for message in result.messages))
+        after_transactions = int(self.db.one("SELECT COUNT(*) AS n FROM transactions WHERE player_id='1'")["n"])
+        self.assertEqual(after_transactions - before_transactions, 2)
+        self.assertIsNotNone(self.db.one(
+            "SELECT 1 FROM achievements WHERE player_id='1' AND achievement_id='gil_spent_100k'"
+        ))
+
     def test_v084_snapshot_includes_progress_points_and_title_collection(self):
         self.db.add_record_stat("1", "damage_dealt", 50000)
         repo = PortalRepository(self.db_path, ROOT / "data")
