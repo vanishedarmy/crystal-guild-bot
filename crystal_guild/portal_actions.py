@@ -14,7 +14,7 @@ from urllib.request import Request, urlopen
 from .engine import CrystalGuildEngine
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 13
+ACTION_PROTOCOL_VERSION = 14
 
 
 class PortalActionWorker:
@@ -221,6 +221,14 @@ class PortalActionWorker:
             if slot not in {"weapon", "armor", "accessory"}:
                 return False, "Portal unequip request has an invalid equipment slot.", {}
             result = self.game.unequip(twitch_id, slot)
+            return self._game_result(result)
+        if action_type == "SET_TITLE":
+            if set(payload) != {"title_id"}:
+                return False, "Portal Title request has unsupported fields.", {}
+            title_id = str(payload.get("title_id") or "").strip().lower()
+            if not title_id:
+                return False, "Portal Title request is missing a Title.", {}
+            result = self.game.set_title(twitch_id, title_id)
             return self._game_result(result)
         if action_type == "CHARACTER_STATE":
             result = self.game.portal_character_state(twitch_id)
