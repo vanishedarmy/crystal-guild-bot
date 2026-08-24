@@ -1,5 +1,169 @@
 [
   {
+    "id": "goblin_king",
+    "name": "Goblin King",
+    "hp": 1800,
+    "xp": 420,
+    "gil": 950,
+    "tier": "World Boss",
+    "recommended_level": 6,
+    "signature": "Royal Ruckus",
+    "description": "A goblin with a crown, an entourage, and absolutely no restraint.",
+    "drops": [
+      {
+        "item_id": "goblin_medallion",
+        "chance": 0.8
+      },
+      {
+        "item_id": "potion",
+        "chance": 0.45
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Royal Entrance",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.6,
+        "name": "Call the Guard",
+        "damage_mult": 1.12
+      },
+      {
+        "threshold": 0.25,
+        "name": "Royal Ruckus",
+        "damage_mult": 1.28
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 1,
+    "aoe_every": 4
+  },
+  {
+    "id": "hornet_empress",
+    "name": "Hornet Empress",
+    "hp": 3000,
+    "xp": 720,
+    "gil": 1650,
+    "tier": "World Boss",
+    "recommended_level": 10,
+    "signature": "Imperial Sting",
+    "description": "The hive has promoted its management problem directly into a raid encounter.",
+    "drops": [
+      {
+        "item_id": "antidote",
+        "chance": 0.75
+      },
+      {
+        "item_id": "echo_herbs",
+        "chance": 0.35
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Circling Swarm",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Wingstorm",
+        "damage_mult": 1.14
+      },
+      {
+        "threshold": 0.28,
+        "name": "Imperial Sting",
+        "damage_mult": 1.3
+      }
+    ],
+    "enrage_round": 12,
+    "attacks_per_round": 1,
+    "aoe_every": 3
+  },
+  {
+    "id": "skeleton_warlord",
+    "name": "Skeleton Warlord",
+    "hp": 4600,
+    "xp": 1050,
+    "gil": 2500,
+    "tier": "World Boss",
+    "recommended_level": 14,
+    "signature": "Grave March",
+    "description": "An ancient commander who has interpreted “rest in peace” as optional guidance.",
+    "drops": [
+      {
+        "item_id": "bone_chip",
+        "chance": 0.85
+      },
+      {
+        "item_id": "phoenix_down",
+        "chance": 0.18
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Old Campaign",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Boneguard",
+        "damage_mult": 1.15
+      },
+      {
+        "threshold": 0.3,
+        "name": "Grave March",
+        "damage_mult": 1.32
+      }
+    ],
+    "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 4
+  },
+  {
+    "id": "gigas_chief",
+    "name": "Gigas Chief",
+    "hp": 6500,
+    "xp": 1450,
+    "gil": 3900,
+    "tier": "World Boss",
+    "recommended_level": 18,
+    "signature": "Grand Slam",
+    "description": "A very large chief with a very small tolerance for adventurers.",
+    "drops": [
+      {
+        "item_id": "iron_ore",
+        "chance": 0.85
+      },
+      {
+        "item_id": "gigas_brace",
+        "chance": 0.32
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Heavy Footwork",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "War Cry",
+        "damage_mult": 1.16
+      },
+      {
+        "threshold": 0.3,
+        "name": "Grand Slam",
+        "damage_mult": 1.34
+      }
+    ],
+    "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
     "id": "bomb_king",
     "name": "Bomb King",
     "hp": 9000,
@@ -39,170 +203,6 @@
     "enrage_round": 11,
     "attacks_per_round": 2,
     "aoe_every": 3
-  },
-  {
-    "id": "king_behemoth",
-    "name": "King Behemoth",
-    "hp": 22000,
-    "xp": 4500,
-    "gil": 15000,
-    "tier": "High Boss",
-    "recommended_level": 55,
-    "signature": "Meteor",
-    "description": "A towering Behemoth monarch that considers Meteor a reasonable disagreement-resolution tool.",
-    "drops": [
-      {
-        "item_id": "behemoth_horn",
-        "chance": 0.65
-      },
-      {
-        "item_id": "dark_matter",
-        "chance": 0.08
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Opening Assault",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Escalation",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Meteor",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 10,
-    "attacks_per_round": 3,
-    "aoe_every": 2
-  },
-  {
-    "id": "tonberry_king",
-    "name": "Tonberry King",
-    "hp": 18000,
-    "xp": 4000,
-    "gil": 13000,
-    "tier": "High Boss",
-    "recommended_level": 50,
-    "signature": "Everyone's Grudge",
-    "description": "The crown, robe and tiny knife do absolutely nothing to make this situation less threatening.",
-    "drops": [
-      {
-        "item_id": "chef_knife",
-        "chance": 0.18
-      },
-      {
-        "item_id": "dark_matter",
-        "chance": 0.06
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Opening Assault",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Escalation",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Everyone's Grudge",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 10,
-    "attacks_per_round": 3,
-    "aoe_every": 2
-  },
-  {
-    "id": "death_machine_prime",
-    "name": "Death Machine Prime",
-    "hp": 30000,
-    "xp": 6000,
-    "gil": 20000,
-    "tier": "High Boss",
-    "recommended_level": 65,
-    "signature": "Nuke",
-    "description": "An upgraded killing machine left running long after everyone responsible had stopped answering emails.",
-    "drops": [
-      {
-        "item_id": "magitek_core",
-        "chance": 0.65
-      },
-      {
-        "item_id": "warmech_component",
-        "chance": 0.08
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Opening Assault",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Escalation",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Nuke",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 10,
-    "attacks_per_round": 3,
-    "aoe_every": 2
-  },
-  {
-    "id": "rift_dragon",
-    "name": "Rift Dragon",
-    "hp": 42000,
-    "xp": 8500,
-    "gil": 28000,
-    "tier": "High Boss",
-    "recommended_level": 72,
-    "signature": "Dimensional Breath",
-    "description": "A dragon twisted by the Rift, carrying enough unstable aether to upset several realities at once.",
-    "drops": [
-      {
-        "item_id": "rift_crystal",
-        "chance": 0.7
-      },
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.65
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Opening Assault",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Escalation",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Dimensional Breath",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 10,
-    "attacks_per_round": 3,
-    "aoe_every": 2
   },
   {
     "id": "ifrit",
@@ -328,6 +328,47 @@
     "aoe_every": 3
   },
   {
+    "id": "ultros",
+    "name": "Ultros",
+    "tier": "World Boss",
+    "recommended_level": 28,
+    "hp": 19000,
+    "xp": 4300,
+    "gil": 13500,
+    "signature": "Tentacle",
+    "description": "A recurring purple nuisance with too many arms and far too much confidence.",
+    "drops": [
+      {
+        "item_id": "ultros_tentacle",
+        "chance": 0.55
+      },
+      {
+        "item_id": "fish_scale",
+        "chance": 0.6
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Tentacle Trouble",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Eight-Armed Panic",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Seafood Catastrophe",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
     "id": "garuda_prime",
     "name": "Garuda",
     "tier": "Primal Boss",
@@ -410,88 +451,6 @@
     "aoe_every": 3
   },
   {
-    "id": "leviathan",
-    "name": "Leviathan",
-    "tier": "Primal Boss",
-    "recommended_level": 35,
-    "hp": 29000,
-    "xp": 6200,
-    "gil": 17000,
-    "signature": "Tidal Wave",
-    "description": "The great sea serpent arrives with enough water to invalidate several maps.",
-    "drops": [
-      {
-        "item_id": "tidal_scale",
-        "chance": 0.45
-      },
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.35
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Rising Tide",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Maelstrom",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Tidal Wave",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 12,
-    "attacks_per_round": 2,
-    "aoe_every": 3
-  },
-  {
-    "id": "ultros",
-    "name": "Ultros",
-    "tier": "World Boss",
-    "recommended_level": 28,
-    "hp": 19000,
-    "xp": 4300,
-    "gil": 13500,
-    "signature": "Tentacle",
-    "description": "A recurring purple nuisance with too many arms and far too much confidence.",
-    "drops": [
-      {
-        "item_id": "ultros_tentacle",
-        "chance": 0.55
-      },
-      {
-        "item_id": "fish_scale",
-        "chance": 0.6
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Tentacle Trouble",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Eight-Armed Panic",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Seafood Catastrophe",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 11,
-    "attacks_per_round": 2,
-    "aoe_every": 3
-  },
-  {
     "id": "demon_wall",
     "name": "Demon Wall",
     "tier": "World Boss",
@@ -529,6 +488,47 @@
       }
     ],
     "enrage_round": 11,
+    "attacks_per_round": 2,
+    "aoe_every": 3
+  },
+  {
+    "id": "leviathan",
+    "name": "Leviathan",
+    "tier": "Primal Boss",
+    "recommended_level": 35,
+    "hp": 29000,
+    "xp": 6200,
+    "gil": 17000,
+    "signature": "Tidal Wave",
+    "description": "The great sea serpent arrives with enough water to invalidate several maps.",
+    "drops": [
+      {
+        "item_id": "tidal_scale",
+        "chance": 0.45
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.35
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Rising Tide",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Maelstrom",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Tidal Wave",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 12,
     "attacks_per_round": 2,
     "aoe_every": 3
   },
@@ -607,6 +607,47 @@
       {
         "threshold": 0.3,
         "name": "Triple",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "tonberry_king",
+    "name": "Tonberry King",
+    "hp": 18000,
+    "xp": 4000,
+    "gil": 13000,
+    "tier": "High Boss",
+    "recommended_level": 50,
+    "signature": "Everyone's Grudge",
+    "description": "The crown, robe and tiny knife do absolutely nothing to make this situation less threatening.",
+    "drops": [
+      {
+        "item_id": "chef_knife",
+        "chance": 0.18
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.06
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Everyone's Grudge",
         "damage_mult": 1.38
       }
     ],
@@ -697,6 +738,47 @@
     "aoe_every": 2
   },
   {
+    "id": "king_behemoth",
+    "name": "King Behemoth",
+    "hp": 22000,
+    "xp": 4500,
+    "gil": 15000,
+    "tier": "High Boss",
+    "recommended_level": 55,
+    "signature": "Meteor",
+    "description": "A towering Behemoth monarch that considers Meteor a reasonable disagreement-resolution tool.",
+    "drops": [
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.65
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.08
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Meteor",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
     "id": "bahamut",
     "name": "Bahamut",
     "tier": "High Boss",
@@ -738,6 +820,47 @@
     "aoe_every": 2
   },
   {
+    "id": "death_machine_prime",
+    "name": "Death Machine Prime",
+    "hp": 30000,
+    "xp": 6000,
+    "gil": 20000,
+    "tier": "High Boss",
+    "recommended_level": 65,
+    "signature": "Nuke",
+    "description": "An upgraded killing machine left running long after everyone responsible had stopped answering emails.",
+    "drops": [
+      {
+        "item_id": "magitek_core",
+        "chance": 0.65
+      },
+      {
+        "item_id": "warmech_component",
+        "chance": 0.08
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Nuke",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
     "id": "ultima_weapon",
     "name": "Ultima Weapon",
     "tier": "High Boss",
@@ -771,6 +894,47 @@
       {
         "threshold": 0.3,
         "name": "Ultima",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 10,
+    "attacks_per_round": 3,
+    "aoe_every": 2
+  },
+  {
+    "id": "rift_dragon",
+    "name": "Rift Dragon",
+    "hp": 42000,
+    "xp": 8500,
+    "gil": 28000,
+    "tier": "High Boss",
+    "recommended_level": 72,
+    "signature": "Dimensional Breath",
+    "description": "A dragon twisted by the Rift, carrying enough unstable aether to upset several realities at once.",
+    "drops": [
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.7
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.65
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Dimensional Breath",
         "damage_mult": 1.38
       }
     ],
@@ -1074,7 +1238,7 @@
     "xp": 59000,
     "gil": 180000,
     "signature": "Armageddon",
-    "description": "A monster-arena nightmare assembled from the Guild\u2019s worst collection habits.",
+    "description": "A monster-arena nightmare assembled from the Guild’s worst collection habits.",
     "drops": [
       {
         "item_id": "nemesis_mark",
@@ -1148,47 +1312,6 @@
     "aoe_every": 2
   },
   {
-    "id": "proto_babil",
-    "name": "Proto-Babil",
-    "tier": "Superboss",
-    "recommended_level": 96,
-    "hp": 520000,
-    "xp": 68000,
-    "gil": 210000,
-    "signature": "Divine Judgment",
-    "description": "An ancient lunar war machine that makes Magitek technology look charmingly homemade.",
-    "drops": [
-      {
-        "item_id": "proto_babil_core",
-        "chance": 0.32
-      },
-      {
-        "item_id": "omega_core",
-        "chance": 0.15
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Opening Assault",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Escalation",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Divine Judgment",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 9,
-    "attacks_per_round": 4,
-    "aoe_every": 2
-  },
-  {
     "id": "long_gui",
     "name": "Long Gui",
     "tier": "Superboss",
@@ -1222,6 +1345,47 @@
       {
         "threshold": 0.3,
         "name": "Ultima",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 9,
+    "attacks_per_round": 4,
+    "aoe_every": 2
+  },
+  {
+    "id": "proto_babil",
+    "name": "Proto-Babil",
+    "tier": "Superboss",
+    "recommended_level": 96,
+    "hp": 520000,
+    "xp": 68000,
+    "gil": 210000,
+    "signature": "Divine Judgment",
+    "description": "An ancient lunar war machine that makes Magitek technology look charmingly homemade.",
+    "drops": [
+      {
+        "item_id": "proto_babil_core",
+        "chance": 0.32
+      },
+      {
+        "item_id": "omega_core",
+        "chance": 0.15
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Opening Assault",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Escalation",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Divine Judgment",
         "damage_mult": 1.38
       }
     ],
@@ -1271,47 +1435,6 @@
     "aoe_every": 2
   },
   {
-    "id": "yiazmat",
-    "name": "Yiazmat",
-    "tier": "Ultimate Superboss",
-    "recommended_level": 99,
-    "hp": 850000,
-    "xp": 100000,
-    "gil": 320000,
-    "signature": "Cyclone",
-    "description": "An ancient elite mark built for the kind of raid where the snack break becomes part of the strategy.",
-    "drops": [
-      {
-        "item_id": "yiazmat_scale",
-        "chance": 0.36
-      },
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.95
-      }
-    ],
-    "phases": [
-      {
-        "threshold": 1.0,
-        "name": "Ancient Wyrm",
-        "damage_mult": 1.0
-      },
-      {
-        "threshold": 0.65,
-        "name": "Cyclone of Ages",
-        "damage_mult": 1.18
-      },
-      {
-        "threshold": 0.3,
-        "name": "Growing Threat",
-        "damage_mult": 1.38
-      }
-    ],
-    "enrage_round": 8,
-    "attacks_per_round": 5,
-    "aoe_every": 2
-  },
-  {
     "id": "absolute_virtue",
     "name": "Absolute Virtue",
     "tier": "Ultimate Superboss",
@@ -1349,6 +1472,47 @@
       {
         "threshold": 0.3,
         "name": "Absolute Judgment",
+        "damage_mult": 1.38
+      }
+    ],
+    "enrage_round": 8,
+    "attacks_per_round": 5,
+    "aoe_every": 2
+  },
+  {
+    "id": "yiazmat",
+    "name": "Yiazmat",
+    "tier": "Ultimate Superboss",
+    "recommended_level": 99,
+    "hp": 850000,
+    "xp": 100000,
+    "gil": 320000,
+    "signature": "Cyclone",
+    "description": "An ancient elite mark built for the kind of raid where the snack break becomes part of the strategy.",
+    "drops": [
+      {
+        "item_id": "yiazmat_scale",
+        "chance": 0.36
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.95
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Ancient Wyrm",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "name": "Cyclone of Ages",
+        "damage_mult": 1.18
+      },
+      {
+        "threshold": 0.3,
+        "name": "Growing Threat",
         "damage_mult": 1.38
       }
     ],

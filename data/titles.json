@@ -646,5 +646,37 @@
     "category": "Social",
     "rarity": "rare",
     "source": "Achievement"
+  },
+  {
+    "id": "goblin_negotiator",
+    "name": "Goblin Negotiator",
+    "description": "Negotiations were brief, loud, and conducted with weapons.",
+    "category": "Hunts",
+    "rarity": "uncommon",
+    "source": "Hunt"
+  },
+  {
+    "id": "packbreaker",
+    "name": "Packbreaker",
+    "description": "The Alpha howled. You answered with paperwork and violence.",
+    "category": "Hunts",
+    "rarity": "uncommon",
+    "source": "Hunt"
+  },
+  {
+    "id": "royal_pest_control",
+    "name": "Royal Pest Control",
+    "description": "Handled a queen-sized stinging problem without a very large rolled newspaper.",
+    "category": "Hunts",
+    "rarity": "uncommon",
+    "source": "Hunt"
+  },
+  {
+    "id": "bone_to_pick",
+    "name": "Bone to Pick",
+    "description": "You had one. The skeleton had considerably more.",
+    "category": "Hunts",
+    "rarity": "uncommon",
+    "source": "Hunt"
   }
 ]

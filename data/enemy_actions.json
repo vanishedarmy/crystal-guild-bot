@@ -1849,7 +1849,7 @@
     "profile": "controller",
     "ability": {
       "id": "pharaoh_s_curse",
-      "name": "Pharaoh’s Curse",
+      "name": "Pharaoh\u2019s Curse",
       "chance": 0.307,
       "cooldown": 1,
       "target": "single",
@@ -2100,6 +2100,110 @@
       "effects": [
         {
           "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "goblin_chieftain",
+    "profile": "aggressive",
+    "ability": {
+      "id": "rallying_club",
+      "name": "Rallying Club",
+      "chance": 0.2,
+      "cooldown": 2,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.08,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "power_up",
+          "turns": 2,
+          "magnitude": 0.1,
+          "chance": 1.0,
+          "recipient": "self"
+        }
+      ]
+    }
+  },
+  {
+    "id": "dire_wolf_alpha",
+    "profile": "skirmisher",
+    "ability": {
+      "id": "pack_rend",
+      "name": "Pack Rend",
+      "chance": 0.2,
+      "cooldown": 2,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.06,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "vulnerable",
+          "turns": 2,
+          "magnitude": 0.08,
+          "chance": 0.4,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "queen_hornet",
+    "profile": "controller",
+    "ability": {
+      "id": "royal_sting",
+      "name": "Royal Sting",
+      "chance": 0.22,
+      "cooldown": 2,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.0,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.04,
+          "chance": 0.55,
+          "recipient": "target"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ossuary_knight",
+    "profile": "defensive",
+    "ability": {
+      "id": "grave_cleave",
+      "name": "Grave Cleave",
+      "chance": 0.2,
+      "cooldown": 2,
+      "target": "single",
+      "scaling": "physical",
+      "power": 1.12,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.08,
+          "chance": 0.45,
+          "recipient": "target"
         }
       ]
     }

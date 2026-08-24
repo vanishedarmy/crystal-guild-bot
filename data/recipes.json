@@ -1,5 +1,110 @@
 [
   {
+    "id": "antidote_satchel",
+    "name": "Antidote Satchel",
+    "known_by_default": true,
+    "min_level": 3,
+    "gil": 30,
+    "materials": [
+      {
+        "item_id": "antidote",
+        "quantity": 2
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "antidote",
+      "quantity": 3
+    }
+  },
+  {
+    "id": "field_hi_potion",
+    "name": "Field Hi-Potion",
+    "known_by_default": true,
+    "min_level": 3,
+    "gil": 40,
+    "materials": [
+      {
+        "item_id": "potion",
+        "quantity": 2
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "hi_potion",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "echo_herb_bundle",
+    "name": "Echo Herb Bundle",
+    "known_by_default": true,
+    "min_level": 4,
+    "gil": 35,
+    "materials": [
+      {
+        "item_id": "echo_herbs",
+        "quantity": 2
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "echo_herbs",
+      "quantity": 3
+    }
+  },
+  {
+    "id": "stamina_draught_mix",
+    "name": "Stamina Draught Mix",
+    "known_by_default": true,
+    "min_level": 6,
+    "gil": 90,
+    "materials": [
+      {
+        "item_id": "potion",
+        "quantity": 1
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "stamina_draught",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "ether_distillation",
+    "name": "Ether Distillation",
+    "known_by_default": true,
+    "min_level": 7,
+    "gil": 100,
+    "materials": [
+      {
+        "item_id": "potion",
+        "quantity": 1
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ether",
+      "quantity": 1
+    }
+  },
+  {
     "id": "hi_potion_batch",
     "name": "Hi-Potion Batch",
     "known_by_default": true,
@@ -14,6 +119,48 @@
     "output": {
       "item_id": "hi_potion",
       "quantity": 2
+    }
+  },
+  {
+    "id": "iron_tonic_mix",
+    "name": "Iron Tonic Mix",
+    "known_by_default": true,
+    "min_level": 9,
+    "gil": 120,
+    "materials": [
+      {
+        "item_id": "potion",
+        "quantity": 1
+      },
+      {
+        "item_id": "iron_ore",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "iron_tonic",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "smoke_bomb_kit",
+    "name": "Smoke Bomb Kit",
+    "known_by_default": true,
+    "min_level": 11,
+    "gil": 140,
+    "materials": [
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 2
+      },
+      {
+        "item_id": "echo_herbs",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "smoke_bomb",
+      "quantity": 1
     }
   },
   {
@@ -35,6 +182,60 @@
     "output": {
       "item_id": "ether",
       "quantity": 2
+    }
+  },
+  {
+    "id": "remedy_kit",
+    "name": "Remedy Kit",
+    "known_by_default": true,
+    "min_level": 15,
+    "gil": 250,
+    "materials": [
+      {
+        "item_id": "antidote",
+        "quantity": 1
+      },
+      {
+        "item_id": "echo_herbs",
+        "quantity": 1
+      },
+      {
+        "item_id": "eye_drops",
+        "quantity": 1
+      },
+      {
+        "item_id": "chronos_tear",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "remedy",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "thieves_gloves",
+    "name": "Thief's Gloves",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 1400,
+    "materials": [
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 5
+      },
+      {
+        "item_id": "cactuar_needle",
+        "quantity": 2
+      },
+      {
+        "item_id": "leather_vest",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "thieves_gloves",
+      "quantity": 1
     }
   },
   {
@@ -84,31 +285,6 @@
     ],
     "output": {
       "item_id": "icebrand",
-      "quantity": 1
-    }
-  },
-  {
-    "id": "thunder_spear",
-    "name": "Thunder Spear",
-    "known_by_default": true,
-    "min_level": 26,
-    "gil": 2200,
-    "materials": [
-      {
-        "item_id": "coral_trident",
-        "quantity": 1
-      },
-      {
-        "item_id": "coeurl_whisker",
-        "quantity": 6
-      },
-      {
-        "item_id": "magitek_scrap",
-        "quantity": 4
-      }
-    ],
-    "output": {
-      "item_id": "thunder_spear",
       "quantity": 1
     }
   },
@@ -188,27 +364,78 @@
     }
   },
   {
-    "id": "thieves_gloves",
-    "name": "Thief's Gloves",
+    "id": "thunder_spear",
+    "name": "Thunder Spear",
     "known_by_default": true,
-    "min_level": 20,
-    "gil": 1400,
+    "min_level": 26,
+    "gil": 2200,
     "materials": [
       {
-        "item_id": "coeurl_whisker",
-        "quantity": 5
-      },
-      {
-        "item_id": "cactuar_needle",
-        "quantity": 2
-      },
-      {
-        "item_id": "leather_vest",
+        "item_id": "coral_trident",
         "quantity": 1
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 6
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 4
       }
     ],
     "output": {
-      "item_id": "thieves_gloves",
+      "item_id": "thunder_spear",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "artisan_hammer",
+    "name": "Artisan's Hammer",
+    "known_by_default": true,
+    "min_level": 34,
+    "gil": 3600,
+    "seal_cost": 30,
+    "materials": [
+      {
+        "item_id": "iron_giant_plate",
+        "quantity": 2
+      },
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 4
+      }
+    ],
+    "output": {
+      "item_id": "artisan_hammer",
+      "quantity": 1
+    }
+  },
+  {
+    "id": "morbol_lash",
+    "name": "Morbol Lash",
+    "known_by_default": false,
+    "min_level": 36,
+    "gil": 4600,
+    "materials": [
+      {
+        "item_id": "malboro_tendril",
+        "quantity": 10
+      },
+      {
+        "item_id": "morbol_bulb",
+        "quantity": 2
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "morbol_lash",
       "quantity": 1
     }
   },
@@ -288,31 +515,6 @@
     }
   },
   {
-    "id": "morbol_lash",
-    "name": "Morbol Lash",
-    "known_by_default": false,
-    "min_level": 36,
-    "gil": 4600,
-    "materials": [
-      {
-        "item_id": "malboro_tendril",
-        "quantity": 10
-      },
-      {
-        "item_id": "morbol_bulb",
-        "quantity": 2
-      },
-      {
-        "item_id": "coeurl_whisker",
-        "quantity": 3
-      }
-    ],
-    "output": {
-      "item_id": "morbol_lash",
-      "quantity": 1
-    }
-  },
-  {
     "id": "dragon_mail",
     "name": "Dragon Mail",
     "known_by_default": false,
@@ -387,32 +589,6 @@
     ],
     "output": {
       "item_id": "void_charm",
-      "quantity": 1
-    }
-  },
-  {
-    "id": "artisan_hammer",
-    "name": "Artisan's Hammer",
-    "known_by_default": true,
-    "min_level": 34,
-    "gil": 3600,
-    "seal_cost": 30,
-    "materials": [
-      {
-        "item_id": "iron_giant_plate",
-        "quantity": 2
-      },
-      {
-        "item_id": "mythril_ore",
-        "quantity": 6
-      },
-      {
-        "item_id": "magitek_scrap",
-        "quantity": 4
-      }
-    ],
-    "output": {
-      "item_id": "artisan_hammer",
       "quantity": 1
     }
   }

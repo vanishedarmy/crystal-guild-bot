@@ -67,7 +67,7 @@
     "price": 300,
     "shop": true,
     "shop_level": 8,
-    "description": "A compact vial of refined aether for restoring a spellcaster\u2019s reserves between difficult fights. Restores 40% of maximum MP and can be used in or out of Active Battle.",
+    "description": "A compact vial of refined aether for restoring a spellcaster’s reserves between difficult fights. Restores 40% of maximum MP and can be used in or out of Active Battle.",
     "use": {
       "target": "ally",
       "field": true,
@@ -87,7 +87,7 @@
     "price": 500,
     "shop": true,
     "shop_level": 12,
-    "description": "Revives a KO\u2019d hero with 30% maximum HP.",
+    "description": "Revives a KO’d hero with 30% maximum HP.",
     "use": {
       "target": "ally",
       "field": true,
@@ -2404,7 +2404,7 @@
   },
   {
     "id": "last_knife_dormant",
-    "name": "Last Knife \u2014 Dormant",
+    "name": "Last Knife — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2441,7 +2441,7 @@
   },
   {
     "id": "masamune_dormant",
-    "name": "Masamune \u2014 Dormant",
+    "name": "Masamune — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2463,7 +2463,7 @@
   },
   {
     "id": "godhand_dormant",
-    "name": "Godhand \u2014 Dormant",
+    "name": "Godhand — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2484,7 +2484,7 @@
   },
   {
     "id": "gae_bolg_dormant",
-    "name": "Gae Bolg \u2014 Dormant",
+    "name": "Gae Bolg — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2505,7 +2505,7 @@
   },
   {
     "id": "nirvana_dormant",
-    "name": "Nirvana \u2014 Dormant",
+    "name": "Nirvana — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2527,7 +2527,7 @@
   },
   {
     "id": "stardust_rod_dormant",
-    "name": "Stardust Rod \u2014 Dormant",
+    "name": "Stardust Rod — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2550,7 +2550,7 @@
   },
   {
     "id": "apocalypse_dormant",
-    "name": "Apocalypse \u2014 Dormant",
+    "name": "Apocalypse — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2571,7 +2571,7 @@
   },
   {
     "id": "excalibur_dormant",
-    "name": "Excalibur \u2014 Dormant",
+    "name": "Excalibur — Dormant",
     "type": "weapon",
     "rarity": "relic",
     "price": 7000,
@@ -2807,7 +2807,7 @@
   },
   {
     "id": "last_knife_awakened",
-    "name": "Last Knife \u2014 Awakened",
+    "name": "Last Knife — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2830,7 +2830,7 @@
   },
   {
     "id": "masamune_awakened",
-    "name": "Masamune \u2014 Awakened",
+    "name": "Masamune — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2853,7 +2853,7 @@
   },
   {
     "id": "godhand_awakened",
-    "name": "Godhand \u2014 Awakened",
+    "name": "Godhand — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2875,7 +2875,7 @@
   },
   {
     "id": "gae_bolg_awakened",
-    "name": "Gae Bolg \u2014 Awakened",
+    "name": "Gae Bolg — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2897,7 +2897,7 @@
   },
   {
     "id": "nirvana_awakened",
-    "name": "Nirvana \u2014 Awakened",
+    "name": "Nirvana — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2920,7 +2920,7 @@
   },
   {
     "id": "stardust_rod_awakened",
-    "name": "Stardust Rod \u2014 Awakened",
+    "name": "Stardust Rod — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2944,7 +2944,7 @@
   },
   {
     "id": "apocalypse_awakened",
-    "name": "Apocalypse \u2014 Awakened",
+    "name": "Apocalypse — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -2966,7 +2966,7 @@
   },
   {
     "id": "excalibur_awakened",
-    "name": "Excalibur \u2014 Awakened",
+    "name": "Excalibur — Awakened",
     "type": "weapon",
     "rarity": "artifact",
     "price": 12000,
@@ -3026,7 +3026,7 @@
   },
   {
     "id": "last_knife_zenith",
-    "name": "Last Knife \u2014 Zenith",
+    "name": "Last Knife — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3132,7 +3132,7 @@
   },
   {
     "id": "masamune_zenith",
-    "name": "Masamune \u2014 Zenith",
+    "name": "Masamune — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3175,7 +3175,7 @@
   },
   {
     "id": "godhand_zenith",
-    "name": "Godhand \u2014 Zenith",
+    "name": "Godhand — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3239,7 +3239,7 @@
   },
   {
     "id": "gae_bolg_zenith",
-    "name": "Gae Bolg \u2014 Zenith",
+    "name": "Gae Bolg — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3285,7 +3285,7 @@
   },
   {
     "id": "nirvana_zenith",
-    "name": "Nirvana \u2014 Zenith",
+    "name": "Nirvana — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3308,7 +3308,7 @@
   },
   {
     "id": "stardust_rod_zenith",
-    "name": "Stardust Rod \u2014 Zenith",
+    "name": "Stardust Rod — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3332,7 +3332,7 @@
   },
   {
     "id": "apocalypse_zenith",
-    "name": "Apocalypse \u2014 Zenith",
+    "name": "Apocalypse — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -3378,7 +3378,7 @@
   },
   {
     "id": "excalibur_zenith",
-    "name": "Excalibur \u2014 Zenith",
+    "name": "Excalibur — Zenith",
     "type": "weapon",
     "rarity": "legendary",
     "price": 25000,
@@ -5668,7 +5668,7 @@
   },
   {
     "id": "warriors_tonic",
-    "name": "Warrior\u2019s Tonic",
+    "name": "Warrior’s Tonic",
     "type": "consumable",
     "rarity": "rare",
     "price": 950,
@@ -5688,7 +5688,7 @@
   },
   {
     "id": "heros_brew",
-    "name": "Hero\u2019s Brew",
+    "name": "Hero’s Brew",
     "type": "consumable",
     "rarity": "epic",
     "price": 2700,
@@ -5882,7 +5882,7 @@
   },
   {
     "id": "mages_incense",
-    "name": "Mage\u2019s Incense",
+    "name": "Mage’s Incense",
     "type": "consumable",
     "rarity": "rare",
     "price": 760,
@@ -6287,7 +6287,7 @@
   },
   {
     "id": "knights_crest",
-    "name": "Knight\u2019s Crest",
+    "name": "Knight’s Crest",
     "type": "accessory",
     "rarity": "rare",
     "price": 2700,
@@ -6308,7 +6308,7 @@
   },
   {
     "id": "mages_crest",
-    "name": "Mage\u2019s Crest",
+    "name": "Mage’s Crest",
     "type": "accessory",
     "rarity": "rare",
     "price": 2700,
@@ -6332,7 +6332,7 @@
   },
   {
     "id": "warriors_crest",
-    "name": "Warrior\u2019s Crest",
+    "name": "Warrior’s Crest",
     "type": "accessory",
     "rarity": "rare",
     "price": 2700,
@@ -6423,7 +6423,7 @@
   },
   {
     "id": "sages_emblem",
-    "name": "Sage\u2019s Emblem",
+    "name": "Sage’s Emblem",
     "type": "accessory",
     "rarity": "epic",
     "price": 6200,
@@ -6447,7 +6447,7 @@
   },
   {
     "id": "champions_emblem",
-    "name": "Champion\u2019s Emblem",
+    "name": "Champion’s Emblem",
     "type": "accessory",
     "rarity": "epic",
     "price": 6200,
@@ -6710,7 +6710,7 @@
   },
   {
     "id": "giants_axe",
-    "name": "Giant\u2019s Axe",
+    "name": "Giant’s Axe",
     "type": "weapon",
     "rarity": "rare",
     "price": 8900,
@@ -6773,7 +6773,7 @@
   },
   {
     "id": "minstrels_harp",
-    "name": "Minstrel\u2019s Harp",
+    "name": "Minstrel’s Harp",
     "type": "weapon",
     "rarity": "rare",
     "price": 8975,
@@ -7518,7 +7518,7 @@
     "rarity": "uncommon",
     "price": 90,
     "shop": false,
-    "description": "A valuable monster material reserved for selling, quests and future crafting expansion."
+    "description": "A stamped trophy pried from goblin leadership. Used in early field-crafting recipes and accepted as a modestly valuable monster material."
   },
   {
     "id": "gigas_brace",

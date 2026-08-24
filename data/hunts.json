@@ -1,5 +1,73 @@
 [
   {
+    "id": "chieftains_challenge",
+    "name": "Chieftain’s Challenge",
+    "rank": "C",
+    "monster_id": "goblin_chieftain",
+    "min_level": 2,
+    "requirements": [],
+    "cooldown_seconds": 900,
+    "rewards": {
+      "xp": 150,
+      "jp": 24,
+      "gil": 110,
+      "seals": 3
+    },
+    "first_clear_item": "goblin_medallion",
+    "first_clear_title": "goblin_negotiator"
+  },
+  {
+    "id": "alpha_on_the_prowl",
+    "name": "Alpha on the Prowl",
+    "rank": "C",
+    "monster_id": "dire_wolf_alpha",
+    "min_level": 4,
+    "requirements": [],
+    "cooldown_seconds": 900,
+    "rewards": {
+      "xp": 190,
+      "jp": 30,
+      "gil": 145,
+      "seals": 4
+    },
+    "first_clear_item": "wolf_fang",
+    "first_clear_title": "packbreaker"
+  },
+  {
+    "id": "sting_operation",
+    "name": "Sting Operation",
+    "rank": "C",
+    "monster_id": "queen_hornet",
+    "min_level": 6,
+    "requirements": [],
+    "cooldown_seconds": 900,
+    "rewards": {
+      "xp": 240,
+      "jp": 36,
+      "gil": 185,
+      "seals": 5
+    },
+    "first_clear_item": "antidote",
+    "first_clear_title": "royal_pest_control"
+  },
+  {
+    "id": "bones_to_pick",
+    "name": "Bones to Pick",
+    "rank": "C",
+    "monster_id": "ossuary_knight",
+    "min_level": 8,
+    "requirements": [],
+    "cooldown_seconds": 900,
+    "rewards": {
+      "xp": 310,
+      "jp": 44,
+      "gil": 240,
+      "seals": 6
+    },
+    "first_clear_item": "bone_chip",
+    "first_clear_title": "bone_to_pick"
+  },
+  {
     "id": "red_hot_problem",
     "name": "Red Hot Problem",
     "rank": "C",

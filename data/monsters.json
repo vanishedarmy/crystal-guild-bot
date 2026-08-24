@@ -66,6 +66,59 @@
     ]
   },
   {
+    "id": "goblin_chieftain",
+    "name": "Goblin Chieftain",
+    "level": 4,
+    "hp": 150,
+    "attack": 22,
+    "defense": 9,
+    "spirit": 7,
+    "xp": 105,
+    "jp": 18,
+    "gil": 48,
+    "weakness": "Fire",
+    "hunt_only": true,
+    "special": {
+      "name": "Rallying Club",
+      "chance": 0.14,
+      "multiplier": 1.35
+    },
+    "drops": [
+      {
+        "item_id": "goblin_medallion",
+        "chance": 0.55
+      },
+      {
+        "item_id": "potion",
+        "chance": 0.18
+      }
+    ]
+  },
+  {
+    "id": "goblin_guard",
+    "name": "Goblin Guard",
+    "level": 4,
+    "hp": 144,
+    "attack": 22,
+    "defense": 14,
+    "spirit": 11,
+    "xp": 59,
+    "jp": 26,
+    "gil": 28,
+    "weakness": "Fire",
+    "special": {
+      "name": "Shield Bash",
+      "chance": 0.108,
+      "multiplier": 1.33
+    },
+    "drops": [
+      {
+        "item_id": "iron_ore",
+        "chance": 0.12
+      }
+    ]
+  },
+  {
     "id": "hornet",
     "name": "Hornet",
     "level": 4,
@@ -104,6 +157,55 @@
     ]
   },
   {
+    "id": "imp",
+    "name": "Imp",
+    "level": 5,
+    "hp": 147,
+    "attack": 25,
+    "defense": 13,
+    "spirit": 13,
+    "xp": 67,
+    "jp": 30,
+    "gil": 34,
+    "weakness": "Holy",
+    "special": {
+      "name": "Impish Hex",
+      "chance": 0.11,
+      "multiplier": 1.34
+    },
+    "drops": [
+      {
+        "item_id": "imp_wing",
+        "chance": 0.32
+      }
+    ]
+  },
+  {
+    "id": "dire_wolf_alpha",
+    "name": "Dire Wolf Alpha",
+    "level": 6,
+    "hp": 190,
+    "attack": 27,
+    "defense": 10,
+    "spirit": 8,
+    "xp": 135,
+    "jp": 22,
+    "gil": 62,
+    "weakness": "Fire",
+    "hunt_only": true,
+    "special": {
+      "name": "Pack Rend",
+      "chance": 0.16,
+      "multiplier": 1.4
+    },
+    "drops": [
+      {
+        "item_id": "wolf_fang",
+        "chance": 0.65
+      }
+    ]
+  },
+  {
     "id": "bomb",
     "name": "Bomb",
     "level": 7,
@@ -132,6 +234,125 @@
       {
         "item_id": "flame_tongue",
         "chance": 0.012
+      }
+    ]
+  },
+  {
+    "id": "cockatrice",
+    "name": "Cockatrice",
+    "level": 7,
+    "hp": 188,
+    "attack": 31,
+    "defense": 17,
+    "spirit": 17,
+    "xp": 89,
+    "jp": 39,
+    "gil": 50,
+    "weakness": "Ice",
+    "special": {
+      "name": "Petrifying Peck",
+      "chance": 0.113,
+      "multiplier": 1.38
+    },
+    "drops": [
+      {
+        "item_id": "cockatrice_pinion",
+        "chance": 0.28
+      }
+    ]
+  },
+  {
+    "id": "bat",
+    "name": "Cave Bat",
+    "level": 8,
+    "hp": 155,
+    "attack": 28,
+    "defense": 9,
+    "spirit": 9,
+    "xp": 118,
+    "jp": 21,
+    "gil": 52,
+    "weakness": "Wind",
+    "drops": [
+      {
+        "item_id": "potion",
+        "chance": 0.1
+      }
+    ]
+  },
+  {
+    "id": "queen_hornet",
+    "name": "Queen Hornet",
+    "level": 8,
+    "hp": 235,
+    "attack": 32,
+    "defense": 11,
+    "spirit": 11,
+    "xp": 165,
+    "jp": 26,
+    "gil": 76,
+    "weakness": "Ice",
+    "hunt_only": true,
+    "special": {
+      "name": "Royal Sting",
+      "chance": 0.17,
+      "multiplier": 1.45
+    },
+    "drops": [
+      {
+        "item_id": "antidote",
+        "chance": 0.35
+      },
+      {
+        "item_id": "echo_herbs",
+        "chance": 0.12
+      }
+    ]
+  },
+  {
+    "id": "ochu",
+    "name": "Ochu",
+    "level": 9,
+    "hp": 276,
+    "attack": 37,
+    "defense": 21,
+    "spirit": 20,
+    "xp": 118,
+    "jp": 47,
+    "gil": 72,
+    "weakness": "Fire",
+    "special": {
+      "name": "Tentacle Lash",
+      "chance": 0.117,
+      "multiplier": 1.42
+    },
+    "drops": [
+      {
+        "item_id": "ochu_vine",
+        "chance": 0.3
+      },
+      {
+        "item_id": "star_pendant",
+        "chance": 0.018
+      }
+    ]
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "level": 9,
+    "hp": 190,
+    "attack": 31,
+    "defense": 14,
+    "spirit": 9,
+    "xp": 132,
+    "jp": 23,
+    "gil": 59,
+    "weakness": "Holy",
+    "drops": [
+      {
+        "item_id": "bone_chip",
+        "chance": 0.3
       }
     ]
   },
@@ -168,40 +389,108 @@
     ]
   },
   {
-    "id": "bat",
-    "name": "Cave Bat",
-    "level": 8,
-    "hp": 155,
-    "attack": 28,
-    "defense": 9,
-    "spirit": 9,
-    "xp": 118,
-    "jp": 21,
-    "gil": 52,
-    "weakness": "Wind",
+    "id": "ossuary_knight",
+    "name": "Ossuary Knight",
+    "level": 10,
+    "hp": 300,
+    "attack": 38,
+    "defense": 17,
+    "spirit": 12,
+    "xp": 215,
+    "jp": 31,
+    "gil": 92,
+    "weakness": "Holy",
+    "hunt_only": true,
+    "special": {
+      "name": "Grave Cleave",
+      "chance": 0.17,
+      "multiplier": 1.5
+    },
     "drops": [
       {
-        "item_id": "potion",
-        "chance": 0.1
+        "item_id": "bone_chip",
+        "chance": 0.7
+      },
+      {
+        "item_id": "phoenix_down",
+        "chance": 0.05
       }
     ]
   },
   {
-    "id": "skeleton",
-    "name": "Skeleton",
-    "level": 9,
-    "hp": 190,
-    "attack": 31,
-    "defense": 14,
-    "spirit": 9,
-    "xp": 132,
-    "jp": 23,
-    "gil": 59,
-    "weakness": "Holy",
+    "id": "spriggan",
+    "name": "Spriggan",
+    "level": 11,
+    "hp": 315,
+    "attack": 46,
+    "defense": 28,
+    "spirit": 21,
+    "xp": 155,
+    "jp": 55,
+    "gil": 99,
+    "weakness": "Fire",
+    "special": {
+      "name": "Stone Toss",
+      "chance": 0.121,
+      "multiplier": 1.46
+    },
     "drops": [
       {
-        "item_id": "bone_chip",
-        "chance": 0.3
+        "item_id": "iron_ore",
+        "chance": 0.22
+      }
+    ]
+  },
+  {
+    "id": "basilisk",
+    "name": "Basilisk",
+    "level": 12,
+    "hp": 352,
+    "attack": 47,
+    "defense": 29,
+    "spirit": 25,
+    "xp": 176,
+    "jp": 59,
+    "gil": 114,
+    "weakness": "Ice",
+    "special": {
+      "name": "Stone Gaze",
+      "chance": 0.123,
+      "multiplier": 1.48
+    },
+    "drops": [
+      {
+        "item_id": "basilisk_eye",
+        "chance": 0.26
+      }
+    ]
+  },
+  {
+    "id": "crimson_detonator",
+    "name": "Crimson Detonator",
+    "level": 12,
+    "hp": 420,
+    "attack": 45,
+    "defense": 20,
+    "spirit": 18,
+    "xp": 260,
+    "jp": 35,
+    "gil": 180,
+    "weakness": "Ice",
+    "hunt_only": true,
+    "special": {
+      "name": "King's Detonation",
+      "chance": 0.18,
+      "multiplier": 1.8
+    },
+    "drops": [
+      {
+        "item_id": "bomb_kings_fuse",
+        "chance": 0.35
+      },
+      {
+        "item_id": "fire_rod",
+        "chance": 0.025
       }
     ]
   },
@@ -234,6 +523,30 @@
     ]
   },
   {
+    "id": "lamia",
+    "name": "Lamia",
+    "level": 14,
+    "hp": 375,
+    "attack": 53,
+    "defense": 29,
+    "spirit": 29,
+    "xp": 223,
+    "jp": 68,
+    "gil": 149,
+    "weakness": "Ice",
+    "special": {
+      "name": "Enticing Song",
+      "chance": 0.127,
+      "multiplier": 1.52
+    },
+    "drops": [
+      {
+        "item_id": "lamia_scale",
+        "chance": 0.27
+      }
+    ]
+  },
+  {
     "id": "mimic",
     "name": "Mimic",
     "level": 14,
@@ -258,6 +571,74 @@
       {
         "item_id": "mythril_ore",
         "chance": 0.08
+      }
+    ]
+  },
+  {
+    "id": "gargoyle",
+    "name": "Gargoyle",
+    "level": 15,
+    "hp": 468,
+    "attack": 56,
+    "defense": 37,
+    "spirit": 30,
+    "xp": 249,
+    "jp": 72,
+    "gil": 168,
+    "weakness": "Holy",
+    "special": {
+      "name": "Stone Wing",
+      "chance": 0.129,
+      "multiplier": 1.53
+    },
+    "drops": [
+      {
+        "item_id": "iron_ore",
+        "chance": 0.2
+      }
+    ]
+  },
+  {
+    "id": "sahagin",
+    "name": "Sahagin",
+    "level": 16,
+    "hp": 370,
+    "attack": 51,
+    "defense": 22,
+    "spirit": 20,
+    "xp": 235,
+    "jp": 34,
+    "gil": 110,
+    "weakness": "Lightning",
+    "drops": [
+      {
+        "item_id": "fish_scale",
+        "chance": 0.32
+      }
+    ]
+  },
+  {
+    "id": "sahagin_prince",
+    "name": "Sahagin Prince",
+    "level": 16,
+    "hp": 560,
+    "attack": 55,
+    "defense": 26,
+    "spirit": 24,
+    "xp": 330,
+    "jp": 42,
+    "gil": 230,
+    "weakness": "Lightning",
+    "hunt_only": true,
+    "special": {
+      "name": "Tidal Spear",
+      "chance": 0.16,
+      "multiplier": 1.55
+    },
+    "drops": [
+      {
+        "item_id": "fish_scale",
+        "chance": 0.5
       }
     ]
   },
@@ -290,25 +671,6 @@
     ]
   },
   {
-    "id": "sahagin",
-    "name": "Sahagin",
-    "level": 16,
-    "hp": 370,
-    "attack": 51,
-    "defense": 22,
-    "spirit": 20,
-    "xp": 235,
-    "jp": 34,
-    "gil": 110,
-    "weakness": "Lightning",
-    "drops": [
-      {
-        "item_id": "fish_scale",
-        "chance": 0.32
-      }
-    ]
-  },
-  {
     "id": "killer_fish",
     "name": "Killer Fish",
     "level": 17,
@@ -324,6 +686,87 @@
       {
         "item_id": "fish_scale",
         "chance": 0.3
+      }
+    ]
+  },
+  {
+    "id": "cactuar_jack",
+    "name": "Cactuar Jack",
+    "level": 18,
+    "hp": 360,
+    "attack": 70,
+    "defense": 32,
+    "spirit": 30,
+    "xp": 650,
+    "jp": 72,
+    "gil": 1400,
+    "weakness": "Ice",
+    "hunt_only": true,
+    "special": {
+      "name": "3000 Needles",
+      "chance": 0.2,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "cactuar_needle",
+        "chance": 0.8
+      }
+    ]
+  },
+  {
+    "id": "gigantoad",
+    "name": "Gigantoad",
+    "level": 18,
+    "hp": 615,
+    "attack": 65,
+    "defense": 35,
+    "spirit": 35,
+    "xp": 339,
+    "jp": 84,
+    "gil": 235,
+    "weakness": "Ice",
+    "special": {
+      "name": "Sticky Tongue",
+      "chance": 0.134,
+      "multiplier": 1.59
+    },
+    "drops": [
+      {
+        "item_id": "fish_scale",
+        "chance": 0.28
+      }
+    ]
+  },
+  {
+    "id": "mindflayer",
+    "name": "Mindflayer",
+    "level": 18,
+    "hp": 538,
+    "attack": 63,
+    "defense": 34,
+    "spirit": 48,
+    "xp": 339,
+    "jp": 84,
+    "gil": 235,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Mind Blast",
+      "chance": 0.134,
+      "multiplier": 1.59
+    },
+    "drops": [
+      {
+        "item_id": "mindflayer_tentacle",
+        "chance": 0.18
+      },
+      {
+        "item_id": "ether",
+        "chance": 0.09
+      },
+      {
+        "item_id": "silver_pendant",
+        "chance": 0.018
       }
     ]
   },
@@ -348,6 +791,78 @@
       {
         "item_id": "phoenix_down",
         "chance": 0.08
+      }
+    ]
+  },
+  {
+    "id": "antlion",
+    "name": "Antlion",
+    "level": 20,
+    "hp": 708,
+    "attack": 75,
+    "defense": 45,
+    "spirit": 35,
+    "xp": 409,
+    "jp": 93,
+    "gil": 286,
+    "weakness": "Ice",
+    "special": {
+      "name": "Sandstorm",
+      "chance": 0.138,
+      "multiplier": 1.63
+    },
+    "drops": [
+      {
+        "item_id": "antlion_mandible",
+        "chance": 0.28
+      }
+    ]
+  },
+  {
+    "id": "piscodemon",
+    "name": "Piscodemon",
+    "level": 20,
+    "hp": 660,
+    "attack": 76,
+    "defense": 39,
+    "spirit": 49,
+    "xp": 409,
+    "jp": 93,
+    "gil": 286,
+    "weakness": "Holy",
+    "special": {
+      "name": "Mind Rend",
+      "chance": 0.138,
+      "multiplier": 1.63
+    },
+    "drops": [
+      {
+        "item_id": "mindflayer_tentacle",
+        "chance": 0.16
+      }
+    ]
+  },
+  {
+    "id": "black_flan",
+    "name": "Black Flan",
+    "level": 21,
+    "hp": 725,
+    "attack": 71,
+    "defense": 53,
+    "spirit": 48,
+    "xp": 446,
+    "jp": 97,
+    "gil": 313,
+    "weakness": "Holy",
+    "special": {
+      "name": "Dark Sludge",
+      "chance": 0.14,
+      "multiplier": 1.65
+    },
+    "drops": [
+      {
+        "item_id": "dark_matter",
+        "chance": 0.01
       }
     ]
   },
@@ -384,6 +899,30 @@
     ]
   },
   {
+    "id": "sand_worm",
+    "name": "Sand Worm",
+    "level": 22,
+    "hp": 874,
+    "attack": 87,
+    "defense": 42,
+    "spirit": 38,
+    "xp": 485,
+    "jp": 101,
+    "gil": 342,
+    "weakness": "Water",
+    "special": {
+      "name": "Swallow",
+      "chance": 0.142,
+      "multiplier": 1.67
+    },
+    "drops": [
+      {
+        "item_id": "sandworm_fang",
+        "chance": 0.26
+      }
+    ]
+  },
+  {
     "id": "chimera",
     "name": "Chimera",
     "level": 23,
@@ -408,6 +947,83 @@
       {
         "item_id": "frost_rod",
         "chance": 0.02
+      }
+    ]
+  },
+  {
+    "id": "remora",
+    "name": "Remora",
+    "level": 23,
+    "hp": 716,
+    "attack": 81,
+    "defense": 44,
+    "spirit": 44,
+    "xp": 526,
+    "jp": 105,
+    "gil": 372,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Ramming Speed",
+      "chance": 0.144,
+      "multiplier": 1.69
+    },
+    "drops": [
+      {
+        "item_id": "fish_scale",
+        "chance": 0.3
+      }
+    ]
+  },
+  {
+    "id": "king_coeurl",
+    "name": "King Coeurl",
+    "level": 24,
+    "hp": 760,
+    "attack": 76,
+    "defense": 38,
+    "spirit": 38,
+    "xp": 620,
+    "jp": 70,
+    "gil": 420,
+    "weakness": "Earth",
+    "hunt_only": true,
+    "special": {
+      "name": "Royal Blaster",
+      "chance": 0.2,
+      "multiplier": 1.75
+    },
+    "drops": [
+      {
+        "item_id": "coeurl_whisker",
+        "chance": 0.65
+      },
+      {
+        "item_id": "thunder_rod",
+        "chance": 0.02
+      }
+    ]
+  },
+  {
+    "id": "magic_pot",
+    "name": "Magic Pot",
+    "level": 25,
+    "hp": 1170,
+    "attack": 70,
+    "defense": 69,
+    "spirit": 69,
+    "xp": 613,
+    "jp": 113,
+    "gil": 436,
+    "weakness": "None",
+    "special": {
+      "name": "Gimme Elixir!",
+      "chance": 0.148,
+      "multiplier": 1.73
+    },
+    "drops": [
+      {
+        "item_id": "magic_pot_shard",
+        "chance": 0.08
       }
     ]
   },
@@ -444,6 +1060,91 @@
       {
         "item_id": "morbol_spore",
         "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "sea_serpent",
+    "name": "Sea Serpent",
+    "level": 25,
+    "hp": 952,
+    "attack": 96,
+    "defense": 48,
+    "spirit": 51,
+    "xp": 613,
+    "jp": 113,
+    "gil": 436,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Aqua Breath",
+      "chance": 0.148,
+      "multiplier": 1.73
+    },
+    "drops": [
+      {
+        "item_id": "fish_scale",
+        "chance": 0.32
+      },
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.04
+      },
+      {
+        "item_id": "coral_sword",
+        "chance": 0.02
+      }
+    ]
+  },
+  {
+    "id": "riven_ronin",
+    "name": "The Riven Ronin",
+    "level": 27,
+    "hp": 900,
+    "attack": 82,
+    "defense": 42,
+    "spirit": 35,
+    "xp": 720,
+    "jp": 78,
+    "gil": 500,
+    "weakness": "Lightning",
+    "hunt_only": true,
+    "special": {
+      "name": "Iaijutsu",
+      "chance": 0.2,
+      "multiplier": 1.85
+    },
+    "drops": [
+      {
+        "item_id": "masamune_fragment",
+        "chance": 0.35
+      },
+      {
+        "item_id": "genji_armor",
+        "chance": 0.012
+      }
+    ]
+  },
+  {
+    "id": "adamantoise",
+    "name": "Adamantoise",
+    "level": 28,
+    "hp": 1623,
+    "attack": 91,
+    "defense": 87,
+    "spirit": 61,
+    "xp": 758,
+    "jp": 126,
+    "gil": 543,
+    "weakness": "Ice",
+    "special": {
+      "name": "Earthshaker",
+      "chance": 0.153,
+      "multiplier": 1.78
+    },
+    "drops": [
+      {
+        "item_id": "adamantite",
+        "chance": 0.025
       }
     ]
   },
@@ -499,6 +1200,87 @@
     ]
   },
   {
+    "id": "garuda",
+    "name": "Garuda",
+    "level": 30,
+    "hp": 1144,
+    "attack": 117,
+    "defense": 53,
+    "spirit": 65,
+    "xp": 864,
+    "jp": 134,
+    "gil": 621,
+    "weakness": "Earth",
+    "special": {
+      "name": "Aerial Blast",
+      "chance": 0.157,
+      "multiplier": 1.82
+    },
+    "drops": [
+      {
+        "item_id": "garuda_feather",
+        "chance": 0.17
+      }
+    ]
+  },
+  {
+    "id": "malboro_overlord",
+    "name": "Malboro Overlord",
+    "level": 30,
+    "hp": 1050,
+    "attack": 90,
+    "defense": 45,
+    "spirit": 55,
+    "xp": 840,
+    "jp": 88,
+    "gil": 560,
+    "weakness": "Fire",
+    "hunt_only": true,
+    "special": {
+      "name": "Catastrophic Breath",
+      "chance": 0.22,
+      "multiplier": 1.9
+    },
+    "drops": [
+      {
+        "item_id": "morbol_bulb",
+        "chance": 0.45
+      },
+      {
+        "item_id": "remedy",
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "id": "death_claw",
+    "name": "Death Claw",
+    "level": 31,
+    "hp": 1226,
+    "attack": 118,
+    "defense": 64,
+    "spirit": 52,
+    "xp": 919,
+    "jp": 138,
+    "gil": 661,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Claw Crush",
+      "chance": 0.159,
+      "multiplier": 1.84
+    },
+    "drops": [
+      {
+        "item_id": "death_claw_pincer",
+        "chance": 0.28
+      },
+      {
+        "item_id": "magitek_scrap",
+        "chance": 0.18
+      }
+    ]
+  },
+  {
     "id": "iron_giant",
     "name": "Iron Giant",
     "level": 32,
@@ -538,310 +1320,6 @@
     ]
   },
   {
-    "id": "behemoth",
-    "name": "Behemoth",
-    "level": 35,
-    "hp": 1350,
-    "attack": 116,
-    "defense": 61,
-    "spirit": 54,
-    "xp": 780,
-    "jp": 76,
-    "gil": 420,
-    "weakness": "Ice",
-    "special": {
-      "name": "Meteor",
-      "chance": 0.14,
-      "multiplier": 2.0
-    },
-    "drops": [
-      {
-        "item_id": "behemoth_horn",
-        "chance": 0.18
-      },
-      {
-        "item_id": "x_potion",
-        "chance": 0.1
-      },
-      {
-        "item_id": "behemoth_hide",
-        "chance": 0.18
-      }
-    ]
-  },
-  {
-    "id": "malboro_great",
-    "name": "Great Malboro",
-    "level": 38,
-    "hp": 1580,
-    "attack": 122,
-    "defense": 63,
-    "spirit": 68,
-    "xp": 900,
-    "jp": 84,
-    "gil": 470,
-    "weakness": "Fire",
-    "special": {
-      "name": "Really Bad Breath",
-      "chance": 0.2,
-      "multiplier": 1.95
-    },
-    "drops": [
-      {
-        "item_id": "malboro_tendril",
-        "chance": 0.55
-      },
-      {
-        "item_id": "ribbon",
-        "chance": 0.01
-      },
-      {
-        "item_id": "ribbon_fragment",
-        "chance": 0.025
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "morbol_lash",
-        "chance": 0.05,
-        "guarantee_after": 16
-      }
-    ]
-  },
-  {
-    "id": "death_machine",
-    "name": "Death Machine",
-    "level": 40,
-    "hp": 1850,
-    "attack": 138,
-    "defense": 76,
-    "spirit": 64,
-    "xp": 1050,
-    "jp": 95,
-    "gil": 550,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Atomic Ray",
-      "chance": 0.18,
-      "multiplier": 2.05
-    },
-    "drops": [
-      {
-        "item_id": "magitek_core",
-        "chance": 0.2
-      },
-      {
-        "item_id": "magitek_capacitor",
-        "chance": 0.16
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "magitek_edge",
-        "chance": 0.04,
-        "guarantee_after": 18
-      }
-    ]
-  },
-  {
-    "id": "tonberry_king",
-    "name": "Tonberry King",
-    "level": 44,
-    "hp": 2200,
-    "attack": 150,
-    "defense": 82,
-    "spirit": 80,
-    "xp": 1300,
-    "jp": 112,
-    "gil": 800,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Royal Grudge",
-      "chance": 0.22,
-      "multiplier": 2.15
-    },
-    "drops": [
-      {
-        "item_id": "chef_knife",
-        "chance": 0.08
-      },
-      {
-        "item_id": "ribbon",
-        "chance": 0.02
-      },
-      {
-        "item_id": "tonberry_lantern",
-        "chance": 0.1
-      }
-    ]
-  },
-  {
-    "id": "crimson_detonator",
-    "name": "Crimson Detonator",
-    "level": 12,
-    "hp": 420,
-    "attack": 45,
-    "defense": 20,
-    "spirit": 18,
-    "xp": 260,
-    "jp": 35,
-    "gil": 180,
-    "weakness": "Ice",
-    "hunt_only": true,
-    "special": {
-      "name": "King's Detonation",
-      "chance": 0.18,
-      "multiplier": 1.8
-    },
-    "drops": [
-      {
-        "item_id": "bomb_kings_fuse",
-        "chance": 0.35
-      },
-      {
-        "item_id": "fire_rod",
-        "chance": 0.025
-      }
-    ]
-  },
-  {
-    "id": "sahagin_prince",
-    "name": "Sahagin Prince",
-    "level": 16,
-    "hp": 560,
-    "attack": 55,
-    "defense": 26,
-    "spirit": 24,
-    "xp": 330,
-    "jp": 42,
-    "gil": 230,
-    "weakness": "Lightning",
-    "hunt_only": true,
-    "special": {
-      "name": "Tidal Spear",
-      "chance": 0.16,
-      "multiplier": 1.55
-    },
-    "drops": [
-      {
-        "item_id": "fish_scale",
-        "chance": 0.5
-      }
-    ]
-  },
-  {
-    "id": "cactuar_jack",
-    "name": "Cactuar Jack",
-    "level": 18,
-    "hp": 360,
-    "attack": 70,
-    "defense": 32,
-    "spirit": 30,
-    "xp": 650,
-    "jp": 72,
-    "gil": 1400,
-    "weakness": "Ice",
-    "hunt_only": true,
-    "special": {
-      "name": "3000 Needles",
-      "chance": 0.2,
-      "multiplier": 2.15
-    },
-    "drops": [
-      {
-        "item_id": "cactuar_needle",
-        "chance": 0.8
-      }
-    ]
-  },
-  {
-    "id": "king_coeurl",
-    "name": "King Coeurl",
-    "level": 24,
-    "hp": 760,
-    "attack": 76,
-    "defense": 38,
-    "spirit": 38,
-    "xp": 620,
-    "jp": 70,
-    "gil": 420,
-    "weakness": "Earth",
-    "hunt_only": true,
-    "special": {
-      "name": "Royal Blaster",
-      "chance": 0.2,
-      "multiplier": 1.75
-    },
-    "drops": [
-      {
-        "item_id": "coeurl_whisker",
-        "chance": 0.65
-      },
-      {
-        "item_id": "thunder_rod",
-        "chance": 0.02
-      }
-    ]
-  },
-  {
-    "id": "riven_ronin",
-    "name": "The Riven Ronin",
-    "level": 27,
-    "hp": 900,
-    "attack": 82,
-    "defense": 42,
-    "spirit": 35,
-    "xp": 720,
-    "jp": 78,
-    "gil": 500,
-    "weakness": "Lightning",
-    "hunt_only": true,
-    "special": {
-      "name": "Iaijutsu",
-      "chance": 0.2,
-      "multiplier": 1.85
-    },
-    "drops": [
-      {
-        "item_id": "masamune_fragment",
-        "chance": 0.35
-      },
-      {
-        "item_id": "genji_armor",
-        "chance": 0.012
-      }
-    ]
-  },
-  {
-    "id": "malboro_overlord",
-    "name": "Malboro Overlord",
-    "level": 30,
-    "hp": 1050,
-    "attack": 90,
-    "defense": 45,
-    "spirit": 55,
-    "xp": 840,
-    "jp": 88,
-    "gil": 560,
-    "weakness": "Fire",
-    "hunt_only": true,
-    "special": {
-      "name": "Catastrophic Breath",
-      "chance": 0.22,
-      "multiplier": 1.9
-    },
-    "drops": [
-      {
-        "item_id": "morbol_bulb",
-        "chance": 0.45
-      },
-      {
-        "item_id": "remedy",
-        "chance": 0.25
-      }
-    ]
-  },
-  {
     "id": "iron_giant_exile",
     "name": "Iron Giant Exile",
     "level": 34,
@@ -863,1140 +1341,6 @@
       {
         "item_id": "iron_giant_plate",
         "chance": 0.5
-      }
-    ]
-  },
-  {
-    "id": "three_moon_chimera",
-    "name": "Chimera of Three Moons",
-    "level": 39,
-    "hp": 1700,
-    "attack": 120,
-    "defense": 70,
-    "spirit": 70,
-    "xp": 1280,
-    "jp": 120,
-    "gil": 840,
-    "weakness": "Water",
-    "hunt_only": true,
-    "special": {
-      "name": "Tri-Disaster",
-      "chance": 0.22,
-      "multiplier": 2.0
-    },
-    "drops": [
-      {
-        "item_id": "triple_chimera_fang",
-        "chance": 0.4
-      },
-      {
-        "item_id": "ward_ring",
-        "chance": 0.018
-      }
-    ]
-  },
-  {
-    "id": "tonberry_executioner",
-    "name": "Tonberry Executioner",
-    "level": 43,
-    "hp": 1900,
-    "attack": 130,
-    "defense": 75,
-    "spirit": 80,
-    "xp": 1500,
-    "jp": 135,
-    "gil": 1050,
-    "weakness": "Lightning",
-    "hunt_only": true,
-    "special": {
-      "name": "Sentence: Everyone's Grudge",
-      "chance": 0.24,
-      "multiplier": 2.25
-    },
-    "drops": [
-      {
-        "item_id": "chef_knife",
-        "chance": 0.12
-      },
-      {
-        "item_id": "tonberry_lantern",
-        "chance": 0.08
-      }
-    ]
-  },
-  {
-    "id": "magitek_juggernaut",
-    "name": "Magitek Juggernaut",
-    "level": 47,
-    "hp": 2300,
-    "attack": 145,
-    "defense": 90,
-    "spirit": 75,
-    "xp": 1800,
-    "jp": 150,
-    "gil": 1250,
-    "weakness": "Lightning",
-    "hunt_only": true,
-    "special": {
-      "name": "Ultima Cannon",
-      "chance": 0.22,
-      "multiplier": 2.2
-    },
-    "drops": [
-      {
-        "item_id": "magitek_core",
-        "chance": 0.45
-      }
-    ]
-  },
-  {
-    "id": "behemoth_tyrant",
-    "name": "Behemoth Tyrant",
-    "level": 55,
-    "hp": 3000,
-    "attack": 170,
-    "defense": 110,
-    "spirit": 100,
-    "xp": 2700,
-    "jp": 190,
-    "gil": 1900,
-    "weakness": "Ice",
-    "hunt_only": true,
-    "special": {
-      "name": "Tyrant Meteor",
-      "chance": 0.24,
-      "multiplier": 2.35
-    },
-    "drops": [
-      {
-        "item_id": "behemoth_horn",
-        "chance": 0.6
-      }
-    ]
-  },
-  {
-    "id": "ancient_adamantoise",
-    "name": "Ancient Adamantoise",
-    "level": 60,
-    "hp": 4000,
-    "attack": 170,
-    "defense": 150,
-    "spirit": 115,
-    "xp": 3200,
-    "jp": 220,
-    "gil": 2300,
-    "weakness": "Ice",
-    "hunt_only": true,
-    "special": {
-      "name": "Earthshaker",
-      "chance": 0.2,
-      "multiplier": 2.25
-    },
-    "drops": [
-      {
-        "item_id": "mythril_ore",
-        "chance": 0.8
-      }
-    ]
-  },
-  {
-    "id": "rift_dragon",
-    "name": "Rift Dragon",
-    "level": 65,
-    "hp": 3600,
-    "attack": 190,
-    "defense": 125,
-    "spirit": 140,
-    "xp": 3900,
-    "jp": 250,
-    "gil": 3000,
-    "weakness": "Holy",
-    "hunt_only": true,
-    "special": {
-      "name": "Dimensional Collapse",
-      "chance": 0.25,
-      "multiplier": 2.5
-    },
-    "drops": [
-      {
-        "item_id": "magitek_core",
-        "chance": 0.4
-      },
-      {
-        "item_id": "behemoth_horn",
-        "chance": 0.4
-      }
-    ]
-  },
-  {
-    "id": "crystal_wolf",
-    "name": "Crystal Wolf",
-    "level": 42,
-    "hp": 2050,
-    "attack": 142,
-    "defense": 75,
-    "spirit": 76,
-    "xp": 1180,
-    "jp": 100,
-    "gil": 610,
-    "weakness": "Fire",
-    "drops": [
-      {
-        "item_id": "crystal_shard",
-        "chance": 0.34
-      },
-      {
-        "item_id": "wolf_fang",
-        "chance": 0.45
-      }
-    ]
-  },
-  {
-    "id": "crystal_golem",
-    "name": "Crystal Golem",
-    "level": 45,
-    "hp": 2600,
-    "attack": 155,
-    "defense": 105,
-    "spirit": 84,
-    "xp": 1450,
-    "jp": 118,
-    "gil": 760,
-    "weakness": "Water",
-    "special": {
-      "name": "Prismatic Slam",
-      "chance": 0.18,
-      "multiplier": 2.0
-    },
-    "drops": [
-      {
-        "item_id": "crystal_shard",
-        "chance": 0.48
-      }
-    ],
-    "pity_drops": [
-      {
-        "item_id": "crystal_core",
-        "chance": 0.07,
-        "guarantee_after": 10
-      }
-    ]
-  },
-  {
-    "id": "elemental_archon",
-    "name": "Elemental Archon",
-    "level": 47,
-    "hp": 2350,
-    "attack": 160,
-    "defense": 82,
-    "spirit": 112,
-    "xp": 1580,
-    "jp": 125,
-    "gil": 820,
-    "weakness": "Non-elemental",
-    "special": {
-      "name": "Elemental Convergence",
-      "chance": 0.2,
-      "multiplier": 2.05
-    },
-    "drops": [
-      {
-        "item_id": "crystal_shard",
-        "chance": 0.5
-      },
-      {
-        "item_id": "ether",
-        "chance": 0.22
-      },
-      {
-        "item_id": "elemental_crystal",
-        "chance": 0.12
-      },
-      {
-        "item_id": "archon_shard",
-        "chance": 0.04
-      }
-    ]
-  },
-  {
-    "id": "ancient_mimic",
-    "name": "Ancient Mimic",
-    "level": 49,
-    "hp": 2700,
-    "attack": 170,
-    "defense": 96,
-    "spirit": 88,
-    "xp": 1750,
-    "jp": 132,
-    "gil": 1200,
-    "weakness": "Holy",
-    "special": {
-      "name": "Devour Fortune",
-      "chance": 0.18,
-      "multiplier": 2.15
-    },
-    "drops": [
-      {
-        "item_id": "ancient_cloth",
-        "chance": 0.35
-      },
-      {
-        "item_id": "x_potion",
-        "chance": 0.18
-      },
-      {
-        "item_id": "ancient_coin",
-        "chance": 0.2
-      },
-      {
-        "item_id": "mimic_lock",
-        "chance": 0.12
-      },
-      {
-        "item_id": "blood_sword",
-        "chance": 0.012
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "crystal_focus",
-        "chance": 0.08,
-        "guarantee_after": 12
-      }
-    ]
-  },
-  {
-    "id": "wyrm",
-    "name": "Wyrm",
-    "level": 52,
-    "hp": 3200,
-    "attack": 184,
-    "defense": 105,
-    "spirit": 100,
-    "xp": 2050,
-    "jp": 150,
-    "gil": 1080,
-    "weakness": "Ice",
-    "special": {
-      "name": "Dragonfire",
-      "chance": 0.2,
-      "multiplier": 2.15
-    },
-    "drops": [
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.25
-      }
-    ],
-    "pity_drops": [
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.12,
-        "guarantee_after": 7
-      }
-    ]
-  },
-  {
-    "id": "rift_hound",
-    "name": "Rift Hound",
-    "level": 55,
-    "hp": 3100,
-    "attack": 195,
-    "defense": 106,
-    "spirit": 105,
-    "xp": 2250,
-    "jp": 160,
-    "gil": 1200,
-    "weakness": "Holy",
-    "drops": [
-      {
-        "item_id": "rift_crystal",
-        "chance": 0.22
-      },
-      {
-        "item_id": "void_essence",
-        "chance": 0.06
-      }
-    ]
-  },
-  {
-    "id": "void_mage",
-    "name": "Void Mage",
-    "level": 58,
-    "hp": 3000,
-    "attack": 205,
-    "defense": 96,
-    "spirit": 145,
-    "xp": 2500,
-    "jp": 174,
-    "gil": 1350,
-    "weakness": "Holy",
-    "special": {
-      "name": "Dark Flare",
-      "chance": 0.21,
-      "multiplier": 2.25
-    },
-    "drops": [
-      {
-        "item_id": "rift_crystal",
-        "chance": 0.28
-      },
-      {
-        "item_id": "ancient_cloth",
-        "chance": 0.24
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "void_charm",
-        "chance": 0.06,
-        "guarantee_after": 14
-      }
-    ]
-  },
-  {
-    "id": "rift_behemoth",
-    "name": "Rift Behemoth",
-    "level": 60,
-    "hp": 4100,
-    "attack": 220,
-    "defense": 128,
-    "spirit": 120,
-    "xp": 2900,
-    "jp": 192,
-    "gil": 1650,
-    "weakness": "Ice",
-    "special": {
-      "name": "Rift Meteor",
-      "chance": 0.2,
-      "multiplier": 2.35
-    },
-    "drops": [
-      {
-        "item_id": "behemoth_horn",
-        "chance": 0.38
-      },
-      {
-        "item_id": "rift_crystal",
-        "chance": 0.25
-      }
-    ]
-  },
-  {
-    "id": "adamant_golem",
-    "name": "Adamant Golem",
-    "level": 62,
-    "hp": 4900,
-    "attack": 216,
-    "defense": 170,
-    "spirit": 118,
-    "xp": 3150,
-    "jp": 205,
-    "gil": 1750,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Adamant Crush",
-      "chance": 0.19,
-      "multiplier": 2.3
-    },
-    "drops": [
-      {
-        "item_id": "adamantite",
-        "chance": 0.12
-      }
-    ],
-    "pity_drops": [
-      {
-        "item_id": "adamantite",
-        "chance": 0.08,
-        "guarantee_after": 9
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "adamant_guard",
-        "chance": 0.08,
-        "guarantee_after": 12
-      }
-    ]
-  },
-  {
-    "id": "rift_drake",
-    "name": "Rift Drake",
-    "level": 65,
-    "hp": 4500,
-    "attack": 235,
-    "defense": 140,
-    "spirit": 145,
-    "xp": 3550,
-    "jp": 220,
-    "gil": 2050,
-    "weakness": "Holy",
-    "special": {
-      "name": "Dimensional Breath",
-      "chance": 0.22,
-      "multiplier": 2.4
-    },
-    "drops": [
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.35
-      },
-      {
-        "item_id": "rift_crystal",
-        "chance": 0.34
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "dragon_mail",
-        "chance": 0.08,
-        "guarantee_after": 12
-      }
-    ]
-  },
-  {
-    "id": "void_tonberry",
-    "name": "Void Tonberry",
-    "level": 68,
-    "hp": 4100,
-    "attack": 255,
-    "defense": 148,
-    "spirit": 150,
-    "xp": 4000,
-    "jp": 240,
-    "gil": 2600,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Grudge Across Worlds",
-      "chance": 0.24,
-      "multiplier": 2.55
-    },
-    "drops": [
-      {
-        "item_id": "void_essence",
-        "chance": 0.25
-      },
-      {
-        "item_id": "chef_knife",
-        "chance": 0.07
-      }
-    ]
-  },
-  {
-    "id": "astral_construct",
-    "name": "Astral Construct",
-    "level": 72,
-    "hp": 4760,
-    "attack": 230,
-    "defense": 149,
-    "spirit": 149,
-    "xp": 4700,
-    "jp": 275,
-    "gil": 3000,
-    "weakness": "Dark",
-    "special": {
-      "name": "Astral Rupture",
-      "chance": 0.23,
-      "multiplier": 2.6
-    },
-    "drops": [
-      {
-        "item_id": "eidolon_shard",
-        "chance": 0.07
-      },
-      {
-        "item_id": "crystal_core",
-        "chance": 0.18
-      }
-    ],
-    "pity_drops": [
-      {
-        "item_id": "eidolon_shard",
-        "chance": 0.06,
-        "guarantee_after": 12
-      }
-    ]
-  },
-  {
-    "id": "omega_fragment",
-    "name": "Omega Fragment",
-    "level": 76,
-    "hp": 5525,
-    "attack": 248,
-    "defense": 162,
-    "spirit": 157,
-    "xp": 5400,
-    "jp": 310,
-    "gil": 3600,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Wave Cannon",
-      "chance": 0.24,
-      "multiplier": 2.65
-    },
-    "drops": [
-      {
-        "item_id": "magitek_core",
-        "chance": 0.45
-      },
-      {
-        "item_id": "dark_matter",
-        "chance": 0.05
-      }
-    ],
-    "pity_drops": [
-      {
-        "item_id": "dark_matter",
-        "chance": 0.05,
-        "guarantee_after": 15
-      }
-    ],
-    "recipe_drops": [
-      {
-        "recipe_id": "magitek_edge",
-        "chance": 0.1,
-        "guarantee_after": 10
-      }
-    ]
-  },
-  {
-    "id": "void_avatar",
-    "name": "Void Avatar",
-    "level": 80,
-    "hp": 6290,
-    "attack": 268,
-    "defense": 174,
-    "spirit": 174,
-    "xp": 6200,
-    "jp": 350,
-    "gil": 4400,
-    "weakness": "Holy",
-    "special": {
-      "name": "Event Horizon",
-      "chance": 0.25,
-      "multiplier": 2.8
-    },
-    "drops": [
-      {
-        "item_id": "void_essence",
-        "chance": 0.45
-      }
-    ],
-    "pity_drops": [
-      {
-        "item_id": "dark_matter",
-        "chance": 0.07,
-        "guarantee_after": 12
-      },
-      {
-        "item_id": "eidolon_shard",
-        "chance": 0.05,
-        "guarantee_after": 15
-      }
-    ]
-  },
-  {
-    "id": "goblin_guard",
-    "name": "Goblin Guard",
-    "level": 4,
-    "hp": 144,
-    "attack": 22,
-    "defense": 14,
-    "spirit": 11,
-    "xp": 59,
-    "jp": 26,
-    "gil": 28,
-    "weakness": "Fire",
-    "special": {
-      "name": "Shield Bash",
-      "chance": 0.108,
-      "multiplier": 1.33
-    },
-    "drops": [
-      {
-        "item_id": "iron_ore",
-        "chance": 0.12
-      }
-    ]
-  },
-  {
-    "id": "imp",
-    "name": "Imp",
-    "level": 5,
-    "hp": 147,
-    "attack": 25,
-    "defense": 13,
-    "spirit": 13,
-    "xp": 67,
-    "jp": 30,
-    "gil": 34,
-    "weakness": "Holy",
-    "special": {
-      "name": "Impish Hex",
-      "chance": 0.11,
-      "multiplier": 1.34
-    },
-    "drops": [
-      {
-        "item_id": "imp_wing",
-        "chance": 0.32
-      }
-    ]
-  },
-  {
-    "id": "cockatrice",
-    "name": "Cockatrice",
-    "level": 7,
-    "hp": 188,
-    "attack": 31,
-    "defense": 17,
-    "spirit": 17,
-    "xp": 89,
-    "jp": 39,
-    "gil": 50,
-    "weakness": "Ice",
-    "special": {
-      "name": "Petrifying Peck",
-      "chance": 0.113,
-      "multiplier": 1.38
-    },
-    "drops": [
-      {
-        "item_id": "cockatrice_pinion",
-        "chance": 0.28
-      }
-    ]
-  },
-  {
-    "id": "ochu",
-    "name": "Ochu",
-    "level": 9,
-    "hp": 276,
-    "attack": 37,
-    "defense": 21,
-    "spirit": 20,
-    "xp": 118,
-    "jp": 47,
-    "gil": 72,
-    "weakness": "Fire",
-    "special": {
-      "name": "Tentacle Lash",
-      "chance": 0.117,
-      "multiplier": 1.42
-    },
-    "drops": [
-      {
-        "item_id": "ochu_vine",
-        "chance": 0.3
-      },
-      {
-        "item_id": "star_pendant",
-        "chance": 0.018
-      }
-    ]
-  },
-  {
-    "id": "spriggan",
-    "name": "Spriggan",
-    "level": 11,
-    "hp": 315,
-    "attack": 46,
-    "defense": 28,
-    "spirit": 21,
-    "xp": 155,
-    "jp": 55,
-    "gil": 99,
-    "weakness": "Fire",
-    "special": {
-      "name": "Stone Toss",
-      "chance": 0.121,
-      "multiplier": 1.46
-    },
-    "drops": [
-      {
-        "item_id": "iron_ore",
-        "chance": 0.22
-      }
-    ]
-  },
-  {
-    "id": "basilisk",
-    "name": "Basilisk",
-    "level": 12,
-    "hp": 352,
-    "attack": 47,
-    "defense": 29,
-    "spirit": 25,
-    "xp": 176,
-    "jp": 59,
-    "gil": 114,
-    "weakness": "Ice",
-    "special": {
-      "name": "Stone Gaze",
-      "chance": 0.123,
-      "multiplier": 1.48
-    },
-    "drops": [
-      {
-        "item_id": "basilisk_eye",
-        "chance": 0.26
-      }
-    ]
-  },
-  {
-    "id": "lamia",
-    "name": "Lamia",
-    "level": 14,
-    "hp": 375,
-    "attack": 53,
-    "defense": 29,
-    "spirit": 29,
-    "xp": 223,
-    "jp": 68,
-    "gil": 149,
-    "weakness": "Ice",
-    "special": {
-      "name": "Enticing Song",
-      "chance": 0.127,
-      "multiplier": 1.52
-    },
-    "drops": [
-      {
-        "item_id": "lamia_scale",
-        "chance": 0.27
-      }
-    ]
-  },
-  {
-    "id": "gargoyle",
-    "name": "Gargoyle",
-    "level": 15,
-    "hp": 468,
-    "attack": 56,
-    "defense": 37,
-    "spirit": 30,
-    "xp": 249,
-    "jp": 72,
-    "gil": 168,
-    "weakness": "Holy",
-    "special": {
-      "name": "Stone Wing",
-      "chance": 0.129,
-      "multiplier": 1.53
-    },
-    "drops": [
-      {
-        "item_id": "iron_ore",
-        "chance": 0.2
-      }
-    ]
-  },
-  {
-    "id": "mindflayer",
-    "name": "Mindflayer",
-    "level": 18,
-    "hp": 538,
-    "attack": 63,
-    "defense": 34,
-    "spirit": 48,
-    "xp": 339,
-    "jp": 84,
-    "gil": 235,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Mind Blast",
-      "chance": 0.134,
-      "multiplier": 1.59
-    },
-    "drops": [
-      {
-        "item_id": "mindflayer_tentacle",
-        "chance": 0.18
-      },
-      {
-        "item_id": "ether",
-        "chance": 0.09
-      },
-      {
-        "item_id": "silver_pendant",
-        "chance": 0.018
-      }
-    ]
-  },
-  {
-    "id": "piscodemon",
-    "name": "Piscodemon",
-    "level": 20,
-    "hp": 660,
-    "attack": 76,
-    "defense": 39,
-    "spirit": 49,
-    "xp": 409,
-    "jp": 93,
-    "gil": 286,
-    "weakness": "Holy",
-    "special": {
-      "name": "Mind Rend",
-      "chance": 0.138,
-      "multiplier": 1.63
-    },
-    "drops": [
-      {
-        "item_id": "mindflayer_tentacle",
-        "chance": 0.16
-      }
-    ]
-  },
-  {
-    "id": "black_flan",
-    "name": "Black Flan",
-    "level": 21,
-    "hp": 725,
-    "attack": 71,
-    "defense": 53,
-    "spirit": 48,
-    "xp": 446,
-    "jp": 97,
-    "gil": 313,
-    "weakness": "Holy",
-    "special": {
-      "name": "Dark Sludge",
-      "chance": 0.14,
-      "multiplier": 1.65
-    },
-    "drops": [
-      {
-        "item_id": "dark_matter",
-        "chance": 0.01
-      }
-    ]
-  },
-  {
-    "id": "magic_pot",
-    "name": "Magic Pot",
-    "level": 25,
-    "hp": 1170,
-    "attack": 70,
-    "defense": 69,
-    "spirit": 69,
-    "xp": 613,
-    "jp": 113,
-    "gil": 436,
-    "weakness": "None",
-    "special": {
-      "name": "Gimme Elixir!",
-      "chance": 0.148,
-      "multiplier": 1.73
-    },
-    "drops": [
-      {
-        "item_id": "magic_pot_shard",
-        "chance": 0.08
-      }
-    ]
-  },
-  {
-    "id": "gigantoad",
-    "name": "Gigantoad",
-    "level": 18,
-    "hp": 615,
-    "attack": 65,
-    "defense": 35,
-    "spirit": 35,
-    "xp": 339,
-    "jp": 84,
-    "gil": 235,
-    "weakness": "Ice",
-    "special": {
-      "name": "Sticky Tongue",
-      "chance": 0.134,
-      "multiplier": 1.59
-    },
-    "drops": [
-      {
-        "item_id": "fish_scale",
-        "chance": 0.28
-      }
-    ]
-  },
-  {
-    "id": "antlion",
-    "name": "Antlion",
-    "level": 20,
-    "hp": 708,
-    "attack": 75,
-    "defense": 45,
-    "spirit": 35,
-    "xp": 409,
-    "jp": 93,
-    "gil": 286,
-    "weakness": "Ice",
-    "special": {
-      "name": "Sandstorm",
-      "chance": 0.138,
-      "multiplier": 1.63
-    },
-    "drops": [
-      {
-        "item_id": "antlion_mandible",
-        "chance": 0.28
-      }
-    ]
-  },
-  {
-    "id": "sand_worm",
-    "name": "Sand Worm",
-    "level": 22,
-    "hp": 874,
-    "attack": 87,
-    "defense": 42,
-    "spirit": 38,
-    "xp": 485,
-    "jp": 101,
-    "gil": 342,
-    "weakness": "Water",
-    "special": {
-      "name": "Swallow",
-      "chance": 0.142,
-      "multiplier": 1.67
-    },
-    "drops": [
-      {
-        "item_id": "sandworm_fang",
-        "chance": 0.26
-      }
-    ]
-  },
-  {
-    "id": "remora",
-    "name": "Remora",
-    "level": 23,
-    "hp": 716,
-    "attack": 81,
-    "defense": 44,
-    "spirit": 44,
-    "xp": 526,
-    "jp": 105,
-    "gil": 372,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Ramming Speed",
-      "chance": 0.144,
-      "multiplier": 1.69
-    },
-    "drops": [
-      {
-        "item_id": "fish_scale",
-        "chance": 0.3
-      }
-    ]
-  },
-  {
-    "id": "sea_serpent",
-    "name": "Sea Serpent",
-    "level": 25,
-    "hp": 952,
-    "attack": 96,
-    "defense": 48,
-    "spirit": 51,
-    "xp": 613,
-    "jp": 113,
-    "gil": 436,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Aqua Breath",
-      "chance": 0.148,
-      "multiplier": 1.73
-    },
-    "drops": [
-      {
-        "item_id": "fish_scale",
-        "chance": 0.32
-      },
-      {
-        "item_id": "dragon_scale",
-        "chance": 0.04
-      },
-      {
-        "item_id": "coral_sword",
-        "chance": 0.02
-      }
-    ]
-  },
-  {
-    "id": "adamantoise",
-    "name": "Adamantoise",
-    "level": 28,
-    "hp": 1623,
-    "attack": 91,
-    "defense": 87,
-    "spirit": 61,
-    "xp": 758,
-    "jp": 126,
-    "gil": 543,
-    "weakness": "Ice",
-    "special": {
-      "name": "Earthshaker",
-      "chance": 0.153,
-      "multiplier": 1.78
-    },
-    "drops": [
-      {
-        "item_id": "adamantite",
-        "chance": 0.025
-      }
-    ]
-  },
-  {
-    "id": "garuda",
-    "name": "Garuda",
-    "level": 30,
-    "hp": 1144,
-    "attack": 117,
-    "defense": 53,
-    "spirit": 65,
-    "xp": 864,
-    "jp": 134,
-    "gil": 621,
-    "weakness": "Earth",
-    "special": {
-      "name": "Aerial Blast",
-      "chance": 0.157,
-      "multiplier": 1.82
-    },
-    "drops": [
-      {
-        "item_id": "garuda_feather",
-        "chance": 0.17
-      }
-    ]
-  },
-  {
-    "id": "death_claw",
-    "name": "Death Claw",
-    "level": 31,
-    "hp": 1226,
-    "attack": 118,
-    "defense": 64,
-    "spirit": 52,
-    "xp": 919,
-    "jp": 138,
-    "gil": 661,
-    "weakness": "Lightning",
-    "special": {
-      "name": "Claw Crush",
-      "chance": 0.159,
-      "multiplier": 1.84
-    },
-    "drops": [
-      {
-        "item_id": "death_claw_pincer",
-        "chance": 0.28
-      },
-      {
-        "item_id": "magitek_scrap",
-        "chance": 0.18
       }
     ]
   },
@@ -2025,6 +1369,38 @@
       {
         "item_id": "iron_giant_plate",
         "chance": 0.1
+      }
+    ]
+  },
+  {
+    "id": "behemoth",
+    "name": "Behemoth",
+    "level": 35,
+    "hp": 1350,
+    "attack": 116,
+    "defense": 61,
+    "spirit": 54,
+    "xp": 780,
+    "jp": 76,
+    "gil": 420,
+    "weakness": "Ice",
+    "special": {
+      "name": "Meteor",
+      "chance": 0.14,
+      "multiplier": 2.0
+    },
+    "drops": [
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.18
+      },
+      {
+        "item_id": "x_potion",
+        "chance": 0.1
+      },
+      {
+        "item_id": "behemoth_hide",
+        "chance": 0.18
       }
     ]
   },
@@ -2081,6 +1457,109 @@
     ]
   },
   {
+    "id": "malboro_great",
+    "name": "Great Malboro",
+    "level": 38,
+    "hp": 1580,
+    "attack": 122,
+    "defense": 63,
+    "spirit": 68,
+    "xp": 900,
+    "jp": 84,
+    "gil": 470,
+    "weakness": "Fire",
+    "special": {
+      "name": "Really Bad Breath",
+      "chance": 0.2,
+      "multiplier": 1.95
+    },
+    "drops": [
+      {
+        "item_id": "malboro_tendril",
+        "chance": 0.55
+      },
+      {
+        "item_id": "ribbon",
+        "chance": 0.01
+      },
+      {
+        "item_id": "ribbon_fragment",
+        "chance": 0.025
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "morbol_lash",
+        "chance": 0.05,
+        "guarantee_after": 16
+      }
+    ]
+  },
+  {
+    "id": "three_moon_chimera",
+    "name": "Chimera of Three Moons",
+    "level": 39,
+    "hp": 1700,
+    "attack": 120,
+    "defense": 70,
+    "spirit": 70,
+    "xp": 1280,
+    "jp": 120,
+    "gil": 840,
+    "weakness": "Water",
+    "hunt_only": true,
+    "special": {
+      "name": "Tri-Disaster",
+      "chance": 0.22,
+      "multiplier": 2.0
+    },
+    "drops": [
+      {
+        "item_id": "triple_chimera_fang",
+        "chance": 0.4
+      },
+      {
+        "item_id": "ward_ring",
+        "chance": 0.018
+      }
+    ]
+  },
+  {
+    "id": "death_machine",
+    "name": "Death Machine",
+    "level": 40,
+    "hp": 1850,
+    "attack": 138,
+    "defense": 76,
+    "spirit": 64,
+    "xp": 1050,
+    "jp": 95,
+    "gil": 550,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Atomic Ray",
+      "chance": 0.18,
+      "multiplier": 2.05
+    },
+    "drops": [
+      {
+        "item_id": "magitek_core",
+        "chance": 0.2
+      },
+      {
+        "item_id": "magitek_capacitor",
+        "chance": 0.16
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "magitek_edge",
+        "chance": 0.04,
+        "guarantee_after": 18
+      }
+    ]
+  },
+  {
     "id": "magitek_armor",
     "name": "Magitek Armor",
     "level": 40,
@@ -2113,6 +1592,29 @@
     ]
   },
   {
+    "id": "crystal_wolf",
+    "name": "Crystal Wolf",
+    "level": 42,
+    "hp": 2050,
+    "attack": 142,
+    "defense": 75,
+    "spirit": 76,
+    "xp": 1180,
+    "jp": 100,
+    "gil": 610,
+    "weakness": "Fire",
+    "drops": [
+      {
+        "item_id": "crystal_shard",
+        "chance": 0.34
+      },
+      {
+        "item_id": "wolf_fang",
+        "chance": 0.45
+      }
+    ]
+  },
+  {
     "id": "mover",
     "name": "Mover",
     "level": 42,
@@ -2141,6 +1643,98 @@
       {
         "item_id": "chronos_charm",
         "chance": 0.02
+      }
+    ]
+  },
+  {
+    "id": "tonberry_executioner",
+    "name": "Tonberry Executioner",
+    "level": 43,
+    "hp": 1900,
+    "attack": 130,
+    "defense": 75,
+    "spirit": 80,
+    "xp": 1500,
+    "jp": 135,
+    "gil": 1050,
+    "weakness": "Lightning",
+    "hunt_only": true,
+    "special": {
+      "name": "Sentence: Everyone's Grudge",
+      "chance": 0.24,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "chef_knife",
+        "chance": 0.12
+      },
+      {
+        "item_id": "tonberry_lantern",
+        "chance": 0.08
+      }
+    ]
+  },
+  {
+    "id": "tonberry_king",
+    "name": "Tonberry King",
+    "level": 44,
+    "hp": 2200,
+    "attack": 150,
+    "defense": 82,
+    "spirit": 80,
+    "xp": 1300,
+    "jp": 112,
+    "gil": 800,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Royal Grudge",
+      "chance": 0.22,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "chef_knife",
+        "chance": 0.08
+      },
+      {
+        "item_id": "ribbon",
+        "chance": 0.02
+      },
+      {
+        "item_id": "tonberry_lantern",
+        "chance": 0.1
+      }
+    ]
+  },
+  {
+    "id": "crystal_golem",
+    "name": "Crystal Golem",
+    "level": 45,
+    "hp": 2600,
+    "attack": 155,
+    "defense": 105,
+    "spirit": 84,
+    "xp": 1450,
+    "jp": 118,
+    "gil": 760,
+    "weakness": "Water",
+    "special": {
+      "name": "Prismatic Slam",
+      "chance": 0.18,
+      "multiplier": 2.0
+    },
+    "drops": [
+      {
+        "item_id": "crystal_shard",
+        "chance": 0.48
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "crystal_core",
+        "chance": 0.07,
+        "guarantee_after": 10
       }
     ]
   },
@@ -2217,6 +1811,67 @@
     ]
   },
   {
+    "id": "elemental_archon",
+    "name": "Elemental Archon",
+    "level": 47,
+    "hp": 2350,
+    "attack": 160,
+    "defense": 82,
+    "spirit": 112,
+    "xp": 1580,
+    "jp": 125,
+    "gil": 820,
+    "weakness": "Non-elemental",
+    "special": {
+      "name": "Elemental Convergence",
+      "chance": 0.2,
+      "multiplier": 2.05
+    },
+    "drops": [
+      {
+        "item_id": "crystal_shard",
+        "chance": 0.5
+      },
+      {
+        "item_id": "ether",
+        "chance": 0.22
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.12
+      },
+      {
+        "item_id": "archon_shard",
+        "chance": 0.04
+      }
+    ]
+  },
+  {
+    "id": "magitek_juggernaut",
+    "name": "Magitek Juggernaut",
+    "level": 47,
+    "hp": 2300,
+    "attack": 145,
+    "defense": 90,
+    "spirit": 75,
+    "xp": 1800,
+    "jp": 150,
+    "gil": 1250,
+    "weakness": "Lightning",
+    "hunt_only": true,
+    "special": {
+      "name": "Ultima Cannon",
+      "chance": 0.22,
+      "multiplier": 2.2
+    },
+    "drops": [
+      {
+        "item_id": "magitek_core",
+        "chance": 0.45
+      }
+    ]
+  },
+  {
     "id": "gold_dragon",
     "name": "Gold Dragon",
     "level": 48,
@@ -2245,6 +1900,53 @@
       {
         "item_id": "gungnir_fragment",
         "chance": 0.012
+      }
+    ]
+  },
+  {
+    "id": "ancient_mimic",
+    "name": "Ancient Mimic",
+    "level": 49,
+    "hp": 2700,
+    "attack": 170,
+    "defense": 96,
+    "spirit": 88,
+    "xp": 1750,
+    "jp": 132,
+    "gil": 1200,
+    "weakness": "Holy",
+    "special": {
+      "name": "Devour Fortune",
+      "chance": 0.18,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "ancient_cloth",
+        "chance": 0.35
+      },
+      {
+        "item_id": "x_potion",
+        "chance": 0.18
+      },
+      {
+        "item_id": "ancient_coin",
+        "chance": 0.2
+      },
+      {
+        "item_id": "mimic_lock",
+        "chance": 0.12
+      },
+      {
+        "item_id": "blood_sword",
+        "chance": 0.012
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "crystal_focus",
+        "chance": 0.08,
+        "guarantee_after": 12
       }
     ]
   },
@@ -2313,6 +2015,37 @@
     ]
   },
   {
+    "id": "wyrm",
+    "name": "Wyrm",
+    "level": 52,
+    "hp": 3200,
+    "attack": 184,
+    "defense": 105,
+    "spirit": 100,
+    "xp": 2050,
+    "jp": 150,
+    "gil": 1080,
+    "weakness": "Ice",
+    "special": {
+      "name": "Dragonfire",
+      "chance": 0.2,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.25
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.12,
+        "guarantee_after": 7
+      }
+    ]
+  },
+  {
     "id": "storm_dragon",
     "name": "Storm Dragon",
     "level": 54,
@@ -2336,6 +2069,54 @@
       },
       {
         "item_id": "rift_crystal",
+        "chance": 0.06
+      }
+    ]
+  },
+  {
+    "id": "behemoth_tyrant",
+    "name": "Behemoth Tyrant",
+    "level": 55,
+    "hp": 3000,
+    "attack": 170,
+    "defense": 110,
+    "spirit": 100,
+    "xp": 2700,
+    "jp": 190,
+    "gil": 1900,
+    "weakness": "Ice",
+    "hunt_only": true,
+    "special": {
+      "name": "Tyrant Meteor",
+      "chance": 0.24,
+      "multiplier": 2.35
+    },
+    "drops": [
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.6
+      }
+    ]
+  },
+  {
+    "id": "rift_hound",
+    "name": "Rift Hound",
+    "level": 55,
+    "hp": 3100,
+    "attack": 195,
+    "defense": 106,
+    "spirit": 105,
+    "xp": 2250,
+    "jp": 160,
+    "gil": 1200,
+    "weakness": "Holy",
+    "drops": [
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.22
+      },
+      {
+        "item_id": "void_essence",
         "chance": 0.06
       }
     ]
@@ -2397,6 +2178,41 @@
     ]
   },
   {
+    "id": "void_mage",
+    "name": "Void Mage",
+    "level": 58,
+    "hp": 3000,
+    "attack": 205,
+    "defense": 96,
+    "spirit": 145,
+    "xp": 2500,
+    "jp": 174,
+    "gil": 1350,
+    "weakness": "Holy",
+    "special": {
+      "name": "Dark Flare",
+      "chance": 0.21,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.28
+      },
+      {
+        "item_id": "ancient_cloth",
+        "chance": 0.24
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "void_charm",
+        "chance": 0.06,
+        "guarantee_after": 14
+      }
+    ]
+  },
+  {
     "id": "death_rider",
     "name": "Death Rider",
     "level": 59,
@@ -2421,6 +2237,97 @@
       {
         "item_id": "void_essence",
         "chance": 0.07
+      }
+    ]
+  },
+  {
+    "id": "ancient_adamantoise",
+    "name": "Ancient Adamantoise",
+    "level": 60,
+    "hp": 4000,
+    "attack": 170,
+    "defense": 150,
+    "spirit": 115,
+    "xp": 3200,
+    "jp": 220,
+    "gil": 2300,
+    "weakness": "Ice",
+    "hunt_only": true,
+    "special": {
+      "name": "Earthshaker",
+      "chance": 0.2,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "mythril_ore",
+        "chance": 0.8
+      }
+    ]
+  },
+  {
+    "id": "rift_behemoth",
+    "name": "Rift Behemoth",
+    "level": 60,
+    "hp": 4100,
+    "attack": 220,
+    "defense": 128,
+    "spirit": 120,
+    "xp": 2900,
+    "jp": 192,
+    "gil": 1650,
+    "weakness": "Ice",
+    "special": {
+      "name": "Rift Meteor",
+      "chance": 0.2,
+      "multiplier": 2.35
+    },
+    "drops": [
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.38
+      },
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "id": "adamant_golem",
+    "name": "Adamant Golem",
+    "level": 62,
+    "hp": 4900,
+    "attack": 216,
+    "defense": 170,
+    "spirit": 118,
+    "xp": 3150,
+    "jp": 205,
+    "gil": 1750,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Adamant Crush",
+      "chance": 0.19,
+      "multiplier": 2.3
+    },
+    "drops": [
+      {
+        "item_id": "adamantite",
+        "chance": 0.12
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "adamantite",
+        "chance": 0.08,
+        "guarantee_after": 9
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "adamant_guard",
+        "chance": 0.08,
+        "guarantee_after": 12
       }
     ]
   },
@@ -2481,6 +2388,70 @@
     ]
   },
   {
+    "id": "rift_dragon",
+    "name": "Rift Dragon",
+    "level": 65,
+    "hp": 3600,
+    "attack": 190,
+    "defense": 125,
+    "spirit": 140,
+    "xp": 3900,
+    "jp": 250,
+    "gil": 3000,
+    "weakness": "Holy",
+    "hunt_only": true,
+    "special": {
+      "name": "Dimensional Collapse",
+      "chance": 0.25,
+      "multiplier": 2.5
+    },
+    "drops": [
+      {
+        "item_id": "magitek_core",
+        "chance": 0.4
+      },
+      {
+        "item_id": "behemoth_horn",
+        "chance": 0.4
+      }
+    ]
+  },
+  {
+    "id": "rift_drake",
+    "name": "Rift Drake",
+    "level": 65,
+    "hp": 4500,
+    "attack": 235,
+    "defense": 140,
+    "spirit": 145,
+    "xp": 3550,
+    "jp": 220,
+    "gil": 2050,
+    "weakness": "Holy",
+    "special": {
+      "name": "Dimensional Breath",
+      "chance": 0.22,
+      "multiplier": 2.4
+    },
+    "drops": [
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.35
+      },
+      {
+        "item_id": "rift_crystal",
+        "chance": 0.34
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "dragon_mail",
+        "chance": 0.08,
+        "guarantee_after": 12
+      }
+    ]
+  },
+  {
     "id": "land_worm",
     "name": "Land Worm",
     "level": 66,
@@ -2533,6 +2504,69 @@
       {
         "item_id": "dragon_fang",
         "chance": 0.36
+      }
+    ]
+  },
+  {
+    "id": "void_tonberry",
+    "name": "Void Tonberry",
+    "level": 68,
+    "hp": 4100,
+    "attack": 255,
+    "defense": 148,
+    "spirit": 150,
+    "xp": 4000,
+    "jp": 240,
+    "gil": 2600,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Grudge Across Worlds",
+      "chance": 0.24,
+      "multiplier": 2.55
+    },
+    "drops": [
+      {
+        "item_id": "void_essence",
+        "chance": 0.25
+      },
+      {
+        "item_id": "chef_knife",
+        "chance": 0.07
+      }
+    ]
+  },
+  {
+    "id": "astral_construct",
+    "name": "Astral Construct",
+    "level": 72,
+    "hp": 4760,
+    "attack": 230,
+    "defense": 149,
+    "spirit": 149,
+    "xp": 4700,
+    "jp": 275,
+    "gil": 3000,
+    "weakness": "Dark",
+    "special": {
+      "name": "Astral Rupture",
+      "chance": 0.23,
+      "multiplier": 2.6
+    },
+    "drops": [
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.07
+      },
+      {
+        "item_id": "crystal_core",
+        "chance": 0.18
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.06,
+        "guarantee_after": 12
       }
     ]
   },
@@ -2593,6 +2627,48 @@
     ]
   },
   {
+    "id": "omega_fragment",
+    "name": "Omega Fragment",
+    "level": 76,
+    "hp": 5525,
+    "attack": 248,
+    "defense": 162,
+    "spirit": 157,
+    "xp": 5400,
+    "jp": 310,
+    "gil": 3600,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Wave Cannon",
+      "chance": 0.24,
+      "multiplier": 2.65
+    },
+    "drops": [
+      {
+        "item_id": "magitek_core",
+        "chance": 0.45
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.05
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "dark_matter",
+        "chance": 0.05,
+        "guarantee_after": 15
+      }
+    ],
+    "recipe_drops": [
+      {
+        "recipe_id": "magitek_edge",
+        "chance": 0.1,
+        "guarantee_after": 10
+      }
+    ]
+  },
+  {
     "id": "varuna",
     "name": "Varuna",
     "level": 79,
@@ -2617,6 +2693,42 @@
       {
         "item_id": "void_essence",
         "chance": 0.34
+      }
+    ]
+  },
+  {
+    "id": "void_avatar",
+    "name": "Void Avatar",
+    "level": 80,
+    "hp": 6290,
+    "attack": 268,
+    "defense": 174,
+    "spirit": 174,
+    "xp": 6200,
+    "jp": 350,
+    "gil": 4400,
+    "weakness": "Holy",
+    "special": {
+      "name": "Event Horizon",
+      "chance": 0.25,
+      "multiplier": 2.8
+    },
+    "drops": [
+      {
+        "item_id": "void_essence",
+        "chance": 0.45
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "dark_matter",
+        "chance": 0.07,
+        "guarantee_after": 12
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.05,
+        "guarantee_after": 15
       }
     ]
   },
