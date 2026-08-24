@@ -1,6 +1,6 @@
 # Crystal Guild v1.1.17 — Arsenal II Manual Check
 
-- [ ] `!cgversion` reports `1.1.17-arsenal-ii`.
+- [ ] `!cgversion` reports `1.1.17-arsenal-ii-h4`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
@@ -36,7 +36,7 @@
 
 ## Wayfarer Solo Venture
 
-- [ ] Adventure Board shows 60 / 40 Encounter / Treasure and a 3-stage maximum.
+- [ ] Adventure Board shows 80 / 20 Encounter / Treasure and a 3-stage maximum.
 - [ ] Encounter shows Attack / Ability / Use Item / Defend and Enemy intent.
 - [ ] One click resolves exactly one round; waiting/refreshing does not advance combat.
 - [ ] Current HP/MP/AP and consumed items persist when pressing deeper.

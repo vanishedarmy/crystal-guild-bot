@@ -1,12 +1,21 @@
 # Crystal Guild Changelog
 
+## v1.1.17 — Arsenal II Hotfix 4
+
+- Rebalances Solo Venture stages to **80% Encounter / 20% Treasure**, reducing the chance that multi-stage runs are dominated by chests while preserving deeper-stage chest quality.
+- Publishes structured Hunt resolution summaries with rewards, combat totals, post-Hunt vitals, first-clear information, and timed-Hunt auto-plan usage for the Portal.
+- Reworks the Portal Hunt result presentation and removes duplicated Solo/Rally/region information where the same state is already visible.
+- Compacts shared action-status areas and increases secondary-text/high-contrast accessibility without hiding functional state.
+- Advances Bot/Web runtime to `1.1.17-arsenal-ii-h4` and frontend asset revision to `1.1.17-arsenal-ii1h4`.
+- Keeps DB schema 5, hosted sync schema 1, Portal Action protocol 14, Twitch prefix `!`, player data, OAuth scopes, and environment requirements unchanged.
+
 ## v1.1.17 — Arsenal II
 - Expands Active Battle abilities from 108 to 172; seven core caster Jobs now use a 12-step JLv curve and every other Job gains JLv.12/JLv.35 techniques.
 - Reorganizes Moogle Emporium into Buy/Sell plus Weapons/Armor/Items categories and clarifies Blacksmith Recipes/Forge Gear views.
 - Adds Camp & Recovery to the Adventure Board and compacts the mobile Portal masthead while preserving scroll-away behavior.
 - Moves Hosted Raid Overlay help to the bottom of the Streamer Dashboard.
 - Suppresses autonomous Twitch action/result announcements whenever stream status is OFFLINE or UNKNOWN; Portal gameplay continues normally.
-- Runtime `1.1.17-arsenal-ii`; frontend `1.1.17-arsenal-ii1`; schema 5, hosted sync 1, Portal protocol 14 unchanged.
+- Runtime `1.1.17-arsenal-ii`; frontend `1.1.17-arsenal-ii1h2`; schema 5, hosted sync 1, Portal protocol 14 unchanged.
 
 ## v1.1.16 — Arsenal Hotfix 6
 

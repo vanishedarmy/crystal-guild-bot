@@ -1,10 +1,11 @@
-Crystal Guild Bot v1.1.17 — Arsenal II
-Runtime: 1.1.17-arsenal-ii
+Crystal Guild Bot v1.1.17 — Arsenal II Hotfix 4
+Runtime: 1.1.17-arsenal-ii-h4
 Local DB schema: 5
 Hosted sync schema: 1
 Hosted sync runtime compatibility: 1.1.15-wayfarer
 Portal Action protocol: 14
 Twitch prefix: !
-Matching Web asset revision: 1.1.17-arsenal-ii1
+Matching Web runtime: 1.1.17-arsenal-ii-h4
+Matching Web asset revision: 1.1.17-arsenal-ii1h4
 
-Arsenal II expands the active ability catalog to 172 techniques, adds Adventure Board Camp state, and gates autonomous Twitch announcements when the channel is offline. No database migration is introduced.
+Hotfix 4 reduces Solo Venture treasure to 20% per stage and publishes structured Hunt results for the matching Web UI. No database migration is introduced.
