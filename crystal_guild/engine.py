@@ -1112,6 +1112,33 @@ class CrystalGuildEngine:
                 reason = "Silence prevents MP abilities."
             elif not enough:
                 reason = f"Needs {cost} {resource.upper()}."
+            traits: list[str] = []
+            element = str(ability.get("element") or "").strip()
+            if element:
+                traits.append(element)
+            for effect in ability.get("effects", []):
+                effect_type = str(effect.get("type") or "")
+                if effect_type == "status":
+                    label = str(effect.get("status") or "").replace("_", " ").title()
+                    if label and label not in traits:
+                        traits.append(label)
+                elif effect_type == "heal" and "Healing" not in traits:
+                    traits.append("Healing")
+                elif effect_type == "cleanse" and "Cleanse" not in traits:
+                    traits.append("Cleanse")
+                elif effect_type == "drain" and "HP Drain" not in traits:
+                    traits.append("HP Drain")
+                elif effect_type == "restore_mp" and "MP Restore" not in traits:
+                    traits.append("MP Restore")
+                elif effect_type == "restore_ap" and "AP Restore" not in traits:
+                    traits.append("AP Restore")
+                elif effect_type == "revive" and "Revive" not in traits:
+                    traits.append("Revive")
+                elif effect_type == "damage":
+                    if float(effect.get("pierce", 0) or 0) > 0 and "Piercing" not in traits:
+                        traits.append("Piercing")
+                    if float(effect.get("crit_bonus", 0) or 0) > 0 and "High Crit" not in traits:
+                        traits.append("High Crit")
             rows.append({
                 "id": str(ability["id"]),
                 "name": str(ability.get("name") or ability["id"]),
@@ -1120,6 +1147,8 @@ class CrystalGuildEngine:
                 "cost": cost,
                 "target": str(ability.get("target") or "enemy"),
                 "description": str(ability.get("description") or ""),
+                "element": element,
+                "traits": traits,
                 "usable": bool(usable),
                 "reason": reason,
             })
@@ -3836,9 +3865,19 @@ class CrystalGuildEngine:
                 while jlevel < 50 and jp >= jp_to_next(jlevel):
                     jp -= jp_to_next(jlevel)
                     jlevel += 1
-                    ability = next((a for a in self.data.jobs[job_id].get("abilities", []) if a["level"] == jlevel), None)
-                    if ability:
-                        messages.append(f"{self.data.jobs[job_id]['name']} JLv.{jlevel} — {ability['name']} unlocked")
+                    passive = next((a for a in self.data.jobs[job_id].get("abilities", []) if a["level"] == jlevel), None)
+                    active = next((a for a in self.data.active_abilities.get(job_id, []) if int(a.get("level", 0)) == jlevel), None)
+                    unlocked_names = []
+                    if passive:
+                        unlocked_names.append(str(passive["name"]))
+                    if active:
+                        unlocked_names.append(f"{active['name']} (Battle Ability)")
+                    if unlocked_names:
+                        messages.append(
+                            f"{self.data.jobs[job_id]['name']} JLv.{jlevel} — "
+                            + " + ".join(unlocked_names)
+                            + " unlocked"
+                        )
                     elif jlevel == 50:
                         messages.append(f"{self.data.jobs[job_id]['name']} MASTERED — {self.data.jobs[job_id]['mastery']['name']} available")
                         messages.extend(self.fellowship_system.record_activity(

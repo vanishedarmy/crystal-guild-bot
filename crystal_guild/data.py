@@ -127,8 +127,8 @@ class GameData:
         }
         for job_id, abilities in self.active_abilities.items():
             require(self.jobs, job_id, "active ability job")
-            if len(abilities) < 3:
-                errors.append(f"active abilities {job_id}: expected at least 3 abilities")
+            if len(abilities) < 6:
+                errors.append(f"active abilities {job_id}: expected at least 6 abilities")
 
             seen: set[str] = set()
             previous_level = 0
