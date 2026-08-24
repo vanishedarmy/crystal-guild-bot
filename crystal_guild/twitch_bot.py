@@ -656,6 +656,19 @@ class RPGCommands(commands.Component):
             return
         await send_result(ctx, self.game.reset_all_player_timers(), limit=2)
 
+    @commands.command(aliases=["clearventures"])
+    async def clearadventures(self, ctx: commands.Context) -> None:
+        if not await self._owner_only(ctx):
+            return
+        result = self.game.clear_all_adventures()
+        await send_result(ctx, result, limit=2)
+        if result.ok:
+            # A clear is a recovery operation: wake the hosted snapshot worker
+            # immediately so Portal drops orphaned Solo/Hunt state promptly.
+            if self.bot.portal_sync:
+                self.bot.portal_sync.wake()
+            self.bot.encounter_daemon.wake()
+
     @commands.command()
     async def economy(self, ctx: commands.Context, days: int = 7) -> None:
         if not await self._owner_only(ctx):

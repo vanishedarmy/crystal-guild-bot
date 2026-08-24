@@ -84,6 +84,7 @@ COMMAND_USAGE: dict[str, str] = {
     "directtest": "!directtest",
     "readyall": "!readyall",
     "resettimers": "!resettimers",
+    "clearadventures": "!clearadventures",
     "fellowshipproject": "!fellowshipproject <project>",
     "resolveencounter": "!resolveencounter",
     "clearencounter": "!clearencounter",

@@ -6708,6 +6708,85 @@ class CrystalGuildEngine:
         )
 
     @_state_guard
+    def clear_all_adventures(self) -> GameResult:
+        """Streamer emergency recovery: abandon every active non-raid adventure.
+
+        This is intentionally narrower than ``!resettimers`` and safer than a
+        database reset. It clears the shared field/Rally encounter, all timed
+        Hunt assignments, and every persisted Wayfarer Solo Venture. Player
+        progression, inventory, current persisted HP/MP/AP, cooldowns, camps,
+        shops, achievements, titles, and any active raid/world boss are left
+        untouched.
+
+        Solo Venture combat writes its vitals/resources after every completed
+        round, so deleting an orphaned expedition returns the player to the
+        last successfully persisted combat state instead of trying to trust a
+        potentially malformed in-flight payload. Unbanked Solo Venture spoils
+        and unresolved Hunt rewards are abandoned by design.
+        """
+        solo_rows = self.db.one("SELECT COUNT(*) AS n FROM solo_expeditions")
+        solo_count = int(solo_rows["n"] or 0) if solo_rows else 0
+        hunt_count = len(self.active_hunts)
+
+        encounter_count = 1 if self.active_encounter else 0
+        encounter_name = ""
+        if self.active_encounter:
+            monster = self.data.monsters.get(str(self.active_encounter.get("monster_id") or ""), {})
+            encounter_name = str(monster.get("name") or self.active_encounter.get("kind") or "field encounter")
+
+        # Schema 5 makes Solo Ventures authoritative rows, so a single delete
+        # is sufficient even when a row can no longer be rendered by Portal.
+        self.db.execute("DELETE FROM solo_expeditions")
+
+        # Timed Hunts live in the runtime checkpoint. Clearing the in-memory
+        # map inside @_state_guard atomically persists the empty assignment set.
+        self.active_hunts.clear()
+
+        # ``active_encounter`` is the shared non-raid field/Rally battle slot.
+        # Raids/world bosses are stored separately in active_boss/raid_roster
+        # and are deliberately not touched by this recovery command.
+        self.active_encounter = None
+        self.encounter_roster.clear()
+
+        # Avoid presenting an old completed adventure card immediately after an
+        # emergency clear. This cache is intentionally ephemeral.
+        self._last_adventure_result = None
+        if encounter_count:
+            self._last_battle_history = None
+
+        total = solo_count + hunt_count + encounter_count
+        if total == 0:
+            return GameResult.success(
+                "ADVENTURES CLEAR — No active field encounter, timed Hunt, or Solo Venture was found.",
+                adventures_cleared=0,
+                encounters_cleared=0,
+                hunts_cleared=0,
+                solo_ventures_cleared=0,
+                cooldowns_unchanged=True,
+                raid_unchanged=bool(self.active_boss),
+            )
+
+        pieces: list[str] = []
+        if encounter_count:
+            pieces.append(f"1 field encounter ({encounter_name})")
+        if hunt_count:
+            pieces.append(f"{hunt_count} timed Hunt assignment{'s' if hunt_count != 1 else ''}")
+        if solo_count:
+            pieces.append(f"{solo_count} Solo Venture{'s' if solo_count != 1 else ''}")
+        summary = ", ".join(pieces)
+        return GameResult.success(
+            f"ADVENTURES CLEARED — abandoned {summary}.",
+            "Player progression/inventory and current persisted vitals were preserved. "
+            "Adventure cooldowns and any active raid/world boss were left untouched; use !resettimers separately if you also want cooldowns cleared.",
+            adventures_cleared=total,
+            encounters_cleared=encounter_count,
+            hunts_cleared=hunt_count,
+            solo_ventures_cleared=solo_count,
+            cooldowns_unchanged=True,
+            raid_unchanged=bool(self.active_boss),
+        )
+
+    @_state_guard
     def reset_all_player_timers(self) -> GameResult:
         """Streamer recovery tool: clear persistent player-side timers globally.
 

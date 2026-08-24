@@ -72,6 +72,7 @@ def main() -> None:
             elif cmd == "clearencounter": show(game.abort_encounter())
             elif cmd == "readyall": show(game.ready_all_players())
             elif cmd == "resettimers": show(game.reset_all_player_timers())
+            elif cmd in {"clearadventures", "clearventures"}: show(game.clear_all_adventures())
             elif cmd in {"rest", "camp"}: show(game.rest(uid))
             elif cmd == "use": show(game.use_item(uid, " ".join(rest)))
             elif cmd == "regions": show(game.regions(uid))
