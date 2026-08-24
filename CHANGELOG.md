@@ -1,5 +1,16 @@
 # Crystal Guild Changelog
 
+## v1.1.16 — Arsenal Hotfix 1
+
+- Rebuilds Hunts as per-player persisted timed assignments: C 5m, B 15m, A 30m, S 1h, S+ 2h.
+- Removes round-by-round Twitch chat interaction from newly accepted Hunts; the daemon resolves them independently at the rank deadline and publishes only the final outcome.
+- Keeps timed Hunts outside the shared Active Battle slot so several heroes can Hunt concurrently without blocking Rally Ventures or Raids.
+- Adds conservative automatic ability, Defend, healing/cleanse, and resource-use decisions with hard consumable ceilings by rank.
+- Adds Adventure Board Hunt countdown/progress/duration presentation and updates player-facing Hunt guidance.
+- Applies readability, typography, wrapping, focus, mobile-target, and overflow polish across Portal, Streamer Dashboard, and Player Guide.
+- Advances runtime to `1.1.16-arsenal-h1` and frontend asset revision to `1.1.16-arsenal1h1`.
+- Keeps DB schema 5, hosted sync schema 1, hosted sync compatibility `1.1.15-wayfarer`, Portal Action protocol 14, and Twitch prefix `!` unchanged.
+
 ## v1.1.16 — Arsenal
 
 - Expands every Job to six active Battle Abilities across JLv.1, 8, 15, 22, 30, and 40 for 108 total abilities.
@@ -9,7 +20,7 @@
 - Adds four early World Bosses at recommended Lv.6/10/14/18 before Bomb King.
 - Adds eight Lv.3–15 consumable-focused crafting recipes.
 - Keeps DB schema 5, hosted sync schema 1, hosted sync compatibility `1.1.15-wayfarer`, Portal Action protocol 14, and Twitch prefix `!` unchanged.
-- Advances runtime to `1.1.16-arsenal` and frontend asset revision to `1.1.16-arsenal1`.
+- Runtime `1.1.16-arsenal`; frontend asset revision `1.1.16-arsenal1`.
 - Requires no database migration, player reset, new Render secret, or new OAuth scope.
 
 ## v1.1.15 — Wayfarer Hotfix 3

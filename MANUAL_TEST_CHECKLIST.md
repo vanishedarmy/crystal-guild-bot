@@ -1,6 +1,6 @@
-# Crystal Guild v1.1.16 — Arsenal Manual Check
+# Crystal Guild v1.1.16 — Arsenal Hotfix 1 Manual Check
 
-- [ ] `!cgversion` reports `1.1.16-arsenal`.
+- [ ] `!cgversion` reports `1.1.16-arsenal-h1`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
@@ -22,6 +22,17 @@
 - [ ] Hunts include starter marks at Lv.2 / 4 / 6 / 8 in ascending order.
 - [ ] World Boss data includes Goblin King, Hornet Empress, Skeleton Warlord, and Gigas Chief before Bomb King.
 - [ ] Blacksmith/crafting references include the eight new Lv.3–15 consumable recipes.
+
+## Arsenal Hotfix 1 — timed Hunts
+
+- [ ] A new C/B/A/S Hunt shows an expected return of 5m / 15m / 30m / 1h respectively; S+ support uses 2h when an S+ mark exists.
+- [ ] Starting a Hunt does not create a shared Active Battle or ask for `!attack`, `!ability`, `!defend`, or `!use` round input.
+- [ ] A Hunt remains pending before its deadline and resolves automatically once due without a new chat command.
+- [ ] Final Hunt results still award normal Hunt rewards/records and may announce the final outcome in chat without replaying individual rounds.
+- [ ] Multiple players can hold independent timed Hunts while Rally/Raid activity remains available.
+- [ ] Automatic consumable use remains within the rank cap: C/B 1, A/S 2, S+ 3.
+- [ ] Adventure Board shows the active Hunt countdown, duration, progress, and autonomous-use explanation.
+- [ ] Portal, Streamer Dashboard, and Player Guide remain readable on desktop and mobile without clipped/overflowing card text.
 
 ## Wayfarer Solo Venture
 

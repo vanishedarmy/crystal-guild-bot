@@ -1,9 +1,9 @@
-Crystal Guild Bot v1.1.16 — Arsenal
-Runtime: 1.1.16-arsenal
+Crystal Guild Bot v1.1.16 — Arsenal Hotfix 1
+Runtime: 1.1.16-arsenal-h1
 Local DB schema: 5
 Hosted sync schema: 1
 Hosted sync runtime compatibility: 1.1.15-wayfarer
 Portal Action protocol: 14
 Twitch prefix: !
-Matching Web asset revision: 1.1.16-arsenal1
+Matching Web asset revision: 1.1.16-arsenal1h1
 Twitch broadcaster scope required for subscriber perks: channel:read:subscriptions

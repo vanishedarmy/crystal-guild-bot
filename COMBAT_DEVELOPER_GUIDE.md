@@ -130,18 +130,20 @@ Do not add `if monster_id == ...` content branches to the round resolver. Enemy 
 **Soft-targeting guardrail:** Active Battle retains the existing Taunt/tank target weighting. Field enemies receive one ordinary action slot per round regardless of rally size; basic and `single` actions choose one living hero, while `party` abilities are the explicit multi-target path. A full threat table, healer prioritization, manual player target selection, or multi-enemy field model should be implemented as a separate versioned system rather than hidden inside enemy skill content.
 
 
-## Active Hunts
+## Timed Hunts
 
-Hunts now enter the same `active_encounter` state machine as Ventures. Keep the mode distinction small and explicit:
+New Hunts use a persisted per-player assignment layer rather than holding `active_encounter` for minutes or hours:
 
-- `engine.hunt()` validates the mark, creates a **solo** combat encounter, starts the Hunt cooldown, and returns. It must not resolve rounds.
-- `_initialize_active_combat()` owns shared HP/MP/AP/action/status setup for both Venture and Hunt combat.
-- `advance_encounter_round()` owns player actions, enemy response, status ticks, and the next timer for both modes.
-- `_finish_active_encounter()` is the only place that branches by `encounter["kind"]` for Venture-vs-Hunt rewards/persistence.
-- `balance.py` owns C/B/A/S Hunt HP/pressure/round-limit multipliers. Keep these conservative because Hunt monsters already have bespoke base stats.
-- `twitch_bot.py` may wake the daemon after a successful `hunt_started` result, but it must never resolve the new round itself.
+- `engine.hunt()` validates the mark, snapshots the accepting hero through `_initialize_active_combat()`, stores the snapshot under `active_hunts[player_id]`, starts the mark cooldown, and returns immediately.
+- Rank deadlines are fixed by `HUNT_DURATION_SECONDS`: C 5m, B 15m, A 30m, S 1h, S+ 2h.
+- `combat_snapshot()` exposes only the small Hunt deadline rows needed by `EncounterDaemon`.
+- `EncounterDaemon._tick_hunts()` calls `engine.resolve_hunt()` only after the assignment deadline and publishes the final result once.
+- `resolve_hunt()` temporarily loads the Hunt snapshot into the established field-combat engine, runs rounds internally, then restores any simultaneous shared encounter state.
+- `_hunt_auto_action()` is intentionally conservative: urgent healing/cleansing first, a hard per-rank item cap, useful abilities with resource reserve, situational Defend, otherwise Attack.
+- `_finish_active_encounter()` remains the authoritative Hunt reward/record persistence path.
+- Existing pre-hotfix `active_encounter.kind == "hunt"` checkpoints are still accepted so an in-flight legacy Hunt can finish safely after upgrading.
 
-Do **not** reintroduce a Hunt-specific combat loop. If a new Hunt mechanic can be represented as a status, enemy action, encounter modifier, or reward rule, add it at that shared boundary instead.
+Do not add long Hunt timers to the global `active_encounter` slot. A player walking away from a Hunt must never block Rally Ventures or the raid scheduler. New Hunt mechanics should continue to reuse the shared combat/status/effect system unless a future release deliberately introduces a separate model.
 
 ### Targeting scope
 

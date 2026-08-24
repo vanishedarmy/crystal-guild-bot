@@ -127,25 +127,20 @@ Enemies in Active Battle have a **Temperament** and, for most monsters, a named 
 
 New harmful statuses include **Poison** (end-of-round damage), **Silence** (blocks MP-based magical abilities), and **Blind** (can make physical attacks/abilities miss). Antidote removes Poison, Echo Herbs remove Silence, and Remedy remains the broad harmful-status cleanser. Enemy Protect, Regen, Haste, Slow, drain, recoil, and utility actions use the same round/status framework as the rest of Active Battle.
 
-## Active Hunts
+## Timed Hunts
 
-`!hunt <mark>` now starts a **solo Active Battle** immediately. Hunts do not open a public rally: the accepting hero enters Round 1 and uses the same Attack / Ability / Defend / Item action vocabulary as Venture combat.
+`!hunt <mark>` dispatches the accepting hero on a **personal timed Hunt**. Hunts do not occupy the Guild-wide Active Battle slot and do not require round-by-round Twitch chat input. The hero's current Job, gear, resources, and combat setup are snapshotted when the Hunt is accepted.
 
 ```text
 !hunts [rank]
 !hunt <mark>
-!encounter
-!attack
-!ability <name>
-!defend
-!use <item>
 ```
 
-The combat scheduler owns Hunt round deadlines too. Acceptance creates the first timer and wakes the daemon; typing another command never becomes the event that advances an overdue round. Missing actions default to Attack at the scheduled deadline.
+Rank determines the assignment duration: **C = 5 minutes, B = 15 minutes, A = 30 minutes, S = 1 hour, S+ = 2 hours**. The independent combat daemon owns the return deadline, so a Hunt resolves on schedule even if nobody sends another chat message. Only the final Hunt result is announced; intermediate simulated rounds are not replayed into Twitch chat.
 
-C/B/A/S marks keep their existing rewards and first-clear unlocks. Rank scaling is deliberately conservative because Hunt monsters already have bespoke stats: higher ranks receive modest HP/enemy-pressure increases plus a larger round safety window. Hunt-focused Job/mastery damage bonuses still apply. Rewards and Hunt-clear records are committed **only on victory**.
+At resolution the normal combat engine is simulated internally. The hero chooses Attack, learned abilities, Defend, and survival items automatically. The planner prioritizes healing/cleansing when genuinely needed, exploits useful abilities and weaknesses, maintains a resource reserve, and applies a hard consumable cap by Hunt rank so common supplies are not burned excessively.
 
-The former immediate solo Hunt resolver has been removed from live code. This keeps one authoritative field-combat engine for both Ventures and Hunts.
+Hunt rewards, first-clear prizes, records, HP/MP/AP changes, and consumed items are committed only when the Hunt resolves. A player may have only one timed Hunt active at once. New Hunts remain single-target encounters and continue to use the existing conservative rank HP/pressure/safety scaling.
 
 ## Community raids — established raid engine retained
 
