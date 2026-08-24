@@ -1063,7 +1063,7 @@ class CrystalGuildEngine:
     def _roll_solo_expedition_treasure(self, player_level: int, stage: int) -> tuple[dict[str, Any], int, int, int] | None:
         """Roll Solo Venture treasure with deeper-stage quality bias.
 
-        The event odds remain the player-facing 60% Encounter / 40% Treasure at
+        The event odds are the player-facing 80% Encounter / 20% Treasure at
         every stage. Pressing on improves the *quality* of a chest rather than
         quietly changing those published odds.
         """
@@ -3487,6 +3487,7 @@ class CrystalGuildEngine:
         levelup_lines: list[str] = []
         achievement_lines: list[str] = []
         fellowship_lines: list[str] = []
+        hunt_results: dict[str, dict[str, Any]] = {}
         solo_rewards: dict[str, Any] = {"xp": 0, "jp": 0, "gil": 0, "loot": [], "levelups": []}
         solo_pid: str | None = next(iter(self.encounter_roster), None) if kind == "solo_venture" else None
         try:
@@ -3537,6 +3538,39 @@ class CrystalGuildEngine:
                     ))
                     chocobo_gain = {"C": 15, "B": 25, "A": 40, "S": 60}.get(str(hunt.get("rank", "C")).upper(), 15)
                     fellowship_lines.extend(self._award_chocobo_xp(pid, chocobo_gain))
+                    hunt_results[str(pid)] = {
+                        "type": "hunt",
+                        "outcome": "victory",
+                        "title": "Mark Slain",
+                        "hunt_id": str(hunt.get("id") or ""),
+                        "hunt_name": str(hunt.get("name") or "Hunt"),
+                        "rank": str(hunt.get("rank") or "C"),
+                        "monster": {
+                            "id": str(monster.get("id") or ""),
+                            "name": str(monster.get("name") or "Unknown Mark"),
+                            "level": int(monster.get("level", 1)),
+                            "hp_remaining": 0,
+                            "max_hp": int(monster.get("hp", 0)),
+                        },
+                        "rounds": int(resolved_round),
+                        "rewards": {
+                            "xp": int(rewards.get("xp", 0)),
+                            "jp": int(rewards.get("jp", 0)),
+                            "gil": int(rewards.get("gil", 0)),
+                            "seals": int(rewards.get("seals", 0)),
+                            "loot": [str(value) for value in rewards.get("loot", [])],
+                            "first_clear": bool(rewards.get("first_clear")),
+                            "first_rewards": [str(value) for value in rewards.get("first_rewards", [])],
+                            "levelups": [str(value) for value in rewards.get("levelups", [])],
+                            "achievements": [],
+                        },
+                        "combat": {
+                            "damage_dealt": int(meta.get("damage", 0)),
+                            "damage_taken": int(meta.get("damage_taken", 0)),
+                            "best_hit": int(meta.get("best_hit", 0)),
+                        },
+                        "player": self._solo_result_vitals(pid),
+                    }
                 elif won:
                     rewards = self._award_victory(pid, p, monster, rally_venture=kind == "venture")
                     if kind == "solo_venture" and pid == solo_pid:
@@ -3568,7 +3602,36 @@ class CrystalGuildEngine:
                     ))
                     fellowship_lines.extend(self._award_chocobo_xp(pid, 12))
 
-                achievement_lines.extend(self._check_achievements(pid))
+                if hunt and not won:
+                    hunt_results[str(pid)] = {
+                        "type": "hunt",
+                        "outcome": "defeat",
+                        "title": "Hunt Failed",
+                        "hunt_id": str(hunt.get("id") or ""),
+                        "hunt_name": str(hunt.get("name") or "Hunt"),
+                        "rank": str(hunt.get("rank") or "C"),
+                        "monster": {
+                            "id": str(monster.get("id") or ""),
+                            "name": str(monster.get("name") or "Unknown Mark"),
+                            "level": int(monster.get("level", 1)),
+                            "hp_remaining": max(0, int(encounter.get("monster_hp", monster.get("hp", 0)))),
+                            "max_hp": int(monster.get("hp", 0)),
+                        },
+                        "rounds": int(resolved_round),
+                        "rewards": {"xp": 0, "jp": 0, "gil": 0, "seals": 0, "loot": [], "first_clear": False, "first_rewards": [], "levelups": [], "achievements": []},
+                        "combat": {
+                            "damage_dealt": int(meta.get("damage", 0)),
+                            "damage_taken": int(meta.get("damage_taken", 0)),
+                            "best_hit": int(meta.get("best_hit", 0)),
+                        },
+                        "player": self._solo_result_vitals(pid),
+                        "reason": str(reason or "The mark remains on the board."),
+                    }
+
+                player_achievements = self._check_achievements(pid)
+                achievement_lines.extend(player_achievements)
+                if str(pid) in hunt_results:
+                    hunt_results[str(pid)]["rewards"]["achievements"] = [str(value) for value in player_achievements[:4]]
 
             if won and hunt:
                 messages.append(
@@ -3647,6 +3710,7 @@ class CrystalGuildEngine:
                 "kind": kind,
                 "monster_name": str(monster.get("name") or "Unknown Enemy"),
                 "hunt_name": str(hunt.get("name")) if hunt else None,
+                "hunt_results": hunt_results,
             }
             return GameResult.success(
                 *messages,
@@ -4323,9 +4387,19 @@ class CrystalGuildEngine:
                 # is discarded when possible.
                 final_meta = last_meta
                 if final_meta:
+                    auto_plan = {
+                        "abilities": int(final_meta.get("abilities_used", 0)),
+                        "items": int(final_meta.get("items_used", 0)),
+                        "defends": int(final_meta.get("defends", 0)),
+                    }
                     result.messages.append(
-                        f"AUTO PLAN — {int(final_meta.get('abilities_used', 0))} abilities · {int(final_meta.get('items_used', 0))} items · {int(final_meta.get('defends', 0))} defends."
+                        f"AUTO PLAN — {auto_plan['abilities']} abilities · {auto_plan['items']} items · {auto_plan['defends']} defends."
                     )
+                    if isinstance(self._last_battle_history, dict):
+                        hunt_summary = (self._last_battle_history.get("hunt_results") or {}).get(str(twitch_id))
+                        if isinstance(hunt_summary, dict):
+                            hunt_summary["auto_plan"] = auto_plan
+                            hunt_summary["duration_seconds"] = max(0, int(assignment.get("resolves_at") or now) - int(assignment.get("started_at") or now))
                 result.data.update({"timed_hunt": True, "hunt_run_id": int(assignment.get("id") or 0), "resolved_at": int(now)})
             return result
         finally:
@@ -5320,6 +5394,7 @@ class CrystalGuildEngine:
                         "monster_name": str(history.get("monster_name") or "Unknown Enemy"),
                         "hunt_name": history.get("hunt_name"),
                         "messages": [str(value) for value in list(history.get("messages") or [])[:4]],
+                        "summary": copy.deepcopy((history.get("hunt_results") or {}).get(str(twitch_id))) if str(history.get("kind") or "") == "hunt" else None,
                     }
 
         return {
