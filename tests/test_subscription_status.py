@@ -8,7 +8,13 @@ import urllib.error
 from pathlib import Path
 from unittest.mock import patch
 
-from crystal_guild.daily_provisions import daily_gil_with_perk, provision_preview, roll_daily_provisions, subscriber_perk
+from crystal_guild.daily_provisions import (
+    DAILY_PROVISION_ITEM_IDS,
+    daily_gil_with_perk,
+    provision_preview,
+    roll_daily_provisions,
+    subscriber_perk,
+)
 from crystal_guild.data import GameData
 from crystal_guild.subscription_status import TwitchSubscriptionStatus
 from crystal_guild.token_store import TwitchTokenStore
@@ -113,6 +119,55 @@ class DailyProvisionPerkTests(unittest.TestCase):
                 self.assertLessEqual(int(item.get("shop_level") or 1), 1)
             if item["type"] == "material":
                 self.assertIn(item.get("rarity"), {"common", "uncommon"})
+
+    def test_daily_provisions_use_only_curated_ordinary_items(self):
+        import random
+
+        for special_id in {"chocobo_writ", "ancient_coin", "goblin_medallion", "gigas_brace"}:
+            self.assertNotIn(special_id, DAILY_PROVISION_ITEM_IDS)
+        special_ids = {
+            item_id
+            for item_id, item in self.data.items.items()
+            if item.get("unsellable") or item_id == "chocobo_writ"
+        }
+        self.assertTrue(special_ids)
+
+        observed = set()
+        for level in (1, 5, 10, 20, 35, 50, 99):
+            for seed in range(80):
+                rows = roll_daily_provisions(self.data.items, level, random.Random(seed), 3)
+                for row in rows:
+                    item_id = row["item_id"]
+                    observed.add(item_id)
+                    self.assertIn(item_id, DAILY_PROVISION_ITEM_IDS)
+                    self.assertNotIn(item_id, special_ids)
+
+        self.assertTrue(observed)
+
+    def test_curated_daily_pool_ids_exist_and_are_ordinary(self):
+        self.assertTrue(DAILY_PROVISION_ITEM_IDS)
+        missing = DAILY_PROVISION_ITEM_IDS - set(self.data.items)
+        self.assertEqual(missing, set())
+        for item_id in DAILY_PROVISION_ITEM_IDS:
+            item = self.data.items[item_id]
+            self.assertFalse(item.get("unsellable"), item_id)
+            self.assertIn(str(item.get("type") or "").lower(), {"consumable", "material"})
+
+    def test_special_material_cannot_leak_into_daily_pool_by_matching_rarity_and_value(self):
+        import random
+
+        items = dict(self.data.items)
+        items["future_special_token"] = {
+            "id": "future_special_token",
+            "name": "Future Special Token",
+            "type": "material",
+            "rarity": "common",
+            "price": 1,
+            "unsellable": True,
+        }
+        for seed in range(120):
+            rows = roll_daily_provisions(items, 99, random.Random(seed), 3)
+            self.assertNotIn("future_special_token", {row["item_id"] for row in rows})
 
     def test_preview_explains_subscriber_bonus(self):
         preview = provision_preview(25, 2)

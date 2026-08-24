@@ -90,6 +90,28 @@ class ChocoboCompanionTests(unittest.TestCase):
         self.assertEqual(int(self.game._player("100")["gil"]), before + 250)
         self.assertIsNotNone(self.db.one("SELECT 1 FROM player_quests WHERE player_id='100' AND quest_id=?", (QUEST_ID,)))
 
+    def test_orphaned_daily_writ_is_removed_without_touching_legitimate_writs(self):
+        player_id = "100"
+        self.db.execute(
+            "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?, 'chocobo_writ', 1) "
+            "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=1",
+            (player_id,),
+        )
+        self.assertEqual(self.game._inventory_qty(player_id, "chocobo_writ"), 1)
+        self.assertIsNone(self.db.one("SELECT * FROM player_chocobos WHERE player_id=?", (player_id,)))
+
+        self.game._chocobo_state_data(player_id)
+
+        self.assertEqual(self.game._inventory_qty(player_id, "chocobo_writ"), 0)
+        tx = self.db.one(
+            "SELECT amount,source FROM transactions WHERE player_id=? AND asset_id='chocobo_writ' "
+            "ORDER BY id DESC LIMIT 1",
+            (player_id,),
+        )
+        self.assertIsNotNone(tx)
+        self.assertEqual(int(tx["amount"]), -1)
+        self.assertEqual(str(tx["source"]), "orphaned_chocobo_writ_cleanup")
+
     def test_writ_requires_stable_and_quest_costs_500_and_waits_one_hour(self):
         self.make_personally_eligible()
         self.assertFalse(self.game.buy_chocobo_writ("100").ok)
