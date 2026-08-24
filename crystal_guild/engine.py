@@ -106,7 +106,9 @@ from .chocobo import (
 
 STARTER_JOBS = {"warrior", "monk", "thief", "blackmage", "whitemage", "redmage"}
 STANCES = {"balanced", "aggressive", "defensive", "magical", "cautious"}
-HUNT_RANKS = {"C": 1, "B": 2, "A": 3, "S": 4}
+HUNT_RANKS = {"C": 1, "B": 2, "A": 3, "S": 4, "S+": 5}
+HUNT_DURATION_SECONDS = {"C": 5 * 60, "B": 15 * 60, "A": 30 * 60, "S": 60 * 60, "S+": 2 * 60 * 60}
+HUNT_AUTO_ITEM_CAP = {"C": 1, "B": 1, "A": 2, "S": 2, "S+": 3}
 TANK_JOBS = {"warrior", "paladin", "darkknight"}
 HEALER_JOBS = {"whitemage", "sage"}
 SUPPORT_JOBS = {"bard", "timemage"}
@@ -179,6 +181,10 @@ class CrystalGuildEngine:
         self._state_lock = threading.RLock()
         self.active_encounter: dict[str, Any] | None = None
         self.encounter_roster: dict[str, dict[str, Any]] = {}
+        # Timed Hunts are per-player autonomous assignments. They are persisted
+        # with runtime combat state so several players may hunt concurrently
+        # without occupying the Guild-wide Rally Venture / raid battle slot.
+        self.active_hunts: dict[str, dict[str, Any]] = {}
         self._encounter_seq = 0
         # Keep a small in-memory recap cache for !battlelog. It is
         # intentionally ephemeral: battle presentation must not become another
@@ -205,6 +211,7 @@ class CrystalGuildEngine:
             "encounter_seq": int(self._encounter_seq),
             "active_encounter": copy.deepcopy(self.active_encounter),
             "encounter_roster": copy.deepcopy(self.encounter_roster),
+            "active_hunts": copy.deepcopy(self.active_hunts),
             "active_boss": copy.deepcopy(self.active_boss),
             "raid_roster": copy.deepcopy(self.raid_roster),
         }
@@ -214,6 +221,8 @@ class CrystalGuildEngine:
         self.active_encounter = copy.deepcopy(state.get("active_encounter"))
         encounter_roster = state.get("encounter_roster") or {}
         self.encounter_roster = copy.deepcopy(encounter_roster) if isinstance(encounter_roster, dict) else {}
+        active_hunts = state.get("active_hunts") or {}
+        self.active_hunts = copy.deepcopy(active_hunts) if isinstance(active_hunts, dict) else {}
         self.active_boss = copy.deepcopy(state.get("active_boss"))
         raid_roster = state.get("raid_roster") or {}
         self.raid_roster = copy.deepcopy(raid_roster) if isinstance(raid_roster, dict) else {}
@@ -278,6 +287,20 @@ class CrystalGuildEngine:
             roster = state.get("encounter_roster")
             if not isinstance(roster, dict) or not roster:
                 raise ValueError("active encounter has no roster")
+        hunts = state.get("active_hunts") or {}
+        if not isinstance(hunts, dict):
+            raise ValueError("active Hunts are malformed")
+        for player_id, assignment in hunts.items():
+            if not isinstance(assignment, dict):
+                raise ValueError("active Hunt assignment is malformed")
+            if str(assignment.get("hunt_id") or "") not in self.data.hunts:
+                raise ValueError("active Hunt references an unknown mark")
+            if str(assignment.get("monster_id") or "") not in self.data.monsters:
+                raise ValueError("active Hunt references an unknown monster")
+            if str(assignment.get("player_id") or player_id) != str(player_id):
+                raise ValueError("active Hunt player identity is malformed")
+            if float(assignment.get("resolves_at") or 0) <= 0:
+                raise ValueError("active Hunt is missing its resolution deadline")
         if boss:
             if not isinstance(boss, dict) or str(boss.get("id") or "") not in self.data.bosses:
                 raise ValueError("active raid references an unknown boss")
@@ -303,16 +326,17 @@ class CrystalGuildEngine:
             self._normalize_encounter_resources()
             if self.active_encounter:
                 self._encounter_seq = max(self._encounter_seq, int(self.active_encounter.get("id", 0)))
-            self._runtime_recovered = bool(self.active_encounter or self.active_boss)
+            self._runtime_recovered = bool(self.active_encounter or self.active_boss or self.active_hunts)
             self._runtime_recovered_at = str(row["updated_at"] or "")
             if self._runtime_recovered:
-                kind = "encounter" if self.active_encounter else "raid"
+                kind = "encounter" if self.active_encounter else "raid" if self.active_boss else f"Hunts({len(self.active_hunts)})"
                 LOGGER.warning("Recovered active %s from Crystal runtime checkpoint", kind)
         except Exception as exc:
             self._runtime_recovery_error = f"{type(exc).__name__}: {exc}"
             LOGGER.error("Ignoring corrupt Crystal runtime checkpoint: %s", self._runtime_recovery_error)
             self.active_encounter = None
             self.encounter_roster = {}
+            self.active_hunts = {}
             self.active_boss = None
             self.raid_roster = {}
             # A corrupt checkpoint must not brick every future launch. Keep the
@@ -325,12 +349,15 @@ class CrystalGuildEngine:
             active = f"encounter#{self.active_encounter.get('id')}:{self.active_encounter.get('state', 'rally')}"
         elif self.active_boss:
             active = f"raid:{self.active_boss.get('id')}:{self.active_boss.get('state', 'rally')}"
+        elif self.active_hunts:
+            active = f"hunts:{len(self.active_hunts)}:timed"
         return {
             "active": active,
             "recovered": self._runtime_recovered,
             "recovered_at": self._runtime_recovered_at or "none",
             "recovery_error": self._runtime_recovery_error or "none",
             "encounter_seq": self._encounter_seq,
+            "active_hunts": len(self.active_hunts),
         }
 
     # ---------- players ----------
@@ -533,6 +560,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change Jobs after committing to an active encounter or raid.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing Jobs.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Your Job is locked while your hero is away on a Hunt.")
         if p["current_job"] != "adventurer" and p["current_hp"] <= 0:
             return GameResult.fail("You are KO'd. Recover before attempting a dramatic career change.")
         job = self._find_by_name_or_id(self.data.jobs, job_id)
@@ -622,6 +651,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing Masteries.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Masteries are locked while your hero is away on a Hunt.")
         job = self._find_by_name_or_id(self.data.jobs, job_query)
         if not job:
             return GameResult.fail("Job not found.")
@@ -644,6 +675,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing Masteries.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Masteries are locked while your hero is away on a Hunt.")
         if slot not in {1, 2}:
             return GameResult.fail("Choose mastery slot 1 or 2.")
         current = self.db.one("SELECT job_id FROM mastery_slots WHERE player_id=? AND slot=?", (twitch_id, slot))
@@ -662,6 +695,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change stance after committing to an active encounter or raid.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing stance.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Your stance is locked while your hero is away on a Hunt.")
         stance = self._norm(stance)
         if stance not in STANCES:
             return GameResult.fail("Unknown stance. Use balanced, aggressive, defensive, magical, or cautious.")
@@ -676,6 +711,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before setting up camp.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Your hero cannot set up camp while away on a Hunt.")
         if twitch_id in self.encounter_roster:
             return GameResult.fail("You are already committed to the active encounter. Survive that before setting up camp.")
         if twitch_id in self.raid_roster:
@@ -730,6 +767,8 @@ class CrystalGuildEngine:
             return self.battle_item(twitch_id, item_query)
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("While on a Solo Venture, use battle items through the Adventure Board. Return or retreat before using field items.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Your Hunt is resolving automatically; field items cannot be used until your hero returns.")
         item = self._find_by_name_or_id(self.data.items, item_query)
         use = item.get("use") if item else None
         if not item or not isinstance(use, dict) or not use.get("field"):
@@ -3889,14 +3928,49 @@ class CrystalGuildEngine:
         return messages
 
     # ---------- hunts ----------
+    @staticmethod
+    def _hunt_duration_seconds(rank: str) -> int:
+        return int(HUNT_DURATION_SECONDS.get(str(rank).upper(), HUNT_DURATION_SECONDS["C"]))
+
+    def _active_hunt_public(self, twitch_id: str) -> dict[str, Any] | None:
+        assignment = self.active_hunts.get(str(twitch_id))
+        if not assignment:
+            return None
+        hunt = self.data.hunts.get(str(assignment.get("hunt_id"))) or {}
+        monster = self.data.monsters.get(str(assignment.get("monster_id"))) or {}
+        now = int(time.time())
+        resolves_at = int(float(assignment.get("resolves_at") or 0))
+        started_at = int(float(assignment.get("started_at") or now))
+        duration_seconds = max(1, int(assignment.get("duration_seconds") or (resolves_at - started_at) or 1))
+        remaining = max(0, resolves_at - now)
+        elapsed = max(0, min(duration_seconds, duration_seconds - remaining))
+        return {
+            "id": int(assignment.get("id") or 0),
+            "hunt_id": str(hunt.get("id") or assignment.get("hunt_id") or ""),
+            "name": str(hunt.get("name") or "Hunt"),
+            "rank": str(hunt.get("rank") or assignment.get("rank") or "C"),
+            "monster": {
+                "id": str(monster.get("id") or assignment.get("monster_id") or ""),
+                "name": str(monster.get("name") or "Unknown Mark"),
+                "level": int(monster.get("level") or hunt.get("min_level") or 1),
+            },
+            "started_at": started_at,
+            "resolves_at": resolves_at,
+            "duration_seconds": duration_seconds,
+            "remaining_seconds": remaining,
+            "progress_percent": max(0, min(100, int(round(100 * elapsed / duration_seconds)))),
+            "mode": "autonomous",
+        }
+
     def hunts(self, twitch_id: str, rank: str | None = None) -> GameResult:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        active = self._active_hunt_public(twitch_id)
         if rank:
             rank = rank.upper()
             if rank not in HUNT_RANKS:
-                return GameResult.fail("Hunt rank must be C, B, A, or S.")
+                return GameResult.fail("Hunt rank must be C, B, A, S, or S+.")
             marks = [h for h in self.data.hunts.values() if h["rank"] == rank]
             parts = []
             for hunt in marks:
@@ -3905,9 +3979,13 @@ class CrystalGuildEngine:
                 clears = row["clears"] if row else 0
                 state = f"✓x{clears}" if clears else ("READY" if met else "LOCKED")
                 parts.append(f"{hunt['name']} [{state}/Lv.{hunt['min_level']}]")
-            return GameResult.success(f"{rank}-Rank Hunts — " + " | ".join(parts), "Begin one with !hunt <name>.")
+            messages = [f"{rank}-Rank Hunts — " + " | ".join(parts), "Begin one with !hunt <name>."]
+            if active:
+                messages.insert(0, f"HUNT IN PROGRESS [{active['rank']}] — {active['name']} returns in {self._format_seconds(active['remaining_seconds'])}.")
+            return GameResult.success(*messages)
         counts = []
-        for rank_name in ["C", "B", "A", "S"]:
+        ranks = [name for name in ("C", "B", "A", "S", "S+") if any(h.get("rank") == name for h in self.data.hunts.values())]
+        for rank_name in ranks:
             total = len([h for h in self.data.hunts.values() if h["rank"] == rank_name])
             cleared = self._rank_unique_clears(twitch_id, rank_name)
             counts.append(f"{rank_name}: {cleared}/{total}")
@@ -3917,49 +3995,76 @@ class CrystalGuildEngine:
             if met:
                 ready.append(hunt)
         suggestion = f" Suggested mark: {ready[0]['name']} ({ready[0]['rank']}-Rank)." if ready else " No marks currently meet your requirements."
-        return GameResult.success(
+        messages = [
             f"Hunt Board | {p['hunt_seals']:,} Hunt Seals | " + " | ".join(counts) + f" | Ready now: {len(ready)}",
-            "Use !hunts C, !hunts B, !hunts A, or !hunts S." + suggestion,
-        )
+            "Use !hunts C, !hunts B, !hunts A, !hunts S, or !hunts S+." + suggestion,
+        ]
+        if active:
+            messages.insert(0, f"HUNT IN PROGRESS [{active['rank']}] — {active['name']} · {active['monster']['name']} | returns in {self._format_seconds(active['remaining_seconds'])}.")
+        return GameResult.success(*messages)
+
+    def _hunt_prepare_combat_snapshot(self, twitch_id: str, hunt: dict[str, Any], monster: dict[str, Any], encounter_id: int) -> tuple[dict[str, Any], dict[str, Any], int]:
+        """Snapshot the accepted hero into the normal combat model without taking the global battle slot."""
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter = {
+                "id": int(encounter_id),
+                "kind": "hunt",
+                "state": "combat",
+                "hunt_id": str(hunt["id"]),
+                "hunt_rank": str(hunt["rank"]),
+                "monster_id": str(monster["id"]),
+                "region_id": str(self._player(twitch_id)["current_region"]),
+                "created_at": int(time.time()),
+                "starter_id": str(twitch_id),
+            }
+            p = self._player(twitch_id)
+            self.encounter_roster = {
+                str(twitch_id): {
+                    "name": p["display_name"],
+                    "username": p["username"],
+                    "job_id": p["current_job"],
+                }
+            }
+            combatants, _, monster_max = self._initialize_active_combat(self.active_encounter)
+            if combatants != 1:
+                return {}, {}, 0
+            self.active_encounter["next_round_at"] = 0
+            return copy.deepcopy(self.active_encounter), copy.deepcopy(self.encounter_roster), int(monster_max)
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
 
     @_state_guard
     def hunt(self, twitch_id: str, hunt_query: str, bypass_cooldown: bool = False) -> GameResult:
-        """Accept a solo Hunt and enter the shared timed Active Battle engine.
+        """Dispatch a personal timed Hunt that resolves autonomously at its rank deadline.
 
-        Hunt acceptance creates combat state only; the autonomous combat daemon
-        owns every round deadline after that point. This method must never loop
-        combat to completion or resolve a round because a chatter typed again.
+        Hunts deliberately do not occupy the shared Twitch Active Battle slot and
+        do not require round-by-round chat input. The hero's combat build is
+        snapshotted at acceptance, then the daemon runs the normal combat engine
+        once when the assignment timer expires.
         """
+        twitch_id = str(twitch_id)
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
         if p["current_job"] == "adventurer":
             return GameResult.fail("Choose a Job before accepting a Hunt.")
-        if self.active_boss:
+        if twitch_id in self.active_hunts:
+            active = self._active_hunt_public(twitch_id)
             return GameResult.fail(
-                f"A raid against {self.active_boss['name']} is active. "
-                "Finish that battle before accepting a Hunt."
+                f"You already have a Hunt in progress: {active['name']} returns in {self._format_seconds(active['remaining_seconds'])}."
             )
-        if self.active_encounter:
-            if twitch_id in self.encounter_roster:
-                return self.encounter_status()
-            if self.active_encounter.get("kind", "venture") == "hunt":
-                return GameResult.fail(
-                    "Another Active Hunt is already underway. Crystal Guild handles "
-                    "one timed field battle at a time."
-                )
-            return GameResult.fail(
-                "A random Active Battle is already underway. Finish it before accepting a Hunt."
-            )
-
+        if twitch_id in self.encounter_roster:
+            return GameResult.fail("Finish your active encounter before accepting a Hunt.")
+        if twitch_id in self.raid_roster:
+            return GameResult.fail("Finish your active raid before accepting a Hunt.")
         blocked = self._activity_block(twitch_id)
         if blocked:
             return GameResult.fail(blocked)
 
-        p = self._player(twitch_id)
         hunt = self._find_by_name_or_id(self.data.hunts, hunt_query)
         if not hunt:
-            return GameResult.fail("Hunt not found. Use !hunts <C|B|A|S> to inspect the board.")
+            return GameResult.fail("Hunt not found. Use !hunts <C|B|A|S|S+> to inspect the board.")
         met, missing = self._hunt_available(twitch_id, hunt)
         if not met:
             return GameResult.fail(f"{hunt['name']} is unavailable — " + "; ".join(missing[:5]))
@@ -3974,51 +4079,262 @@ class CrystalGuildEngine:
         monster = self.data.monsters[hunt["monster_id"]]
         now = time.time()
         self._encounter_seq += 1
-        encounter_id = self._encounter_seq
-        self.active_encounter = {
-            "id": encounter_id,
-            "kind": "hunt",
-            "state": "combat",
-            "hunt_id": hunt["id"],
-            "hunt_rank": hunt["rank"],
-            "monster_id": monster["id"],
-            "region_id": p["current_region"],
-            "created_at": int(now),
-            "starter_id": twitch_id,
-        }
-        self.encounter_roster = {
-            twitch_id: {
-                "name": p["display_name"],
-                "username": p["username"],
-                "job_id": p["current_job"],
-            }
-        }
-
-        combatants, _, monster_max = self._initialize_active_combat(self.active_encounter)
-        if combatants == 0:
-            self._clear_encounter(encounter_id)
+        encounter_id = int(self._encounter_seq)
+        encounter, roster, monster_max = self._hunt_prepare_combat_snapshot(twitch_id, hunt, monster, encounter_id)
+        if not encounter or not roster:
             return GameResult.fail("That Hunt cannot begin while your hero is unable to fight.")
 
-        # Hunt cooldown begins at acceptance, not victory. Aborting/restarting a
-        # difficult mark therefore cannot be used to reroll enemy behavior.
-        self._set_cooldown(
-            twitch_id,
-            f"hunt:{hunt['id']}",
-            int(hunt.get("cooldown_seconds", 1800)),
-        )
-        rounds = int(self.active_encounter["max_rounds"])
+        rank = str(hunt.get("rank", "C")).upper()
+        duration_seconds = self._hunt_duration_seconds(rank)
+        resolves_at = int(now) + duration_seconds
+        self.active_hunts[twitch_id] = {
+            "id": encounter_id,
+            "player_id": twitch_id,
+            "hunt_id": str(hunt["id"]),
+            "rank": rank,
+            "monster_id": str(monster["id"]),
+            "started_at": int(now),
+            "resolves_at": resolves_at,
+            "duration_seconds": duration_seconds,
+            "encounter": encounter,
+            "roster": roster,
+        }
+
+        # Cooldown starts at acceptance, but can never expire before the timed
+        # assignment itself is complete.
+        cooldown_seconds = max(duration_seconds, int(hunt.get("cooldown_seconds", duration_seconds)))
+        self._set_cooldown(twitch_id, f"hunt:{hunt['id']}", cooldown_seconds)
         return GameResult.success(
-            f"HUNT ACCEPTED [{hunt['rank']}] — {hunt['name']} · "
-            f"{monster['name']} Lv.{monster['level']} | {resource_text('Enemy HP', monster_max, monster_max)}.",
-            f"ROUND 1 · {self._format_seconds(self.encounter_round_seconds)} | "
-            "!attack · !ability <name> · !defend · !use <item> | "
-            f"No action = Attack · safety limit {rounds} rounds · "
-            "!encounter for vitals · !battlelog for recaps.",
-            battle_started=True,
+            f"HUNT DISPATCHED [{rank}] — {hunt['name']} · {monster['name']} Lv.{monster['level']} | expected return in {self._format_seconds(duration_seconds)}.",
+            "No chat combat is required. Your hero will automatically Attack, use learned abilities, Defend, and spend a small number of appropriate consumables when survival warrants it.",
             hunt_started=True,
-            encounter_id=encounter_id,
-            next_round_at=self.active_encounter["next_round_at"],
+            hunt_id=str(hunt["id"]),
+            hunt_run_id=encounter_id,
+            resolves_at=resolves_at,
+            duration_seconds=duration_seconds,
+            enemy_max_hp=monster_max,
         )
+
+    @staticmethod
+    def _hunt_harmful_statuses(meta: dict[str, Any]) -> set[str]:
+        harmful = {"vulnerable", "weaken", "slow", "stun", "poison", "silence", "blind"}
+        return {status for status in harmful if has_status(meta.get("statuses", {}), status)}
+
+    def _hunt_best_ability_action(self, twitch_id: str, meta: dict[str, Any], monster: dict[str, Any], *, urgent_only: bool = False) -> tuple[dict[str, Any] | None, float]:
+        job = self.data.jobs.get(str(meta.get("job_id"))) or {}
+        hp = int(meta.get("hp", 0)); max_hp = max(1, int(meta.get("max_hp", 1)))
+        hp_ratio = hp / max_hp
+        harmful = self._hunt_harmful_statuses(meta)
+        monster_statuses = self.active_encounter.get("monster_statuses", {}) if self.active_encounter else {}
+        best: tuple[dict[str, Any] | None, float] = (None, -999.0)
+        for ability in unlocked_abilities(self.data.active_abilities.get(str(meta.get("job_id")), []), int(meta.get("job_level", 0))):
+            effects = list(ability.get("effects") or [])
+            if any(effect.get("type") == "revive" for effect in effects):
+                continue
+            resource = ability_resource(ability, job)
+            cost = ability_cost(ability)
+            current = int(meta.get(resource, 0)); maximum = max(0, int(meta.get(f"max_{resource}", 0)))
+            if current < cost or (resource == "mp" and has_status(meta.get("statuses", {}), "silence")):
+                continue
+            score = 0.0
+            urgent = False
+            for effect in effects:
+                etype = str(effect.get("type") or "")
+                if etype == "heal_hp":
+                    if hp_ratio <= 0.30: score += 120; urgent = True
+                    elif hp_ratio <= 0.45: score += 92; urgent = True
+                    elif hp_ratio <= 0.62: score += 52
+                    else: score -= 20
+                elif etype == "cleanse":
+                    if harmful: score += 105; urgent = True
+                    else: score -= 25
+                elif etype == "damage":
+                    power = float(effect.get("power", 1.0) or 1.0)
+                    score += 22 + power * 14
+                    element = effect.get("element")
+                    if element and monster.get("weakness") and str(element).lower() == str(monster.get("weakness")).lower():
+                        score += 38
+                elif etype == "drain":
+                    score += 28 if hp_ratio <= 0.60 else 8
+                    urgent = urgent or hp_ratio <= 0.35
+                elif etype in {"restore_mp", "restore_ap"}:
+                    key = "mp" if etype == "restore_mp" else "ap"
+                    pool_max = max(1, int(meta.get(f"max_{key}", 0)))
+                    ratio = int(meta.get(key, 0)) / pool_max
+                    score += 58 if ratio <= 0.20 else 14
+                elif etype == "status":
+                    status_id = str(effect.get("status") or "")
+                    recipient = str(effect.get("recipient") or ability.get("target") or "")
+                    if status_id in {"protect", "regen", "evade"} and recipient in {"self", "ally", "party"}:
+                        if not has_status(meta.get("statuses", {}), status_id):
+                            score += 62 if hp_ratio <= 0.55 else 28
+                            urgent = urgent or hp_ratio <= 0.30
+                    elif status_id in {"power_up", "focus", "haste"} and recipient in {"self", "ally", "party"}:
+                        if not has_status(meta.get("statuses", {}), status_id): score += 22
+                    elif ability.get("target") == "enemy" and not has_status(monster_statuses, status_id):
+                        score += 24 if status_id in {"weaken", "vulnerable", "poison", "slow"} else 16
+                        if status_id == "stun": score += 10
+            if urgent_only and not urgent:
+                continue
+            if maximum > 0:
+                remaining_ratio = (current - cost) / maximum
+                if not urgent and remaining_ratio < 0.18:
+                    score -= 55
+                elif remaining_ratio < 0.32:
+                    score -= 18
+                score -= (cost / maximum) * 14
+            if score > best[1]:
+                target_mode = str(ability.get("target") or "enemy")
+                target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+                best = ({"kind": "ability", "ability_id": str(ability["id"]), "target_id": target_id, "auto": True}, score)
+        return best
+
+    def _hunt_survival_item_action(self, twitch_id: str, meta: dict[str, Any], rank: str) -> dict[str, Any] | None:
+        if int(meta.get("items_used", 0)) >= int(HUNT_AUTO_ITEM_CAP.get(rank, 1)):
+            return None
+        rows = self.db.all("SELECT item_id,quantity FROM inventory WHERE player_id=? AND quantity>0", (str(twitch_id),))
+        owned = {str(row["item_id"]): int(row["quantity"] or 0) for row in rows}
+        hp = int(meta.get("hp", 0)); max_hp = max(1, int(meta.get("max_hp", 1))); hp_ratio = hp / max_hp
+        harmful = self._hunt_harmful_statuses(meta)
+
+        # Prefer cheap, specific cleanses over rare universal remedies.
+        if harmful:
+            cleanse_candidates: list[tuple[int, str]] = []
+            for item_id, qty in owned.items():
+                item = self.data.items.get(item_id) or {}; use = item.get("use") or {}
+                if item_id == "tent" or str(use.get("target", "ally")) not in {"ally", "self"}: continue
+                for effect in use.get("effects", []):
+                    if effect.get("type") != "cleanse": continue
+                    allowed = set(effect.get("statuses", []))
+                    covers = bool(effect.get("all_harmful")) or bool(harmful & allowed)
+                    if covers:
+                        rarity_cost = {"common": 0, "uncommon": 1, "rare": 3, "epic": 5}.get(str(item.get("rarity", "common")).lower(), 6)
+                        specificity = 0 if allowed else 4
+                        cleanse_candidates.append((rarity_cost + specificity, item_id))
+            if cleanse_candidates:
+                _, item_id = min(cleanse_candidates)
+                return {"kind": "item", "item_id": item_id, "target_id": str(twitch_id), "auto": True}
+
+        if hp_ratio <= 0.30:
+            need = max(1, int(max_hp * 0.68) - hp)
+            heals: list[tuple[int, int, str]] = []
+            for item_id, qty in owned.items():
+                item = self.data.items.get(item_id) or {}; use = item.get("use") or {}
+                if item_id in {"tent", "elixir", "megalixir"} or str(use.get("target", "ally")) not in {"ally", "self"}: continue
+                for effect in use.get("effects", []):
+                    if effect.get("type") != "heal_hp": continue
+                    amount = int(effect.get("amount", 0) or 0)
+                    if effect.get("fraction") is not None: amount = max(amount, int(max_hp * float(effect.get("fraction", 0))))
+                    if amount > 0:
+                        waste = abs(amount - need) if amount >= need else (need - amount) * 2
+                        rarity_cost = {"common": 0, "uncommon": 40, "rare": 100}.get(str(item.get("rarity", "common")).lower(), 180)
+                        heals.append((waste + rarity_cost, amount, item_id))
+            if heals:
+                _, _, item_id = min(heals)
+                return {"kind": "item", "item_id": item_id, "target_id": str(twitch_id), "auto": True}
+            if rank in {"S", "S+"} and hp_ratio <= 0.15:
+                for item_id in ("elixir",):
+                    if owned.get(item_id, 0) > 0:
+                        return {"kind": "item", "item_id": item_id, "target_id": str(twitch_id), "auto": True}
+
+        # Resource recovery is deliberately conservative: only basic restoration
+        # items at <=10% pool, and only when the hero is not already in HP danger.
+        if hp_ratio > 0.42:
+            for resource, basic_ids in (("mp", ("ether", "hi_ether")), ("ap", ("stamina_draught", "warriors_tonic"))):
+                maximum = int(meta.get(f"max_{resource}", 0)); current = int(meta.get(resource, 0))
+                if maximum <= 0 or current / max(1, maximum) > 0.10: continue
+                choices = basic_ids if rank in {"A", "S", "S+"} else basic_ids[:1]
+                for item_id in choices:
+                    if owned.get(item_id, 0) > 0:
+                        return {"kind": "item", "item_id": item_id, "target_id": str(twitch_id), "auto": True}
+        return None
+
+    def _hunt_auto_action(self, twitch_id: str, meta: dict[str, Any], monster: dict[str, Any], rank: str) -> dict[str, Any]:
+        hp_ratio = int(meta.get("hp", 0)) / max(1, int(meta.get("max_hp", 1)))
+        urgent_ability, urgent_score = self._hunt_best_ability_action(twitch_id, meta, monster, urgent_only=True)
+        if urgent_ability and urgent_score >= 70:
+            return urgent_ability
+        item_action = self._hunt_survival_item_action(twitch_id, meta, rank)
+        if item_action:
+            return item_action
+        best_ability, score = self._hunt_best_ability_action(twitch_id, meta, monster, urgent_only=False)
+        if best_ability and score >= 30:
+            return best_ability
+        resource_ratios = []
+        for resource in ("mp", "ap"):
+            maximum = int(meta.get(f"max_{resource}", 0))
+            if maximum > 0: resource_ratios.append(int(meta.get(resource, 0)) / maximum)
+        if hp_ratio <= 0.26 or (resource_ratios and max(resource_ratios) <= 0.12):
+            return {"kind": "defend", "auto": True}
+        return {"kind": "attack", "auto": True}
+
+    @_state_guard
+    def resolve_hunt(self, twitch_id: str, hunt_run_id: int | None = None, *, force: bool = False) -> GameResult:
+        """Resolve one expired timed Hunt in a single autonomous simulation pass."""
+        twitch_id = str(twitch_id)
+        assignment = self.active_hunts.get(twitch_id)
+        if not assignment:
+            return GameResult.fail("That Hunt assignment is no longer active.")
+        if hunt_run_id is not None and int(assignment.get("id") or 0) != int(hunt_run_id):
+            return GameResult.fail("That Hunt assignment has already been replaced or completed.")
+        now = time.time()
+        resolves_at = float(assignment.get("resolves_at") or 0)
+        if not force and now < resolves_at:
+            return GameResult.fail(f"That Hunt returns in {self._format_seconds(max(0, int(resolves_at - now)))}.")
+
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        old_history = self._last_battle_history
+        result: GameResult | None = None
+        try:
+            self.active_encounter = copy.deepcopy(assignment.get("encounter") or {})
+            self.encounter_roster = copy.deepcopy(assignment.get("roster") or {})
+            if not self.active_encounter or twitch_id not in self.encounter_roster:
+                raise ValueError("timed Hunt combat snapshot is incomplete")
+            encounter_id = int(self.active_encounter["id"])
+            monster = self.data.monsters[self.active_encounter["monster_id"]]
+            hunt = self.data.hunts[self.active_encounter["hunt_id"]]
+            rank = str(hunt.get("rank", "C")).upper()
+            safety = max(1, int(self.active_encounter.get("max_rounds", active_hunt_round_limit(rank))))
+            last_meta: dict[str, Any] | None = None
+            for _ in range(safety + 1):
+                if not self.active_encounter:
+                    break
+                meta = self.encounter_roster.get(twitch_id)
+                if not meta or int(meta.get("hp", 0)) <= 0:
+                    result = self._finish_active_encounter(False, reason=f"{monster['name']} defeats the hunter.")
+                    break
+                last_meta = meta
+                meta["action"] = self._hunt_auto_action(twitch_id, meta, monster, rank)
+                result = self.advance_encounter_round(encounter_id)
+                if result.data.get("hunt_finished"):
+                    break
+            if self.active_encounter:
+                result = self._finish_active_encounter(False, reason="The Hunt reaches its combat safety limit.")
+            if result is None:
+                result = GameResult.fail("The Hunt could not be resolved.")
+            self.active_hunts.pop(twitch_id, None)
+            # Add one concise auto-combat usage recap; do not replay every round
+            # into Twitch chat after a five-minute-to-two-hour assignment.
+            if result.ok:
+                recap = self._last_battle_history or {}
+                history = list(recap.get("history") or [])
+                # Metrics were persisted by _finish_active_encounter; derive a
+                # lightweight human summary from the snapshotted roster before it
+                # is discarded when possible.
+                final_meta = last_meta
+                if final_meta:
+                    result.messages.append(
+                        f"AUTO PLAN — {int(final_meta.get('abilities_used', 0))} abilities · {int(final_meta.get('items_used', 0))} items · {int(final_meta.get('defends', 0))} defends."
+                    )
+                result.data.update({"timed_hunt": True, "hunt_run_id": int(assignment.get("id") or 0), "resolved_at": int(now)})
+            return result
+        finally:
+            # Preserve any simultaneously running Rally Venture / raid-facing
+            # encounter state. If a shared encounter was active, its recap also
+            # remains the relevant !battlelog view.
+            if old_encounter:
+                self._last_battle_history = old_history
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
 
     def _award_hunt_victory(self, player_id: str, p: Any, hunt: dict[str, Any], monster: dict[str, Any]) -> dict[str, Any]:
         reward = hunt["rewards"]
@@ -4218,6 +4534,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Equipment is locked while your hero is away on a Hunt.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change equipment after committing to an active encounter or raid.")
         item = self._find_by_name_or_id(self.data.items, item_query)
@@ -4250,6 +4568,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
+        if str(twitch_id) in self.active_hunts:
+            return GameResult.fail("Equipment is locked while your hero is away on a Hunt.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change equipment after committing to an active encounter or raid.")
         normalized = self._norm(slot)
@@ -4732,6 +5052,8 @@ class CrystalGuildEngine:
         joined_raid = twitch_id in self.raid_roster
         solo_expedition = self._solo_expedition_public(twitch_id)
         solo_expedition_active = bool(solo_expedition)
+        active_hunt = self._active_hunt_public(twitch_id)
+        active_hunt_running = bool(active_hunt)
         ko = bool(p["current_job"] != "adventurer" and int(p["current_hp"] or 0) <= 0)
         resting = camp_remaining > 0
         activity_reason = (
@@ -4763,6 +5085,8 @@ class CrystalGuildEngine:
                 reason = "Finish your active encounter or raid before traveling."
             elif solo_expedition_active:
                 reason = "Return from your Solo Venture before traveling."
+            elif active_hunt_running:
+                reason = f"Your hunter returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
             regions.append({
                 "id": str(region["id"]),
                 "name": str(region["name"]),
@@ -4770,7 +5094,7 @@ class CrystalGuildEngine:
                 "min_level": int(region.get("min_level", 1)),
                 "current": str(region["id"]) == str(p["current_region"]),
                 "unlocked": unlocked,
-                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not solo_expedition_active),
+                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not solo_expedition_active and not active_hunt_running),
                 "reason": reason,
             })
 
@@ -4854,6 +5178,8 @@ class CrystalGuildEngine:
         venture_reason = ""
         if p["current_job"] == "adventurer":
             venture_reason = "Choose a Job before venturing."
+        elif active_hunt_running:
+            venture_reason = f"Hunt in progress — returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
         elif resting or ko:
             venture_reason = activity_reason
         elif global_battle_reason:
@@ -4865,6 +5191,8 @@ class CrystalGuildEngine:
         solo_venture_reason = ""
         if solo_expedition_active:
             solo_venture_reason = "Solo Venture in progress."
+        elif active_hunt_running:
+            solo_venture_reason = f"Hunt in progress — returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
         elif p["current_job"] == "adventurer":
             solo_venture_reason = "Choose a Job before starting a Solo Venture."
         elif resting or ko:
@@ -4895,6 +5223,8 @@ class CrystalGuildEngine:
                 reason_parts.append(global_battle_reason)
             if solo_expedition_active:
                 reason_parts.append("Return from your Solo Venture before accepting a Hunt.")
+            if active_hunt_running:
+                reason_parts.append(f"Current Hunt returns in {self._format_seconds(active_hunt['remaining_seconds'])}.")
             if not met:
                 reason_parts.extend(str(value) for value in missing[:4])
             if remaining > 0:
@@ -4938,6 +5268,7 @@ class CrystalGuildEngine:
                 "challengeable": bool(not reason_parts),
                 "reason": " ".join(value for value in reason_parts if value),
                 "first_clear_rewards": first_rewards,
+                "duration_seconds": self._hunt_duration_seconds(str(hunt.get("rank", "C"))),
             })
 
         recent_result = None
@@ -4982,6 +5313,7 @@ class CrystalGuildEngine:
                 "ko": ko,
                 "in_encounter": joined_encounter,
                 "in_raid": joined_raid,
+                "on_hunt": active_hunt_running,
             },
             "current_region": {
                 "id": str(current_region.get("id") or p["current_region"]),
@@ -5023,6 +5355,7 @@ class CrystalGuildEngine:
                 "expedition": solo_expedition,
             },
             "encounter": encounter_payload,
+            "active_hunt": active_hunt,
             "hunts": hunts,
             "recent_result": recent_result,
             "raid_active": bool(self.active_boss),
@@ -7699,6 +8032,16 @@ class CrystalGuildEngine:
         return {
             "encounter": encounter,
             "encounter_roster": len(self.encounter_roster),
+            "hunts": [
+                {
+                    "id": int(row.get("id") or 0),
+                    "player_id": str(player_id),
+                    "hunt_id": str(row.get("hunt_id") or ""),
+                    "rank": str(row.get("rank") or "C"),
+                    "resolves_at": float(row.get("resolves_at") or 0),
+                }
+                for player_id, row in self.active_hunts.items()
+            ],
             "boss": boss,
             "raid_roster": len(self.raid_roster),
         }
@@ -8286,6 +8629,11 @@ class CrystalGuildEngine:
             return "Your hero is KO'd. Use !rest for a 30-minute camp recovery, !use phoenix down, or !use tent."
         if self._solo_expedition_load(player_id):
             return "Your hero is currently on a Solo Venture. Return or retreat from the Adventure Board first."
+        if str(player_id) in self.active_hunts:
+            assignment = self.active_hunts[str(player_id)]
+            hunt = self.data.hunts.get(str(assignment.get("hunt_id"))) or {}
+            remaining = max(0, int(float(assignment.get("resolves_at") or 0) - time.time()))
+            return f"Your hero is away on the {hunt.get('name', 'Hunt')} mark for another {self._format_seconds(remaining)}."
         return None
 
     def _set_cooldown(self, player_id: str, action: str, seconds: int) -> None:

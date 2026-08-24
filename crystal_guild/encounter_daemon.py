@@ -55,7 +55,7 @@ class TwitchRESTChatSender:
 
     TOKEN_URL = "https://id.twitch.tv/oauth2/token"
     CHAT_URL = "https://api.twitch.tv/helix/chat/messages"
-    USER_AGENT = "CrystalGuild/1.1.16-Arsenal"
+    USER_AGENT = "CrystalGuild/1.1.16-Arsenal-H1"
 
     def __init__(
         self,
@@ -289,8 +289,9 @@ class EncounterDaemon:
     """Independent combat director for encounters and raid progression.
 
     Despite the historical class name, this director owns every autonomous combat deadline:
-    Venture/Hunt Active Battle rounds, raid rally start, and raid combat rounds. It does
-    not require Twitch chat activity or the TwitchIO asyncio scheduler.
+    Rally Venture rounds, personal timed-Hunt returns, raid rally start, and raid combat rounds.
+    Legacy pre-hotfix Hunt round checkpoints are also allowed to finish safely. It does not
+    require Twitch chat activity or the TwitchIO asyncio scheduler.
     """
 
     def __init__(
@@ -399,6 +400,10 @@ class EncounterDaemon:
                 if due:
                     label = "hunt-round" if encounter.get("kind") == "hunt" else "encounter-round"
                     deadlines.append((label, due))
+        for hunt in snapshot.get("hunts") or []:
+            due = float(hunt.get("resolves_at") or 0)
+            if due:
+                deadlines.append((f"hunt:{hunt.get('player_id')}:{hunt.get('id')}", due))
         boss = snapshot.get("boss")
         if boss:
             if boss.get("state") == "rally":
@@ -483,6 +488,25 @@ class EncounterDaemon:
                 self._publish(result)
         return True
 
+    def _tick_hunts(self, snapshot: dict[str, Any], now: float) -> bool:
+        """Resolve all personal Hunt assignments whose rank timer has expired."""
+        acted = False
+        for hunt in list(snapshot.get("hunts") or []):
+            due = float(hunt.get("resolves_at") or 0)
+            if not due or due > now:
+                continue
+            player_id = str(hunt.get("player_id") or "")
+            run_id = int(hunt.get("id") or 0)
+            self._record_deadline(f"hunt:{player_id}:{run_id}", due, now)
+            LOGGER.info("Combat daemon resolving timed Hunt %s for player %s", run_id, player_id)
+            result = self.game.resolve_hunt(player_id, run_id)
+            self._last_action = f"hunt-resolve:{player_id}:{run_id}"
+            if result.ok:
+                self._last_resolved_id = run_id
+                self._publish(result)
+            acted = True
+        return acted
+
     def _tick_raid(self, snapshot: dict[str, Any], now: float) -> bool:
         boss = snapshot.get("boss")
         if not boss:
@@ -519,7 +543,10 @@ class EncounterDaemon:
             try:
                 now = self._clock()
                 snapshot = self.game.combat_snapshot()
-                acted = self._tick_encounter(snapshot, now)
+                hunt_acted = self._tick_hunts(snapshot, now)
+                if hunt_acted:
+                    snapshot = self.game.combat_snapshot()
+                acted = self._tick_encounter(snapshot, self._clock())
                 # Re-snapshot after every autonomous transition so the next
                 # calculated sleep is based on the newly-created deadline.
                 if acted:

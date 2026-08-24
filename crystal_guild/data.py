@@ -485,7 +485,7 @@ class GameData:
             require(self.monsters, hunt.get("monster_id"), f"hunt {hunt['id']}")
             require(self.items, hunt.get("first_clear_item"), f"hunt {hunt['id']} first-clear item")
             require(self.titles, hunt.get("first_clear_title"), f"hunt {hunt['id']} first-clear title")
-            if hunt.get("rank") not in {"C", "B", "A", "S"}:
+            if hunt.get("rank") not in {"C", "B", "A", "S", "S+"}:
                 errors.append(f"hunt {hunt['id']}: invalid rank")
             if int(hunt.get("min_level", 0)) < 1:
                 errors.append(f"hunt {hunt['id']}: min_level must be >= 1")

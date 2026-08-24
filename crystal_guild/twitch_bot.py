@@ -321,8 +321,8 @@ class RPGCommands(commands.Component):
         result = self.game.hunt(uid, hunt_name)
         await send_result(ctx, result, limit=5)
         if result.ok and result.data.get("hunt_started"):
-            # Active Hunts create an immediate round deadline. Wake the
-            # scheduler so it can sleep toward that timer even if no
+            # Timed Hunts create a rank-based return deadline. Wake the
+            # scheduler so it can sleep toward that timestamp even if no
             # further chat message is ever sent.
             self.bot.encounter_daemon.wake()
 

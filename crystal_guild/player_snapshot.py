@@ -549,12 +549,13 @@ class PortalRepository:
                     }
                 )
             rank_summary = {}
-            for rank in ("C", "B", "A", "S"):
+            for rank in ("C", "B", "A", "S", "S+"):
                 group = [h for h in hunts if h["rank"] == rank]
-                rank_summary[rank] = {
-                    "cleared": sum(1 for h in group if h["clears"] > 0),
-                    "total": len(group),
-                }
+                if group:
+                    rank_summary[rank] = {
+                        "cleared": sum(1 for h in group if h["clears"] > 0),
+                        "total": len(group),
+                    }
             return {"player": self._public_identity(player), "summary": rank_summary, "hunts": hunts}
 
     def bestiary(self, key: str) -> dict[str, Any] | None:

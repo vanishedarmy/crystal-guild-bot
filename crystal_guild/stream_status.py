@@ -29,7 +29,7 @@ class TwitchStreamStatus:
 
     TOKEN_URL = "https://id.twitch.tv/oauth2/token"
     STREAMS_URL = "https://api.twitch.tv/helix/streams"
-    USER_AGENT = "CrystalGuild/1.1.16-Arsenal"
+    USER_AGENT = "CrystalGuild/1.1.16-Arsenal-H1"
 
     def __init__(
         self,

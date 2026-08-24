@@ -153,8 +153,8 @@ STUN_RESIST_ROUNDS_AFTER_SUCCESS = 1
 
 # Hunt marks gradually resist player-applied debuffs while retaining the same
 # player ability vocabulary. This is chance scaling, not blanket immunity.
-HUNT_STATUS_CHANCE_MULTIPLIERS = {"C": 1.00, "B": 0.96, "A": 0.92, "S": 0.88}
-HUNT_STUN_CHANCE_MULTIPLIERS = {"C": 0.90, "B": 0.82, "A": 0.74, "S": 0.66}
+HUNT_STATUS_CHANCE_MULTIPLIERS = {"C": 1.00, "B": 0.96, "A": 0.92, "S": 0.88, "S+": 0.84}
+HUNT_STUN_CHANCE_MULTIPLIERS = {"C": 0.90, "B": 0.82, "A": 0.74, "S": 0.66, "S+": 0.58}
 
 
 # ---------------------------------------------------------------------------
@@ -170,9 +170,9 @@ RAID_MITIGATION_WEIGHT = 0.35
 # Hunt monsters already carry bespoke stats in monsters.json; these
 # multipliers compensate for the richer active-action system without rewriting
 # the Hunt catalog itself.
-HUNT_HP_MULTIPLIERS = {"C": 1.00, "B": 1.08, "A": 1.16, "S": 1.24}
-HUNT_PRESSURE_MULTIPLIERS = {"C": 1.00, "B": 1.04, "A": 1.08, "S": 1.12}
-HUNT_MAX_ROUNDS = {"C": 12, "B": 14, "A": 16, "S": 18}
+HUNT_HP_MULTIPLIERS = {"C": 1.00, "B": 1.08, "A": 1.16, "S": 1.24, "S+": 1.30}
+HUNT_PRESSURE_MULTIPLIERS = {"C": 1.00, "B": 1.04, "A": 1.08, "S": 1.12, "S+": 1.15}
+HUNT_MAX_ROUNDS = {"C": 12, "B": 14, "A": 16, "S": 18, "S+": 20}
 
 
 def xp_to_next(level: int) -> int:

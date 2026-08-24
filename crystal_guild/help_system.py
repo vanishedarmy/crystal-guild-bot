@@ -31,8 +31,8 @@ HELP_TOPICS = {
         "Stock is Job- and level-aware and does not reroll every time you type !shop. Use !item <name> to inspect something you own or discover.",
     ),
     "hunts": (
-        "ACTIVE HUNTS — !hunts shows C/B/A/S progress and remains readable off-stream. !hunt <name> starts a Twitch live-stream Active Hunt and therefore requires the channel to be LIVE; Portal Challenge Hunt remains available off-stream.",
-        "Use !attack, !ability, !defend and battle items exactly as in Venture combat. Hunt rewards and first-clear prizes are committed only on victory; spend Hunt Seals with !sealshop and !sealbuy <item> [qty].",
+        "HUNTS — !hunts shows C/B/A/S/S+ progress and remains readable off-stream. !hunt <name> dispatches your hero while the channel is LIVE; Portal Challenge Hunt remains available off-stream.",
+        "Hunts return automatically after their rank timer: C 5m, B 15m, A 30m, S 1h, S+ 2h. No round commands are needed; your hero conserves supplies, uses learned abilities/Defend when useful, and only spends limited survival items when warranted. Rewards and first-clear prizes are committed when the Hunt resolves.",
     ),
     "quests": (
         "QUESTS — !quests lists available Job-unlock quests. !quest <name> attempts one after its requirements are met.",
