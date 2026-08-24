@@ -230,7 +230,7 @@ class EngineTests(unittest.TestCase):
 
     def test_v2_data_references_are_valid(self):
         for hunt in self.game.data.hunts.values():
-            self.assertIn(hunt["rank"], {"C", "B", "A", "S"})
+            self.assertIn(hunt["rank"], {"C", "B", "A", "S", "S+"})
             self.assertIn(hunt["monster_id"], self.game.data.monsters)
             if hunt.get("first_clear_item"):
                 self.assertIn(hunt["first_clear_item"], self.game.data.items)
@@ -269,15 +269,14 @@ class EngineTests(unittest.TestCase):
         self.assertTrue(started.ok)
         self.assertTrue(started.data.get("hunt_started"))
         # Hunts award nothing at acceptance; rewards are committed only
-        # when the shared Active Battle resolver records a victory.
+        # when the rank timer's autonomous resolver records the result.
         self.assertIsNone(
             self.db.one(
                 "SELECT clears FROM player_hunts WHERE player_id='1' AND hunt_id='red_hot_problem'"
             )
         )
-        self.game.active_encounter["monster_hp"] = 1
-        self.game.battle_attack("1")
-        result = self.game.advance_encounter_round(started.data["encounter_id"])
+        self.assertIsNone(self.game.active_encounter)
+        result = self.game.resolve_hunt("1", started.data["hunt_run_id"], force=True)
         self.assertTrue(result.ok)
         self.assertTrue(result.data.get("hunt_finished"))
         hunt = self.db.one("SELECT clears FROM player_hunts WHERE player_id='1' AND hunt_id='red_hot_problem'")

@@ -568,9 +568,10 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertTrue(first[0])
         self.assertTrue(second[0])
         self.assertEqual(first[2], second[2])
-        self.assertEqual(self.game.active_encounter["kind"], "hunt")
-        self.assertEqual(self.game.active_encounter["hunt_id"], hunt["id"])
-        self.assertFalse(first[2]["adventure_state"]["encounter"]["web_combat_controls"])
+        self.assertIsNone(self.game.active_encounter)
+        self.assertEqual(self.game.active_hunts["100"]["hunt_id"], hunt["id"])
+        self.assertEqual(first[2]["adventure_state"]["active_hunt"]["hunt_id"], hunt["id"])
+        self.assertEqual(first[2]["adventure_state"]["active_hunt"]["mode"], "autonomous")
         cooldown = self.db.one("SELECT available_at FROM cooldowns WHERE player_id='100' AND action=?", (f"hunt:{hunt['id']}",))
         self.assertIsNotNone(cooldown)
 
