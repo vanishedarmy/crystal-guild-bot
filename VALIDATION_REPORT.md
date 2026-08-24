@@ -1,79 +1,63 @@
-# Crystal Guild v1.1.16 — Arsenal Hotfix 4 Validation Report
+# Crystal Guild v1.1.16 — Arsenal Hotfix 6 Validation Report
 
-## Feature validation
+## Scope
 
-PASS — `!clearadventures` is registered as a streamer-only Twitch command and uses the existing shared owner gate.
+Hotfix 6 changes Daily Guild Provisions from broad type/rarity inference to an explicit opt-in item pool. Special/progression items such as the Chocobo Registration Writ are not eligible.
 
-PASS — `!clearventures` is retained as a convenience alias while `!clearadventures` remains the documented canonical command.
+## Daily provisions checks
 
-PASS — the engine recovery operation clears the shared field/Rally encounter and encounter roster.
+PASS — Daily pool is explicit and opt-in.
 
-PASS — all timed Hunt assignments are removed from authoritative runtime state and the empty set is persisted through the combat checkpoint.
+PASS — `chocobo_writ`, `ancient_coin`, `goblin_medallion`, and `gigas_brace` are outside the approved pool.
 
-PASS — all schema-5 `solo_expeditions` rows are deleted directly, so an orphaned Solo Venture can be recovered even when Portal cannot render it.
+PASS — every approved Daily item exists in the current item catalog, is an ordinary consumable/material, and is not marked unsellable.
 
-PASS — an active raid/world boss remains untouched.
+PASS — a synthetic future common, low-value, unsellable special material cannot enter the pool merely by matching type/rarity/value.
 
-PASS — adventure cooldowns remain untouched; `!resettimers` remains the separate explicit timer reset.
+PASS — orphaned Chocobo Writ inventory with no authoritative Stable purchase/timer row is removed and audit-recorded; legitimately purchased/timed Writs are preserved.
 
-PASS — Streamer Dashboard documents the new recovery command and its scope.
+PASS — level gates for consumables, randomized quantities, subscriber-tier provision roll counts, subscriber Gil bonuses, and the 24-hour cooldown remain unchanged.
 
-## Source regression suites
+## Automated tests
 
-- Bot automated tests: **368 / 368 PASS**
-- Frontend automated tests: **171 / 171 PASS**
-- Hosted Portal/API tests: **45 / 45 PASS**
-- Python grammar: **74 / 74 PASS**
-- JavaScript / JSX / MJS syntax parse: **104 / 104 PASS**
-
-Expected simulated-error log messages in the Bot tests (notification outage, action acknowledgement loss, corrupt recovery fixture, Twitch status lookup failures) remained test fixtures and did not fail the suite.
-
-## Synthetic concurrency stress
-
-Configuration:
-
-- 1,000 players
-- 10,000 mutation operations
-- 4 concurrent Portal readers
-
-Result:
-
-- elapsed: **16.38 s**
-- throughput: **610.3 ops/s**
-- Portal reads: **7,557**
-- SQLite journal mode: **WAL**
-- quick-check failures: **0**
-- foreign-key violations: **0**
-- negative Gil rows: **0**
-- negative inventory rows: **0**
-- Portal read errors: **0**
-- transaction rollbacks: **0**
-
-**CLOUD RUNTIME STRESS PASS**
-
-## Release identity
-
-- Bot runtime: `1.1.16-arsenal-h4`
-- Web runtime: `1.1.16-arsenal-h4`
-- frontend asset revision: `1.1.16-arsenal1h4`
-- local DB schema: **5**
-- hosted sync schema: **1**
-- Portal Action protocol: **14**
-
-Package extraction/overlay verification is recorded after release archives are assembled.
-
-## Exact release-package verification
-
-PASS — extracted Complete archive matches the finalized Hotfix 4 source tree exactly: **0 diff lines**.
-
-PASS — extracted standalone Bot archive matches the finalized Bot tree exactly: **0 diff lines**.
-
-PASS — extracted standalone Web archive matches the finalized Web tree exactly: **0 diff lines**.
-
-PASS — applying `CrystalGuild-v1.1.16-Arsenal-Hotfix4-Update-from-Hotfix3.zip` over an untouched Arsenal Hotfix 3 Complete tree reproduces the finalized Hotfix 4 tree exactly: **0 diff lines**.
-
-Suites rerun from the extracted Complete archive:
-
-- Bot: **368 / 368 PASS**
+- Bot: **372 / 372 PASS**
 - Frontend: **171 / 171 PASS**
-- Hosted Portal/API: **45 / 45 PASS**
+- Hosted Portal/API: **46 / 46 PASS**
+- Python grammar/compile: **74 / 74 PASS**
+- JS/JSX/MJS syntax: **103 / 103 PASS**
+
+The Bot suite emits expected simulated outage/acknowledgement-loss warnings from resilience tests; these tests pass.
+
+## Stress profile
+
+PASS — 1,000 synthetic players, 10,000 gameplay/read operations, 4 concurrent Portal readers.
+
+- Throughput: **770.7 ops/sec**
+- SQLite quick-check failures: **0**
+- Foreign-key violations: **0**
+- Negative Gil rows: **0**
+- Negative inventory rows: **0**
+- Portal read errors: **0**
+- Transaction rollbacks: **0**
+
+## Compatibility
+
+- Bot runtime: `1.1.16-arsenal-h6`
+- Web runtime: `1.1.16-arsenal-h5` unchanged
+- Frontend asset revision: `1.1.16-arsenal1h5` unchanged
+- Local DB schema: **5** unchanged
+- Hosted sync schema: **1** unchanged
+- Portal Action protocol: **14** unchanged
+- Twitch prefix: `!`
+
+No database migration, player reset, OAuth change, new Render secret, or Web replacement is required.
+
+## Package verification
+
+PASS — the standalone Bot archive reproduces the finalized Bot tree exactly: **0 diff lines**.
+
+PASS — the Complete archive reproduces the finalized release tree exactly: **0 diff lines**.
+
+PASS — applying `CrystalGuild-v1.1.16-Arsenal-Hotfix6-Update-from-Hotfix5.zip` over an untouched Hotfix 5 Complete tree reproduces the finalized Hotfix 6 tree exactly: **0 diff lines**.
+
+PASS — tests executed again from the extracted release package: **372 Bot**, **171 frontend**, **46 hosted Portal/API**.

@@ -1,53 +1,34 @@
-# Crystal Guild v1.1.16 — Arsenal Hotfix 4 Release Notes
+# Crystal Guild v1.1.16 — Arsenal Hotfix 6 Release Notes
 
-Arsenal Hotfix 4 adds an authoritative streamer recovery path for adventure state that cannot be cleared from the player Portal.
+Arsenal Hotfix 6 tightens the randomized Daily Guild Provisions reward pool.
 
-## New streamer recovery command
+## Daily provisions
 
-### `!clearadventures`
+Daily provisions now use an explicit opt-in catalog of ordinary reward items instead of selecting any item that happens to match a broad type, rarity, and value rule.
 
-Streamer-only emergency command. Alias: `!clearventures`.
+This means:
 
-The command atomically abandons all currently active non-raid adventure activity:
+- **Chocobo Registration Writs can never be rolled from Daily Guild Provisions.**
+- Other special/progression items are excluded by default.
+- Ordinary level-appropriate shop consumables remain eligible.
+- Approved common/uncommon crafting materials remain eligible.
+- New future items must be deliberately added to the Daily provisions catalog before they can appear.
+- Subscriber Tier 1/2/3 bonus roll counts and Gil bonuses are unchanged.
+- The 24-hour Daily cooldown is unchanged.
 
-- the shared field / Rally Venture encounter, if one is active;
-- every timed Hunt assignment currently waiting to resolve;
-- every persisted Wayfarer Solo Venture row, including an orphaned/stuck Solo Venture that the Portal can no longer render.
+The Chocobo Registration Writ remains obtainable only through its intended Chocobo Stable progression/purchase path.
 
-The command operates directly against the authoritative Bot/runtime state and schema-5 `solo_expeditions` table. It therefore does not depend on an Adventure Board request succeeding first.
+### Existing orphaned Writ repair
 
-After a successful clear, the Bot wakes its in-process hosted Portal sync worker immediately when available so the cleared activity state is published without waiting for the normal sync interval.
-
-## What the command intentionally preserves
-
-`!clearadventures` is a recovery command, not a player reset. It leaves these untouched:
-
-- player level, XP, JP, Gil and progression;
-- inventory and equipment;
-- the player's last successfully persisted HP / MP / AP state;
-- achievements and Titles;
-- Chocobo/Fellowship progression;
-- Venture, Solo Venture, Daily and Hunt cooldowns;
-- camp timers and personal shop rotations;
-- active raids / world bosses and raid rosters.
-
-Unbanked Solo Venture spoils and unresolved Hunt rewards are abandoned when those activities are cleared. If the streamer also wants to clear cooldowns afterward, `!resettimers` remains the separate explicit recovery tool.
-
-## Streamer Dashboard
-
-The Streamer Dashboard now lists `!clearadventures` under Player Recovery and explains its scope. The dashboard now documents 13 streamer-only commands.
+A Writ previously granted by the old Daily pool could exist in inventory without the authoritative `player_chocobos` purchase/timer record. That invalid state could block a later legitimate Writ purchase. Hotfix 6 detects this specific orphaned state and removes only the invalid inventory Writ, recording the cleanup in the transaction ledger. Legitimately purchased/timed Writs always have the authoritative row and are left untouched.
 
 ## Compatibility
 
-- Bot runtime: `1.1.16-arsenal-h4`
-- Hosted Web runtime: `1.1.16-arsenal-h4`
-- Frontend asset revision: `1.1.16-arsenal1h4`
-- Local DB schema: **5** (unchanged)
-- Hosted sync schema: **1** (unchanged)
-- Hosted sync compatibility: `1.1.15-wayfarer` (unchanged)
-- Portal Action protocol: **14** (unchanged)
-- Twitch command prefix: `!`
+- Bot runtime: `1.1.16-arsenal-h6`
+- Hosted Web runtime: `1.1.16-arsenal-h5` unchanged
+- Frontend asset revision: `1.1.16-arsenal1h5` unchanged
+- Local DB schema: 5 unchanged
+- Hosted sync schema: 1 unchanged
+- Portal Action protocol: 14 unchanged
 
-No database migration, player reset, new Render secret, or new Twitch OAuth authorization is required.
-
-This is a matching **Bot + Web** hotfix because the authoritative recovery command is implemented in the Bot and its streamer-facing command reference is updated on the Web dashboard.
+No database migration, player reset, OAuth change, new Render secret, or Web replacement is required.

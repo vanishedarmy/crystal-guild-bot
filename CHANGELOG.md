@@ -1,5 +1,14 @@
 # Crystal Guild Changelog
 
+## v1.1.16 — Arsenal Hotfix 6
+
+- Restricts randomized Daily Guild Provisions to an explicit opt-in catalog of ordinary consumables and approved crafting materials.
+- Excludes Chocobo Registration Writs and other special/progression items from Daily rewards.
+- Repairs orphaned Writ inventory created by the old Daily pool when no authoritative Stable purchase/timer row exists; legitimate purchased Writs are preserved.
+- Adds regression coverage proving low-value/common future special materials cannot enter the Daily pool implicitly.
+- Preserves subscriber-tier bonuses, randomized quantities, 24-hour cooldowns, schema 5, hosted sync schema 1, and Portal protocol 14.
+- Advances Bot runtime to `1.1.16-arsenal-h6`; Hotfix 5 Web/frontend remains unchanged.
+
 ## v1.1.16 — Arsenal Hotfix 4
 
 - Adds streamer-only `!clearadventures` (`!clearventures` alias) as an authoritative recovery command for orphaned adventure state.

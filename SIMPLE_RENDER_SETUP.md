@@ -10,5 +10,5 @@
 5. Transfer `crystal_guild.db` and `twitch_tokens.db` to `/var/data`.
 6. Run `python run_cloud_preflight.py`.
 7. Keep the old local Bot OFF and restart the worker.
-8. Verify `!cgversion` = `1.1.16-arsenal-h4` and `!health` is healthy.
+8. Verify `!cgversion` = `1.1.16-arsenal-h6` and `!health` is healthy.
 9. Deploy matching v1.1.16 Web and point OBS to `https://YOUR-SITE/overlay`.
