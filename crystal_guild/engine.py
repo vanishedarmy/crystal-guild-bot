@@ -5044,6 +5044,7 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return {}
+        self._repair_orphaned_chocobo_writ(twitch_id)
         now = int(time.time())
         level = int(p["level"] or 1)
         current_region = self.data.regions.get(p["current_region"], {})
@@ -5393,10 +5394,50 @@ class CrystalGuildEngine:
             return False, "Use letters, numbers, spaces, apostrophes, or hyphens for the Chocobo name."
         return True, value
 
+    def _repair_orphaned_chocobo_writ(self, twitch_id: str) -> int:
+        """Remove an invalid Writ that has no authoritative Stable timer row.
+
+        Legitimate Writ purchases create the inventory item and player_chocobos
+        timing row in the same transaction. Older Daily Provisions could award
+        the item alone, leaving the player unable to buy or register normally.
+        """
+        quantity = self._inventory_qty(twitch_id, "chocobo_writ")
+        if quantity <= 0:
+            return 0
+        row = self.db.one(
+            "SELECT writ_purchased_at,writ_ready_at,registered_at FROM player_chocobos WHERE player_id=?",
+            (twitch_id,),
+        )
+        if row and (
+            int(row["writ_purchased_at"] or 0) > 0
+            or int(row["writ_ready_at"] or 0) > 0
+            or bool(row["registered_at"])
+        ):
+            return 0
+        with self.db.tx() as conn:
+            current = conn.execute(
+                "SELECT quantity FROM inventory WHERE player_id=? AND item_id='chocobo_writ'",
+                (twitch_id,),
+            ).fetchone()
+            orphaned = max(0, int(current["quantity"] or 0)) if current else 0
+            if orphaned <= 0:
+                return 0
+            conn.execute(
+                "DELETE FROM inventory WHERE player_id=? AND item_id='chocobo_writ'",
+                (twitch_id,),
+            )
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) "
+                "VALUES (?, 'item','chocobo_writ',?,'orphaned_chocobo_writ_cleanup')",
+                (twitch_id, -orphaned),
+            )
+        return orphaned
+
     def _chocobo_state_data(self, twitch_id: str) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:
             return {}
+        self._repair_orphaned_chocobo_writ(twitch_id)
         now = int(time.time())
         row = self.db.one("SELECT * FROM player_chocobos WHERE player_id=?", (twitch_id,))
         registered = bool(row and row["registered_at"] and row["name"])
@@ -5514,6 +5555,7 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        self._repair_orphaned_chocobo_writ(twitch_id)
         if self._chocobo_stable_tier() < 1:
             return GameResult.fail("The Fellowship Chocobo Stable must be constructed before registration writs can be issued.")
         if not self._chocobo_quest_done(twitch_id):
@@ -5566,6 +5608,7 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        self._repair_orphaned_chocobo_writ(twitch_id)
         valid, clean_name = self._validate_chocobo_name(name)
         if not valid:
             return GameResult.fail(clean_name)

@@ -20,6 +20,28 @@ _RARITY_WEIGHT = {
     "epic": 1,
 }
 
+# Daily Guild Provisions use an explicit opt-in catalog. Special/progression
+# items are never inferred into the pool merely because they share a broad
+# item type or rarity. New items must be deliberately added here.
+DAILY_PROVISION_CONSUMABLE_IDS = frozenset({
+    "potion", "hi_potion", "x_potion", "ether", "phoenix_down",
+    "antidote", "echo_herbs", "remedy", "tent", "mega_potion",
+    "hi_ether", "stamina_draught", "warriors_tonic", "eye_drops",
+    "chronos_tear", "smelling_salts", "iron_tonic", "swiftwater",
+    "regen_tonic", "war_horn", "mages_incense", "smoke_bomb",
+    "arctic_wind", "lightning_marble", "water_gem", "earth_drum",
+})
+
+DAILY_PROVISION_MATERIAL_IDS = frozenset({
+    "wolf_fang", "bomb_fragment", "bone_chip", "iron_ore", "fish_scale",
+    "imp_wing", "cockatrice_pinion", "ochu_vine", "basilisk_eye",
+    "coeurl_whisker", "lamia_scale", "antlion_mandible", "sandworm_fang",
+    "chimera_scale", "malboro_tendril", "magitek_scrap",
+    "death_claw_pincer",
+})
+
+DAILY_PROVISION_ITEM_IDS = DAILY_PROVISION_CONSUMABLE_IDS | DAILY_PROVISION_MATERIAL_IDS
+
 
 def normalize_subscriber_tier(value: Any) -> int:
     """Normalize Twitch/Crystal-Guild tier values to 0..3."""
@@ -60,8 +82,12 @@ def daily_gil_with_perk(low: int, high: int, tier: Any) -> tuple[int, int]:
 def _eligible_consumables(items: dict[str, dict[str, Any]], level: int) -> list[dict[str, Any]]:
     level = max(1, int(level))
     result: list[dict[str, Any]] = []
-    for item in items.values():
+    for item_id, item in items.items():
+        if item_id not in DAILY_PROVISION_CONSUMABLE_IDS:
+            continue
         if str(item.get("type") or "").lower() != "consumable":
+            continue
+        if item.get("unsellable"):
             continue
         # Daily provisions should feel useful without bypassing rare encounter,
         # raid, relic or artifact rewards.  Only normal shop consumables whose
@@ -83,8 +109,12 @@ def _eligible_materials(items: dict[str, dict[str, Any]], level: int) -> list[di
     # appear; boss/relic/artifact materials remain encounter rewards.
     value_ceiling = 45 + (level * 8)
     result: list[dict[str, Any]] = []
-    for item in items.values():
+    for item_id, item in items.items():
+        if item_id not in DAILY_PROVISION_MATERIAL_IDS:
+            continue
         if str(item.get("type") or "").lower() != "material":
+            continue
+        if item.get("unsellable"):
             continue
         rarity = str(item.get("rarity") or "common").lower()
         if rarity not in {"common", "uncommon"}:
