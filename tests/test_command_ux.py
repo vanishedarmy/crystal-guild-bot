@@ -139,10 +139,11 @@ class OnboardingTests(unittest.TestCase):
     def test_owner_recovery_commands_are_registered_and_owner_gated(self):
         twitch_source = (ROOT / "crystal_guild" / "twitch_bot.py").read_text(encoding="utf-8")
         ux_source = (ROOT / "crystal_guild" / "chat_ux.py").read_text(encoding="utf-8")
-        for command in ("readyall", "resettimers"):
+        for command in ("readyall", "resettimers", "clearadventures"):
             self.assertIn(f'async def {command}(', twitch_source)
             block = twitch_source[twitch_source.index(f'async def {command}('):]
-            block = block[:block.index("@commands.command()", 1) if "@commands.command()" in block[1:] else len(block)]
+            next_decorator = block.find("@commands.command", 1)
+            block = block[:next_decorator if next_decorator >= 0 else len(block)]
             self.assertIn("await self._owner_only(ctx)", block)
             self.assertIn(f'"{command}": "!{command}"', ux_source)
 

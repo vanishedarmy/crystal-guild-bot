@@ -178,6 +178,66 @@ class EngineTests(unittest.TestCase):
         self.assertIsNone(self.db.one("SELECT 1 FROM player_shops WHERE player_id='1'"))
         self.assertEqual(self.db.one("SELECT current_hp FROM players WHERE twitch_id='1'")["current_hp"], before_hp)
 
+    def test_clear_all_adventures_clears_field_hunts_and_solo_without_touching_raid_or_cooldowns(self):
+        self.assertTrue(self.game.choose_job("1", "warrior").ok)
+        self.assertTrue(self.game.recruit("2", "aeris", "Aeris").ok)
+        self.assertTrue(self.game.choose_job("2", "warrior").ok)
+
+        # Shared field/Rally state.
+        started = self.game.venture("1", bypass_cooldown=True)
+        self.assertTrue(started.ok, started.messages)
+        self.assertIsNotNone(self.game.active_encounter)
+
+        # Personal timed Hunt state may coexist with the shared field slot.
+        self.db.execute("UPDATE players SET level=30 WHERE twitch_id='2'")
+        hunt = self.game.hunt("2", "red hot problem", bypass_cooldown=True)
+        self.assertTrue(hunt.ok, hunt.messages)
+        self.assertIn("2", self.game.active_hunts)
+
+        # Persist a deliberately orphaned Solo Venture row. The recovery command
+        # must be able to clear it even if Portal can no longer render it.
+        self.game._solo_expedition_save("1", {
+            "version": 1, "started_at": int(time.time()), "stage": 2,
+            "status": "choice", "spoils": {"gil": 123, "items": []},
+            "secured": {"xp": 50, "jp": 5}, "history": [],
+        })
+        self.assertIsNotNone(self.db.one("SELECT state_json FROM solo_expeditions WHERE player_id='1'"))
+
+        # Adventure cooldowns are intentionally not part of this emergency clear.
+        self.game._set_cooldown("1", "solo_venture", 420)
+        remaining_before = self.game._cooldown_remaining("1", "solo_venture")
+
+        # Raids/world bosses use a separate state owner and must not be touched.
+        self.game.active_boss = {"id": 999, "name": "Recovery Test Boss"}
+        raid_before = dict(self.game.active_boss)
+
+        result = self.game.clear_all_adventures()
+        self.assertTrue(result.ok, result.messages)
+        self.assertEqual(result.data["encounters_cleared"], 1)
+        self.assertEqual(result.data["hunts_cleared"], 1)
+        self.assertEqual(result.data["solo_ventures_cleared"], 1)
+        self.assertEqual(result.data["adventures_cleared"], 3)
+        self.assertIsNone(self.game.active_encounter)
+        self.assertEqual(self.game.encounter_roster, {})
+        self.assertEqual(self.game.active_hunts, {})
+        self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM solo_expeditions")["n"], 0)
+        self.assertEqual(self.game.active_boss, raid_before)
+        self.assertGreater(self.game._cooldown_remaining("1", "solo_venture"), 0)
+        self.assertLessEqual(self.game._cooldown_remaining("1", "solo_venture"), remaining_before)
+
+        checkpoint = self.db.one("SELECT value_json FROM runtime_state WHERE state_key='combat'")
+        self.assertIsNotNone(checkpoint)
+        payload = __import__("json").loads(checkpoint["value_json"])
+        self.assertIsNone(payload.get("active_encounter"))
+        self.assertEqual(payload.get("active_hunts"), {})
+        self.assertEqual(payload.get("active_boss", {}).get("name"), "Recovery Test Boss")
+
+    def test_clear_all_adventures_is_safe_when_nothing_is_active(self):
+        result = self.game.clear_all_adventures()
+        self.assertTrue(result.ok)
+        self.assertEqual(result.data["adventures_cleared"], 0)
+        self.assertIn("No active", result.messages[0])
+
     def test_reset_all_player_timers_does_not_advance_active_combat_deadlines(self):
         self.assertTrue(self.game.choose_job("1", "warrior").ok)
         started = self.game.venture("1", bypass_cooldown=True)
