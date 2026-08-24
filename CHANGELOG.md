@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.1.16 — Arsenal Hotfix 4
+
+- Adds streamer-only `!clearadventures` (`!clearventures` alias) as an authoritative recovery command for orphaned adventure state.
+- Clears the shared field/Rally encounter, all timed Hunt assignments, and all persisted Solo Ventures in one atomic Bot-side operation.
+- Preserves raids/world bosses, player progression, inventory, persisted vitals, cooldowns, camps, shops, achievements, and Titles.
+- Wakes hosted Portal sync immediately after the command so recovered state is published promptly.
+- Advances Bot/Web runtime to `1.1.16-arsenal-h4` and frontend asset revision to `1.1.16-arsenal1h4`; schema 5 and Portal protocol 14 remain unchanged.
+
 ## v1.1.16 — Arsenal Hotfix 1
 
 - Rebuilds Hunts as per-player persisted timed assignments: C 5m, B 15m, A 30m, S 1h, S+ 2h.

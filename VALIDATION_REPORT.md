@@ -1,79 +1,79 @@
-# Crystal Guild v1.1.16 — Arsenal Hotfix 1 Validation Report
+# Crystal Guild v1.1.16 — Arsenal Hotfix 4 Validation Report
 
-## Certification summary
+## Feature validation
 
-**PASS — timed autonomous Hunts and the website readability pass are certified on the v1.1.16 Arsenal schema-5 / protocol-14 baseline.**
+PASS — `!clearadventures` is registered as a streamer-only Twitch command and uses the existing shared owner gate.
 
-| Check | Result |
-|---|---:|
-| Bot automated tests | **366 / 366 PASS** |
-| Frontend source/unit/regression tests | **168 / 168 PASS** |
-| Hosted Portal/API tests | **40 / 40 PASS** |
-| Python grammar sweep | **74 / 74 PASS** |
-| JS/JSX/MJS independent TypeScript parse | **103 / 103 PASS** |
-| 1,000-player / 10,000-op / 4-reader stress | **PASS** |
+PASS — `!clearventures` is retained as a convenience alias while `!clearadventures` remains the documented canonical command.
 
-## Timed Hunt contracts
+PASS — the engine recovery operation clears the shared field/Rally encounter and encounter roster.
 
-Automated and targeted coverage verifies:
+PASS — all timed Hunt assignments are removed from authoritative runtime state and the empty set is persisted through the combat checkpoint.
 
-- exact rank timers: **C 5m / B 15m / A 30m / S 1h / S+ 2h**;
-- accepting a new Hunt does not occupy the shared `active_encounter` slot;
-- rewards are deferred until the timed assignment resolves;
-- early resolution is rejected;
-- daemon resolution does not occur before the deadline and does occur when due;
-- active Hunt deadlines are present in persisted/runtime combat state;
-- only one Hunt may be active per player while different players may Hunt concurrently;
-- build/recovery activity is locked while that hero is away;
-- Hunt cooldown covers the assignment duration;
-- automatic consumable ceilings are enforced by rank;
-- survival logic does not indiscriminately spend rare recovery items;
-- timed Hunt state survives runtime checkpoint/restore;
-- Hunt combat metrics and normal reward/record paths remain intact;
-- Twitch command dispatch only wakes the scheduler; chat activity is not the resolution trigger;
-- Solo Venture and shared combat state remain independent;
-- legacy pre-hotfix Hunt checkpoints remain compatible.
+PASS — all schema-5 `solo_expeditions` rows are deleted directly, so an orphaned Solo Venture can be recovered even when Portal cannot render it.
 
-## Website contracts
+PASS — an active raid/world boss remains untouched.
 
-The Adventure Board and site regressions verify:
+PASS — adventure cooldowns remain untouched; `!resettimers` remains the separate explicit timer reset.
 
-- active timed Hunt state, countdown, progress, and assignment duration are presented to players;
-- new Hunt copy explicitly states that chat combat is not required;
-- old new-Hunt Twitch-round instructions are absent;
-- Portal, Streamer Dashboard, and Player Guide include the Hotfix 1 readability safeguards;
-- long text can wrap without forcing card/grid overflow;
-- mobile action targets and Hunt-progress layouts remain usable at narrow widths;
-- current Arsenal functionality, Portal protocol behavior, and hosted routes continue to pass the complete existing suites.
+PASS — Streamer Dashboard documents the new recovery command and its scope.
 
-## Stress result
+## Source regression suites
 
-Synthetic cloud profile:
+- Bot automated tests: **368 / 368 PASS**
+- Frontend automated tests: **171 / 171 PASS**
+- Hosted Portal/API tests: **45 / 45 PASS**
+- Python grammar: **74 / 74 PASS**
+- JavaScript / JSX / MJS syntax parse: **104 / 104 PASS**
 
-- Players: **1,000**
-- Operations: **10,000**
-- Concurrent Portal readers: **4**
-- Portal reads: **6,898**
-- Elapsed: **15.04 s**
-- Throughput: **664.9 ops/s**
-- Ledger rows: **12,594**
-- SQLite quick-check failures: **0**
-- Foreign-key violations: **0**
-- Negative Gil states: **0**
-- Negative inventory states: **0**
+Expected simulated-error log messages in the Bot tests (notification outage, action acknowledgement loss, corrupt recovery fixture, Twitch status lookup failures) remained test fixtures and did not fail the suite.
+
+## Synthetic concurrency stress
+
+Configuration:
+
+- 1,000 players
+- 10,000 mutation operations
+- 4 concurrent Portal readers
+
+Result:
+
+- elapsed: **16.38 s**
+- throughput: **610.3 ops/s**
+- Portal reads: **7,557**
+- SQLite journal mode: **WAL**
+- quick-check failures: **0**
+- foreign-key violations: **0**
+- negative Gil rows: **0**
+- negative inventory rows: **0**
 - Portal read errors: **0**
-- Transaction rollbacks: **0**
+- transaction rollbacks: **0**
 
-## Compatibility
+**CLOUD RUNTIME STRESS PASS**
 
-- Runtime: `1.1.16-arsenal-h1`
-- Frontend asset revision: `1.1.16-arsenal1h1`
-- Local DB schema: **5**
-- Hosted sync schema: **1**
-- Hosted sync compatibility: `1.1.15-wayfarer`
+## Release identity
+
+- Bot runtime: `1.1.16-arsenal-h4`
+- Web runtime: `1.1.16-arsenal-h4`
+- frontend asset revision: `1.1.16-arsenal1h4`
+- local DB schema: **5**
+- hosted sync schema: **1**
 - Portal Action protocol: **14**
-- Twitch prefix: `!`
 
-No database migration, player reset, new Render secret, or new Twitch OAuth scope is introduced.
+Package extraction/overlay verification is recorded after release archives are assembled.
 
-Build-environment note: a full local Vite production bundle is not part of this certification because the frontend dependency tree is not installed in this execution environment. Frontend regressions, independent syntax parsing, hosted API tests, and release-package verification cover the shipped source; Render performs the normal production dependency install/build during deployment.
+## Exact release-package verification
+
+PASS — extracted Complete archive matches the finalized Hotfix 4 source tree exactly: **0 diff lines**.
+
+PASS — extracted standalone Bot archive matches the finalized Bot tree exactly: **0 diff lines**.
+
+PASS — extracted standalone Web archive matches the finalized Web tree exactly: **0 diff lines**.
+
+PASS — applying `CrystalGuild-v1.1.16-Arsenal-Hotfix4-Update-from-Hotfix3.zip` over an untouched Arsenal Hotfix 3 Complete tree reproduces the finalized Hotfix 4 tree exactly: **0 diff lines**.
+
+Suites rerun from the extracted Complete archive:
+
+- Bot: **368 / 368 PASS**
+- Frontend: **171 / 171 PASS**
+- Hosted Portal/API: **45 / 45 PASS**

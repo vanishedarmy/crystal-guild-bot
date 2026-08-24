@@ -1,6 +1,6 @@
-# Crystal Guild v1.1.16 — Arsenal Hotfix 1 Manual Check
+# Crystal Guild v1.1.16 — Arsenal Hotfix 4 Manual Check
 
-- [ ] `!cgversion` reports `1.1.16-arsenal-h1`.
+- [ ] `!cgversion` reports `1.1.16-arsenal-h4`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
@@ -45,3 +45,12 @@
 - [ ] Defeat keeps secured XP/JP, recovers half pending Gil, and loses loose item spoils.
 - [ ] An active Solo Venture does not occupy the shared Rally/Hunt battle slot.
 - [ ] Profile tabs begin Overview → Adventure Board → Jobs → Equipment & Inventory.
+
+## Arsenal Hotfix 4 — Adventure recovery
+
+- [ ] Start or seed a Solo Venture, then run `!clearadventures`; the Solo Venture row is removed and Portal returns to no active Solo Venture after sync.
+- [ ] With a timed Hunt active, `!clearadventures` cancels the assignment without granting Hunt rewards.
+- [ ] With a field/Rally encounter active, `!clearadventures` clears that encounter.
+- [ ] An active raid/world boss is not cleared.
+- [ ] Player progression, inventory, persisted HP/MP/AP, and cooldowns remain unchanged.
+- [ ] `!resettimers` remains the separate command for intentionally clearing cooldowns.
