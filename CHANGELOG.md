@@ -1,5 +1,17 @@
 # Crystal Guild Changelog
 
+## v1.1.16 — Arsenal
+
+- Expands every Job to six active Battle Abilities across JLv.1, 8, 15, 22, 30, and 40 for 108 total abilities.
+- Adds stronger elemental and special-effect identity using existing Fire/Ice/Lightning/Wind/Water/Holy/Dark and status/resource mechanics.
+- Surfaces ability element/effect traits in Job details, Player Guide, and interactive Solo Venture ability selection.
+- Adds four C-rank starter Hunts at Lv.2/4/6/8 with new marks, enemy behaviors, rewards, and first-clear Titles.
+- Adds four early World Bosses at recommended Lv.6/10/14/18 before Bomb King.
+- Adds eight Lv.3–15 consumable-focused crafting recipes.
+- Keeps DB schema 5, hosted sync schema 1, hosted sync compatibility `1.1.15-wayfarer`, Portal Action protocol 14, and Twitch prefix `!` unchanged.
+- Advances runtime to `1.1.16-arsenal` and frontend asset revision to `1.1.16-arsenal1`.
+- Requires no database migration, player reset, new Render secret, or new OAuth scope.
+
 ## v1.1.15 — Wayfarer Hotfix 3
 
 - Adds authenticated Portal Title equipping for earned Titles.

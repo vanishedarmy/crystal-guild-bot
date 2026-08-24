@@ -1,6 +1,6 @@
-# Crystal Guild v1.1.15 — Wayfarer Hotfix 3 Manual Check
+# Crystal Guild v1.1.16 — Arsenal Manual Check
 
-- [ ] `!cgversion` reports `1.1.15-wayfarer`.
+- [ ] `!cgversion` reports `1.1.16-arsenal`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
@@ -14,6 +14,14 @@
 - [ ] Existing player progression, Fellowship, Adventure Board, hosted overlay, and stream-live gate remain intact.
 - [ ] On the Portal, an active Rally Venture renders inside the Rally Venture panel, not below Current Region.
 - [ ] Portal buttons/filters are readable, identify their purpose/target, and remain clear when selected, focused, or disabled.
+
+## Arsenal content
+
+- [ ] Each Job detail shows six active abilities at JLv.1 / 8 / 15 / 22 / 30 / 40.
+- [ ] Element/special-effect traits appear in Job details, Player Guide, and Solo Venture ability selection.
+- [ ] Hunts include starter marks at Lv.2 / 4 / 6 / 8 in ascending order.
+- [ ] World Boss data includes Goblin King, Hornet Empress, Skeleton Warlord, and Gigas Chief before Bomb King.
+- [ ] Blacksmith/crafting references include the eight new Lv.3–15 consumable recipes.
 
 ## Wayfarer Solo Venture
 

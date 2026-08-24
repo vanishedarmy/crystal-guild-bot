@@ -1,11 +1,11 @@
-# Crystal Guild v1.1.15 — Wayfarer Full Setup
+# Crystal Guild v1.1.16 — Arsenal Full Setup
 
 This guide covers both supported operating modes:
 
 1. **Local Windows runtime** — the traditional Crystal Guild setup.
 2. **Render Cloud Continuity** — the authoritative Bot runs continuously online.
 
-v1.1.15 keeps the established local/cloud deployment model while adding interactive Portal Solo Ventures. Local database schema is **5**, hosted sync schema remains **1**, Portal Action protocol is **14**, and the Twitch prefix remains **`!`**.
+v1.1.16 keeps the established local/cloud deployment model and Wayfarer Solo Venture persistence while expanding Job abilities and early-game Hunts, World Bosses, and consumable crafting. Local database schema remains **5**, hosted sync schema remains **1**, Portal Action protocol remains **14**, and the Twitch prefix remains **`!`**.
 
 ---
 
@@ -119,7 +119,7 @@ Owner diagnostics in Twitch:
 !health
 ```
 
-`!cgversion` should report **v1.1.15 Wayfarer**.
+`!cgversion` should report **v1.1.16 Arsenal**.
 
 ---
 
@@ -237,7 +237,7 @@ Render Bot worker --> integrated Portal sync/actions --> hosted Web
 
 Do not run both sync methods against the same authoritative Guild at once.
 
-The consolidated v1.1.15 Complete build includes a matching Web package. Deploy the v1.1.15 Web package with the Wayfarer Bot because Portal Action protocol 14 is required for interactive Solo Venture controls.
+The consolidated v1.1.16 Complete build includes a matching Web package. Deploy the v1.1.16 Web package with the Arsenal Bot so gameplay data, Guide content, and frontend ability references remain aligned.
 
 ---
 

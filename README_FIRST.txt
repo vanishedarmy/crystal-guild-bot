@@ -1,23 +1,26 @@
-CRYSTAL GUILD v1.1.15 — WAYFARER HOTFIX 3
-==========================================
+CRYSTAL GUILD v1.1.16 — ARSENAL
+===============================
 
-Baseline: v1.1.15 — Wayfarer Hotfix 2
+Upgrade baseline: v1.1.15 — Wayfarer Hotfix 3
 
-Hotfix 3 adds authoritative Adventurer Portal Title management:
-- earned Titles can be equipped directly from Achievements & Titles → Title Collection;
-- the currently equipped Title is clearly marked;
-- locked Titles remain view-only;
-- public/read-only profiles never receive Title mutation controls;
-- the Bot re-validates that the requested Title is actually unlocked before applying it.
+Arsenal expands the combat/content curve:
+- 18 Jobs × 6 active Battle Abilities = 108 abilities;
+- active ability progression at JLv.1 / 8 / 15 / 22 / 30 / 40;
+- richer elemental and special-effect identity;
+- element/effect information on Job details, Player Guide, and Solo Venture ability selection;
+- four new C-rank starter Hunts at Lv.2 / 4 / 6 / 8;
+- four new early World Bosses at recommended Lv.6 / 10 / 14 / 18;
+- eight new Lv.3–15 consumable crafting recipes;
+- Arsenal featured in the Portal What's New panel.
 
-Runtime: 1.1.15-wayfarer-h3
-Frontend: 1.1.15-wayfarer1h3
-DB schema: 5 (unchanged)
+Runtime: 1.1.16-arsenal
+Frontend: 1.1.16-arsenal1
+Local DB schema: 5 (unchanged)
 Hosted sync schema: 1 (unchanged)
-Hosted sync compatibility: 1.1.15-wayfarer
-Portal Action protocol: 14
+Hosted sync compatibility: 1.1.15-wayfarer (unchanged)
+Portal Action protocol: 14 (unchanged)
 Twitch prefix: !
 
 PRESERVE: .env, .tio.tokens.json, crystal_guild.db, Twitch token database, and private runtime state.
 
-Hotfix 3 does NOT run a database migration and does NOT reset players. It does require matching Bot + Web files because Portal Action protocol advances 13 → 14.
+Arsenal requires matching Bot + Web files but runs NO database migration and requires NO player reset, new Render secret, or new OAuth scope.

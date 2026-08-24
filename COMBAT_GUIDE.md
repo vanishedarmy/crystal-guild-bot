@@ -1,4 +1,4 @@
-# Crystal Guild v1.1.15 — Wayfarer Battle & Recovery Guide
+# Crystal Guild v1.1.16 — Arsenal Battle & Recovery Guide
 
 ## Portal Solo Venture — Wayfarer
 
@@ -47,7 +47,7 @@ MP/AP now persist between encounters. Starting a new battle uses the amount the 
 
 ## Active Job abilities
 
-Every Job ships with three Active Battle abilities at JLv.1, JLv.15, and JLv.30. Use:
+Every Job now has six Active Battle abilities across JLv.1, 8, 15, 22, 30, and 40. Arsenal also surfaces elemental identity and special effects such as status pressure, healing, cleansing, piercing, resource recovery, and critical focus. Use:
 
 ```text
 !abilities
