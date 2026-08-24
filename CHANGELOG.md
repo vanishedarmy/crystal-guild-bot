@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.1.17 — Arsenal II
+- Expands Active Battle abilities from 108 to 172; seven core caster Jobs now use a 12-step JLv curve and every other Job gains JLv.12/JLv.35 techniques.
+- Reorganizes Moogle Emporium into Buy/Sell plus Weapons/Armor/Items categories and clarifies Blacksmith Recipes/Forge Gear views.
+- Adds Camp & Recovery to the Adventure Board and compacts the mobile Portal masthead while preserving scroll-away behavior.
+- Moves Hosted Raid Overlay help to the bottom of the Streamer Dashboard.
+- Suppresses autonomous Twitch action/result announcements whenever stream status is OFFLINE or UNKNOWN; Portal gameplay continues normally.
+- Runtime `1.1.17-arsenal-ii`; frontend `1.1.17-arsenal-ii1`; schema 5, hosted sync 1, Portal protocol 14 unchanged.
+
 ## v1.1.16 — Arsenal Hotfix 6
 
 - Restricts randomized Daily Guild Provisions to an explicit opt-in catalog of ordinary consumables and approved crafting materials.

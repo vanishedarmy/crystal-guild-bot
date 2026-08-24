@@ -40,7 +40,7 @@ def main() -> int:
     _upgrade_command_prefix()
     load_dotenv()
     db_path = Path(os.getenv("DATABASE_PATH", "crystal_guild.db"))
-    print("Crystal Guild v1.1.16 — Arsenal In-place Upgrade Check")
+    print("Crystal Guild v1.1.17 — Arsenal II In-place Upgrade Check")
     print(f"Database: {db_path}")
     if not db_path.exists():
         print("INFO — no existing Guild database found; nothing to migrate.")

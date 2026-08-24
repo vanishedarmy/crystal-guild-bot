@@ -1,4 +1,4 @@
-# Crystal Guild v1.1.16 — Arsenal Render Cloud Setup
+# Crystal Guild v1.1.17 — Arsenal II Render Cloud Setup
 
 ## Existing v1.1.15 Wayfarer Hotfix 3 cloud deployment
 

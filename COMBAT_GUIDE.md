@@ -1,4 +1,4 @@
-# Crystal Guild v1.1.16 — Arsenal Battle & Recovery Guide
+# Crystal Guild v1.1.17 — Arsenal II Battle & Recovery Guide
 
 ## Portal Solo Venture — Wayfarer
 

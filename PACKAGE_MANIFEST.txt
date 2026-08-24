@@ -1,10 +1,10 @@
-Crystal Guild Bot v1.1.16 — Arsenal Hotfix 6
-Runtime: 1.1.16-arsenal-h6
+Crystal Guild Bot v1.1.17 — Arsenal II
+Runtime: 1.1.17-arsenal-ii
 Local DB schema: 5
 Hosted sync schema: 1
 Hosted sync runtime compatibility: 1.1.15-wayfarer
 Portal Action protocol: 14
 Twitch prefix: !
-Matching Web asset revision: 1.1.16-arsenal1h5
+Matching Web asset revision: 1.1.17-arsenal-ii1
 
-Arsenal Hotfix 6 restricts Daily Guild Provisions to an explicit curated pool of ordinary consumables and crafting materials. Special/progression items such as Chocobo Registration Writs are never eligible. Orphaned Writs without an authoritative Stable timer row are repaired automatically; legitimate purchased Writs are preserved. No database migration is introduced.
+Arsenal II expands the active ability catalog to 172 techniques, adds Adventure Board Camp state, and gates autonomous Twitch announcements when the channel is offline. No database migration is introduced.

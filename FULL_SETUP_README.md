@@ -1,4 +1,4 @@
-# Crystal Guild v1.1.16 — Arsenal Full Setup
+# Crystal Guild v1.1.17 — Arsenal II Full Setup
 
 This guide covers both supported operating modes:
 
@@ -119,7 +119,7 @@ Owner diagnostics in Twitch:
 !health
 ```
 
-`!cgversion` should report **v1.1.16 Arsenal**.
+`!cgversion` should report **v1.1.17 Arsenal II**.
 
 ---
 

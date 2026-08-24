@@ -1,4 +1,4 @@
-# Crystal Guild v1.1.16 — Arsenal Portal Sync + Hosted Overlay
+# Crystal Guild v1.1.17 — Arsenal II Portal Sync + Hosted Overlay
 
 Cloud mode uses in-process Portal synchronization. The Bot sends sanitized player snapshots, Fellowship state, manifest heartbeats, and a sanitized raid-overlay snapshot to the hosted Web service using the existing `PORTAL_SYNC_KEY`.
 

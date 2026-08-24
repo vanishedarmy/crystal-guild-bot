@@ -1,38 +1,38 @@
-# Crystal Guild v1.1.16 — Arsenal Hotfix 6 Validation Report
+# Crystal Guild v1.1.17 — Arsenal II Validation Report
 
-## Scope
+## Source release validation
 
-Hotfix 6 changes Daily Guild Provisions from broad type/rarity inference to an explicit opt-in item pool. Special/progression items such as the Chocobo Registration Writ are not eligible.
+- Bot unittest suite: **377 / 377 PASS**
+- Frontend Node tests: **178 / 178 PASS**
+- Hosted Portal/API tests: **46 / 46 PASS**
+- Python grammar/compile sweep: **75 / 75 PASS**
+- JS/JSX source syntax parse: **52 / 52 PASS**
+- Static game-data validation: **PASS**
+- Active Battle ability catalog: **172 abilities across 18 Jobs**
+  - 7 core caster Jobs: 12 abilities each
+  - 11 other Jobs: 8 abilities each
 
-## Daily provisions checks
+## Arsenal II targeted coverage
 
-PASS — Daily pool is explicit and opt-in.
+PASS — core caster spellbooks use the new 12-step JLv progression.
 
-PASS — `chocobo_writ`, `ancient_coin`, `goblin_medallion`, and `gigas_brace` are outside the approved pool.
+PASS — every non-caster Job retains the existing six abilities and gains JLv.12/JLv.35 additions.
 
-PASS — every approved Daily item exists in the current item catalog, is an ordinary consumable/material, and is not marked unsellable.
+PASS — all 172 active abilities resolve through the existing Active Battle resource/effect path under the combat-balance suite.
 
-PASS — a synthetic future common, low-value, unsellable special material cannot enter the pool merely by matching type/rarity/value.
+PASS — off-stream autonomous Twitch announcements are suppressed; live announcements still deliver.
 
-PASS — orphaned Chocobo Writ inventory with no authoritative Stable purchase/timer row is removed and audit-recorded; legitimately purchased/timed Writs are preserved.
+PASS — Adventure Board state exposes authoritative Camp recovery state and START_REST remains the mutation path.
 
-PASS — level gates for consumables, randomized quantities, subscriber-tier provision roll counts, subscriber Gil bonuses, and the 24-hour cooldown remain unchanged.
+PASS — Moogle Buy/Sell category UI, Blacksmith active view state, compact mobile header, and Streamer Overlay placement have dedicated frontend regression coverage.
 
-## Automated tests
+## Synthetic cloud-runtime stress profile
 
-- Bot: **372 / 372 PASS**
-- Frontend: **171 / 171 PASS**
-- Hosted Portal/API: **46 / 46 PASS**
-- Python grammar/compile: **74 / 74 PASS**
-- JS/JSX/MJS syntax: **103 / 103 PASS**
+Configuration: **1,000 players / 10,000 operations / 4 concurrent Portal readers**.
 
-The Bot suite emits expected simulated outage/acknowledgement-loss warnings from resilience tests; these tests pass.
-
-## Stress profile
-
-PASS — 1,000 synthetic players, 10,000 gameplay/read operations, 4 concurrent Portal readers.
-
-- Throughput: **770.7 ops/sec**
+- Throughput: **554.8 ops/sec**
+- Portal reads: **8,449**
+- SQLite journal mode: WAL
 - SQLite quick-check failures: **0**
 - Foreign-key violations: **0**
 - Negative Gil rows: **0**
@@ -40,24 +40,31 @@ PASS — 1,000 synthetic players, 10,000 gameplay/read operations, 4 concurrent 
 - Portal read errors: **0**
 - Transaction rollbacks: **0**
 
+Result: **CLOUD RUNTIME STRESS PASS**.
+
 ## Compatibility
 
-- Bot runtime: `1.1.16-arsenal-h6`
-- Web runtime: `1.1.16-arsenal-h5` unchanged
-- Frontend asset revision: `1.1.16-arsenal1h5` unchanged
-- Local DB schema: **5** unchanged
-- Hosted sync schema: **1** unchanged
-- Portal Action protocol: **14** unchanged
-- Twitch prefix: `!`
+- Bot runtime: `1.1.17-arsenal-ii`
+- Hosted Web runtime: `1.1.17-arsenal-ii`
+- Frontend asset revision: `1.1.17-arsenal-ii1`
+- DB schema: **5**
+- Hosted sync schema: **1**
+- Portal Action protocol: **14**
 
-No database migration, player reset, OAuth change, new Render secret, or Web replacement is required.
+No database migration, reset, OAuth change, or new environment variable is required.
 
-## Package verification
+Package extraction/overlay verification and checksum verification are recorded after final archive generation.
 
-PASS — the standalone Bot archive reproduces the finalized Bot tree exactly: **0 diff lines**.
+## Final archive verification
 
-PASS — the Complete archive reproduces the finalized release tree exactly: **0 diff lines**.
+The release archives were generated from the finalized source and independently extracted for verification.
 
-PASS — applying `CrystalGuild-v1.1.16-Arsenal-Hotfix6-Update-from-Hotfix5.zip` over an untouched Hotfix 5 Complete tree reproduces the finalized Hotfix 6 tree exactly: **0 diff lines**.
+- Complete archive vs finalized complete tree: **0 differences**
+- Bot archive vs finalized Bot tree: **0 differences**
+- Web archive vs finalized Web tree: **0 differences**
+- Hotfix 6 + direct Arsenal II update overlay vs finalized tree: **0 differences**
+- Tests from extracted Complete archive: **377 / 377 Bot PASS**
+- Tests from extracted Complete archive: **178 / 178 frontend PASS**
+- Tests from extracted Complete archive: **46 / 46 hosted Portal/API PASS**
 
-PASS — tests executed again from the extracted release package: **372 Bot**, **171 frontend**, **46 hosted Portal/API**.
+The standalone SHA-256 manifest is generated after the final archive rebuild so its hashes describe the exact files delivered to the user.
