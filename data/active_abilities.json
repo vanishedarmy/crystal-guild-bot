@@ -43,6 +43,29 @@
         "resource": "ap"
       },
       {
+        "id": "skull_sunder",
+        "name": "Skull Sunder",
+        "level": 12,
+        "target": "enemy",
+        "description": "A punishing axe blow that cuts through part of the enemy’s defense.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.35
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.65
+          }
+        ],
+        "cost": 7,
+        "resource": "ap"
+      },
+      {
         "id": "provoke",
         "name": "Provoke",
         "level": 15,
@@ -114,6 +137,33 @@
         "resource": "ap"
       },
       {
+        "id": "vengeance",
+        "name": "Vengeance",
+        "level": 35,
+        "target": "self",
+        "description": "Brace for punishment, reducing incoming damage while building power for the next exchange.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "self"
+          },
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.22,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
         "id": "decimate",
         "name": "Decimate",
         "level": 40,
@@ -182,6 +232,31 @@
         "resource": "ap"
       },
       {
+        "id": "fists_of_wind",
+        "name": "Fists of Wind",
+        "level": 12,
+        "target": "enemy",
+        "description": "A Wind-charged combination that hits quickly and sharpens evasion.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.25
+          },
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 7,
+        "resource": "ap",
+        "element": "Wind"
+      },
+      {
         "id": "chakra",
         "name": "Chakra",
         "level": 15,
@@ -237,6 +312,30 @@
           }
         ],
         "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "forbidden_chakra",
+        "name": "Forbidden Chakra",
+        "level": 35,
+        "target": "enemy",
+        "description": "Release stored fighting spirit in a high-critical physical burst.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.9
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 15,
         "resource": "ap"
       },
       {
@@ -300,6 +399,29 @@
           }
         ],
         "cost": 5,
+        "resource": "ap"
+      },
+      {
+        "id": "feint",
+        "name": "Feint",
+        "level": 12,
+        "target": "enemy",
+        "description": "A deceptive strike that disrupts the enemy’s timing and can Slow it.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.2
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 0.7
+          }
+        ],
+        "cost": 7,
         "resource": "ap"
       },
       {
@@ -368,6 +490,29 @@
         "resource": "ap"
       },
       {
+        "id": "dancing_edge",
+        "name": "Dancing Edge",
+        "level": 35,
+        "target": "enemy",
+        "description": "A precise multi-cut technique condensed into one attack that leaves the target exposed.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.8
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 0.8
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
         "id": "assassinate",
         "name": "Assassinate",
         "level": 40,
@@ -408,6 +553,23 @@
         "resource": "mp"
       },
       {
+        "id": "water",
+        "name": "Water",
+        "level": 5,
+        "target": "enemy",
+        "description": "Focused Water magic for exploiting Water weakness.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.12
+          }
+        ],
+        "cost": 5,
+        "resource": "mp",
+        "element": "Water"
+      },
+      {
         "id": "blizzard",
         "name": "Blizzard",
         "level": 8,
@@ -423,6 +585,30 @@
         "cost": 6,
         "resource": "mp",
         "element": "Ice"
+      },
+      {
+        "id": "fira",
+        "name": "Fira",
+        "level": 12,
+        "target": "enemy",
+        "description": "A stronger Fire spell with a chance to leave the target vulnerable.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.38
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.45
+          }
+        ],
+        "cost": 8,
+        "resource": "mp",
+        "element": "Fire"
       },
       {
         "id": "thunder",
@@ -449,6 +635,30 @@
         "resource": "mp"
       },
       {
+        "id": "blizzara",
+        "name": "Blizzara",
+        "level": 18,
+        "target": "enemy",
+        "description": "A stronger Ice spell that can Slow the enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.45
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.55
+          }
+        ],
+        "cost": 9,
+        "resource": "mp",
+        "element": "Ice"
+      },
+      {
         "id": "drain",
         "name": "Drain",
         "level": 22,
@@ -470,6 +680,30 @@
         "element": "Dark"
       },
       {
+        "id": "thundara",
+        "name": "Thundara",
+        "level": 26,
+        "target": "enemy",
+        "description": "High-voltage Lightning magic with an improved chance to Stun.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.62
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 0.0,
+            "chance": 0.3
+          }
+        ],
+        "cost": 12,
+        "resource": "mp",
+        "element": "Lightning"
+      },
+      {
         "id": "flare",
         "name": "Flare",
         "level": 30,
@@ -484,6 +718,37 @@
         ],
         "cost": 18,
         "resource": "mp"
+      },
+      {
+        "id": "bio",
+        "name": "Bio",
+        "level": 35,
+        "target": "enemy",
+        "description": "Dark-aspected magic that poisons and weakens a single enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.55
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.55
+          }
+        ],
+        "cost": 15,
+        "resource": "mp",
+        "element": "Dark"
       },
       {
         "id": "freeze",
@@ -508,6 +773,29 @@
         "cost": 19,
         "resource": "mp",
         "element": "Ice"
+      },
+      {
+        "id": "ultima",
+        "name": "Ultima",
+        "level": 45,
+        "target": "enemy",
+        "description": "The pinnacle of destructive non-elemental magic, focused on one target.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.35
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -528,6 +816,30 @@
         ],
         "cost": 5,
         "resource": "mp"
+      },
+      {
+        "id": "dia",
+        "name": "Dia",
+        "level": 5,
+        "target": "enemy",
+        "description": "Holy-aspected light magic that weakens a foe’s defenses.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.0
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.6
+          }
+        ],
+        "cost": 5,
+        "resource": "mp",
+        "element": "Holy"
       },
       {
         "id": "aero",
@@ -554,6 +866,22 @@
         "element": "Wind"
       },
       {
+        "id": "cure_ii",
+        "name": "Cure II",
+        "level": 12,
+        "target": "ally",
+        "description": "Restore a larger amount of HP to one ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.25,
+            "recipient": "target"
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
         "id": "protect",
         "name": "Protect",
         "level": 15,
@@ -568,6 +896,29 @@
           }
         ],
         "cost": 8,
+        "resource": "mp"
+      },
+      {
+        "id": "regen_spell",
+        "name": "Regen",
+        "level": 18,
+        "target": "ally",
+        "description": "Restore some HP immediately and grant regenerative healing for three rounds.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 0.65,
+            "recipient": "target"
+          },
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.07,
+            "chance": 1.0
+          }
+        ],
+        "cost": 9,
         "resource": "mp"
       },
       {
@@ -586,6 +937,25 @@
         "resource": "mp"
       },
       {
+        "id": "shell",
+        "name": "Shell",
+        "level": 26,
+        "target": "ally",
+        "description": "Wrap one ally in protective magic for three rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.24,
+            "chance": 1.0,
+            "recipient": "target"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
         "id": "raise",
         "name": "Raise",
         "level": 30,
@@ -599,6 +969,30 @@
         ],
         "cost": 18,
         "resource": "mp"
+      },
+      {
+        "id": "banish",
+        "name": "Banish",
+        "level": 35,
+        "target": "enemy",
+        "description": "Focused Holy magic that can leave the enemy weakened.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.75
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 15,
+        "resource": "mp",
+        "element": "Holy"
       },
       {
         "id": "holy",
@@ -623,6 +1017,26 @@
         "cost": 19,
         "resource": "mp",
         "element": "Holy"
+      },
+      {
+        "id": "benediction",
+        "name": "Benediction",
+        "level": 45,
+        "target": "ally",
+        "description": "A supreme single-target heal that also removes harmful statuses.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.8,
+            "recipient": "target"
+          },
+          {
+            "type": "cleanse",
+            "count": 4
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -646,6 +1060,30 @@
         "resource": "mp"
       },
       {
+        "id": "veraero",
+        "name": "Veraero",
+        "level": 5,
+        "target": "enemy",
+        "description": "Wind-aspected spellblade magic with a chance to Blind.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.12
+          },
+          {
+            "type": "status",
+            "status": "blind",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.45
+          }
+        ],
+        "cost": 5,
+        "resource": "mp",
+        "element": "Wind"
+      },
+      {
         "id": "verfire",
         "name": "Verfire",
         "level": 8,
@@ -663,6 +1101,22 @@
         "element": "Fire"
       },
       {
+        "id": "verstone",
+        "name": "Verstone",
+        "level": 12,
+        "target": "enemy",
+        "description": "A dense spellblade burst that partially pierces defense.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.32
+          }
+        ],
+        "cost": 7,
+        "resource": "mp"
+      },
+      {
         "id": "vercure",
         "name": "Vercure",
         "level": 15,
@@ -676,6 +1130,30 @@
         ],
         "cost": 7,
         "resource": "mp"
+      },
+      {
+        "id": "verwater",
+        "name": "Verwater",
+        "level": 18,
+        "target": "enemy",
+        "description": "Water-aspected spellblade magic that can Weaken the target.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.42
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.55
+          }
+        ],
+        "cost": 9,
+        "resource": "mp",
+        "element": "Water"
       },
       {
         "id": "verthunder",
@@ -702,6 +1180,30 @@
         "element": "Lightning"
       },
       {
+        "id": "verholy",
+        "name": "Verholy",
+        "level": 26,
+        "target": "enemy",
+        "description": "Holy spellblade magic that can briefly Stun the enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.62
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 0.0,
+            "chance": 0.25
+          }
+        ],
+        "cost": 12,
+        "resource": "mp",
+        "element": "Holy"
+      },
+      {
         "id": "dualcast",
         "name": "Dualcast",
         "level": 30,
@@ -716,6 +1218,30 @@
         ],
         "cost": 14,
         "resource": "mp"
+      },
+      {
+        "id": "verflare",
+        "name": "Verflare",
+        "level": 35,
+        "target": "enemy",
+        "description": "High-tier Fire spellblade magic that exposes the target.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.82
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 15,
+        "resource": "mp",
+        "element": "Fire"
       },
       {
         "id": "scorch",
@@ -740,6 +1266,30 @@
         "cost": 18,
         "resource": "mp",
         "element": "Fire"
+      },
+      {
+        "id": "resolution",
+        "name": "Resolution",
+        "level": 45,
+        "target": "enemy",
+        "description": "A master spellblade finisher that combines magical and physical force.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.25
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -784,6 +1334,31 @@
           }
         ],
         "cost": 6,
+        "resource": "ap",
+        "element": "Holy"
+      },
+      {
+        "id": "holy_blade",
+        "name": "Holy Blade",
+        "level": 12,
+        "target": "enemy",
+        "description": "Channel Holy light through the weapon for a disciplined armored strike.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.25
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 7,
         "resource": "ap",
         "element": "Holy"
       },
@@ -852,6 +1427,25 @@
         "resource": "mp"
       },
       {
+        "id": "sentinel",
+        "name": "Sentinel",
+        "level": 35,
+        "target": "self",
+        "description": "Take a defensive stance that sharply reduces incoming damage for three rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.3,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
         "id": "confiteor",
         "name": "Confiteor",
         "level": 40,
@@ -909,6 +1503,31 @@
           }
         ],
         "cost": 6,
+        "resource": "ap",
+        "element": "Dark"
+      },
+      {
+        "id": "flood_of_darkness",
+        "name": "Flood of Darkness",
+        "level": 12,
+        "target": "enemy",
+        "description": "Release a Dark wave that damages the foe and feeds your aggression.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.3
+          },
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 7,
         "resource": "ap",
         "element": "Dark"
       },
@@ -976,6 +1595,33 @@
         "element": "Dark"
       },
       {
+        "id": "dark_mind",
+        "name": "Dark Mind",
+        "level": 35,
+        "target": "self",
+        "description": "Wrap yourself in darkness, gaining protection and regenerative resolve.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 1.0,
+            "recipient": "self"
+          },
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.24,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
         "id": "quietus",
         "name": "Quietus",
         "level": 40,
@@ -1040,6 +1686,29 @@
         "element": "Wind"
       },
       {
+        "id": "chaos_thrust",
+        "name": "Chaos Thrust",
+        "level": 12,
+        "target": "enemy",
+        "description": "A twisting lance strike that leaves a lingering wound.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.3
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.05,
+            "chance": 0.7
+          }
+        ],
+        "cost": 7,
+        "resource": "ap"
+      },
+      {
         "id": "dragon_sight",
         "name": "Dragon Sight",
         "level": 15,
@@ -1093,6 +1762,30 @@
           }
         ],
         "cost": 14,
+        "resource": "ap",
+        "element": "Fire"
+      },
+      {
+        "id": "dragonfire_dive",
+        "name": "Dragonfire Dive",
+        "level": 35,
+        "target": "enemy",
+        "description": "Descend in a burst of Fire-aspected force with a chance to stagger the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.9
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 0.0,
+            "chance": 0.3
+          }
+        ],
+        "cost": 15,
         "resource": "ap",
         "element": "Fire"
       },
@@ -1160,6 +1853,30 @@
         "element": "Fire"
       },
       {
+        "id": "suiton",
+        "name": "Suiton",
+        "level": 12,
+        "target": "enemy",
+        "description": "Water ninjutsu that softens the enemy for follow-up attacks.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.3
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.7
+          }
+        ],
+        "cost": 7,
+        "resource": "ap",
+        "element": "Water"
+      },
+      {
         "id": "trick_attack",
         "name": "Trick Attack",
         "level": 15,
@@ -1222,6 +1939,31 @@
         ],
         "cost": 13,
         "resource": "ap"
+      },
+      {
+        "id": "aeolian_edge",
+        "name": "Aeolian Edge",
+        "level": 35,
+        "target": "enemy",
+        "description": "A Wind-aspected finishing cut with an elevated critical edge.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.9
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 15,
+        "resource": "ap",
+        "element": "Wind"
       },
       {
         "id": "raiton",
@@ -1293,6 +2035,29 @@
         "resource": "ap"
       },
       {
+        "id": "gekko",
+        "name": "Gekko",
+        "level": 12,
+        "target": "enemy",
+        "description": "A measured crescent cut that weakens the enemy’s offense.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.35
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.7
+          }
+        ],
+        "cost": 7,
+        "resource": "ap"
+      },
+      {
         "id": "third_eye",
         "name": "Third Eye",
         "level": 15,
@@ -1356,6 +2121,30 @@
         "resource": "ap"
       },
       {
+        "id": "shoha",
+        "name": "Shoha",
+        "level": 35,
+        "target": "enemy",
+        "description": "Release disciplined force in a devastating single-target strike.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.0
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
         "id": "ogi_namikiri",
         "name": "Ogi Namikiri",
         "level": 40,
@@ -1395,6 +2184,25 @@
         "element": "Wind"
       },
       {
+        "id": "carbuncles_aegis",
+        "name": "Carbuncle’s Aegis",
+        "level": 5,
+        "target": "self",
+        "description": "Call Carbuncle to wrap the summoner in a protective ward.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.18,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
         "id": "ifrits_favor",
         "name": "Ifrit’s Favor",
         "level": 8,
@@ -1412,6 +2220,33 @@
         "element": "Fire"
       },
       {
+        "id": "titans_ward",
+        "name": "Titan’s Ward",
+        "level": 12,
+        "target": "self",
+        "description": "Invoke Titan’s endurance for stronger protection and brief regeneration.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 2,
+            "magnitude": 0.05,
+            "chance": 1.0,
+            "recipient": "self"
+          },
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.24,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 7,
+        "resource": "mp"
+      },
+      {
         "id": "aetherflow",
         "name": "Aetherflow",
         "level": 15,
@@ -1425,6 +2260,30 @@
         ],
         "cost": 0,
         "resource": "mp"
+      },
+      {
+        "id": "leviathans_favor",
+        "name": "Leviathan’s Favor",
+        "level": 18,
+        "target": "enemy",
+        "description": "Call on Leviathan for Water damage that weakens the enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.45
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.55
+          }
+        ],
+        "cost": 9,
+        "resource": "mp",
+        "element": "Water"
       },
       {
         "id": "shivas_favor",
@@ -1451,6 +2310,30 @@
         "element": "Ice"
       },
       {
+        "id": "garudas_favor",
+        "name": "Garuda’s Favor",
+        "level": 26,
+        "target": "enemy",
+        "description": "Call on Garuda for Wind damage with a chance to Blind.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.62
+          },
+          {
+            "type": "status",
+            "status": "blind",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 0.55
+          }
+        ],
+        "cost": 12,
+        "resource": "mp",
+        "element": "Wind"
+      },
+      {
         "id": "grand_summon",
         "name": "Grand Summon",
         "level": 30,
@@ -1464,6 +2347,29 @@
           }
         ],
         "cost": 17,
+        "resource": "mp"
+      },
+      {
+        "id": "bahamuts_favor",
+        "name": "Bahamut’s Favor",
+        "level": 35,
+        "target": "enemy",
+        "description": "Focus Bahamut’s aether into one devastating non-elemental blast.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.95
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.5
+          }
+        ],
+        "cost": 16,
         "resource": "mp"
       },
       {
@@ -1489,6 +2395,28 @@
         "cost": 19,
         "resource": "mp",
         "element": "Lightning"
+      },
+      {
+        "id": "phoenixs_favor",
+        "name": "Phoenix’s Favor",
+        "level": 45,
+        "target": "enemy",
+        "description": "Call Phoenix for searing Fire damage and restorative flames around the summoner.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.1
+          },
+          {
+            "type": "heal",
+            "power": 0.75,
+            "recipient": "self"
+          }
+        ],
+        "cost": 20,
+        "resource": "mp",
+        "element": "Fire"
       }
     ]
   },
@@ -1512,6 +2440,27 @@
         "resource": "mp"
       },
       {
+        "id": "vampire",
+        "name": "Vampire",
+        "level": 5,
+        "target": "enemy",
+        "description": "A copied Dark technique that steals a portion of damage as HP.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.05
+          },
+          {
+            "type": "drain",
+            "fraction": 0.3
+          }
+        ],
+        "cost": 5,
+        "resource": "mp",
+        "element": "Dark"
+      },
+      {
         "id": "bomb_toss",
         "name": "Bomb Toss",
         "level": 8,
@@ -1529,6 +2478,22 @@
         "element": "Fire"
       },
       {
+        "id": "white_wind",
+        "name": "White Wind",
+        "level": 12,
+        "target": "self",
+        "description": "A copied restorative wind that heals the caster.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.15,
+            "recipient": "self"
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
         "id": "mighty_guard",
         "name": "Mighty Guard",
         "level": 15,
@@ -1544,6 +2509,22 @@
           }
         ],
         "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "thousand_needles",
+        "name": "1000 Needles",
+        "level": 18,
+        "target": "enemy",
+        "description": "A piercing copied technique represented as highly defense-resistant hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.45
+          }
+        ],
+        "cost": 9,
         "resource": "mp"
       },
       {
@@ -1579,6 +2560,37 @@
         "resource": "mp"
       },
       {
+        "id": "glower",
+        "name": "Glower",
+        "level": 26,
+        "target": "enemy",
+        "description": "Lightning from a copied gaze can Blind or briefly Stun the enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.55
+          },
+          {
+            "type": "status",
+            "status": "blind",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.6
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 0.0,
+            "chance": 0.2
+          }
+        ],
+        "cost": 12,
+        "resource": "mp",
+        "element": "Lightning"
+      },
+      {
         "id": "aqua_breath",
         "name": "Aqua Breath",
         "level": 30,
@@ -1603,6 +2615,30 @@
         "element": "Water"
       },
       {
+        "id": "flamethrower",
+        "name": "Flamethrower",
+        "level": 35,
+        "target": "enemy",
+        "description": "A copied Fire breath that burns through defenses and Weakens the target.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.8
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 15,
+        "resource": "mp",
+        "element": "Fire"
+      },
+      {
         "id": "aqua_cannon",
         "name": "Aqua Cannon",
         "level": 40,
@@ -1625,6 +2661,37 @@
         "cost": 18,
         "resource": "mp",
         "element": "Water"
+      },
+      {
+        "id": "night",
+        "name": "Night",
+        "level": 45,
+        "target": "enemy",
+        "description": "A master copied Dark technique that can Silence and Slow one enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.0
+          },
+          {
+            "type": "status",
+            "status": "silence",
+            "turns": 2,
+            "magnitude": 0.0,
+            "chance": 0.55
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 20,
+        "resource": "mp",
+        "element": "Dark"
       }
     ]
   },
@@ -1646,6 +2713,29 @@
           }
         ],
         "cost": 6,
+        "resource": "mp"
+      },
+      {
+        "id": "delay",
+        "name": "Delay",
+        "level": 5,
+        "target": "enemy",
+        "description": "A minor temporal distortion that deals magic damage and Slows one enemy.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.0
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.7
+          }
+        ],
+        "cost": 5,
         "resource": "mp"
       },
       {
@@ -1672,6 +2762,25 @@
         "resource": "mp"
       },
       {
+        "id": "float",
+        "name": "Float",
+        "level": 12,
+        "target": "ally",
+        "description": "Temporal buoyancy increases one ally’s evasion for three rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 3,
+            "magnitude": 0.16,
+            "chance": 1.0,
+            "recipient": "target"
+          }
+        ],
+        "cost": 7,
+        "resource": "mp"
+      },
+      {
         "id": "slow",
         "name": "Slow",
         "level": 15,
@@ -1687,6 +2796,22 @@
           }
         ],
         "cost": 8,
+        "resource": "mp"
+      },
+      {
+        "id": "refresh",
+        "name": "Refresh",
+        "level": 18,
+        "target": "self",
+        "description": "Restore a measured portion of your own MP by rewinding spent aether.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.18,
+            "recipient": "self"
+          }
+        ],
+        "cost": 0,
         "resource": "mp"
       },
       {
@@ -1707,6 +2832,29 @@
         "resource": "mp"
       },
       {
+        "id": "gravity_ii",
+        "name": "Gravity II",
+        "level": 26,
+        "target": "enemy",
+        "description": "Crush one enemy under stronger temporal gravity and leave it Vulnerable.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.55
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.6
+          }
+        ],
+        "cost": 12,
+        "resource": "mp"
+      },
+      {
         "id": "comet",
         "name": "Comet",
         "level": 30,
@@ -1717,6 +2865,33 @@
             "type": "damage",
             "scaling": "magic",
             "power": 1.95
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "quick",
+        "name": "Quick",
+        "level": 35,
+        "target": "self",
+        "description": "Accelerate your own timeline, gaining Haste and Focus for three rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "self"
+          },
+          {
+            "type": "status",
+            "status": "haste",
+            "turns": 3,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "self"
           }
         ],
         "cost": 15,
@@ -1745,6 +2920,22 @@
           }
         ],
         "cost": 18,
+        "resource": "mp"
+      },
+      {
+        "id": "meteor",
+        "name": "Meteor",
+        "level": 45,
+        "target": "enemy",
+        "description": "Call a concentrated meteor onto a single target for extreme non-elemental magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.3
+          }
+        ],
+        "cost": 20,
         "resource": "mp"
       }
     ]
@@ -1790,6 +2981,30 @@
         ],
         "cost": 5,
         "resource": "mp"
+      },
+      {
+        "id": "windbite",
+        "name": "Windbite",
+        "level": 12,
+        "target": "enemy",
+        "description": "A Wind-laced shot that can leave the enemy weakened.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.25
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.7
+          }
+        ],
+        "cost": 7,
+        "resource": "mp",
+        "element": "Wind"
       },
       {
         "id": "armys_paeon",
@@ -1854,6 +3069,33 @@
         "resource": "mp"
       },
       {
+        "id": "radiant_finale",
+        "name": "Radiant Finale",
+        "level": 35,
+        "target": "self",
+        "description": "A triumphant refrain that raises your damage and focus for three rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 3,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "self"
+          },
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.14,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
         "id": "apex_arrow",
         "name": "Apex Arrow",
         "level": 40,
@@ -1914,6 +3156,29 @@
           }
         ],
         "cost": 5,
+        "resource": "ap"
+      },
+      {
+        "id": "ricochet",
+        "name": "Ricochet",
+        "level": 12,
+        "target": "enemy",
+        "description": "A banked precision shot with a high chance to disrupt the target.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.3
+          },
+          {
+            "type": "status",
+            "status": "blind",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 0.65
+          }
+        ],
+        "cost": 7,
         "resource": "ap"
       },
       {
@@ -1981,6 +3246,30 @@
         "element": "Fire"
       },
       {
+        "id": "air_anchor",
+        "name": "Air Anchor",
+        "level": 35,
+        "target": "enemy",
+        "description": "A charged Lightning round that punches through armor and can Stun.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.85
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 0.0,
+            "chance": 0.35
+          }
+        ],
+        "cost": 15,
+        "resource": "ap",
+        "element": "Lightning"
+      },
+      {
         "id": "drill",
         "name": "Drill",
         "level": 40,
@@ -2035,6 +3324,30 @@
         ],
         "cost": 5,
         "resource": "ap"
+      },
+      {
+        "id": "aqua_fang",
+        "name": "Aqua Fang",
+        "level": 12,
+        "target": "enemy",
+        "description": "Call a river beast for a Water-aspected bite that slows the prey.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.3
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 7,
+        "resource": "ap",
+        "element": "Water"
       },
       {
         "id": "thick_hide",
@@ -2100,6 +3413,27 @@
         "resource": "ap"
       },
       {
+        "id": "phoenix_talon",
+        "name": "Phoenix Talon",
+        "level": 35,
+        "target": "enemy",
+        "description": "Call a firebird for a searing strike that restores a little of your vitality.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 1.8
+          },
+          {
+            "type": "drain",
+            "fraction": 0.2
+          }
+        ],
+        "cost": 15,
+        "resource": "ap",
+        "element": "Fire"
+      },
+      {
         "id": "thunder_roar",
         "name": "Thunder Roar",
         "level": 40,
@@ -2145,6 +3479,22 @@
         "resource": "mp"
       },
       {
+        "id": "diagnosis",
+        "name": "Diagnosis",
+        "level": 5,
+        "target": "ally",
+        "description": "Restore HP to one ally with focused noulith aether.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 0.9,
+            "recipient": "target"
+          }
+        ],
+        "cost": 5,
+        "resource": "mp"
+      },
+      {
         "id": "eukrasian_dosis",
         "name": "Eukrasian Dosis",
         "level": 8,
@@ -2168,6 +3518,29 @@
         "resource": "mp"
       },
       {
+        "id": "eukrasian_diagnosis",
+        "name": "Eukrasian Diagnosis",
+        "level": 12,
+        "target": "ally",
+        "description": "Heal one ally and reinforce them with a short protective barrier.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 0.75,
+            "recipient": "target"
+          },
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 2,
+            "magnitude": 0.16,
+            "chance": 1.0
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
         "id": "haima",
         "name": "Haima",
         "level": 15,
@@ -2179,6 +3552,29 @@
             "status": "protect",
             "turns": 3,
             "magnitude": 0.32
+          }
+        ],
+        "cost": 9,
+        "resource": "mp"
+      },
+      {
+        "id": "toxikon",
+        "name": "Toxikon",
+        "level": 18,
+        "target": "enemy",
+        "description": "Condensed aether damages one enemy and can leave it Vulnerable.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.4
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.08,
+            "chance": 0.55
           }
         ],
         "cost": 9,
@@ -2204,6 +3600,33 @@
         "resource": "mp"
       },
       {
+        "id": "kerachole",
+        "name": "Kerachole",
+        "level": 26,
+        "target": "ally",
+        "description": "Reinforce one ally with protection and regenerative aether.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.05,
+            "chance": 1.0,
+            "recipient": "target"
+          },
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "target"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
         "id": "pneuma",
         "name": "Pneuma",
         "level": 30,
@@ -2225,6 +3648,29 @@
         "resource": "mp"
       },
       {
+        "id": "taurochole",
+        "name": "Taurochole",
+        "level": 35,
+        "target": "ally",
+        "description": "Powerfully heal one ally and strengthen their defenses.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.35,
+            "recipient": "target"
+          },
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
         "id": "phlegma",
         "name": "Phlegma",
         "level": 40,
@@ -2242,6 +3688,33 @@
             "turns": 2,
             "magnitude": 0.1,
             "chance": 0.7
+          }
+        ],
+        "cost": 19,
+        "resource": "mp"
+      },
+      {
+        "id": "philosophia",
+        "name": "Philosophia",
+        "level": 45,
+        "target": "self",
+        "description": "Enter a master healing stance, gaining Focus and Regen for three rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.07,
+            "chance": 1.0,
+            "recipient": "self"
+          },
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 3,
+            "magnitude": 0.14,
+            "chance": 1.0,
+            "recipient": "self"
           }
         ],
         "cost": 19,
