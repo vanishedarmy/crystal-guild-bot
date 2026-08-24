@@ -1,3 +1,3 @@
 """Crystal Guild Twitch RPG bot."""
 
-__version__ = "1.1.16-arsenal-h6"
+__version__ = "1.1.17-arsenal-ii"

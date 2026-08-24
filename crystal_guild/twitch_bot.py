@@ -887,10 +887,20 @@ def main() -> None:
         encounter_round_seconds=settings.encounter_round_seconds,
     )
 
+    stream_status = TwitchStreamStatus(
+        settings.client_id,
+        settings.client_secret,
+        settings.owner_id,
+        cache_seconds=settings.stream_status_cache_seconds,
+        stale_seconds=settings.stream_status_stale_seconds,
+    )
     direct_sender = TwitchRESTChatSender(
         settings.client_id, settings.client_secret, settings.bot_id, settings.owner_id
     )
-    notifier = NotificationDispatcher(direct_sender)
+    notifier = NotificationDispatcher(
+        direct_sender,
+        delivery_allowed=lambda: bool(stream_status.refresh().get("live")),
+    )
     encounter_daemon = EncounterDaemon(game, notifier.enqueue)
     token_store = TwitchTokenStore(settings.twitch_token_db) if settings.twitch_token_db else None
     subscription_status = TwitchSubscriptionStatus(
@@ -928,14 +938,6 @@ def main() -> None:
         portal_sync = PortalSyncWorker(sync_client)
     elif settings.cloud_runtime:
         LOGGER.warning("Cloud runtime has in-process Portal sync disabled or Portal credentials are missing.")
-
-    stream_status = TwitchStreamStatus(
-        settings.client_id,
-        settings.client_secret,
-        settings.owner_id,
-        cache_seconds=settings.stream_status_cache_seconds,
-        stale_seconds=settings.stream_status_stale_seconds,
-    )
 
     notifier.start()
     encounter_daemon.start()

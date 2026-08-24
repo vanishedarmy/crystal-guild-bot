@@ -55,7 +55,7 @@ class TwitchRESTChatSender:
 
     TOKEN_URL = "https://id.twitch.tv/oauth2/token"
     CHAT_URL = "https://api.twitch.tv/helix/chat/messages"
-    USER_AGENT = "CrystalGuild/1.1.16-Arsenal-H1"
+    USER_AGENT = "CrystalGuild/1.1.17-Arsenal-II"
 
     def __init__(
         self,
@@ -213,14 +213,22 @@ class TwitchRESTChatSender:
 class NotificationDispatcher:
     """Non-blocking outbound queue for autonomous game announcements."""
 
-    def __init__(self, sender: TwitchRESTChatSender, *, max_queue: int = 256) -> None:
+    def __init__(
+        self,
+        sender: TwitchRESTChatSender,
+        *,
+        max_queue: int = 256,
+        delivery_allowed: Callable[[], bool] | None = None,
+    ) -> None:
         self.sender = sender
+        self.delivery_allowed = delivery_allowed
         self._queue: queue.Queue[GameResult | None] = queue.Queue(maxsize=max_queue)
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self._last_error: str | None = None
         self._sent_batches = 0
         self._failed_batches = 0
+        self._suppressed_batches = 0
 
     @property
     def is_alive(self) -> bool:
@@ -261,6 +269,7 @@ class NotificationDispatcher:
             "queued": self._queue.qsize(),
             "sent_batches": self._sent_batches,
             "failed_batches": self._failed_batches,
+            "suppressed_batches": self._suppressed_batches,
             "last_error": self._last_error or "none",
         }
 
@@ -274,9 +283,14 @@ class NotificationDispatcher:
                 self._queue.task_done()
                 continue
             try:
-                self.sender.send_result(item)
-                self._sent_batches += 1
-                self._last_error = None
+                if self.delivery_allowed is not None and not bool(self.delivery_allowed()):
+                    self._suppressed_batches += 1
+                    self._last_error = None
+                    LOGGER.info("Crystal Guild suppressed autonomous Twitch announcement because the stream is offline or unavailable")
+                else:
+                    self.sender.send_result(item)
+                    self._sent_batches += 1
+                    self._last_error = None
             except Exception as exc:
                 self._failed_batches += 1
                 self._last_error = f"{type(exc).__name__}: {exc}"

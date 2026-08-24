@@ -5057,6 +5057,25 @@ class CrystalGuildEngine:
         active_hunt_running = bool(active_hunt)
         ko = bool(p["current_job"] != "adventurer" and int(p["current_hp"] or 0) <= 0)
         resting = camp_remaining > 0
+        max_hp = self._max_hp(p)
+        camp_resources = self._resource_state_for(p)
+        needs_hp = int(p["current_hp"] or 0) < max_hp
+        needs_mp = int(camp_resources.get("max_mp", 0)) > 0 and int(camp_resources.get("mp", 0)) < int(camp_resources.get("max_mp", 0))
+        needs_ap = int(camp_resources.get("max_ap", 0)) > 0 and int(camp_resources.get("ap", 0)) < int(camp_resources.get("max_ap", 0))
+        camp_reason = ""
+        if solo_expedition_active:
+            camp_reason = "Return or retreat from your Solo Venture before setting up camp."
+        elif active_hunt_running:
+            camp_reason = f"Your hunter returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
+        elif joined_encounter:
+            camp_reason = "Finish your active encounter before setting up camp."
+        elif joined_raid:
+            camp_reason = "Finish your active raid before setting up camp."
+        elif resting:
+            camp_reason = f"Camp completes in {self._format_seconds(camp_remaining)}."
+        elif not (needs_hp or needs_mp or needs_ap):
+            camp_reason = "Your HP and battle resources are already full."
+        camp_can_start = not camp_reason
         activity_reason = (
             f"Resting at camp for another {self._format_seconds(camp_remaining)}."
             if resting else
@@ -5315,6 +5334,20 @@ class CrystalGuildEngine:
                 "in_encounter": joined_encounter,
                 "in_raid": joined_raid,
                 "on_hunt": active_hunt_running,
+            },
+            "camp": {
+                "resting": resting,
+                "can_start": bool(camp_can_start),
+                "reason": camp_reason,
+                "remaining_seconds": int(camp_remaining),
+                "until": int(p["camp_until"] or 0) if resting else 0,
+                "duration_seconds": int(self.fellowship_system.effective_camp_seconds(self.camp_rest_seconds)),
+                "hp": max(0, int(p["current_hp"] or 0)),
+                "max_hp": int(max_hp),
+                "mp": max(0, int(camp_resources.get("mp", 0))),
+                "max_mp": max(0, int(camp_resources.get("max_mp", 0))),
+                "ap": max(0, int(camp_resources.get("ap", 0))),
+                "max_ap": max(0, int(camp_resources.get("max_ap", 0))),
             },
             "current_region": {
                 "id": str(current_region.get("id") or p["current_region"]),
