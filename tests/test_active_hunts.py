@@ -194,6 +194,22 @@ class ActiveHuntTests(unittest.TestCase):
         self.assertIsNotNone(row)
         self.assertGreaterEqual(row["value"], 1)
 
+    def test_timed_hunt_exposes_structured_recent_result_for_portal(self):
+        started = self.start_hunt()
+        result = self.game.resolve_hunt("1", started.data["hunt_run_id"], force=True)
+        self.assertTrue(result.ok, result.messages)
+        state = self.game.portal_adventure_state("1")
+        self.assertTrue(state.ok, state.messages)
+        recent = state.data["adventure_state"]["recent_result"]
+        self.assertEqual(recent["kind"], "hunt")
+        summary = recent["summary"]
+        self.assertEqual(summary["type"], "hunt")
+        self.assertIn(summary["outcome"], {"victory", "defeat"})
+        self.assertEqual(summary["hunt_name"], "Red Hot Problem")
+        self.assertIn("combat", summary)
+        self.assertIn("player", summary)
+        self.assertIn("auto_plan", summary)
+
     def test_twitch_hunt_adapter_only_wakes_scheduler(self):
         source = (ROOT / "crystal_guild" / "twitch_bot.py").read_text(encoding="utf-8")
         self.assertIn('result.data.get("hunt_started")', source)
