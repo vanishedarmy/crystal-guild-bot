@@ -13,12 +13,17 @@ class ArsenalExpansionTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.data = GameData(ROOT / "data")
 
-    def test_each_job_has_six_active_abilities_across_the_job_curve(self):
+    def test_arsenal_ii_expands_every_job_and_deepens_core_casters(self):
         self.assertEqual(len(self.data.jobs), 18)
-        self.assertEqual(sum(len(rows) for rows in self.data.active_abilities.values()), 108)
+        self.assertEqual(sum(len(rows) for rows in self.data.active_abilities.values()), 172)
+        caster_jobs = {"blackmage", "whitemage", "redmage", "summoner", "bluemage", "timemage", "sage"}
         for job_id in self.data.jobs:
             rows = self.data.active_abilities[job_id]
-            self.assertEqual([int(row["level"]) for row in rows], [1, 8, 15, 22, 30, 40], job_id)
+            levels = [int(row["level"]) for row in rows]
+            if job_id in caster_jobs:
+                self.assertEqual(levels, [1, 5, 8, 12, 15, 18, 22, 26, 30, 35, 40, 45], job_id)
+            else:
+                self.assertEqual(levels, [1, 8, 12, 15, 22, 30, 35, 40], job_id)
 
     def test_every_job_has_elemental_or_special_effect_identity(self):
         for job_id, rows in self.data.active_abilities.items():

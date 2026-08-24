@@ -290,6 +290,16 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertEqual(int(self.game._player("100")["current_hp"]), first_hp)
         self.assertEqual(first[2]["recovery_state"]["hp"]["current"], first_hp)
 
+    def test_arsenal_ii_adventure_state_exposes_camp_recovery(self):
+        self.db.execute("UPDATE players SET current_hp=1, current_ap=0 WHERE twitch_id='100'")
+        ok, message, data = self.worker._execute(self.action(id="pa_adventure_camp", type="ADVENTURE_STATE", payload={}))
+        self.assertTrue(ok, message)
+        camp = data["adventure_state"]["camp"]
+        self.assertTrue(camp["can_start"])
+        self.assertFalse(camp["resting"])
+        self.assertGreater(camp["max_hp"], camp["hp"])
+        self.assertGreater(camp["duration_seconds"], 0)
+
     def test_phase_five_camp_uses_absolute_deadline_and_is_replay_safe(self):
         self.db.execute("UPDATE players SET current_hp=1 WHERE twitch_id='100'")
         action = self.action(id="pa_start_rest", type="START_REST", payload={})
