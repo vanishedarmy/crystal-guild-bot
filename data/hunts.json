@@ -1,7 +1,7 @@
 [
   {
     "id": "chieftains_challenge",
-    "name": "Chieftain’s Challenge",
+    "name": "Chieftain\u2019s Challenge",
     "rank": "C",
     "monster_id": "goblin_chieftain",
     "min_level": 2,
@@ -74,7 +74,7 @@
     "monster_id": "crimson_detonator",
     "min_level": 10,
     "requirements": [],
-    "cooldown_seconds": 1200,
+    "cooldown_seconds": 900,
     "rewards": {
       "xp": 420,
       "jp": 55,
@@ -91,7 +91,7 @@
     "monster_id": "sahagin_prince",
     "min_level": 14,
     "requirements": [],
-    "cooldown_seconds": 1200,
+    "cooldown_seconds": 900,
     "rewards": {
       "xp": 500,
       "jp": 60,
@@ -108,7 +108,7 @@
     "monster_id": "cactuar_jack",
     "min_level": 16,
     "requirements": [],
-    "cooldown_seconds": 1200,
+    "cooldown_seconds": 900,
     "rewards": {
       "xp": 720,
       "jp": 80,
@@ -223,7 +223,7 @@
         "amount": 3
       }
     ],
-    "cooldown_seconds": 2700,
+    "cooldown_seconds": 7200,
     "rewards": {
       "xp": 1850,
       "jp": 155,
@@ -246,7 +246,7 @@
         "amount": 3
       }
     ],
-    "cooldown_seconds": 2700,
+    "cooldown_seconds": 7200,
     "rewards": {
       "xp": 2150,
       "jp": 170,
@@ -269,7 +269,7 @@
         "amount": 4
       }
     ],
-    "cooldown_seconds": 2700,
+    "cooldown_seconds": 7200,
     "rewards": {
       "xp": 2450,
       "jp": 185,
@@ -292,7 +292,7 @@
         "amount": 2
       }
     ],
-    "cooldown_seconds": 3600,
+    "cooldown_seconds": 18000,
     "rewards": {
       "xp": 3600,
       "jp": 240,
@@ -315,7 +315,7 @@
         "amount": 3
       }
     ],
-    "cooldown_seconds": 3600,
+    "cooldown_seconds": 18000,
     "rewards": {
       "xp": 4300,
       "jp": 280,
@@ -342,7 +342,7 @@
         "amount": 1
       }
     ],
-    "cooldown_seconds": 3600,
+    "cooldown_seconds": 18000,
     "rewards": {
       "xp": 5200,
       "jp": 320,

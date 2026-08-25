@@ -107,7 +107,7 @@ from .chocobo import (
 STARTER_JOBS = {"warrior", "monk", "thief", "blackmage", "whitemage", "redmage"}
 STANCES = {"balanced", "aggressive", "defensive", "magical", "cautious"}
 HUNT_RANKS = {"C": 1, "B": 2, "A": 3, "S": 4, "S+": 5}
-HUNT_DURATION_SECONDS = {"C": 5 * 60, "B": 15 * 60, "A": 30 * 60, "S": 60 * 60, "S+": 2 * 60 * 60}
+HUNT_DURATION_SECONDS = {"C": 15 * 60, "B": 30 * 60, "A": 2 * 60 * 60, "S": 5 * 60 * 60, "S+": 5 * 60 * 60}
 HUNT_AUTO_ITEM_CAP = {"C": 1, "B": 1, "A": 2, "S": 2, "S+": 3}
 TANK_JOBS = {"warrior", "paladin", "darkknight"}
 HEALER_JOBS = {"whitemage", "sage"}
@@ -4043,7 +4043,10 @@ class CrystalGuildEngine:
                 clears = row["clears"] if row else 0
                 state = f"✓x{clears}" if clears else ("READY" if met else "LOCKED")
                 parts.append(f"{hunt['name']} [{state}/Lv.{hunt['min_level']}]")
-            messages = [f"{rank}-Rank Hunts — " + " | ".join(parts), "Begin one with !hunt <name>."]
+            messages = [
+                f"{rank}-Rank Hunts — " + " | ".join(parts),
+                f"Dispatch with !hunt <name>. No round commands are required; {rank}-Rank Hunts return in {self._format_seconds(self._hunt_duration_seconds(rank))}.",
+            ]
             if active:
                 messages.insert(0, f"HUNT IN PROGRESS [{active['rank']}] — {active['name']} returns in {self._format_seconds(active['remaining_seconds'])}.")
             return GameResult.success(*messages)
@@ -4061,7 +4064,7 @@ class CrystalGuildEngine:
         suggestion = f" Suggested mark: {ready[0]['name']} ({ready[0]['rank']}-Rank)." if ready else " No marks currently meet your requirements."
         messages = [
             f"Hunt Board | {p['hunt_seals']:,} Hunt Seals | " + " | ".join(counts) + f" | Ready now: {len(ready)}",
-            "Use !hunts C, !hunts B, !hunts A, !hunts S, or !hunts S+." + suggestion,
+            "Timers — C 15m · B 30m · A 2h · S 5h. Dispatch with !hunt <name>; Hunts resolve automatically." + suggestion,
         ]
         if active:
             messages.insert(0, f"HUNT IN PROGRESS [{active['rank']}] — {active['name']} · {active['monster']['name']} | returns in {self._format_seconds(active['remaining_seconds'])}.")

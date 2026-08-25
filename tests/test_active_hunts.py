@@ -49,14 +49,20 @@ class ActiveHuntTests(unittest.TestCase):
 
     def test_rank_duration_contract(self):
         self.assertEqual(HUNT_DURATION_SECONDS, {
-            "C": 5 * 60,
-            "B": 15 * 60,
-            "A": 30 * 60,
-            "S": 60 * 60,
-            "S+": 2 * 60 * 60,
+            "C": 15 * 60,
+            "B": 30 * 60,
+            "A": 2 * 60 * 60,
+            "S": 5 * 60 * 60,
+            "S+": 5 * 60 * 60,
         })
         for rank, seconds in HUNT_DURATION_SECONDS.items():
             self.assertEqual(self.game._hunt_duration_seconds(rank), seconds)
+
+
+    def test_hunt_catalog_cooldowns_match_rank_timers(self):
+        for hunt in self.data.hunts.values():
+            rank = str(hunt["rank"]).upper()
+            self.assertEqual(int(hunt["cooldown_seconds"]), HUNT_DURATION_SECONDS[rank])
 
     def test_hunt_is_personal_timed_assignment_not_shared_active_battle(self):
         started = self.start_hunt()
@@ -65,8 +71,8 @@ class ActiveHuntTests(unittest.TestCase):
         assignment = self.game.active_hunts["1"]
         self.assertEqual(assignment["hunt_id"], "red_hot_problem")
         self.assertEqual(assignment["rank"], "C")
-        self.assertEqual(started.data["duration_seconds"], 300)
-        self.assertGreaterEqual(int(assignment["resolves_at"]), int(assignment["started_at"]) + 300)
+        self.assertEqual(started.data["duration_seconds"], 900)
+        self.assertGreaterEqual(int(assignment["resolves_at"]), int(assignment["started_at"]) + 900)
         self.assertIn("No chat combat is required", " ".join(started.messages))
 
     def test_hunt_rewards_are_deferred_until_timer_resolution(self):

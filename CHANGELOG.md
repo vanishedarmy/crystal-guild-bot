@@ -36,7 +36,7 @@
 
 ## v1.1.16 — Arsenal Hotfix 1
 
-- Rebuilds Hunts as per-player persisted timed assignments: C 5m, B 15m, A 30m, S 1h, S+ 2h.
+- Rebuilds Hunts as per-player persisted timed assignments: C 15m, B 30m, A 2h, S 5h (S+ currently inherits the S timer until marks are introduced).
 - Removes round-by-round Twitch chat interaction from newly accepted Hunts; the daemon resolves them independently at the rank deadline and publishes only the final outcome.
 - Keeps timed Hunts outside the shared Active Battle slot so several heroes can Hunt concurrently without blocking Rally Ventures or Raids.
 - Adds conservative automatic ability, Defend, healing/cleanse, and resource-use decisions with hard consumable ceilings by rank.

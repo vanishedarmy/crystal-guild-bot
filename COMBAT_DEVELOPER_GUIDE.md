@@ -135,7 +135,7 @@ Do not add `if monster_id == ...` content branches to the round resolver. Enemy 
 New Hunts use a persisted per-player assignment layer rather than holding `active_encounter` for minutes or hours:
 
 - `engine.hunt()` validates the mark, snapshots the accepting hero through `_initialize_active_combat()`, stores the snapshot under `active_hunts[player_id]`, starts the mark cooldown, and returns immediately.
-- Rank deadlines are fixed by `HUNT_DURATION_SECONDS`: C 5m, B 15m, A 30m, S 1h, S+ 2h.
+- Rank deadlines are fixed by `HUNT_DURATION_SECONDS`: C 15m, B 30m, A 2h, S 5h (S+ currently inherits the S timer until marks are introduced).
 - `combat_snapshot()` exposes only the small Hunt deadline rows needed by `EncounterDaemon`.
 - `EncounterDaemon._tick_hunts()` calls `engine.resolve_hunt()` only after the assignment deadline and publishes the final result once.
 - `resolve_hunt()` temporarily loads the Hunt snapshot into the established field-combat engine, runs rounds internally, then restores any simultaneous shared encounter state.

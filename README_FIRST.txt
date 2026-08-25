@@ -1,8 +1,6 @@
-Crystal Guild v1.1.17 — Arsenal II Hotfix 4
+Crystal Guild Bot v1.1.18 — Hunt Board Hotfix 1
+Runtime: 1.1.18-hunt-board-h1
 
-Paired Bot + Web update.
-Bot runtime: 1.1.17-arsenal-ii-h4.
-Matching Web asset revision: 1.1.17-arsenal-ii1h4.
-Solo Venture is now 80% Encounter / 20% Treasure per stage.
-No DB migration, player reset, new secret, or OAuth change is required.
-Read HOTFIX_4_UPGRADE_GUIDE.md before deployment.
+Hunt timers are now C 15m, B 30m, A 2h, S 5h. Hunts remain autonomous timed assignments with no round-by-round chat combat.
+
+No DB migration or player reset is required. See UPGRADE_GUIDE.md.

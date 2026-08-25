@@ -21,8 +21,8 @@ REPO = ROOT.parent
 
 
 class ReleaseReadinessTests(unittest.TestCase):
-    def test_release_identity_is_arsenal_ii_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.1.17-arsenal-ii-h4")
+    def test_release_identity_is_hunt_board_hotfix_without_hosted_sync_schema_break(self):
+        self.assertEqual(__version__, "1.1.18-hunt-board-h1")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -88,7 +88,7 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.1.17 - ARSENAL II", panel)
+        self.assertIn("v1.1.18 - HUNT BOARD HOTFIX", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
