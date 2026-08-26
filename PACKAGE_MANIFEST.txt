@@ -1,9 +1,8 @@
-Crystal Guild Bot v1.1.18 — Hunt Board Hotfix 1
-Runtime: 1.1.18-hunt-board-h1
+Crystal Guild Bot v1.1.18
+Runtime: 1.1.18-recovery-h1
 Local DB schema: 5
 Hosted sync schema: 1
-Hosted sync compatibility: 1.1.15-wayfarer
 Portal Action protocol: 14
-Twitch command prefix: !
+Twitch prefix: !
 
-Timed Hunt rank durations: C 15m · B 30m · A 2h · S 5h. Autonomous Hunt behavior retained.
+Passive Recovery Hotfix: 8-hour Long Rest + once-per-stream LIVE roster refresh, preserving Hunt Board Timer Pass behavior.

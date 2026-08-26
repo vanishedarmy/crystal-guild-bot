@@ -121,6 +121,9 @@ RAID_SUMMONS = {
 LOGGER = logging.getLogger(__name__)
 RUNTIME_STATE_KEY = "combat"
 RUNTIME_STATE_SCHEMA = 1
+LONG_REST_SECONDS = 8 * 60 * 60
+PLAYER_ACTIVITY_STATE_PREFIX = "player_activity:"
+STREAM_REFRESH_STATE_KEY = "stream_live_refresh"
 
 
 def _state_guard(method):
@@ -360,6 +363,172 @@ class CrystalGuildEngine:
             "active_hunts": len(self.active_hunts),
         }
 
+    # ---------- passive recovery ----------
+    @staticmethod
+    def _player_activity_key(player_id: str) -> str:
+        return f"{PLAYER_ACTIVITY_STATE_PREFIX}{str(player_id)}"
+
+    def _load_player_activity_state(self, player_id: str) -> dict[str, int | str]:
+        row = self.db.runtime_state(self._player_activity_key(player_id))
+        if not row:
+            return {"last_action_at": 0, "last_refresh_at": 0, "refresh_reason": ""}
+        try:
+            payload = json.loads(str(row["value_json"] or "{}"))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            payload = {}
+        return {
+            "last_action_at": max(0, int(payload.get("last_action_at") or 0)),
+            "last_refresh_at": max(0, int(payload.get("last_refresh_at") or 0)),
+            "refresh_reason": str(payload.get("refresh_reason") or ""),
+        }
+
+    def _save_player_activity_state(
+        self, player_id: str, *, last_action_at: int, last_refresh_at: int = 0, refresh_reason: str = ""
+    ) -> None:
+        self.db.set_runtime_state(
+            self._player_activity_key(player_id),
+            json.dumps(
+                {
+                    "last_action_at": max(0, int(last_action_at)),
+                    "last_refresh_at": max(0, int(last_refresh_at)),
+                    "refresh_reason": str(refresh_reason or ""),
+                },
+                separators=(",", ":"),
+            ),
+        )
+
+    def _full_refresh_player_row(self, player: Any, *, clear_camp: bool = True) -> dict[str, int]:
+        player_id = str(player["twitch_id"])
+        current_job = str(player["current_job"] or "adventurer")
+        max_hp = 100
+        max_mp = 0
+        max_ap = 0
+        job = self.data.jobs.get(current_job)
+        if job is not None:
+            stats = self._stats(player, job)
+            pools = battle_resource_pools(stats, job)
+            max_hp = int(stats["hp"])
+            max_mp = max(0, int(pools.get("max_mp") or 0))
+            max_ap = max(0, int(pools.get("max_ap") or 0))
+        camp_until = 0 if clear_camp else int(player["camp_until"] or 0)
+        self.db.execute(
+            "UPDATE players SET current_hp=?, current_mp=?, current_ap=?, camp_until=?, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+            (max_hp, max_mp, max_ap, camp_until, player_id),
+        )
+        return {"hp": max_hp, "mp": max_mp, "ap": max_ap}
+
+    def record_player_action(self, player_id: str, *, now: int | None = None) -> dict[str, Any]:
+        """Record an intentional player interaction and apply an eight-hour Long Rest once due.
+
+        Runtime-state storage keeps this upgrade schema-neutral and persistent across
+        Bot restarts. Read-only hosted Portal polling does not call this method; only
+        intentional Twitch commands and Portal mutations advance the inactivity timer.
+        """
+        uid = str(player_id)
+        player = self.db.one("SELECT * FROM players WHERE twitch_id=?", (uid,))
+        if not player:
+            return {"player_id": uid, "refreshed": False, "tracked": False}
+        current = int(time.time()) if now is None else int(now)
+        state = self._load_player_activity_state(uid)
+        last_action = int(state.get("last_action_at") or 0)
+        refreshed = False
+        resources: dict[str, int] | None = None
+        # Existing players begin a fresh eight-hour inactivity window on their
+        # first post-upgrade interaction rather than receiving a surprise heal
+        # based on unrelated historical database writes.
+        last_refresh = int(state.get("last_refresh_at") or 0)
+        if last_action and current - last_action >= LONG_REST_SECONDS and last_refresh < last_action:
+            resources = self._full_refresh_player_row(player, clear_camp=True)
+            refreshed = True
+            LOGGER.info(
+                "Long Rest refreshed player %s after %ss without player activity",
+                uid, current - last_action,
+            )
+        self._save_player_activity_state(
+            uid,
+            last_action_at=current,
+            last_refresh_at=current if refreshed else last_refresh,
+            refresh_reason="long_rest" if refreshed else str(state.get("refresh_reason") or ""),
+        )
+        return {
+            "player_id": uid,
+            "refreshed": refreshed,
+            "tracked": True,
+            "inactive_seconds": max(0, current - last_action) if last_action else 0,
+            "resources": resources or {},
+        }
+
+    def refresh_due_long_rests(self, *, now: int | None = None) -> dict[str, Any]:
+        """Refresh heroes whose persisted inactivity counter has reached eight hours.
+
+        The combat daemon calls this on a light periodic cadence, so Long Rest
+        resolves even if the player never opens chat or the Portal at the exact
+        deadline. A later player action sees the persisted refresh marker and
+        will not receive a duplicate heal.
+        """
+        current = int(time.time()) if now is None else int(now)
+        refreshed_ids: list[str] = []
+        with self._state_lock, self.db.tx():
+            for player in self.db.all("SELECT * FROM players ORDER BY twitch_id"):
+                uid = str(player["twitch_id"])
+                state = self._load_player_activity_state(uid)
+                last_action = int(state.get("last_action_at") or 0)
+                last_refresh = int(state.get("last_refresh_at") or 0)
+                if not last_action or current - last_action < LONG_REST_SECONDS or last_refresh >= last_action:
+                    continue
+                self._full_refresh_player_row(player, clear_camp=True)
+                self._save_player_activity_state(
+                    uid,
+                    last_action_at=last_action,
+                    last_refresh_at=current,
+                    refresh_reason="long_rest",
+                )
+                refreshed_ids.append(uid)
+        if refreshed_ids:
+            LOGGER.info("Long Rest scheduler refreshed %s player(s): %s", len(refreshed_ids), ",".join(refreshed_ids))
+        return {"count": len(refreshed_ids), "player_ids": refreshed_ids, "checked_at": current}
+
+    def refresh_all_players_for_stream(self, started_at: str) -> dict[str, Any]:
+        """Refresh every hero once per Twitch stream session.
+
+        Twitch's stream ``started_at`` timestamp is persisted as the idempotency
+        key, so repeated status probes and Bot reconnects during the same stream
+        do not repeatedly heal the roster.
+        """
+        session = str(started_at or "").strip()
+        if not session:
+            return {"refreshed": False, "count": 0, "session": ""}
+        with self._state_lock, self.db.tx():
+            row = self.db.runtime_state(STREAM_REFRESH_STATE_KEY)
+            if row:
+                try:
+                    previous = json.loads(str(row["value_json"] or "{}"))
+                except (TypeError, ValueError, json.JSONDecodeError):
+                    previous = {}
+                if str(previous.get("started_at") or "") == session:
+                    return {"refreshed": False, "count": 0, "session": session}
+            players = self.db.all("SELECT * FROM players ORDER BY twitch_id")
+            refreshed_at = int(time.time())
+            for player in players:
+                uid = str(player["twitch_id"])
+                self._full_refresh_player_row(player, clear_camp=True)
+                activity = self._load_player_activity_state(uid)
+                self._save_player_activity_state(
+                    uid,
+                    last_action_at=int(activity.get("last_action_at") or 0),
+                    last_refresh_at=refreshed_at,
+                    refresh_reason="stream_live",
+                )
+            self.db.set_runtime_state(
+                STREAM_REFRESH_STATE_KEY,
+                json.dumps(
+                    {"started_at": session, "refreshed_at": refreshed_at, "count": len(players)},
+                    separators=(",", ":"),
+                ),
+            )
+        LOGGER.info("Stream-live refresh restored %s Crystal Guild players for session %s", len(players), session)
+        return {"refreshed": True, "count": len(players), "session": session}
+
     # ---------- players ----------
     def recruit(self, twitch_id: str, username: str, display_name: str | None = None) -> GameResult:
         if self._player(twitch_id):
@@ -378,6 +547,7 @@ class CrystalGuildEngine:
                 (str(twitch_id),),
             )
         self.fellowship_system.ensure_member(str(twitch_id), founding=False)
+        self.record_player_action(str(twitch_id))
         return GameResult.success(
             f"{display} joined the Crystal Guild! Lv.1 Adventurer | 250 gil | 3 Potions | NEXT: !job warrior | monk | thief | blackmage | whitemage | redmage",
             "After choosing a Job: !venture to adventure | !next for your next objective | !guild for the command map.",
@@ -429,6 +599,7 @@ class CrystalGuildEngine:
                 (uid,),
             )
             self._portal_action_store_sql(conn, action_id, result)
+        self.record_player_action(uid)
         return result
 
     def hero(self, twitch_id: str) -> GameResult:

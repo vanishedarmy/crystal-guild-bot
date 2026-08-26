@@ -64,8 +64,15 @@ class RPGCommands(commands.Component):
         self.bot = bot
         self.game = bot.game
 
+    def _identity(self, ctx: commands.Context) -> tuple[str, str, str]:
+        uid, username, display = _identity(ctx)
+        # Every intentional Twitch command counts as player activity. Long Rest
+        # recovery is applied before the command reaches gameplay validation.
+        self.game.record_player_action(uid)
+        return uid, username, display
+
     async def _owner_only(self, ctx: commands.Context) -> bool:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         if uid == self.bot.settings.owner_id:
             return True
         if self.bot.feedback_gate.allow(uid, "owner-only"):
@@ -76,7 +83,7 @@ class RPGCommands(commands.Component):
         status = await asyncio.to_thread(self.bot.stream_status.refresh)
         if status["live"]:
             return True
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         bucket = f"stream-live:{activity.lower()}"
         if not self.bot.feedback_gate.allow(uid, bucket):
             return False
@@ -94,37 +101,37 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def recruit(self, ctx: commands.Context) -> None:
-        uid, username, display = _identity(ctx)
+        uid, username, display = self._identity(ctx)
         await send_result(ctx, self.game.recruit(uid, username, display))
 
     @commands.command(aliases=["me", "profile", "status"])
     async def hero(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.hero(uid))
 
     @commands.command()
     async def next(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.next_step(uid))
 
     @commands.command(aliases=["class", "jobs"])
     async def job(self, ctx: commands.Context, *, job_name: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.choose_job(uid, job_name))
 
     @commands.command()
     async def jobinfo(self, ctx: commands.Context, *, job_name: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.job_info(uid, job_name))
 
     @commands.command(aliases=["skills"])
     async def abilities(self, ctx: commands.Context, *, job_name: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.abilities(uid, job_name))
 
     @commands.command()
     async def mastery(self, ctx: commands.Context, *, selection: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         if not selection:
             await send_result(ctx, self.game.mastery(uid))
             return
@@ -137,14 +144,14 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def stance(self, ctx: commands.Context, stance_name: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.set_stance(uid, stance_name))
 
     @commands.command(aliases=["adv", "adventure"])
     async def venture(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Rally Venture"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         result = self.game.venture(uid)
         await send_result(ctx, result, limit=4)
         if result.ok and result.data.get("encounter_started"):
@@ -154,7 +161,7 @@ class RPGCommands(commands.Component):
     async def join(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Rally participation"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.join_encounter(uid))
 
     @commands.command(aliases=["battle", "enc"])
@@ -174,7 +181,7 @@ class RPGCommands(commands.Component):
     async def attack(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Combat actions"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         # Queue intent only. The scheduler owns the round deadline.
         await send_result(ctx, self.game.battle_attack(uid))
 
@@ -182,7 +189,7 @@ class RPGCommands(commands.Component):
     async def ability(self, ctx: commands.Context, *, ability_name: str | None = None) -> None:
         if not await self._require_stream_live(ctx, "Combat actions"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         # Queue intent only. Never use chat traffic as a timer callback.
         await send_result(ctx, self.game.battle_ability(uid, ability_name), limit=3)
 
@@ -190,17 +197,17 @@ class RPGCommands(commands.Component):
     async def defend(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Combat actions"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.battle_defend(uid))
 
     @commands.command(aliases=["camp"])
     async def rest(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.rest(uid), limit=3)
 
     @commands.command()
     async def use(self, ctx: commands.Context, *, item_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         in_timed_combat = (
             bool(self.game.active_encounter and self.game.active_encounter.get("state") == "combat" and uid in self.game.encounter_roster)
             or bool(self.game.active_boss and self.game.active_boss.get("state") == "combat" and uid in self.game.raid_roster)
@@ -211,47 +218,47 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["region"])
     async def regions(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.regions(uid))
 
     @commands.command()
     async def travel(self, ctx: commands.Context, *, region: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.travel(uid, region))
 
     @commands.command(aliases=["inv"])
     async def inventory(self, ctx: commands.Context, category: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.inventory(uid, category))
 
     @commands.command(aliases=["equipment"])
     async def gear(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.gear(uid))
 
     @commands.command()
     async def equip(self, ctx: commands.Context, *, item: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.equip(uid, item))
 
     @commands.command()
     async def shop(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.shop(uid))
 
     @commands.command()
     async def item(self, ctx: commands.Context, *, item_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.inspect_item(uid, item_name))
 
     @commands.command()
     async def gil(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.gil(uid))
 
     @commands.command(aliases=["guildinfo"])
     async def fellowship(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.fellowship(uid), limit=4)
 
     @commands.command()
@@ -260,7 +267,7 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def contribute(self, ctx: commands.Context, *, contribution: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.contribute_fellowship(uid, contribution), limit=3)
 
     @commands.command()
@@ -277,17 +284,17 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["guildrecord"])
     async def contributions(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.fellowship_contributions(uid), limit=3)
 
     @commands.command(aliases=["guildrank"])
     async def rank(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.fellowship_rank(uid), limit=2)
 
     @commands.command()
     async def buy(self, ctx: commands.Context, *, purchase: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         parts = purchase.rsplit(" ", 1)
         qty = 1
         query = purchase
@@ -297,7 +304,7 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def sell(self, ctx: commands.Context, *, sale: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         parts = sale.rsplit(" ", 1)
         qty = 1
         query = sale
@@ -307,12 +314,12 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["huntboard", "marks"])
     async def hunts(self, ctx: commands.Context, rank: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.hunts(uid, rank))
 
     @commands.command(aliases=["mark"])
     async def hunt(self, ctx: commands.Context, *, hunt_name: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         if not hunt_name:
             await send_result(ctx, self.game.hunts(uid))
             return
@@ -328,37 +335,37 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["stable"])
     async def chocobo(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.chocobo(uid), limit=3)
 
     @commands.command()
     async def chocoboquest(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.chocobo_quest(uid), limit=3)
 
     @commands.command(aliases=["writ"])
     async def chocobowrit(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.buy_chocobo_writ(uid), limit=3)
 
     @commands.command()
     async def registerchocobo(self, ctx: commands.Context, *, name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.register_chocobo(uid, name), limit=3)
 
     @commands.command()
     async def chocoboname(self, ctx: commands.Context, *, name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.rename_chocobo(uid, name), limit=2)
 
     @commands.command()
     async def quests(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.quests(uid))
 
     @commands.command()
     async def quest(self, ctx: commands.Context, *, quest_name: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         if not quest_name:
             await send_result(ctx, self.game.quests(uid), limit=4)
             return
@@ -366,32 +373,32 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def titles(self, ctx: commands.Context, *, filter_query: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.titles(uid, filter_query))
 
     @commands.command()
     async def title(self, ctx: commands.Context, *, title_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.set_title(uid, title_name))
 
     @commands.command(aliases=["smith", "forge"])
     async def blacksmith(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.blacksmith(uid))
 
     @commands.command()
     async def recipes(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.recipes(uid))
 
     @commands.command()
     async def recipe(self, ctx: commands.Context, *, recipe_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.recipe_info(uid, recipe_name))
 
     @commands.command()
     async def craft(self, ctx: commands.Context, *, selection: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         parts = selection.rsplit(" ", 1)
         qty = 1
         query = selection
@@ -401,17 +408,17 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["enhance"])
     async def upgrade(self, ctx: commands.Context, *, item_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.upgrade(uid, item_name))
 
     @commands.command(aliases=["quartermaster"])
     async def sealshop(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.sealshop(uid))
 
     @commands.command()
     async def sealbuy(self, ctx: commands.Context, *, selection: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         parts = selection.rsplit(" ", 1)
         qty = 1
         query = selection
@@ -421,17 +428,17 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def relics(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.relics(uid))
 
     @commands.command()
     async def relic(self, ctx: commands.Context, *, relic_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.relic(uid, relic_name))
 
     @commands.command()
     async def awaken(self, ctx: commands.Context, *, relic_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.awaken_relic(uid, relic_name), limit=4)
 
     @commands.command()
@@ -444,22 +451,22 @@ class RPGCommands(commands.Component):
 
     @commands.command(aliases=["beasts"])
     async def bestiary(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.bestiary(uid))
 
     @commands.command(aliases=["ach"])
     async def achievements(self, ctx: commands.Context, *, category: str | None = None) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.achievements(uid, category), limit=4)
 
     @commands.command(aliases=["achinfo"])
     async def achievement(self, ctx: commands.Context, *, achievement_name: str) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.achievement(uid, achievement_name))
 
     @commands.command(aliases=["career", "stats"])
     async def records(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.records(uid), limit=4)
 
     @commands.command(aliases=["lb"])
@@ -468,13 +475,13 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def daily(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         status = await asyncio.to_thread(self.bot.subscription_status.refresh, uid)
         await send_result(ctx, self.game.daily(uid, int(status.get("tier") or 0)))
 
     @commands.command()
     async def substatus(self, ctx: commands.Context) -> None:
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         status = await asyncio.to_thread(self.bot.subscription_status.refresh, uid, True)
         if status["state"] == "UNKNOWN":
             scope_note = " Broadcaster reauthorization for channel:read:subscriptions may be required." if status.get("scope_required") else ""
@@ -501,28 +508,28 @@ class RPGCommands(commands.Component):
     async def raid(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Raid participation"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.raid_join(uid))
 
     @commands.command()
     async def limit(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Raid actions"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.limit_break(uid))
 
     @commands.command()
     async def summon(self, ctx: commands.Context, *, summon_name: str | None = None) -> None:
         if not await self._require_stream_live(ctx, "Raid actions"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.summon_raid(uid, summon_name))
 
     @commands.command()
     async def revive(self, ctx: commands.Context, *, target: str) -> None:
         if not await self._require_stream_live(ctx, "Raid actions"):
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.revive_raid(uid, target))
 
     @commands.command(aliases=["raidcontrib", "raidboard"])
@@ -696,7 +703,7 @@ class RPGCommands(commands.Component):
             for message in help_messages(topic):
                 await ctx.send(message[:480])
             return
-        uid, _, _ = _identity(ctx)
+        uid, _, _ = self._identity(ctx)
         await ctx.send(
             "MOGNET — !next = what to do now | !hero = character | !venture = adventure | "
             "!inventory = items | !hunts = marks | !guild <topic> = focused help"
@@ -893,6 +900,7 @@ def main() -> None:
         settings.owner_id,
         cache_seconds=settings.stream_status_cache_seconds,
         stale_seconds=settings.stream_status_stale_seconds,
+        on_live=lambda stream: game.refresh_all_players_for_stream(str(stream.get("started_at") or "")),
     )
     direct_sender = TwitchRESTChatSender(
         settings.client_id, settings.client_secret, settings.bot_id, settings.owner_id

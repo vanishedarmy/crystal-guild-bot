@@ -1,29 +1,20 @@
-# Crystal Guild v1.1.18 — Hunt Board Hotfix 1
+# Crystal Guild v1.1.18 — Passive Recovery Hotfix
 
-This gameplay hotfix aligns the Hunt Board with the autonomous timed-Hunt system and rebalances current Hunt assignment timers.
+Adds automatic Long Rest recovery and a once-per-stream roster refresh.
 
-## Hunt behavior
-- Hunts remain personal timed assignments and do not occupy the shared Rally/Active Battle slot.
-- Dispatch from the Adventurer Portal Hunt Board or with `!hunt <name>`.
-- No round-by-round chat commands are required.
-- The hero automatically uses learned abilities, Defend, and a limited number of appropriate survival items.
-- Rewards, first-clear prizes, resource changes, and records are committed only when the Hunt resolves.
-- A hero may have only one Hunt active at a time.
+## Long Rest
+- An intentional Twitch command or Portal gameplay mutation records player activity.
+- If eight hours pass without another intentional action, the background game daemon automatically restores full HP and current-Job MP/AP and clears ordinary Camp state, normally within one minute of the threshold.
+- Passive Portal state polling does not reset the inactivity timer.
+- Existing players begin a fresh Long Rest window on their first intentional action after upgrading.
 
-## New rank timers
-- C-Rank: **15 minutes**
-- B-Rank: **30 minutes**
-- A-Rank: **2 hours**
-- S-Rank: **5 hours**
-- S+ has no current marks and inherits the S timer internally until separately balanced.
+## Stream Start Refresh
+- Every registered hero is fully refreshed when Twitch reports a new LIVE stream session.
+- Twitch `started_at` is persisted as the stream-session idempotency key, preventing repeated refreshes during reconnects or status polling.
 
-The per-mark cooldown catalog now matches the rank assignment timer, so a completed Hunt does not expose a contradictory shorter cooldown.
-
-## Release identity
-- Bot runtime: `1.1.18-hunt-board-h1`
-- Local DB schema: 5 (unchanged)
-- Hosted sync schema: 1 (unchanged)
-- Hosted sync compatibility: `1.1.15-wayfarer` (unchanged)
-- Portal Action protocol: 14 (unchanged)
-- Twitch prefix: `!`
-- No DB migration or player reset required.
+## Compatibility
+- Runtime: `1.1.18-recovery-h1`
+- DB schema: 5 unchanged
+- Hosted sync schema: 1 unchanged
+- Portal Action protocol: 14 unchanged
+- Twitch prefix: `!` unchanged

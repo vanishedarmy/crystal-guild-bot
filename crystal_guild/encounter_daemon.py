@@ -336,6 +336,7 @@ class EncounterDaemon:
         self._next_due_in_ms = -1
         self._consecutive_failures = 0
         self._retry_backoff_ms = 0
+        self._next_passive_recovery_scan = 0.0
 
     @property
     def is_alive(self) -> bool:
@@ -556,6 +557,11 @@ class EncounterDaemon:
             failed = False
             try:
                 now = self._clock()
+                if now >= self._next_passive_recovery_scan:
+                    recovery = self.game.refresh_due_long_rests(now=int(now))
+                    self._next_passive_recovery_scan = now + 60.0
+                    if int(recovery.get("count") or 0) > 0:
+                        self._last_action = f"long-rest:{int(recovery['count'])}"
                 snapshot = self.game.combat_snapshot()
                 hunt_acted = self._tick_hunts(snapshot, now)
                 if hunt_acted:

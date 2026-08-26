@@ -210,6 +210,15 @@ class PortalActionWorker:
                 "username": str(row["username"]),
                 "display_name": display_name,
             }
+        passive_state_actions = {
+            "CHARACTER_STATE", "SHOP_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
+            "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE",
+        }
+        if action_type not in passive_state_actions:
+            # Only intentional Portal mutations reset the Long Rest inactivity
+            # clock. Background/read-only state polling must never keep a hero
+            # artificially awake.
+            self.game.record_player_action(twitch_id)
         if action_type == "EQUIP_ITEM":
             item_id = str(payload.get("item_id") or "").strip()
             if not item_id:

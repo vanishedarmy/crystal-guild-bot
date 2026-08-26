@@ -7,7 +7,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Any
+from typing import Any, Callable
 
 LOGGER = logging.getLogger("CrystalGuild")
 
@@ -29,7 +29,7 @@ class TwitchStreamStatus:
 
     TOKEN_URL = "https://id.twitch.tv/oauth2/token"
     STREAMS_URL = "https://api.twitch.tv/helix/streams"
-    USER_AGENT = "CrystalGuild/1.1.17-Arsenal-II"
+    USER_AGENT = "CrystalGuild/1.1.18-Recovery"
 
     def __init__(
         self,
@@ -40,6 +40,7 @@ class TwitchStreamStatus:
         cache_seconds: float = 15.0,
         stale_seconds: float = 90.0,
         timeout: float = 6.0,
+        on_live: Callable[[dict[str, Any]], Any] | None = None,
     ) -> None:
         self.client_id = str(client_id)
         self.client_secret = str(client_secret)
@@ -47,6 +48,7 @@ class TwitchStreamStatus:
         self.cache_seconds = max(2.0, float(cache_seconds))
         self.stale_seconds = max(self.cache_seconds, float(stale_seconds))
         self.timeout = max(2.0, float(timeout))
+        self.on_live = on_live
 
         self._lock = threading.RLock()
         self._access_token = ""
@@ -165,6 +167,17 @@ class TwitchStreamStatus:
                     self._title = str(row.get("title") or "")
                     self._game_name = str(row.get("game_name") or "")
                     self._started_at = str(row.get("started_at") or "")
+                    if self.on_live is not None:
+                        try:
+                            self.on_live({
+                                "state": "LIVE",
+                                "live": True,
+                                "title": self._title,
+                                "game_name": self._game_name,
+                                "started_at": self._started_at,
+                            })
+                        except Exception:
+                            LOGGER.exception("Stream-live refresh callback failed; Twitch presence remains LIVE.")
                 else:
                     self._title = ""
                     self._game_name = ""

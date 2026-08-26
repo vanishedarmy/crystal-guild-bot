@@ -39,6 +39,16 @@ class StreamStatusTests(unittest.TestCase):
         self.assertEqual(probe.calls, 1)
         self.assertEqual(second["state"], "LIVE")
 
+
+    def test_live_callback_runs_for_successful_live_probe(self):
+        seen = []
+        probe = _Probe([[{"title": "Guild Night", "started_at": "2026-08-25T23:00:00Z"}]])
+        probe.on_live = lambda stream: seen.append(dict(stream))
+        status = probe.refresh(force=True)
+        self.assertTrue(status["live"])
+        self.assertEqual(len(seen), 1)
+        self.assertEqual(seen[0]["started_at"], "2026-08-25T23:00:00Z")
+
     def test_empty_stream_list_is_offline(self):
         probe = _Probe([[]])
         status = probe.refresh()
