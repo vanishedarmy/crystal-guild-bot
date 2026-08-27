@@ -1,13 +1,5 @@
-Crystal Guild Bot — v1.1.19 Retro Phase III RC1 Hotfix 6
-Runtime: 1.1.19-retro-phase-iii-rc1h6
+Crystal Guild Bot — v1.1.19 Retro Phase III RC1 Hotfix 7
+Runtime: 1.1.19-retro-phase-iii-rc1h7
 Local DB schema: 7
-Hosted sync schema: 1
-Portal Action protocol: 17
-Twitch command prefix: !
-
-Primary changes:
-- owner-only STREAMER_COMMAND Portal execution allowlist
-- owner ID included in authenticated Portal sync manifest
-- live-only notable Portal Solo/Title announcements
-- Portal-origin Hunt resolution announcement tagging
-- durable Portal Adventure result inbox; explicit ACK_ADVENTURE_RESULT confirmation
+Portal Action protocol: 18
+Primary change: streamer-only add/remove player item administration via chat and Portal.

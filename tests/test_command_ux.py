@@ -147,6 +147,18 @@ class OnboardingTests(unittest.TestCase):
             self.assertIn("await self._owner_only(ctx)", block)
             self.assertIn(f'"{command}": "!{command}"', ux_source)
 
+    def test_owner_inventory_admin_commands_are_registered_and_owner_gated(self):
+        twitch_source = (ROOT / "crystal_guild" / "twitch_bot.py").read_text(encoding="utf-8")
+        ux_source = (ROOT / "crystal_guild" / "chat_ux.py").read_text(encoding="utf-8")
+        for command in ("additem", "removeitem"):
+            self.assertIn(f"async def {command}(", twitch_source)
+            block = twitch_source[twitch_source.index(f"async def {command}("):]
+            next_decorator = block.find("@commands.command", 1)
+            block = block[:next_decorator if next_decorator >= 0 else len(block)]
+            self.assertIn("await self._owner_only(ctx)", block)
+            self.assertIn("streamer_item_admin", block)
+            self.assertIn(f'"{command}": "!{command}', ux_source)
+
     def test_fellowship_project_command_is_owner_gated(self):
         twitch_source = (ROOT / "crystal_guild" / "twitch_bot.py").read_text(encoding="utf-8")
         block = twitch_source[twitch_source.index("async def fellowshipproject("):]

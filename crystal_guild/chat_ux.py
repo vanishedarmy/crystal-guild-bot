@@ -86,6 +86,8 @@ COMMAND_USAGE: dict[str, str] = {
     "resettimers": "!resettimers",
     "clearadventures": "!clearadventures",
     "fellowshipproject": "!fellowshipproject <project>",
+    "additem": "!additem <player> | <item> | [quantity]",
+    "removeitem": "!removeitem <player> | <item> | [quantity]",
     "resolveencounter": "!resolveencounter",
     "clearencounter": "!clearencounter",
     "spawnboss": "!spawnboss <name>",

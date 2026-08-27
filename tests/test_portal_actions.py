@@ -79,6 +79,31 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertTrue(ok)
         self.assertIn("ECONOMY", message)
 
+        before = self.game._inventory_qty("100", "potion")
+        add_action = self.action(
+            id="pa_stream_additem", type="STREAMER_COMMAND",
+            payload={"command": "additem", "argument": "van|potion|3"},
+        )
+        ok, message, data = worker._execute(add_action)
+        self.assertTrue(ok)
+        self.assertIn("Added 3", message)
+        self.assertEqual(data["owned_before"], before)
+        self.assertEqual(data["owned_after"], before + 3)
+        self.assertEqual(self.game._inventory_qty("100", "potion"), before + 3)
+        replay = worker._execute(add_action)
+        self.assertTrue(replay[0])
+        self.assertEqual(self.game._inventory_qty("100", "potion"), before + 3)
+
+        remove_action = self.action(
+            id="pa_stream_removeitem", type="STREAMER_COMMAND",
+            payload={"command": "removeitem", "argument": "van|potion|2"},
+        )
+        ok, message, data = worker._execute(remove_action)
+        self.assertTrue(ok)
+        self.assertIn("Removed 2", message)
+        self.assertEqual(data["owned_after"], before + 1)
+        self.assertEqual(self.game._inventory_qty("100", "potion"), before + 1)
+
         ok, message, _ = worker._execute(self.action(
             id="pa_stream_bad", type="STREAMER_COMMAND", payload={"command": "say", "argument": "hello"}
         ))
@@ -91,6 +116,31 @@ class PortalActionWorkerTests(unittest.TestCase):
         ))
         self.assertFalse(ok)
         self.assertIn("not authorized", message.lower())
+
+    def test_streamer_removeitem_auto_unequips_last_equipped_copy_and_logs_delta(self):
+        equipped = self.game.equip("100", "hunters_axe")
+        self.assertTrue(equipped.ok)
+        self.assertEqual(self.game._inventory_qty("100", "hunters_axe"), 1)
+        result = self.game.streamer_item_admin("van|hunters_axe|1", remove=True)
+        self.assertTrue(result.ok)
+        self.assertTrue(result.data["auto_unequipped"])
+        self.assertEqual(self.game._inventory_qty("100", "hunters_axe"), 0)
+        row = self.db.one("SELECT weapon_id FROM equipment WHERE player_id='100'")
+        self.assertIsNone(row["weapon_id"])
+        tx = self.db.one(
+            "SELECT amount,source FROM transactions WHERE player_id='100' AND asset_id='hunters_axe' ORDER BY id DESC LIMIT 1"
+        )
+        self.assertEqual(int(tx["amount"]), -1)
+        self.assertEqual(tx["source"], "streamer_admin:remove")
+
+    def test_streamer_item_admin_rejects_ambiguous_or_excessive_removal(self):
+        self.game.recruit("200", "other", "Other")
+        result = self.game.streamer_item_admin("missing|potion|1")
+        self.assertFalse(result.ok)
+        self.assertIn("not found", " ".join(result.messages).lower())
+        result = self.game.streamer_item_admin("van|potion|999", remove=True)
+        self.assertFalse(result.ok)
+        self.assertIn("only owns", " ".join(result.messages).lower())
 
     def test_phase_two_equips_and_unequips_owned_compatible_gear(self):
         ok, message, data = self.worker._execute(self.action(type="EQUIP_ITEM", payload={"item_id": "hunters_axe"}))

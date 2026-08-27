@@ -1,26 +1,25 @@
-# Validation Report — RC1 Hotfix 6 Persistent Adventure Results
+# Validation Report — RC1 Hotfix 7 Streamer Inventory Admin
 
 ## Identity
-- Runtime: `1.1.19-retro-phase-iii-rc1h6`
-- Local DB schema: 7
-- Hosted sync schema: 1
-- Portal Action protocol: 17
+- Runtime: `1.1.19-retro-phase-iii-rc1h7`
+- Local DB schema: 7 (unchanged)
+- Hosted sync schema: 1 (unchanged)
+- Portal Action protocol: 18
 - Twitch prefix: `!`
 
 ## Automated validation
-- Bot Python tests: **400 / 400 PASS**
-- Hosted Web / Portal Python tests: **47 / 47 PASS**
-- Frontend Node tests: **291 / 291 PASS**
-- Python `compileall`: **PASS**
+- Full Bot unittest suite: **403 / 403 passed**.
+- Changed Python modules compile successfully.
 
-## Persistence and migration checks
-- Schema 6 → 7 is additive.
-- Existing databases receive a verified automatic `pre_schema_7_*.db` backup before the new table is created.
-- `portal_adventure_results` uses player foreign keys and retains unacknowledged rows without time expiry.
-- Confirmed rows are retained only as short diagnostic history and may be pruned after 30 days; unconfirmed rows are never auto-pruned.
-- Solo result persistence survives loss of the old in-memory recent-result cache.
-- Timed Hunt result persistence survives loss of transient battle history.
-- `ACK_ADVENTURE_RESULT` is player-scoped and replay safe.
+## Inventory-admin coverage
+- `!additem` / `!giveitem` are owner-gated.
+- `!removeitem` / `!takeitem` are owner-gated.
+- Exact player and item resolution is authoritative in the Bot.
+- Quantity guardrail is 1–999.
+- Add/remove writes a normal item transaction ledger entry.
+- Over-removal is rejected.
+- Removing the final equipped copy automatically unequips the slot.
+- Portal inventory mutations store the replay marker in the same SQLite transaction as the item delta, preventing duplicate changes after acknowledgement retry.
+- Bot independently rejects Streamer Portal actions when the Twitch ID does not match the configured owner.
 
-## Continuity
-Streamer Controls, LIVE-only notable Portal announcements, refreshed Relic artwork, and LIVE/OFFLINE Camp timing remain intact.
+Existing simulated outage/recovery warnings in the test suite are intentional fault-injection coverage; all tests completed successfully.

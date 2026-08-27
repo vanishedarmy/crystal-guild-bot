@@ -1,6 +1,7 @@
-Crystal Guild v1.1.19 — Retro Phase III / RC1 Hotfix 6 Bot
-Runtime: 1.1.19-retro-phase-iii-rc1h6
-DB schema: 7 | Hosted sync schema: 1 | Portal Action protocol: 17 | Twitch prefix: !
+Crystal Guild v1.1.19 — Retro Phase III / RC1 Hotfix 7 Bot
+Runtime: 1.1.19-retro-phase-iii-rc1h7
+Local DB schema: 7
+Portal Action protocol: 18
 
-Hotfix 6 adds a durable Adventure Board result inbox and explicit result confirmation. Portal Solo Venture outcomes and timed Hunt results no longer disappear while the player is away. Existing Streamer Controls, LIVE-only result announcements, Relic visuals, dynamic Camp, progression, and player data are preserved.
-IMPORTANT: deploy the paired RC1H6 Web build because Portal Action protocol 17 is required.
+Hotfix 7 adds streamer-only inventory administration. The owner can use !additem / !removeitem in Twitch chat or the authenticated Streamer Portal controls. Mutations are authoritative, ledgered, exact-quantity validated, and replay-safe when sent through the Portal. Hotfix 6 persistent Adventure results and all prior Retro Phase III behavior remain intact.
+IMPORTANT: deploy the paired RC1H7 Web build because Portal Action protocol 18 is required.

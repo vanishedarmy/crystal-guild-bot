@@ -9068,6 +9068,139 @@ class CrystalGuildEngine:
         if not self.db.one("SELECT 1 FROM player_titles WHERE player_id=? AND title_id='fresh_meat'", (player_id,)):
             self.db.execute("INSERT INTO player_titles(player_id,title_id) VALUES (?, 'fresh_meat')", (player_id,))
 
+    def _streamer_player_match(self, query: str):
+        raw = str(query or "").strip().lstrip("@").strip()
+        if not raw:
+            return None
+        rows = self.db.all("SELECT twitch_id,username,display_name FROM players ORDER BY username")
+        lowered = raw.lower()
+        exact = [
+            row for row in rows
+            if str(row["twitch_id"]) == raw
+            or str(row["username"] or "").lower() == lowered
+            or str(row["display_name"] or "").lower() == lowered
+        ]
+        unique = {str(row["twitch_id"]): row for row in exact}
+        if len(unique) == 1:
+            return next(iter(unique.values()))
+        if exact:
+            return None
+        normalized = self._norm(raw)
+        fuzzy = [
+            row for row in rows
+            if normalized in {self._norm(str(row["username"] or "")), self._norm(str(row["display_name"] or ""))}
+        ]
+        unique = {str(row["twitch_id"]): row for row in fuzzy}
+        return next(iter(unique.values())) if len(unique) == 1 else None
+
+    def streamer_item_admin(self, request: str, *, remove: bool = False, action_id: str = "") -> GameResult:
+        """Streamer-only inventory adjustment shared by chat and Portal controls.
+
+        Syntax is ``player | item | quantity`` with quantity defaulting to one.
+        Portal calls pass ``action_id`` so the inventory mutation and replay marker
+        commit atomically; a lost hosted acknowledgement can never double-add or
+        double-remove an item.
+        """
+        if action_id:
+            replay = self._portal_action_replay(action_id)
+            if replay is not None:
+                return replay
+
+        def finish(result: GameResult) -> GameResult:
+            return self._portal_store_nonmutating_result(action_id, result) if action_id else result
+
+        parts = [part.strip() for part in str(request or "").split("|")]
+        if len(parts) not in {2, 3} or not parts[0] or not parts[1]:
+            return finish(GameResult.fail(
+                "Usage: !removeitem <player> | <item> | [quantity]" if remove
+                else "Usage: !additem <player> | <item> | [quantity]"
+            ))
+        player_query, item_query = parts[0], parts[1]
+        try:
+            quantity = int(parts[2]) if len(parts) == 3 and parts[2] else 1
+        except (TypeError, ValueError):
+            return finish(GameResult.fail("Item quantity must be a whole number between 1 and 999."))
+        if quantity < 1 or quantity > 999:
+            return finish(GameResult.fail("Item quantity must be between 1 and 999."))
+
+        player = self._streamer_player_match(player_query)
+        if not player:
+            return finish(GameResult.fail(
+                f"Player '{player_query}' was not found or is ambiguous. Use the exact Twitch username."
+            ))
+        item = self._find_by_name_or_id(self.data.items, item_query)
+        if not item:
+            return finish(GameResult.fail(f"Item '{item_query}' was not found. Use the exact item name or ID."))
+
+        player_id = str(player["twitch_id"])
+        display_name = str(player["display_name"] or player["username"] or player_id)
+        item_id = str(item["id"])
+        item_name = str(item["name"])
+        auto_unequipped = False
+        slot = ""
+        delta = -quantity if remove else quantity
+        source = "streamer_admin:remove" if remove else "streamer_admin:add"
+
+        with self.db.tx() as conn:
+            row = conn.execute(
+                "SELECT quantity FROM inventory WHERE player_id=? AND item_id=?",
+                (player_id, item_id),
+            ).fetchone()
+            before = max(0, int(row["quantity"] if row else 0))
+            if remove and before < quantity:
+                result = GameResult.fail(
+                    f"{display_name} only owns {before} × {item_name}; cannot remove {quantity}."
+                )
+                if action_id:
+                    self._portal_action_store_sql(conn, action_id, result)
+                return result
+
+            after = before + delta
+            conn.execute(
+                "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
+                "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=excluded.quantity",
+                (player_id, item_id, after),
+            )
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, ?)",
+                (player_id, item_id, delta, source),
+            )
+
+            if remove and after == 0 and item.get("type") in {"weapon", "armor", "accessory"}:
+                slot = str(item["type"])
+                column = {"weapon": "weapon_id", "armor": "armor_id", "accessory": "accessory_id"}[slot]
+                equipped = conn.execute(
+                    f"SELECT {column} AS item_id FROM equipment WHERE player_id=?",
+                    (player_id,),
+                ).fetchone()
+                if equipped and str(equipped["item_id"] or "") == item_id:
+                    conn.execute(f"UPDATE equipment SET {column}=NULL WHERE player_id=?", (player_id,))
+                    auto_unequipped = True
+
+            verb = "Removed" if remove else "Added"
+            direction = "from" if remove else "to"
+            note = f" Last equipped copy was unequipped from {slot}." if auto_unequipped else ""
+            result = GameResult.success(
+                f"STREAMER ITEM — {verb} {quantity} × {item_name} {direction} {display_name} ({before} → {after}).{note}",
+                operation="remove" if remove else "add",
+                player_id=player_id,
+                username=str(player["username"] or ""),
+                display_name=display_name,
+                item_id=item_id,
+                item_name=item_name,
+                quantity=quantity,
+                owned_before=before,
+                owned_after=after,
+                auto_unequipped=auto_unequipped,
+                slot=slot or None,
+            )
+            if action_id:
+                self._portal_action_store_sql(conn, action_id, result)
+
+        if auto_unequipped:
+            self._normalize_after_equipment_change(player_id)
+        return result
+
     def _change_item(self, player_id: str, item_id: str, amount: int, source: str) -> None:
         with self.db.tx() as conn:
             conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=MAX(0, quantity+excluded.quantity)", (player_id, item_id, amount))

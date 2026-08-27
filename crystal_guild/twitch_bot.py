@@ -682,6 +682,24 @@ class RPGCommands(commands.Component):
                 self.bot.portal_sync.wake()
             self.bot.encounter_daemon.wake()
 
+    @commands.command(aliases=["giveitem"])
+    async def additem(self, ctx: commands.Context, *, request: str) -> None:
+        if not await self._owner_only(ctx):
+            return
+        result = self.game.streamer_item_admin(request, remove=False)
+        await send_result(ctx, result, limit=2)
+        if result.ok and self.bot.portal_sync:
+            self.bot.portal_sync.wake()
+
+    @commands.command(aliases=["takeitem"])
+    async def removeitem(self, ctx: commands.Context, *, request: str) -> None:
+        if not await self._owner_only(ctx):
+            return
+        result = self.game.streamer_item_admin(request, remove=True)
+        await send_result(ctx, result, limit=2)
+        if result.ok and self.bot.portal_sync:
+            self.bot.portal_sync.wake()
+
     @commands.command()
     async def economy(self, ctx: commands.Context, days: int = 7) -> None:
         if not await self._owner_only(ctx):

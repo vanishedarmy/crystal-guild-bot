@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 17
+ACTION_PROTOCOL_VERSION = 18
 
 
 class PortalActionWorker:
@@ -592,6 +592,14 @@ class PortalActionWorker:
             return self._game_result(result)
         if command == "resolveboss":
             return self._game_result(self.game.resolve_boss())
+        if command in {"additem", "removeitem"}:
+            text = str(argument or "").strip()
+            if not text:
+                return False, f"{command} requires player | item | quantity.", {}
+            result = self.game.streamer_item_admin(
+                text, remove=(command == "removeitem"), action_id=action_id
+            )
+            return self._game_result(result)
         return False, "That streamer command is not available through the Portal.", {}
 
     @staticmethod

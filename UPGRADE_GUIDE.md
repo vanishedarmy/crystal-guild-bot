@@ -1,12 +1,9 @@
-# Upgrade Guide — v1.1.19 Retro Phase III RC1 Hotfix 6
+# Upgrade Guide — v1.1.19 Retro Phase III RC1 Hotfix 7
 
-1. Stop the current Bot cleanly.
-2. Preserve the existing database and `.env`. Do not replace or reset player data.
-3. Deploy the RC1H6 Bot package or apply the Bot patch.
-4. Start the Bot. On first launch from schema 6, Crystal Guild creates a verified `pre_schema_7_*.db` backup and adds the `portal_adventure_results` table.
-5. Deploy the paired RC1H6 Web package/patch. Both sides must use Portal Action protocol **17**.
-6. Verify `!cgversion` reports `1.1.19-retro-phase-iii-rc1h6` and Portal Action protocol 17.
-7. Verify the database schema reports **7** and `PRAGMA quick_check` passes.
-8. Test a Portal-origin timed Hunt: leave the Portal before it resolves, return after resolution, verify the result remains, then use **Confirm Result**.
-
-No player reset, OAuth change, or new environment variable is required.
+1. Stop the current Bot.
+2. Back up the database as usual.
+3. Replace the Bot files with RC1H7 while preserving `.env`, database, Twitch token database, and other persistent runtime data.
+4. No database migration is required; schema remains **7**.
+5. Deploy the matching RC1H7 Web package.
+6. Start the Bot and verify `!cgversion` reports `1.1.19-retro-phase-iii-rc1h7` and Portal Action protocol 18.
+7. Test `!additem <testplayer> | potion | 1`, then `!removeitem <testplayer> | potion | 1`, or use the matching Streamer Dashboard controls.
