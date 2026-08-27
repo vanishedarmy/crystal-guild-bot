@@ -1,3 +1,3 @@
-"""Crystal Guild Twitch RPG bot."""
+"""Crystal Guild package."""
 
-__version__ = "1.1.18-recovery-h1"
+__version__ = "1.1.19-retro-phase-iii-balance1"

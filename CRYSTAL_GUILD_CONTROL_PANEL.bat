@@ -1,12 +1,12 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title Crystal Guild v1.1.18 - Hunt Board Hotfix 1 - Bot Control Panel
+title Crystal Guild v1.1.19 - Retro Phase III - Facility Supply Balance
 
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.1.18 - HUNT BOARD HOTFIX
+echo              CRYSTAL GUILD v1.1.19 - FACILITY SUPPLY BALANCE
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

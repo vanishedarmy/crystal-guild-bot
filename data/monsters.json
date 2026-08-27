@@ -91,6 +91,10 @@
       {
         "item_id": "potion",
         "chance": 0.18
+      },
+      {
+        "item_id": "hi_potion",
+        "chance": 0.1
       }
     ]
   },
@@ -153,6 +157,10 @@
       {
         "item_id": "ether",
         "chance": 0.08
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.1
       }
     ]
   },
@@ -177,6 +185,10 @@
       {
         "item_id": "imp_wing",
         "chance": 0.32
+      },
+      {
+        "item_id": "demon_horn",
+        "chance": 0.1
       }
     ]
   },
@@ -234,6 +246,10 @@
       {
         "item_id": "flame_tongue",
         "chance": 0.012
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.08
       }
     ]
   },
@@ -258,6 +274,10 @@
       {
         "item_id": "cockatrice_pinion",
         "chance": 0.28
+      },
+      {
+        "item_id": "wyvern_scale",
+        "chance": 0.1
       }
     ]
   },
@@ -414,6 +434,10 @@
       {
         "item_id": "phoenix_down",
         "chance": 0.05
+      },
+      {
+        "item_id": "ancient_coin",
+        "chance": 0.12
       }
     ]
   },
@@ -438,6 +462,10 @@
       {
         "item_id": "iron_ore",
         "chance": 0.22
+      },
+      {
+        "item_id": "mythril_ore",
+        "chance": 0.12
       }
     ]
   },
@@ -462,6 +490,10 @@
       {
         "item_id": "basilisk_eye",
         "chance": 0.26
+      },
+      {
+        "item_id": "wyvern_scale",
+        "chance": 0.12
       }
     ]
   },
@@ -519,6 +551,10 @@
       {
         "item_id": "gigas_brace",
         "chance": 0.08
+      },
+      {
+        "item_id": "mythril_ore",
+        "chance": 0.1
       }
     ]
   },
@@ -566,11 +602,15 @@
     "drops": [
       {
         "item_id": "hi_potion",
-        "chance": 0.18
+        "chance": 0.26
       },
       {
         "item_id": "mythril_ore",
-        "chance": 0.08
+        "chance": 0.16
+      },
+      {
+        "item_id": "ancient_coin",
+        "chance": 0.18
       }
     ]
   },
@@ -595,6 +635,10 @@
       {
         "item_id": "iron_ore",
         "chance": 0.2
+      },
+      {
+        "item_id": "demon_horn",
+        "chance": 0.12
       }
     ]
   },
@@ -667,6 +711,10 @@
       {
         "item_id": "phoenix_down",
         "chance": 0.14
+      },
+      {
+        "item_id": "hi_potion",
+        "chance": 0.16
       }
     ]
   },
@@ -839,6 +887,10 @@
       {
         "item_id": "mindflayer_tentacle",
         "chance": 0.16
+      },
+      {
+        "item_id": "demon_horn",
+        "chance": 0.14
       }
     ]
   },
@@ -863,6 +915,10 @@
       {
         "item_id": "dark_matter",
         "chance": 0.01
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.14
       }
     ]
   },
@@ -1024,6 +1080,14 @@
       {
         "item_id": "magic_pot_shard",
         "chance": 0.08
+      },
+      {
+        "item_id": "ancient_coin",
+        "chance": 0.24
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.18
       }
     ]
   },
@@ -1092,6 +1156,10 @@
       {
         "item_id": "coral_sword",
         "chance": 0.02
+      },
+      {
+        "item_id": "wyvern_scale",
+        "chance": 0.16
       }
     ]
   },
@@ -1611,6 +1679,10 @@
       {
         "item_id": "wolf_fang",
         "chance": 0.45
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.16
       }
     ]
   },
@@ -1728,6 +1800,10 @@
       {
         "item_id": "crystal_shard",
         "chance": 0.48
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.25
       }
     ],
     "pity_drops": [
@@ -1775,6 +1851,10 @@
       {
         "item_id": "dragon_heart",
         "chance": 0.08
+      },
+      {
+        "item_id": "wyvern_scale",
+        "chance": 0.2
       }
     ]
   },
@@ -1806,7 +1886,7 @@
       },
       {
         "item_id": "wyvern_scale",
-        "chance": 0.14
+        "chance": 0.28
       }
     ]
   },
@@ -1838,7 +1918,7 @@
       },
       {
         "item_id": "elemental_crystal",
-        "chance": 0.12
+        "chance": 0.35
       },
       {
         "item_id": "archon_shard",
@@ -1931,7 +2011,7 @@
       },
       {
         "item_id": "ancient_coin",
-        "chance": 0.2
+        "chance": 0.4
       },
       {
         "item_id": "mimic_lock",
@@ -2035,6 +2115,10 @@
       {
         "item_id": "dragon_scale",
         "chance": 0.25
+      },
+      {
+        "item_id": "wyvern_scale",
+        "chance": 0.28
       }
     ],
     "pity_drops": [
@@ -2384,6 +2468,10 @@
       {
         "item_id": "dark_matter",
         "chance": 0.035
+      },
+      {
+        "item_id": "demon_horn",
+        "chance": 0.3
       }
     ]
   },
@@ -2623,6 +2711,10 @@
       {
         "item_id": "dark_matter",
         "chance": 0.06
+      },
+      {
+        "item_id": "demon_horn",
+        "chance": 0.4
       }
     ]
   },
@@ -2757,6 +2849,10 @@
       {
         "item_id": "dark_matter",
         "chance": 0.055
+      },
+      {
+        "item_id": "demon_horn",
+        "chance": 0.28
       }
     ]
   },
@@ -2865,6 +2961,10 @@
       {
         "item_id": "void_essence",
         "chance": 0.48
+      },
+      {
+        "item_id": "elemental_crystal",
+        "chance": 0.3
       }
     ]
   },

@@ -1,8 +1,8 @@
-Crystal Guild Bot v1.1.18
-Runtime: 1.1.18-recovery-h1
+Crystal Guild Bot v1.1.19 — Retro Phase III
+Runtime: 1.1.19-retro-phase-iii-balance1
 Local DB schema: 5
 Hosted sync schema: 1
 Portal Action protocol: 14
 Twitch prefix: !
 
-Passive Recovery Hotfix: 8-hour Long Rest + once-per-stream LIVE roster refresh, preserving Hunt Board Timer Pass behavior.
+Facility Supply Balance: Fellowship facility materials now have multiple level-appropriate monster sources with bounded drop rates. Passive Recovery Hotfix behavior remains intact.
