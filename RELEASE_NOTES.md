@@ -1,32 +1,34 @@
-# Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits
+# Crystal Guild v1.1.19 — Retro Phase III / Release Candidate 1
 
-This paired Bot + Web update adds persistent Chocobo portrait selection to the existing Chocobo Stable.
+RC1 is the finalization checkpoint for Retro Phase III before v1.2 Expeditions. It consolidates the current gameplay/data state, performs a release-wide balance and integrity audit, and pairs with the final RC Web presentation pass.
 
-## Chocobo portrait persistence
-- `player_chocobos` now stores a persistent `portrait_id`.
-- Existing registered Chocobos migrate automatically to `classic_gold` without changing names, Bond XP, traits, registration dates, or any other progression.
-- The authoritative portrait catalog contains 10 IDs shared with the Web Stable: Classic Gold, Midnight, Celestial, Ember, Verdant, Cobalt, Arcane, Sandrunner, Frost, and Rose.
-- Invalid portrait IDs are rejected.
-- Portrait changes are replay-safe through the existing Portal action receipt system.
-- Public player snapshots now include the selected Chocobo portrait so read-only profiles render the owner’s choice.
+## Gameplay and progression state
+- Chocobo portrait selection remains authoritative and persistent.
+- Facility Supply Balance remains intact: all six Fellowship facility materials have multiple monster sources and practical early-game access.
+- No new gameplay mechanics are introduced in RC1.
+- No progression reset is required.
 
-## Portal action
-New typed action: `SET_CHOCOBO_PORTRAIT` with `{ "portrait_id": "..." }`.
+## Finalization audit
+RC1 statically validates:
+- every monster drop references a real item and uses a valid probability;
+- every region encounter references a real monster;
+- each region retains multiple encounters within its minimum-level +10 safety band;
+- every facility material has at least three monster sources, an early source at Lv.11 or below, and an early practical drop rate;
+- shop availability remains populated throughout Lv.1–50.
 
-Portal Action protocol advances **14 → 15**. The matching iii13 Web build must be deployed with this Bot.
+See `FINALIZATION_AUDIT.md` for the full result.
 
-## Database migration
-Local DB schema advances **5 → 6** by adding `player_chocobos.portrait_id TEXT NOT NULL DEFAULT 'classic_gold'`.
-
-Before the migration, Crystal Guild automatically creates and verifies a `pre_schema_6_<timestamp>.db` backup for an existing on-disk Guild.
+## Cleanup
+- Removed superseded Arsenal II / Hotfix / Passive Recovery staging documents from the shipping Bot root.
+- Removed Python bytecode and cache directories from the release tree.
+- Preserved only current setup, recovery, combat, deployment, and release documentation.
 
 ## Compatibility
-- Bot runtime: `1.1.19-retro-phase-iii-chocobo1`
-- Local DB schema: **6**
+- Bot runtime: `1.1.19-retro-phase-iii-rc1`
+- Local DB schema: **6** unchanged from Chocobo Portraits
 - Hosted sync schema: **1** unchanged
-- Hosted sync compatibility: `1.1.15-wayfarer` unchanged
-- Portal Action protocol: **15**
-- Twitch command prefix: `!` unchanged
+- Portal Action protocol: **15** unchanged
+- Twitch command prefix: `!`
 - Player reset: **none**
-- OAuth changes: **none**
+- OAuth change: **none**
 - New environment variables: **none**

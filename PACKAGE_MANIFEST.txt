@@ -1,14 +1,13 @@
-Package: Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits Bot
-Runtime: 1.1.19-retro-phase-iii-chocobo1
+Package: Crystal Guild v1.1.19 — Retro Phase III / Release Candidate 1 Bot
+Runtime: 1.1.19-retro-phase-iii-rc1
 Local DB schema: 6
 Hosted sync schema: 1
 Hosted sync compatibility: 1.1.15-wayfarer
 Portal Action protocol: 15
 Twitch prefix: !
 
-Primary feature files:
-- crystal_guild/chocobo.py — authoritative portrait catalog/default
-- crystal_guild/database.py — schema 6 migration
-- crystal_guild/engine.py — portrait state and mutation
-- crystal_guild/player_snapshot.py — public portrait publication
-- crystal_guild/portal_actions.py — SET_CHOCOBO_PORTRAIT routing/protocol 15
+RC1 scope:
+- Carries forward Chocobo portrait selection and Facility Supply Balance.
+- No new gameplay mutation or schema change after the Chocobo Portrait checkpoint.
+- Final progression/data integrity audit for monsters, drops, regions, facility materials, and level-1–50 shop density.
+- Release-tree cleanup removes superseded staging/hotfix documentation and runtime caches.

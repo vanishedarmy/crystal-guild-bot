@@ -1,14 +1,15 @@
-# Upgrade Guide — Facility Supply Balance → Chocobo Portraits
+# Upgrade Guide — v1.1.19 Retro Phase III RC1
 
-1. Stop the Bot/worker cleanly.
-2. Preserve `.env`, Twitch token storage, `crystal_guild.db`, and Render persistent-disk paths.
-3. Make your normal manual database backup as an additional safeguard.
-4. Apply the Chocobo Portrait Bot patch over `1.1.19-retro-phase-iii-balance1`, or replace the Bot source with the full Chocobo Portrait package.
-5. On first start, the Bot performs the additive **schema 5 → 6** migration and automatically creates/verifies a `pre_schema_6_<timestamp>.db` backup.
-6. Deploy the matching Web iii13 package/patch. Bot and Web must match because Portal Action protocol advances **14 → 15**.
-7. Restart/redeploy both services.
-8. Verify `!cgversion` reports `1.1.19-retro-phase-iii-chocobo1`.
-9. Verify hosted `/api/health` reports runtime `1.1.19-retro-phase-iii-chocobo1`, frontend revision `1.1.19-retro-phase-iii13`, and Portal Action protocol `15`.
-10. Open a registered player’s Chocobo Stable, apply a portrait, refresh, and confirm it persists.
+Baseline: **v1.1.19 Retro Phase III / Chocobo Portraits + Facility Supply Balance**.
 
-No player reset, OAuth change, or new environment variable is required.
+1. Stop the Bot cleanly.
+2. Preserve `.env`, Twitch token storage, the live `crystal_guild.db`, and any persistent-disk paths.
+3. Back up the database as usual.
+4. Apply the RC1 Bot patch or replace the Bot source with the RC1 full Bot package.
+5. Apply the matching RC1 Web patch/full Web package and redeploy the hosted Web service.
+6. Restart the Bot.
+7. Verify `!cgversion` reports `1.1.19-retro-phase-iii-rc1`.
+8. Verify `/api/health` reports Web runtime `1.1.19-retro-phase-iii-rc1`, frontend revision `1.1.19-retro-phase-iii14-rc1`, and Portal Action protocol `15`.
+9. Open Camp, Blacksmith, Chocobo Stable, and Moogle Emporium and confirm the scenic background art is visible but controls remain readable.
+
+No database migration is required from the Chocobo Portrait checkpoint; schema 6 remains current. No player reset, OAuth change, or new environment variable is required.

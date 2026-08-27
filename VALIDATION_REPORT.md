@@ -1,29 +1,44 @@
-# Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits Validation Report
+# Crystal Guild v1.1.19 — Retro Phase III RC1 Validation Report
 
 ## Automated validation
-
 - Bot unittest suite: **392 / 392 PASS**.
-- Python test run completed against the finalized Chocobo Portrait Bot source.
-- Chocobo migration, persistence, portrait mutation, snapshot publication, invalid-ID rejection, and Portal replay/idempotency behavior are covered by the packaged regression suite.
+- Frontend Node regression suite: **283 / 283 PASS**.
+- Hosted Portal/API unittest suite: **46 / 46 PASS**.
+- Bot + hosted Web Python compile sweep: **PASS**.
+- Finalization static audit: **PASS — 0 errors / 0 warnings**.
+- Explicit `/retro-phase-*` artwork routes checked: **147**, missing: **0**.
+- Bot patch reconstruction from the Chocobo Portrait baseline: **0 differences**.
+- Web patch reconstruction from iii13: **0 differences**.
 
-## Chocobo portrait feature checks
+## RC1 visual pass
+Four optimized **1440×810 PNG** scenic backgrounds are packaged and routed:
+- Camp / Recovery
+- Blacksmith
+- Chocobo Stable
+- Moogle Emporium
 
-- Existing schema-5 installations migrate additively to schema **6**.
-- Existing registered Chocobos receive `classic_gold` as the default portrait without changing name, Bond XP, traits, registration data, inventory, or other player progression.
-- The authoritative portrait catalog exposes exactly 10 supported IDs.
-- `SET_CHOCOBO_PORTRAIT` accepts supported portrait IDs and rejects unknown IDs.
-- Selected portrait IDs persist in `player_chocobos` and are published through player snapshots.
-- Portal action replay safety remains active for portrait changes.
-- Facility Supply Balance monster-drop changes from the previous paired checkpoint remain present.
+The scenic layers use readability gradients, reduced mobile opacity, and `prefers-contrast: more` safeguards. Camp art is shared by both Adventure Board Camp and Inventory Recovery.
+
+## Progression / balance audit
+- All monster drop item IDs resolve and all drop probabilities are valid.
+- Every region encounter ID resolves.
+- Every region retains at least three listed encounters within its minimum-level +10 safety band.
+- All six Fellowship facility materials have at least three monster sources, at least one source at Lv.11 or below, and a practical early drop rate.
+- Shop catalog density remains populated across Lv.1–10, 11–20, 21–30, 31–40, and 41–50.
+
+See `FINALIZATION_AUDIT.md` for the detailed source tables.
+
+## Frontend production-build note
+The shipping source tree intentionally contains no `node_modules`. The local RC workspace therefore could not execute `vite build` because the Vite executable is not installed in the clean package tree. The complete Node regression suite passes against the shipping source; normal hosted deployment installs the pinned dependencies before building.
 
 ## Compatibility
-
-- Bot runtime: `1.1.19-retro-phase-iii-chocobo1`
+- Bot runtime: `1.1.19-retro-phase-iii-rc1`
+- Hosted Web runtime: `1.1.19-retro-phase-iii-rc1`
+- Frontend asset revision: `1.1.19-retro-phase-iii14-rc1`
 - Local DB schema: **6**
-- Hosted sync schema: **1** unchanged
-- Hosted sync compatibility identity: `1.1.15-wayfarer` unchanged
+- Hosted sync schema: **1**
 - Portal Action protocol: **15**
-- Twitch prefix: `!` unchanged
+- Twitch prefix: `!`
 - Player reset: **none**
-- OAuth changes: **none**
+- OAuth change: **none**
 - New environment variables: **none**

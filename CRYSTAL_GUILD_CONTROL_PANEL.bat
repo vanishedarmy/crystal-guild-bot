@@ -6,7 +6,7 @@ title Crystal Guild v1.1.19 - Retro Phase III - Chocobo Portraits
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.1.19 - CHOCOBO PORTRAITS
+echo              CRYSTAL GUILD v1.1.19 - RETRO PHASE III RC1
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

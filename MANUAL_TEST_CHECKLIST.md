@@ -1,6 +1,6 @@
 # Crystal Guild v1.1.17 — Arsenal II Manual Check
 
-- [ ] `!cgversion` reports `1.1.19-retro-phase-iii-chocobo1`.
+- [ ] `!cgversion` reports `1.1.19-retro-phase-iii-rc1`.
 - [ ] `!streamstatus` still reports LIVE/OFFLINE correctly.
 - [ ] Start/join a Raid while live; `!attack` queues for the next Raid round.
 - [ ] `!ability <name> [target]` queues and resolves, spending MP/AP only on resolution.
