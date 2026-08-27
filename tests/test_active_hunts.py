@@ -200,6 +200,16 @@ class ActiveHuntTests(unittest.TestCase):
         self.assertIsNotNone(row)
         self.assertGreaterEqual(row["value"], 1)
 
+    def test_portal_hunt_marks_origin_and_includes_new_title_at_resolution(self):
+        started = self.game.portal_challenge_hunt("1", "red_hot_problem", "pa_hunt_portal_origin")
+        self.assertTrue(started.ok, started.messages)
+        self.assertTrue(self.game.active_hunts["1"].get("portal_origin"))
+        result = self.game.resolve_hunt("1", started.data["hunt_run_id"], force=True)
+        self.assertTrue(result.ok, result.messages)
+        self.assertTrue(result.data.get("portal_origin"))
+        if result.data.get("hunt_finished") and result.data.get("won", True):
+            self.assertTrue(any("TITLE UNLOCKED" in message for message in result.messages))
+
     def test_timed_hunt_exposes_structured_recent_result_for_portal(self):
         started = self.start_hunt()
         result = self.game.resolve_hunt("1", started.data["hunt_run_id"], force=True)

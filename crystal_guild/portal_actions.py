@@ -11,10 +11,11 @@ from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from .engine import CrystalGuildEngine
+from . import __version__ as APP_VERSION
+from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 15
+ACTION_PROTOCOL_VERSION = 17
 
 
 class PortalActionWorker:
@@ -38,6 +39,7 @@ class PortalActionWorker:
         wake_encounter: Callable[[], None] | None = None,
         subscription_lookup: Callable[[str], dict[str, Any]] | None = None,
         stream_live_lookup: Callable[[], bool] | None = None,
+        owner_id: str = "",
     ) -> None:
         self.game = game
         self.public_url = str(public_url or "").rstrip("/")
@@ -49,7 +51,8 @@ class PortalActionWorker:
         self.wake_encounter = wake_encounter
         self.subscription_lookup = subscription_lookup
         self.stream_live_lookup = stream_live_lookup
-        self._post_ack_notifications: dict[str, Any] = {}
+        self.owner_id = str(owner_id or "").strip()
+        self._post_ack_notifications: dict[str, list[Any]] = {}
         self.worker_id = f"bot:{socket.gethostname()}:{os.getpid()}"
         self._stop = threading.Event()
         self._wake = threading.Event()
@@ -124,7 +127,15 @@ class PortalActionWorker:
                 break
             if not isinstance(action, dict):
                 continue
+            action_type = str(action.get("type") or "").strip().upper()
+            twitch_id = str(action.get("twitch_id") or "").strip()
+            track_titles = action_type not in {"RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT"}
+            title_before = self._player_title_ids(twitch_id) if track_titles else set()
             ok, message, data = self._execute(action)
+            if ok:
+                self._stage_notable_portal_result(action, message, data)
+                if track_titles:
+                    self._stage_new_title_announcement(action, title_before)
             result = {
                 "protocol_version": ACTION_PROTOCOL_VERSION,
                 "id": str(action.get("id") or ""),
@@ -144,21 +155,69 @@ class PortalActionWorker:
                 # game-action layer as well as in the hosted submission queue.
                 LOGGER.exception("Unable to acknowledge Portal action %s", action.get("id"))
                 raise
-            pending = self._post_ack_notifications.pop(action_id, None)
-            if pending is not None and self.notify_result is not None:
-                try:
-                    self.notify_result(pending)
-                except Exception:
-                    LOGGER.exception("Unable to enqueue Twitch announcement for Portal action %s", action_id)
+            pending = self._post_ack_notifications.pop(action_id, [])
+            if pending and self.notify_result is not None:
+                for announcement in pending:
+                    try:
+                        self.notify_result(announcement)
+                    except Exception:
+                        LOGGER.exception("Unable to enqueue Twitch announcement for Portal action %s", action_id)
             processed += 1
         return processed
 
-    def _stage_post_ack_announcement(self, action_id: str, result: Any) -> None:
+    def _stage_post_ack_announcement(self, action_id: str, result: Any, *, live_only: bool = False) -> None:
         if self.notify_result is None or not getattr(result, "ok", False) or not getattr(result, "messages", None):
+            return
+        if live_only and not self._stream_live():
             return
         key = str(action_id or "").strip()
         if key:
-            self._post_ack_notifications[key] = result
+            self._post_ack_notifications.setdefault(key, []).append(result)
+
+    def _player_title_ids(self, twitch_id: str) -> set[str]:
+        if not str(twitch_id or "").isdigit():
+            return set()
+        rows = self.game.db.all("SELECT title_id FROM player_titles WHERE player_id=?", (str(twitch_id),))
+        return {str(row["title_id"]) for row in rows}
+
+    def _stage_new_title_announcement(self, action: dict[str, Any], before: set[str]) -> None:
+        twitch_id = str(action.get("twitch_id") or "").strip()
+        after = self._player_title_ids(twitch_id)
+        added = sorted(after - before)
+        if not added:
+            return
+        player = self.game.db.one("SELECT display_name,username FROM players WHERE twitch_id=?", (twitch_id,))
+        display_name = str(player["display_name"] or player["username"]) if player else "An adventurer"
+        names = [str((self.game.data.titles.get(title_id) or {}).get("name") or title_id.replace("_", " ").title()) for title_id in added]
+        if len(names) == 1:
+            message = f"TITLE UNLOCKED — {display_name} earned {names[0]}!"
+        else:
+            message = f"TITLE UNLOCKED — {display_name} earned " + ", ".join(names) + "!"
+        self._stage_post_ack_announcement(str(action.get("id") or ""), GameResult.success(message), live_only=True)
+
+    def _stage_notable_portal_result(self, action: dict[str, Any], message: str, data: dict[str, Any]) -> None:
+        action_type = str(action.get("type") or "").strip().upper()
+        if action_type not in {
+            "SOLO_VENTURE", "SOLO_EXPEDITION_ACTION", "SOLO_EXPEDITION_CONTINUE",
+            "SOLO_EXPEDITION_RETURN", "SOLO_EXPEDITION_RETREAT",
+        }:
+            return
+        # Portal Solo play can produce a result every combat round. Twitch only
+        # gets the memorable beats: a completed/failed/returned run, or treasure.
+        notable = bool(data.get("solo_result")) or (
+            bool(data.get("solo_expedition_stage_complete")) and "treasure found" in str(message).lower()
+        )
+        if not notable:
+            return
+        twitch_id = str(action.get("twitch_id") or "").strip()
+        player = self.game.db.one("SELECT display_name,username FROM players WHERE twitch_id=?", (twitch_id,))
+        display_name = str(player["display_name"] or player["username"]) if player else "Adventurer"
+        concise = " ".join(str(message or "Completed.").split())[:360]
+        self._stage_post_ack_announcement(
+            str(action.get("id") or ""),
+            GameResult.success(f"SOLO — {display_name}: {concise}"),
+            live_only=True,
+        )
 
     def _wake_encounter_scheduler(self) -> None:
         if self.wake_encounter is None:
@@ -174,7 +233,7 @@ class PortalActionWorker:
         try:
             return bool(self.stream_live_lookup())
         except Exception:
-            LOGGER.exception("Unable to resolve Twitch stream state for Camp; using OFFLINE timer.")
+            LOGGER.exception("Unable to resolve Twitch stream state for Portal action; treating stream as OFFLINE.")
             return False
 
     def _subscriber_tier(self, twitch_id: str) -> int:
@@ -207,6 +266,10 @@ class PortalActionWorker:
             if result.ok and result.data.get("recruited"):
                 self._stage_post_ack_announcement(action_id, result)
             return self._game_result(result)
+        if action_type == "STREAMER_COMMAND":
+            if not self.owner_id or twitch_id != self.owner_id:
+                return False, "This Twitch account is not authorized for Streamer Controls.", {}
+            return self._execute_streamer_command(action, payload)
         row = self.game.db.one(
             "SELECT username,display_name FROM players WHERE twitch_id=?",
             (twitch_id,),
@@ -426,10 +489,110 @@ class PortalActionWorker:
             action_id = str(action.get("id") or "")
             result = self.game.portal_challenge_hunt(twitch_id, hunt_id, action_id)
             if result.ok and result.data.get("hunt_started"):
-                self._stage_post_ack_announcement(action_id, result)
                 self._wake_encounter_scheduler()
             return self._game_result(result)
+        if action_type == "ACK_ADVENTURE_RESULT":
+            try:
+                result_id = int(payload.get("result_id") or 0)
+            except (TypeError, ValueError):
+                return False, "Adventure result confirmation is invalid.", {}
+            if result_id <= 0:
+                return False, "Adventure result confirmation is invalid.", {}
+            return self._game_result(
+                self.game.portal_ack_adventure_result(twitch_id, result_id, str(action.get("id") or ""))
+            )
         return False, "That Portal action is not supported by this Bot build.", {}
+
+    def _execute_streamer_command(self, action: dict[str, Any], payload: dict[str, Any]) -> tuple[bool, str, dict[str, Any]]:
+        if set(payload) - {"command", "argument"} or "command" not in payload:
+            return False, "Streamer Control request contains unsupported fields.", {}
+        command = str(payload.get("command") or "").strip().lower().lstrip("!")
+        argument = payload.get("argument", "")
+        action_id = str(action.get("id") or "")
+
+        no_arg = {
+            "health", "cgversion", "encounterdebug", "directtest", "readyall",
+            "resettimers", "clearadventures", "resolveencounter", "clearencounter", "resolveboss",
+        }
+        if command in no_arg and str(argument or "").strip():
+            return False, f"{command} does not accept a Portal argument.", {}
+
+        if command == "health":
+            runtime = self.game.runtime_status()
+            status = self.status()
+            result = GameResult.success(
+                f"CG HEALTH v{APP_VERSION} — DB={'OK' if self.game.db.health_check() else 'FAIL'} | "
+                f"actions={status['state']} processed={status['processed']} | "
+                f"stream={'LIVE' if self._stream_live() else 'OFFLINE'} | state={runtime['active']}.",
+                runtime=runtime, portal_actions=status,
+            )
+            return self._game_result(result)
+        if command == "economy":
+            try:
+                days = int(argument or 7)
+            except (TypeError, ValueError):
+                return False, "Economy days must be between 1 and 90.", {}
+            return self._game_result(self.game.economy_report(days))
+        if command == "cgversion":
+            status = self.status()
+            result = GameResult.success(
+                f"Crystal Guild v{APP_VERSION} | Portal Action protocol {ACTION_PROTOCOL_VERSION} | "
+                f"actions={status['state']} | DB={'OK' if self.game.db.health_check() else 'FAIL'}.",
+                version=APP_VERSION, protocol_version=ACTION_PROTOCOL_VERSION, portal_actions=status,
+            )
+            return self._game_result(result)
+        if command == "encounterdebug":
+            snapshot = self.game.combat_snapshot()
+            active = snapshot.get("encounter")
+            if active:
+                result = GameResult.success(
+                    f"Encounter debug — id={active.get('id')} kind={active.get('kind','encounter')} "
+                    f"round={active.get('round', 0)} roster={snapshot.get('encounter_roster', 0)}.",
+                    encounter=active, roster=snapshot.get("encounter_roster"),
+                )
+            else:
+                result = GameResult.success("Encounter debug — no active field encounter.", encounter=None)
+            return self._game_result(result)
+        if command == "directtest":
+            if not self._stream_live():
+                return self._game_result(GameResult.success(
+                    "Direct Twitch API test not sent because the stream is OFFLINE.", sent=False
+                ))
+            self._stage_post_ack_announcement(
+                action_id,
+                GameResult.success("Crystal Guild direct API PASS. Streamer Portal announcements can reach Twitch chat."),
+                live_only=True,
+            )
+            return self._game_result(GameResult.success("Direct Twitch API test queued for Twitch chat.", sent=True))
+        if command == "fellowshipproject":
+            text = " ".join(str(argument or "").strip().split())
+            if not text:
+                return False, "Choose a Fellowship project first.", {}
+            return self._game_result(self.game.set_fellowship_project(text))
+        if command == "readyall":
+            return self._game_result(self.game.ready_all_players())
+        if command == "resettimers":
+            return self._game_result(self.game.reset_all_player_timers())
+        if command == "clearadventures":
+            result = self.game.clear_all_adventures()
+            if result.ok:
+                self._wake_encounter_scheduler()
+            return self._game_result(result)
+        if command == "resolveencounter":
+            return self._game_result(self.game.resolve_encounter())
+        if command == "clearencounter":
+            return self._game_result(self.game.abort_encounter())
+        if command == "spawnboss":
+            text = " ".join(str(argument or "").strip().split())
+            if not text:
+                return False, "Choose a boss first.", {}
+            result = self.game.spawn_boss(text)
+            if result.ok and result.data.get("raid_spawned"):
+                self._wake_encounter_scheduler()
+            return self._game_result(result)
+        if command == "resolveboss":
+            return self._game_result(self.game.resolve_boss())
+        return False, "That streamer command is not available through the Portal.", {}
 
     @staticmethod
     def _game_result(result: Any) -> tuple[bool, str, dict[str, Any]]:

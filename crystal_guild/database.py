@@ -252,7 +252,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- version 3 adds additive Fellowship progression tables; version 4 adds
 -- persistent Chocobo companion and registration-writ state; version 5 adds
 -- persistent per-player Wayfarer Solo Expedition state; version 6 adds
--- persistent Chocobo portrait selection.
+-- persistent Chocobo portrait selection; version 7 adds durable Portal adventure result acknowledgements.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 6
+DATABASE_SCHEMA_VERSION = 7
 
 
 class Database:
@@ -570,6 +570,39 @@ class Database:
                 self.conn.execute(
                     "INSERT OR REPLACE INTO schema_migrations(version,name,applied_at) "
                     "VALUES (6,'chocobo_portraits',CURRENT_TIMESTAMP)"
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v7 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=7").fetchone()
+        )
+        if not already_v7:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(7)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS portal_adventure_results (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id TEXT NOT NULL,
+                        kind TEXT NOT NULL,
+                        result_json TEXT NOT NULL,
+                        created_at INTEGER NOT NULL,
+                        acknowledged_at INTEGER,
+                        source_action_id TEXT,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_portal_adventure_results_pending
+                    ON portal_adventure_results(player_id, acknowledged_at, created_at DESC, id DESC);
+                    CREATE INDEX IF NOT EXISTS idx_portal_adventure_results_source
+                    ON portal_adventure_results(source_action_id);
+                    INSERT INTO schema_migrations(version,name) VALUES (7,'portal_adventure_result_inbox');
+                    COMMIT;
+                    """
                 )
                 self.conn.commit()
             except Exception:

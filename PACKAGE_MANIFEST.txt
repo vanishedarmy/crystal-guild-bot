@@ -1,13 +1,13 @@
-Package: Crystal Guild v1.1.19 — Retro Phase III / Release Candidate 1 Bot
-Runtime: 1.1.19-retro-phase-iii-rc1
-Local DB schema: 6
+Crystal Guild Bot — v1.1.19 Retro Phase III RC1 Hotfix 6
+Runtime: 1.1.19-retro-phase-iii-rc1h6
+Local DB schema: 7
 Hosted sync schema: 1
-Hosted sync compatibility: 1.1.15-wayfarer
-Portal Action protocol: 15
-Twitch prefix: !
+Portal Action protocol: 17
+Twitch command prefix: !
 
-RC1 scope:
-- Carries forward Chocobo portrait selection and Facility Supply Balance.
-- No new gameplay mutation or schema change after the Chocobo Portrait checkpoint.
-- Final progression/data integrity audit for monsters, drops, regions, facility materials, and level-1–50 shop density.
-- Release-tree cleanup removes superseded staging/hotfix documentation and runtime caches.
+Primary changes:
+- owner-only STREAMER_COMMAND Portal execution allowlist
+- owner ID included in authenticated Portal sync manifest
+- live-only notable Portal Solo/Title announcements
+- Portal-origin Hunt resolution announcement tagging
+- durable Portal Adventure result inbox; explicit ACK_ADVENTURE_RESULT confirmation

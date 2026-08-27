@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_retro_phase_iii_rc1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.1.19-retro-phase-iii-rc1h4")
+        self.assertEqual(__version__, "1.1.19-retro-phase-iii-rc1h6")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -39,6 +39,8 @@ class ReleaseReadinessTests(unittest.TestCase):
                 self.assertEqual(report["journal_mode"], "wal")
                 self.assertGreaterEqual(report["busy_timeout_ms"], 1000)
                 self.assertEqual(report["players"], 1)
+                self.assertEqual(db.schema_version(), 7)
+                self.assertIsNotNone(db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='portal_adventure_results'"))
             finally:
                 db.close()
 

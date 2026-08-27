@@ -1,34 +1,20 @@
-# Crystal Guild v1.1.19 — Retro Phase III / Release Candidate 1
+# Crystal Guild v1.1.19 — Retro Phase III / RC1 Hotfix 6 — Persistent Adventure Results
 
-RC1 is the finalization checkpoint for Retro Phase III before v1.2 Expeditions. It consolidates the current gameplay/data state, performs a release-wide balance and integrity audit, and pairs with the final RC Web presentation pass.
+## Durable Adventure Board result inbox
+The authoritative Bot database now stores Portal Adventure results in `portal_adventure_results`. Unacknowledged rows have no time-based expiry. Solo Venture outcomes and timed Hunt resolutions remain available to the signed-in player until that player confirms the individual result.
 
-## Gameplay and progression state
-- Chocobo portrait selection remains authoritative and persistent.
-- Facility Supply Balance remains intact: all six Fellowship facility materials have multiple monster sources and practical early-game access.
-- No new gameplay mechanics are introduced in RC1.
-- No progression reset is required.
+The new typed `ACK_ADVENTURE_RESULT` Portal action verifies player ownership, marks only the selected result as acknowledged, and returns a refreshed Adventure Board state. The action is replay/idempotency safe through the existing Portal action ledger.
 
-## Finalization audit
-RC1 statically validates:
-- every monster drop references a real item and uses a valid probability;
-- every region encounter references a real monster;
-- each region retains multiple encounters within its minimum-level +10 safety band;
-- every facility material has at least three monster sources, an early source at Lv.11 or below, and an early practical drop rate;
-- shop availability remains populated throughout Lv.1–50.
+Schema 7 is additive and automatically backed up before migration. Existing characters, progression, equipment, Relics, Chocobos, Camp state, and other player data are preserved.
 
-See `FINALIZATION_AUDIT.md` for the full result.
-
-## Cleanup
-- Removed superseded Arsenal II / Hotfix / Passive Recovery staging documents from the shipping Bot root.
-- Removed Python bytecode and cache directories from the release tree.
-- Preserved only current setup, recovery, combat, deployment, and release documentation.
+## Hotfix 5 behavior retained
+Owner-authenticated Streamer Control Portal actions remain available. LIVE-only Portal announcements remain limited to notable Solo results, Hunt results, and newly unlocked Titles, while normal Portal combat chatter stays silent. Chat-origin Twitch commands retain their normal chat response path.
 
 ## Compatibility
-- Bot runtime: `1.1.19-retro-phase-iii-rc1`
-- Local DB schema: **6** unchanged from Chocobo Portraits
+- Bot runtime: `1.1.19-retro-phase-iii-rc1h6`
+- Local DB schema: **7**
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **15** unchanged
-- Twitch command prefix: `!`
-- Player reset: **none**
-- OAuth change: **none**
-- New environment variables: **none**
+- Portal Action protocol: **17** (paired Web update required)
+- Twitch command prefix: `!` unchanged
+- Camp: 15-minute LIVE / 1-hour OFFLINE base timer retained
+- No player reset, OAuth change, or new environment variable

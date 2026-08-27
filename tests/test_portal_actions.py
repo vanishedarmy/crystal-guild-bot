@@ -8,7 +8,7 @@ from pathlib import Path
 
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
-from crystal_guild.engine import CrystalGuildEngine
+from crystal_guild.engine import CrystalGuildEngine, GameResult
 from crystal_guild.portal_actions import ACTION_PROTOCOL_VERSION, PortalActionWorker
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,6 +60,37 @@ class PortalActionWorkerTests(unittest.TestCase):
         ok, message, _ = self.worker._execute(self.action(twitch_id="999"))
         self.assertFalse(ok)
         self.assertIn("no longer exists", message.lower())
+
+    def test_streamer_command_requires_authoritative_owner_and_runs_allowlisted_backend_actions(self):
+        worker = PortalActionWorker(
+            self.game, "https://guild.example", "sync-key",
+            owner_id="100", stream_live_lookup=lambda: True,
+        )
+        ok, message, data = worker._execute(self.action(
+            id="pa_stream_health", type="STREAMER_COMMAND", payload={"command": "health"}
+        ))
+        self.assertTrue(ok)
+        self.assertIn("CG HEALTH", message)
+        self.assertIn("runtime", data)
+
+        ok, message, _ = worker._execute(self.action(
+            id="pa_stream_economy", type="STREAMER_COMMAND", payload={"command": "economy", "argument": 7}
+        ))
+        self.assertTrue(ok)
+        self.assertIn("ECONOMY", message)
+
+        ok, message, _ = worker._execute(self.action(
+            id="pa_stream_bad", type="STREAMER_COMMAND", payload={"command": "say", "argument": "hello"}
+        ))
+        self.assertFalse(ok)
+        self.assertIn("not available", message.lower())
+
+        blocked = PortalActionWorker(self.game, "https://guild.example", "sync-key", owner_id="999")
+        ok, message, _ = blocked._execute(self.action(
+            id="pa_stream_blocked", type="STREAMER_COMMAND", payload={"command": "readyall"}
+        ))
+        self.assertFalse(ok)
+        self.assertIn("not authorized", message.lower())
 
     def test_phase_two_equips_and_unequips_owned_compatible_gear(self):
         ok, message, data = self.worker._execute(self.action(type="EQUIP_ITEM", payload={"item_id": "hunters_axe"}))
@@ -557,6 +588,66 @@ class PortalActionWorkerTests(unittest.TestCase):
         encoded = json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
         self.assertLess(len(encoded), 16 * 1024)
 
+    def test_adventure_results_persist_until_explicit_confirmation(self):
+        summary = {
+            "type": "encounter",
+            "outcome": "victory",
+            "title": "Victory",
+            "region_name": "Greenwind Plains",
+            "enemy": {"id": "slime", "name": "Slime", "level": 1},
+            "rounds": 2,
+            "rewards": {"xp": 10, "jp": 2, "gil": 5, "loot": [], "fellowship_renown": 1, "achievements": []},
+            "combat": {"damage_dealt": 12, "damage_taken": 2, "best_hit": 8},
+            "player": {"hp": 98, "max_hp": 100, "mp": 0, "max_mp": 0, "ap": 10, "max_ap": 10},
+        }
+        self.game._remember_adventure_result("100", summary)
+        # The old in-memory result cache can disappear while the browser is away;
+        # the durable inbox must still drive the Portal card.
+        self.game._last_adventure_result = None
+        ok, _, data = self.worker._execute(self.action(id="pa_result_state", type="ADVENTURE_STATE", payload={}))
+        self.assertTrue(ok)
+        pending = data["adventure_state"]["pending_results"]
+        self.assertEqual(len(pending), 1)
+        self.assertEqual(pending[0]["kind"], "solo_venture")
+        self.assertTrue(pending[0]["requires_confirmation"])
+        result_id = int(pending[0]["result_id"])
+
+        ok, message, data = self.worker._execute(self.action(
+            id="pa_result_ack", type="ACK_ADVENTURE_RESULT", payload={"result_id": result_id}
+        ))
+        self.assertTrue(ok)
+        self.assertIn("confirmed", message.lower())
+        self.assertEqual(data["adventure_state"]["pending_results"], [])
+        self.assertIsNone(data["adventure_state"]["recent_result"])
+
+        # Confirmation is replay safe through the normal Portal action ledger.
+        replay = self.worker._execute(self.action(
+            id="pa_result_ack", type="ACK_ADVENTURE_RESULT", payload={"result_id": result_id}
+        ))
+        self.assertTrue(replay[0])
+        self.assertEqual(replay[2], data)
+
+    def test_portal_origin_timed_hunt_result_survives_until_confirmation(self):
+        self.db.execute("UPDATE players SET level=99,current_hp=9999 WHERE twitch_id='100'")
+        hunt = next(iter(self.game.data.hunts.values()))
+        accepted = self.worker._execute(self.action(
+            id="pa_persistent_hunt", type="CHALLENGE_HUNT", payload={"hunt_id": hunt["id"]}
+        ))
+        self.assertTrue(accepted[0])
+        assignment = self.game.active_hunts["100"]
+        resolved = self.game.resolve_hunt("100", int(assignment["id"]), force=True)
+        self.assertTrue(resolved.ok)
+        self.assertNotIn("100", self.game.active_hunts)
+
+        # Simulate the user returning later, after transient battle history is gone.
+        self.game._last_battle_history = None
+        ok, _, data = self.worker._execute(self.action(id="pa_hunt_after", type="ADVENTURE_STATE", payload={}))
+        self.assertTrue(ok)
+        pending = [row for row in data["adventure_state"]["pending_results"] if row["kind"] == "hunt"]
+        self.assertEqual(len(pending), 1)
+        self.assertEqual(pending[0]["hunt_name"], hunt["name"])
+        self.assertTrue(pending[0]["requires_confirmation"])
+
     def test_adventure_board_travel_remains_replay_safe(self):
         self.db.execute("UPDATE players SET level=20 WHERE twitch_id='100'")
         travel = self.action(id="pa_travel_sable", type="TRAVEL_REGION", payload={"region_id": "sable_coast"})
@@ -766,6 +857,57 @@ class PortalActionWorkerTests(unittest.TestCase):
         after = acted[2]["adventure_state"]["solo_venture"]["expedition"]
         self.assertEqual(after["combat"]["round"], 2)
         self.assertEqual(after["last_round"]["round"], 1)
+
+    def test_live_portal_solo_posts_only_notable_treasure_result_after_ack(self):
+        self.db.execute("UPDATE players SET level=20 WHERE twitch_id='100'")
+        announcements = []
+        worker = PortalActionWorker(
+            self.game, "https://guild.example", "sync-key",
+            notify_result=announcements.append, stream_live_lookup=lambda: True,
+        )
+        action = self.action(id="pa_solo_live_treasure", type="SOLO_VENTURE", payload={})
+        def fake_post(path, payload):
+            if path == "/api/actions/claim":
+                return {"ok": True, "protocol_version": ACTION_PROTOCOL_VERSION, "actions": [action]}
+            if path == "/api/actions/result":
+                return {"ok": True}
+            raise AssertionError(path)
+        worker._post = fake_post
+        with patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 1.0):
+            self.assertEqual(worker.poll_once(), 1)
+        self.assertEqual(len(announcements), 1)
+        self.assertIn("SOLO — Van", announcements[0].messages[0])
+        self.assertIn("Treasure found", announcements[0].messages[0])
+
+    def test_portal_title_unlock_posts_while_live_but_not_offline(self):
+        def run(live: bool, title_id: str, action_id: str):
+            announcements = []
+            worker = PortalActionWorker(
+                self.game, "https://guild.example", "sync-key",
+                notify_result=announcements.append, stream_live_lookup=lambda: live,
+            )
+            action = self.action(id=action_id, type="CLAIM_DAILY", payload={})
+            def fake_claim(_uid, _action_id, _tier):
+                self.db.execute("INSERT OR IGNORE INTO player_titles(player_id,title_id) VALUES ('100',?)", (title_id,))
+                return GameResult.success("Daily reward claimed.")
+            def fake_post(path, payload):
+                if path == "/api/actions/claim":
+                    return {"ok": True, "protocol_version": ACTION_PROTOCOL_VERSION, "actions": [action]}
+                if path == "/api/actions/result":
+                    return {"ok": True}
+                raise AssertionError(path)
+            worker._post = fake_post
+            with patch.object(self.game, "portal_claim_daily", side_effect=fake_claim):
+                self.assertEqual(worker.poll_once(), 1)
+            return announcements
+
+        live_announcements = run(True, "monster_botherer", "pa_title_live")
+        self.assertEqual(len(live_announcements), 1)
+        self.assertIn("TITLE UNLOCKED", live_announcements[0].messages[0])
+        self.assertIn("Monster Botherer", live_announcements[0].messages[0])
+
+        offline_announcements = run(False, "needle_dodger", "pa_title_offline")
+        self.assertEqual(offline_announcements, [])
 
     def test_v1112h1_solo_venture_stays_silent_and_needs_no_scheduler_wake(self):
         self.db.execute("UPDATE players SET level=5 WHERE twitch_id='100'")

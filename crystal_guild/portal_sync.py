@@ -43,6 +43,7 @@ class PortalSyncClient:
         verify_tls: bool = True,
         heartbeat_seconds: float = 30.0,
         overlay_state_path: str | Path | None = None,
+        owner_twitch_id: str | None = None,
     ):
         self.repository = repository
         self.public_url = public_url.rstrip("/")
@@ -52,6 +53,7 @@ class PortalSyncClient:
         self.verify_tls = verify_tls
         self.heartbeat_seconds = max(5.0, float(heartbeat_seconds))
         self.overlay_state_path = Path(overlay_state_path).resolve() if overlay_state_path else None
+        self.owner_twitch_id = str(owner_twitch_id or os.getenv("TWITCH_OWNER_ID", "")).strip()
         self._hashes: dict[str, str] = {}
         self._fellowship_hash: str | None = None
         self._overlay_hash: str | None = None
@@ -252,6 +254,7 @@ class PortalSyncClient:
                     "schema_version": SCHEMA_VERSION,
                     "sync_version": SYNC_VERSION,
                     "usernames": list(usernames),
+                    "owner_twitch_id": self.owner_twitch_id if self.owner_twitch_id.isdigit() else "",
                     "generated_at": int(time.time()),
                 },
             )
@@ -450,6 +453,7 @@ def main() -> None:
         verify_tls=env_bool("PORTAL_SYNC_VERIFY_TLS", True),
         heartbeat_seconds=float(os.getenv("PORTAL_SYNC_HEARTBEAT_SECONDS", "30")),
         overlay_state_path=os.getenv("OVERLAY_STATE_PATH", "overlay/state.json"),
+        owner_twitch_id=os.getenv("TWITCH_OWNER_ID", ""),
     )
     if args.once:
         print(client.sync_once(force=args.force or True))

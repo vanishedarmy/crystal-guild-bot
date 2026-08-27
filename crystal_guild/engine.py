@@ -1210,12 +1210,108 @@ class CrystalGuildEngine:
             "max_ap": max(0, int(resources.get("max_ap", 0))),
         }
 
+    def _persist_portal_adventure_result(
+        self, twitch_id: str, kind: str, result: dict[str, Any], *, source_action_id: str = ""
+    ) -> int:
+        """Store an Adventure Board result until the player explicitly confirms it.
+
+        These rows intentionally have no time-based expiry while unacknowledged.
+        This lets a player leave the Portal during a timed Hunt or Solo Venture
+        and still see the authoritative result when they return later.
+        """
+        player_id = str(twitch_id)
+        created_at = int(time.time())
+        payload = copy.deepcopy(result)
+        payload["kind"] = str(kind or payload.get("kind") or "adventure")
+        payload["finished_at"] = int(payload.get("finished_at") or created_at)
+        encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False)
+        with self.db.tx() as conn:
+            cursor = conn.execute(
+                "INSERT INTO portal_adventure_results(player_id,kind,result_json,created_at,acknowledged_at,source_action_id) "
+                "VALUES (?,?,?,?,NULL,?)",
+                (player_id, payload["kind"], encoded, created_at, str(source_action_id or "") or None),
+            )
+            # Acknowledged history is only diagnostic; prune old confirmed rows.
+            # Pending rows are never pruned automatically.
+            conn.execute(
+                "DELETE FROM portal_adventure_results WHERE player_id=? AND acknowledged_at IS NOT NULL "
+                "AND acknowledged_at < ?",
+                (player_id, created_at - 30 * 24 * 60 * 60),
+            )
+            return int(cursor.lastrowid)
+
+    def _pending_portal_adventure_results(self, twitch_id: str, limit: int = 8) -> list[dict[str, Any]]:
+        rows = self.db.all(
+            "SELECT id,kind,result_json,created_at FROM portal_adventure_results "
+            "WHERE player_id=? AND acknowledged_at IS NULL ORDER BY created_at DESC,id DESC LIMIT ?",
+            (str(twitch_id), max(1, min(20, int(limit)))),
+        )
+        pending: list[dict[str, Any]] = []
+        for row in rows:
+            try:
+                payload = json.loads(str(row["result_json"]))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                payload = {}
+            if not isinstance(payload, dict):
+                payload = {}
+            payload["result_id"] = int(row["id"])
+            payload["kind"] = str(payload.get("kind") or row["kind"] or "adventure")
+            payload["finished_at"] = int(payload.get("finished_at") or row["created_at"] or 0)
+            payload["requires_confirmation"] = True
+            pending.append(payload)
+        return pending
+
+    def _ack_portal_adventure_result(self, twitch_id: str, result_id: int) -> bool:
+        row = self.db.one(
+            "SELECT id,acknowledged_at FROM portal_adventure_results WHERE id=? AND player_id=?",
+            (int(result_id), str(twitch_id)),
+        )
+        if not row:
+            return False
+        if row["acknowledged_at"] is None:
+            self.db.execute(
+                "UPDATE portal_adventure_results SET acknowledged_at=? WHERE id=? AND player_id=? AND acknowledged_at IS NULL",
+                (int(time.time()), int(result_id), str(twitch_id)),
+            )
+        return True
+
     def _remember_adventure_result(self, twitch_id: str, summary: dict[str, Any]) -> None:
+        finished_at = int(time.time())
         self._last_adventure_result = {
             "participants": [str(twitch_id)],
-            "finished_at": time.time(),
+            "finished_at": finished_at,
             "summary": copy.deepcopy(summary),
         }
+        result = {
+            "title": str(summary.get("title") or "Solo Venture Result"),
+            "won": str(summary.get("outcome") or "") != "defeat",
+            "finished_at": finished_at,
+            "kind": "solo_venture",
+            "monster_name": str((summary.get("enemy") or {}).get("name") or ""),
+            "hunt_name": None,
+            "messages": [],
+            "summary": copy.deepcopy(summary),
+        }
+        self._persist_portal_adventure_result(twitch_id, "solo_venture", result)
+
+    def _remember_portal_hunt_result(
+        self, twitch_id: str, summary: dict[str, Any], messages: list[str], *, source_action_id: str = ""
+    ) -> None:
+        finished_at = int(time.time())
+        monster = summary.get("monster") or {}
+        result = {
+            "title": str(summary.get("title") or "Hunt Result"),
+            "won": str(summary.get("outcome") or "") == "victory",
+            "finished_at": finished_at,
+            "kind": "hunt",
+            "monster_name": str(monster.get("name") or "Unknown Mark"),
+            "hunt_name": str(summary.get("hunt_name") or "Hunt"),
+            "messages": [str(value) for value in list(messages or [])[:4]],
+            "summary": copy.deepcopy(summary),
+        }
+        self._persist_portal_adventure_result(
+            twitch_id, "hunt", result, source_action_id=source_action_id
+        )
 
     # ---------- Wayfarer Solo Ventures ----------
     def _solo_expedition_load(self, twitch_id: str) -> dict[str, Any] | None:
@@ -4527,6 +4623,11 @@ class CrystalGuildEngine:
         assignment = self.active_hunts.get(twitch_id)
         if not assignment:
             return GameResult.fail("That Hunt assignment is no longer active.")
+        portal_origin = bool(assignment.get("portal_origin"))
+        title_before = {
+            str(row["title_id"])
+            for row in self.db.all("SELECT title_id FROM player_titles WHERE player_id=?", (twitch_id,))
+        } if portal_origin else set()
         if hunt_run_id is not None and int(assignment.get("id") or 0) != int(hunt_run_id):
             return GameResult.fail("That Hunt assignment has already been replaced or completed.")
         now = time.time()
@@ -4588,7 +4689,36 @@ class CrystalGuildEngine:
                         if isinstance(hunt_summary, dict):
                             hunt_summary["auto_plan"] = auto_plan
                             hunt_summary["duration_seconds"] = max(0, int(assignment.get("resolves_at") or now) - int(assignment.get("started_at") or now))
-                result.data.update({"timed_hunt": True, "hunt_run_id": int(assignment.get("id") or 0), "resolved_at": int(now)})
+                if isinstance(self._last_battle_history, dict):
+                    hunt_summary = (self._last_battle_history.get("hunt_results") or {}).get(str(twitch_id))
+                    if isinstance(hunt_summary, dict):
+                        # Timed Hunt results are useful Portal history regardless
+                        # of whether the Hunt was accepted in chat or the Portal.
+                        # Portal-origin only affects Twitch announcement policy.
+                        self._remember_portal_hunt_result(
+                            twitch_id,
+                            hunt_summary,
+                            list(result.messages or []),
+                            source_action_id=str(assignment.get("portal_action_id") or ""),
+                        )
+                result.data.update({
+                    "timed_hunt": True,
+                    "hunt_run_id": int(assignment.get("id") or 0),
+                    "resolved_at": int(now),
+                    "portal_origin": portal_origin,
+                })
+                if portal_origin:
+                    title_after = {
+                        str(row["title_id"])
+                        for row in self.db.all("SELECT title_id FROM player_titles WHERE player_id=?", (twitch_id,))
+                    }
+                    added_titles = sorted(title_after - title_before)
+                    if added_titles:
+                        player = self._player(twitch_id)
+                        display_name = str(player["display_name"] or player["username"]) if player else "Adventurer"
+                        for title_id in added_titles:
+                            title_name = str((self.data.titles.get(title_id) or {}).get("name") or title_id.replace("_", " ").title())
+                            result.messages.append(f"TITLE UNLOCKED — {display_name} earned {title_name}!")
             return result
         finally:
             # Preserve any simultaneously running Rally Venture / raid-facing
@@ -5553,36 +5683,28 @@ class CrystalGuildEngine:
                 "duration_seconds": self._hunt_duration_seconds(str(hunt.get("rank", "C"))),
             })
 
-        recent_result = None
-        adventure_recent = self._last_adventure_result if isinstance(self._last_adventure_result, dict) else None
-        if adventure_recent and twitch_id in set(adventure_recent.get("participants") or []):
-            finished_at = int(float(adventure_recent.get("finished_at") or 0))
-            if finished_at and now - finished_at <= 15 * 60:
-                summary = copy.deepcopy(adventure_recent.get("summary") or {})
-                recent_result = {
-                    "title": str(summary.get("title") or "Solo Venture Result"),
-                    "won": str(summary.get("outcome") or "") != "defeat",
-                    "finished_at": finished_at,
-                    "kind": "solo_venture",
-                    "monster_name": str((summary.get("enemy") or {}).get("name") or ""),
-                    "hunt_name": None,
-                    "messages": [],
-                    "summary": summary,
-                }
+        # Portal-origin Solo/Hunt results are durable and remain on the Adventure
+        # Board until the player explicitly confirms them. Do not time-expire
+        # these rows or fall back to the in-memory Solo/Hunt caches after an
+        # acknowledgement, otherwise a confirmed card could briefly reappear.
+        pending_results = self._pending_portal_adventure_results(twitch_id)
+        recent_result = pending_results[0] if pending_results else None
         if recent_result is None:
             history = self._last_battle_history if isinstance(self._last_battle_history, dict) else None
             if history and twitch_id in set(history.get("participants") or []):
+                history_kind = str(history.get("kind") or "venture")
                 finished_at = int(float(history.get("finished_at") or 0))
-                if finished_at and now - finished_at <= 15 * 60:
+                if history_kind not in {"solo_venture", "hunt"} and finished_at and now - finished_at <= 15 * 60:
                     recent_result = {
                         "title": str(history.get("title") or "Recent Battle"),
                         "won": bool(history.get("won")),
                         "finished_at": finished_at,
-                        "kind": str(history.get("kind") or "venture"),
+                        "kind": history_kind,
                         "monster_name": str(history.get("monster_name") or "Unknown Enemy"),
                         "hunt_name": history.get("hunt_name"),
                         "messages": [str(value) for value in list(history.get("messages") or [])[:4]],
-                        "summary": copy.deepcopy((history.get("hunt_results") or {}).get(str(twitch_id))) if str(history.get("kind") or "") == "hunt" else None,
+                        "summary": None,
+                        "requires_confirmation": False,
                     }
 
         return {
@@ -5657,6 +5779,7 @@ class CrystalGuildEngine:
             "active_hunt": active_hunt,
             "hunts": hunts,
             "recent_result": recent_result,
+            "pending_results": pending_results,
             "raid_active": bool(self.active_boss),
         }
 
@@ -6140,6 +6263,23 @@ class CrystalGuildEngine:
         if replay is not None:
             return replay
         result = self.hunt(twitch_id, str(hunt_id or "").strip())
+        if result.ok and result.data.get("hunt_started"):
+            assignment = self.active_hunts.get(str(twitch_id))
+            if isinstance(assignment, dict):
+                assignment["portal_origin"] = True
+                assignment["portal_action_id"] = str(action_id or "")
+            result.data["portal_origin"] = True
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_ack_adventure_result(self, twitch_id: str, result_id: int, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._ack_portal_adventure_result(twitch_id, int(result_id)):
+            result = GameResult.fail("That Adventure Board result is no longer pending for this hero.")
+        else:
+            result = GameResult.success("RESULT CONFIRMED — This Adventure Board result has been cleared.")
         return self._portal_adventure_mutation_result(action_id, result, twitch_id)
 
     def portal_recovery_state(self, twitch_id: str) -> GameResult:

@@ -1,15 +1,12 @@
-# Upgrade Guide — v1.1.19 Retro Phase III RC1
+# Upgrade Guide — v1.1.19 Retro Phase III RC1 Hotfix 6
 
-Baseline: **v1.1.19 Retro Phase III / Chocobo Portraits + Facility Supply Balance**.
+1. Stop the current Bot cleanly.
+2. Preserve the existing database and `.env`. Do not replace or reset player data.
+3. Deploy the RC1H6 Bot package or apply the Bot patch.
+4. Start the Bot. On first launch from schema 6, Crystal Guild creates a verified `pre_schema_7_*.db` backup and adds the `portal_adventure_results` table.
+5. Deploy the paired RC1H6 Web package/patch. Both sides must use Portal Action protocol **17**.
+6. Verify `!cgversion` reports `1.1.19-retro-phase-iii-rc1h6` and Portal Action protocol 17.
+7. Verify the database schema reports **7** and `PRAGMA quick_check` passes.
+8. Test a Portal-origin timed Hunt: leave the Portal before it resolves, return after resolution, verify the result remains, then use **Confirm Result**.
 
-1. Stop the Bot cleanly.
-2. Preserve `.env`, Twitch token storage, the live `crystal_guild.db`, and any persistent-disk paths.
-3. Back up the database as usual.
-4. Apply the RC1 Bot patch or replace the Bot source with the RC1 full Bot package.
-5. Apply the matching RC1 Web patch/full Web package and redeploy the hosted Web service.
-6. Restart the Bot.
-7. Verify `!cgversion` reports `1.1.19-retro-phase-iii-rc1`.
-8. Verify `/api/health` reports Web runtime `1.1.19-retro-phase-iii-rc1`, frontend revision `1.1.19-retro-phase-iii14-rc1`, and Portal Action protocol `15`.
-9. Open Camp, Blacksmith, Chocobo Stable, and Moogle Emporium and confirm the scenic background art is visible but controls remain readable.
-
-No database migration is required from the Chocobo Portrait checkpoint; schema 6 remains current. No player reset, OAuth change, or new environment variable is required.
+No player reset, OAuth change, or new environment variable is required.

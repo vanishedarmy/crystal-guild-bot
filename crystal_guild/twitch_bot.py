@@ -935,6 +935,7 @@ def main() -> None:
         wake_encounter=encounter_daemon.wake,
         subscription_lookup=subscription_status.refresh,
         stream_live_lookup=lambda: bool(stream_status.refresh().get("live")),
+        owner_id=settings.owner_id,
     )
 
     portal_sync: PortalSyncWorker | None = None
@@ -949,6 +950,7 @@ def main() -> None:
             verify_tls=settings.portal_sync_verify_tls,
             heartbeat_seconds=settings.portal_sync_heartbeat_seconds,
             overlay_state_path=settings.overlay_state_path,
+            owner_twitch_id=settings.owner_id,
         )
         portal_sync = PortalSyncWorker(sync_client)
     elif settings.cloud_runtime:
