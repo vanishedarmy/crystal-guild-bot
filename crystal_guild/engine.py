@@ -126,6 +126,8 @@ RUNTIME_STATE_SCHEMA = 1
 LONG_REST_SECONDS = 8 * 60 * 60
 PLAYER_ACTIVITY_STATE_PREFIX = "player_activity:"
 STREAM_REFRESH_STATE_KEY = "stream_live_refresh"
+CAMP_REST_ONLINE_SECONDS = 15 * 60
+CAMP_REST_OFFLINE_SECONDS = 60 * 60
 
 
 def _state_guard(method):
@@ -169,7 +171,7 @@ class GameResult:
 
 
 class CrystalGuildEngine:
-    def __init__(self, db: Database, data: GameData, venture_cooldown_seconds: int = 600, encounter_join_seconds: int = 45, camp_rest_seconds: int = 1800, raid_join_seconds: int = 60, raid_round_seconds: int = 15, overlay_state_path: str = "overlay/state.json", rng: random.Random | None = None, shop_refresh_seconds: int = 1800, encounter_round_seconds: int = 20, venture_treasure_chance: float = VENTURE_TREASURE_CHANCE):
+    def __init__(self, db: Database, data: GameData, venture_cooldown_seconds: int = 600, encounter_join_seconds: int = 45, camp_rest_seconds: int = 3600, raid_join_seconds: int = 60, raid_round_seconds: int = 15, overlay_state_path: str = "overlay/state.json", rng: random.Random | None = None, shop_refresh_seconds: int = 1800, encounter_round_seconds: int = 20, venture_treasure_chance: float = VENTURE_TREASURE_CHANCE):
         self.db = db
         self.data = data
         self.fellowship_system = FellowshipSystem(db, data)
@@ -876,9 +878,19 @@ class CrystalGuildEngine:
         self.db.execute("UPDATE players SET stance=? WHERE twitch_id=?", (stance, twitch_id))
         return GameResult.success(f"Combat stance set to {stance}.")
 
+    def _effective_camp_seconds_for_stream(self, stream_live: bool | None) -> int:
+        """Return the authoritative Camp timer for the current stream state.
+
+        LIVE uses a 15-minute base rest; OFFLINE and UNKNOWN fail closed to a
+        60-minute base rest. Existing Fellowship/Infirmary Camp reductions still
+        apply to the selected base duration.
+        """
+        base_seconds = CAMP_REST_ONLINE_SECONDS if stream_live is True else CAMP_REST_OFFLINE_SECONDS
+        return self.fellowship_system.effective_camp_seconds(base_seconds)
+
     # ---------- recovery / camp ----------
     @_state_guard
-    def rest(self, twitch_id: str) -> GameResult:
+    def rest(self, twitch_id: str, *, stream_live: bool | None = None) -> GameResult:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
@@ -910,7 +922,7 @@ class CrystalGuildEngine:
                 f"{p['display_name']} is already fully recovered (" + " | ".join(summary) + "). No need to make the Moogle unfold a tent."
             )
 
-        rest_seconds = self.fellowship_system.effective_camp_seconds(self.camp_rest_seconds)
+        rest_seconds = self._effective_camp_seconds_for_stream(stream_live)
         until = int(time.time()) + rest_seconds
         self.db.execute("UPDATE players SET camp_until=?, rests=rests+1 WHERE twitch_id=?", (until, twitch_id))
         missing: list[str] = []
@@ -5282,7 +5294,7 @@ class CrystalGuildEngine:
         }
 
     # ---------- Portal Actions Phase 9: Adventure Board ----------
-    def _portal_adventure_state_data(self, twitch_id: str) -> dict[str, Any]:
+    def _portal_adventure_state_data(self, twitch_id: str, *, stream_live: bool | None = None) -> dict[str, Any]:
         """Return live, player-safe Adventure Board state.
 
         This is intentionally sourced from the authoritative engine instead of
@@ -5592,7 +5604,9 @@ class CrystalGuildEngine:
                 "reason": camp_reason,
                 "remaining_seconds": int(camp_remaining),
                 "until": int(p["camp_until"] or 0) if resting else 0,
-                "duration_seconds": int(self.fellowship_system.effective_camp_seconds(self.camp_rest_seconds)),
+                "duration_seconds": int(self._effective_camp_seconds_for_stream(stream_live)),
+                "base_duration_seconds": int(CAMP_REST_ONLINE_SECONDS if stream_live is True else CAMP_REST_OFFLINE_SECONDS),
+                "stream_live": bool(stream_live is True),
                 "hp": max(0, int(p["current_hp"] or 0)),
                 "max_hp": int(max_hp),
                 "mp": max(0, int(camp_resources.get("mp", 0))),
@@ -6061,10 +6075,10 @@ class CrystalGuildEngine:
             twitch_id, action_id, lambda: self.set_chocobo_portrait(twitch_id, portrait_id)
         )
 
-    def portal_adventure_state(self, twitch_id: str) -> GameResult:
+    def portal_adventure_state(self, twitch_id: str, *, stream_live: bool | None = None) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
-        return GameResult.success("Adventure Board refreshed.", adventure_state=self._portal_adventure_state_data(twitch_id))
+        return GameResult.success("Adventure Board refreshed.", adventure_state=self._portal_adventure_state_data(twitch_id, stream_live=stream_live))
 
     def _portal_adventure_mutation_result(self, action_id: str, result: GameResult, twitch_id: str) -> GameResult:
         result.data["adventure_state"] = self._portal_adventure_state_data(twitch_id)
@@ -6157,8 +6171,8 @@ class CrystalGuildEngine:
             )
         return self._portal_recovery_mutation(twitch_id, action_id, lambda: self.use_item(twitch_id, str(item_id)))
 
-    def portal_start_rest(self, twitch_id: str, action_id: str) -> GameResult:
-        return self._portal_recovery_mutation(twitch_id, action_id, lambda: self.rest(twitch_id))
+    def portal_start_rest(self, twitch_id: str, action_id: str, *, stream_live: bool | None = None) -> GameResult:
+        return self._portal_recovery_mutation(twitch_id, action_id, lambda: self.rest(twitch_id, stream_live=stream_live))
 
     def _portal_fellowship_state_data(self, twitch_id: str) -> dict[str, Any]:
         """Return live, contribution-safe Fellowship state for the signed-in player.
@@ -9068,7 +9082,7 @@ class CrystalGuildEngine:
         if remaining > 0:
             return f"Your hero is resting at camp for another {self._format_seconds(remaining)}. Full HP/MP/AP recovery awaits; patience is apparently a stat now."
         if p["current_hp"] <= 0 and p["current_job"] != "adventurer":
-            return "Your hero is KO'd. Use !rest for a 30-minute camp recovery, !use phoenix down, or !use tent."
+            return "Your hero is KO'd. Use !rest for Camp recovery (15m LIVE / 1h OFFLINE base), !use phoenix down, or !use tent."
         if self._solo_expedition_load(player_id):
             return "Your hero is currently on a Solo Venture. Return or retreat from the Adventure Board first."
         if str(player_id) in self.active_hunts:

@@ -663,16 +663,17 @@ class EngineTests(unittest.TestCase):
         battle = self.game._party_battle({"1":{"name":"Van"},"2":{"name":"Cloud"}}, monster)
         self.assertGreater(battle["monster_max_hp"], monster["hp"])
 
-    def test_v4_camp_rest_blocks_activity_and_heals_after_30_minutes(self):
+    def test_v4_camp_rest_blocks_activity_and_heals_after_offline_timer(self):
         self.game.choose_job("1", "warrior")
         p = self.game._player("1")
         max_hp = self.game._max_hp(p)
         self.db.execute("UPDATE players SET current_hp=1 WHERE twitch_id='1'")
-        rested = self.game.rest("1")
+        rested = self.game.rest("1", stream_live=False)
         self.assertTrue(rested.ok, rested.messages)
         row = self.game._player("1")
         remaining = row["camp_until"] - int(time.time())
-        self.assertGreaterEqual(remaining, 1798)
+        self.assertGreaterEqual(remaining, 3598)
+        self.assertLessEqual(remaining, 3600)
         blocked = self.game.venture("1", bypass_cooldown=True)
         self.assertFalse(blocked.ok)
         self.assertIn("resting at camp", blocked.messages[0])
@@ -681,6 +682,16 @@ class EngineTests(unittest.TestCase):
         self.assertTrue(completed.ok)
         self.assertEqual(self.game._player("1")["current_hp"], max_hp)
         self.assertEqual(self.game._player("1")["camp_until"], 0)
+
+    def test_v4_camp_uses_shorter_online_timer(self):
+        self.game.choose_job("1", "warrior")
+        self.db.execute("UPDATE players SET current_hp=1 WHERE twitch_id='1'")
+        result = self.game.rest("1", stream_live=True)
+        self.assertTrue(result.ok, result.messages)
+        remaining = int(self.game._player("1")["camp_until"]) - int(time.time())
+        self.assertGreaterEqual(remaining, 898)
+        self.assertLessEqual(remaining, 900)
+        self.assertIn("15m", result.messages[0])
 
     def test_v4_tent_is_instant_full_recovery(self):
         self.game.choose_job("1", "warrior")

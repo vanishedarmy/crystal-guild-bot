@@ -60,7 +60,7 @@ class Settings:
     venture_cooldown_seconds: int = 600
     encounter_join_seconds: int = 45
     encounter_round_seconds: int = 20
-    camp_rest_seconds: int = 1800
+    camp_rest_seconds: int = 3600
     shop_refresh_seconds: int = 1800
     raid_join_seconds: int = 60
     raid_round_seconds: int = 15
@@ -130,7 +130,7 @@ class Settings:
             venture_cooldown_seconds=_env_int("VENTURE_COOLDOWN_SECONDS", 600, 0),
             encounter_join_seconds=_env_int("ENCOUNTER_JOIN_SECONDS", 45, 5),
             encounter_round_seconds=_env_int("ENCOUNTER_ROUND_SECONDS", 20, 5),
-            camp_rest_seconds=_env_int("CAMP_REST_SECONDS", 1800, 60),
+            camp_rest_seconds=_env_int("CAMP_REST_SECONDS", 3600, 60),
             shop_refresh_seconds=_env_int("SHOP_REFRESH_SECONDS", 1800, 60),
             raid_join_seconds=_env_int("RAID_JOIN_SECONDS", 60, 10),
             raid_round_seconds=_env_int("RAID_ROUND_SECONDS", 15, 5),

@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_retro_phase_iii_rc1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.1.19-retro-phase-iii-rc1")
+        self.assertEqual(__version__, "1.1.19-retro-phase-iii-rc1h4")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 

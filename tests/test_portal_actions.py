@@ -298,7 +298,24 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertTrue(camp["can_start"])
         self.assertFalse(camp["resting"])
         self.assertGreater(camp["max_hp"], camp["hp"])
-        self.assertGreater(camp["duration_seconds"], 0)
+        self.assertEqual(camp["base_duration_seconds"], 3600)
+        self.assertFalse(camp["stream_live"])
+
+    def test_camp_uses_live_stream_timer_in_portal_worker(self):
+        self.db.execute("UPDATE players SET current_hp=1 WHERE twitch_id='100'")
+        worker = PortalActionWorker(
+            self.game, "https://guild.example", "sync-key", stream_live_lookup=lambda: True
+        )
+        ok, message, data = worker._execute(self.action(id="pa_live_camp_state", type="ADVENTURE_STATE", payload={}))
+        self.assertTrue(ok, message)
+        self.assertEqual(data["adventure_state"]["camp"]["base_duration_seconds"], 900)
+        self.assertTrue(data["adventure_state"]["camp"]["stream_live"])
+        action = self.action(id="pa_live_camp_start", type="START_REST", payload={})
+        started = worker._execute(action)
+        self.assertTrue(started[0], started[1])
+        remaining = int(self.game._player("100")["camp_until"]) - int(__import__("time").time())
+        self.assertGreaterEqual(remaining, 898)
+        self.assertLessEqual(remaining, 900)
 
     def test_phase_five_camp_uses_absolute_deadline_and_is_replay_safe(self):
         self.db.execute("UPDATE players SET current_hp=1 WHERE twitch_id='100'")

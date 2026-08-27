@@ -203,7 +203,13 @@ class RPGCommands(commands.Component):
     @commands.command(aliases=["camp"])
     async def rest(self, ctx: commands.Context) -> None:
         uid, _, _ = self._identity(ctx)
-        await send_result(ctx, self.game.rest(uid), limit=3)
+        try:
+            stream = await asyncio.to_thread(self.bot.stream_status.refresh)
+            stream_live = bool(stream.get("live"))
+        except Exception:
+            LOGGER.exception("Unable to resolve Twitch stream state for Camp; using OFFLINE timer.")
+            stream_live = False
+        await send_result(ctx, self.game.rest(uid, stream_live=stream_live), limit=3)
 
     @commands.command()
     async def use(self, ctx: commands.Context, *, item_name: str) -> None:
@@ -928,6 +934,7 @@ def main() -> None:
         notify_result=notifier.enqueue,
         wake_encounter=encounter_daemon.wake,
         subscription_lookup=subscription_status.refresh,
+        stream_live_lookup=lambda: bool(stream_status.refresh().get("live")),
     )
 
     portal_sync: PortalSyncWorker | None = None

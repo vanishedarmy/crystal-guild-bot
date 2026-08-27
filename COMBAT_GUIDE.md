@@ -119,7 +119,7 @@ Broadly:
 
 ## Camp
 
-`!rest` or `!camp` begins a free camp rest. The default duration is 1800 seconds (30 minutes). A resting hero cannot join combat. When the timer completes, the hero returns at full calculated maximum HP for the current Job.
+`!rest` or `!camp` begins a free camp rest. Camp now uses a stream-aware base timer: 15 minutes while the Twitch channel is LIVE and 60 minutes while OFFLINE or when live status cannot be confirmed. Existing Fellowship/Infirmary Camp-time reductions still apply. A resting hero cannot join combat. When the timer completes, the hero returns at full calculated maximum HP for the current Job.
 
 ## Enemy combat
 

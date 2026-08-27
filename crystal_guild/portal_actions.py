@@ -37,6 +37,7 @@ class PortalActionWorker:
         notify_result: Callable[[Any], None] | None = None,
         wake_encounter: Callable[[], None] | None = None,
         subscription_lookup: Callable[[str], dict[str, Any]] | None = None,
+        stream_live_lookup: Callable[[], bool] | None = None,
     ) -> None:
         self.game = game
         self.public_url = str(public_url or "").rstrip("/")
@@ -47,6 +48,7 @@ class PortalActionWorker:
         self.notify_result = notify_result
         self.wake_encounter = wake_encounter
         self.subscription_lookup = subscription_lookup
+        self.stream_live_lookup = stream_live_lookup
         self._post_ack_notifications: dict[str, Any] = {}
         self.worker_id = f"bot:{socket.gethostname()}:{os.getpid()}"
         self._stop = threading.Event()
@@ -165,6 +167,15 @@ class PortalActionWorker:
             self.wake_encounter()
         except Exception:
             LOGGER.exception("Unable to wake encounter scheduler after Portal gameplay action")
+
+    def _stream_live(self) -> bool:
+        if not self.stream_live_lookup:
+            return False
+        try:
+            return bool(self.stream_live_lookup())
+        except Exception:
+            LOGGER.exception("Unable to resolve Twitch stream state for Camp; using OFFLINE timer.")
+            return False
 
     def _subscriber_tier(self, twitch_id: str) -> int:
         if not self.subscription_lookup:
@@ -304,7 +315,7 @@ class PortalActionWorker:
             result = self.game.portal_use_field_item(twitch_id, item_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "START_REST":
-            result = self.game.portal_start_rest(twitch_id, str(action.get("id") or ""))
+            result = self.game.portal_start_rest(twitch_id, str(action.get("id") or ""), stream_live=self._stream_live())
             return self._game_result(result)
         if action_type == "FELLOWSHIP_STATE":
             result = self.game.portal_fellowship_state(twitch_id)
@@ -381,7 +392,7 @@ class PortalActionWorker:
             )
             return self._game_result(result)
         if action_type == "ADVENTURE_STATE":
-            result = self.game.portal_adventure_state(twitch_id)
+            result = self.game.portal_adventure_state(twitch_id, stream_live=self._stream_live())
             return self._game_result(result)
         if action_type == "TRAVEL_REGION":
             region_id = str(payload.get("region_id") or "").strip()
