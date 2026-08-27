@@ -13,6 +13,21 @@ QUEST_DESCRIPTION = (
     "Prove you can handle the road before the Stable hands you responsibility for a very large bird."
 )
 QUEST_REWARD_GIL = 250
+
+DEFAULT_PORTRAIT_ID = "classic_gold"
+PORTRAITS: dict[str, dict[str, str]] = {
+    "classic_gold": {"name": "Classic Gold"},
+    "midnight_black": {"name": "Midnight"},
+    "celestial_white": {"name": "Celestial"},
+    "ember_red": {"name": "Ember"},
+    "verdant_green": {"name": "Verdant"},
+    "cobalt_blue": {"name": "Cobalt"},
+    "arcane_violet": {"name": "Arcane"},
+    "desert_gold": {"name": "Sandrunner"},
+    "frost_silver": {"name": "Frost"},
+    "rose_pink": {"name": "Rose"},
+}
+
 QUEST_REQUIREMENTS: list[dict[str, Any]] = [
     {"type": "character_level", "amount": 10},
     {"type": "ventures", "amount": 10},

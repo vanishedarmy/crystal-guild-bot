@@ -1,36 +1,32 @@
-# Crystal Guild v1.1.19 — Retro Phase III / Facility Supply Balance
+# Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits
 
-This paired Bot + Web balance checkpoint removes Fellowship facility progression bottlenecks caused by materials that were previously tied to a single late-game monster or had no monster source at all.
+This paired Bot + Web update adds persistent Chocobo portrait selection to the existing Chocobo Stable.
 
-## Facility supply rebalance
+## Chocobo portrait persistence
+- `player_chocobos` now stores a persistent `portrait_id`.
+- Existing registered Chocobos migrate automatically to `classic_gold` without changing names, Bond XP, traits, registration dates, or any other progression.
+- The authoritative portrait catalog contains 10 IDs shared with the Web Stable: Classic Gold, Midnight, Celestial, Ember, Verdant, Cobalt, Arcane, Sandrunner, Frost, and Rose.
+- Invalid portrait IDs are rejected.
+- Portrait changes are replay-safe through the existing Portal action receipt system.
+- Public player snapshots now include the selected Chocobo portrait so read-only profiles render the owner’s choice.
 
-The six recurring Fellowship facility materials keep their existing item IDs and project requirements so active project progress is preserved. Instead of changing the projects, monster drop tables now provide multiple level-appropriate acquisition paths.
+## Portal action
+New typed action: `SET_CHOCOBO_PORTRAIT` with `{ "portrait_id": "..." }`.
 
-| Material | New / reinforced monster sources |
-|---|---|
-| Ancient Coin | Ossuary Knight Lv.10 12% · Mimic Lv.14 18% · Magic Pot Lv.25 24% · Ancient Mimic Lv.49 40% |
-| Hi-Potion | Goblin Chieftain Lv.4 10% · Mimic Lv.14 26% · Tonberry Lv.16 16% |
-| Mythril Ore | Spriggan Lv.11 12% · Gigas Lv.12 10% · Mimic Lv.14 16% · Iron Giant Lv.32 35% · Ancient Adamantoise Lv.60 80% |
-| Wyvern Scale | Cockatrice Lv.7 10% · Basilisk Lv.12 12% · Sea Serpent Lv.25 16% · Red Dragon Lv.45 20% · Blue Dragon Lv.46 28% · Wyrm Lv.52 28% |
-| Elemental Crystal | Flan Lv.5 10% · Bomb Lv.7 8% · Black Flan Lv.21 14% · Magic Pot Lv.25 18% · Crystal Wolf Lv.42 16% · Crystal Golem Lv.45 25% · Elemental Archon Lv.47 35% · Dark Element Lv.87 30% |
-| Demon Horn | Imp Lv.5 10% · Gargoyle Lv.15 12% · Piscodemon Lv.20 14% · Abaddon Lv.64 30% · Archeodemon Lv.76 40% · Demonolith Lv.82 28% |
+Portal Action protocol advances **14 → 15**. The matching iii13 Web build must be deployed with this Bot.
 
-The early sources are intentionally modest rather than guaranteed. Higher-level thematic enemies remain more efficient farming targets, so progression becomes available early without erasing the value of later regions.
+## Database migration
+Local DB schema advances **5 → 6** by adding `player_chocobos.portrait_id TEXT NOT NULL DEFAULT 'classic_gold'`.
 
-## Player Guide / Bestiary
-
-The hosted Player Guide publishes the same updated drop tables as the authoritative Bot. Bestiary drop listings therefore show the new material sources and percentages instead of leaving players to discover an inaccessible requirement by trial and error.
+Before the migration, Crystal Guild automatically creates and verifies a `pre_schema_6_<timestamp>.db` backup for an existing on-disk Guild.
 
 ## Compatibility
-
-- Bot runtime: `1.1.19-retro-phase-iii-balance1`
-- Hosted Web runtime: `1.1.19-retro-phase-iii`
-- Frontend asset revision: `1.1.19-retro-phase-iii12`
-- Local DB schema: **5** unchanged
+- Bot runtime: `1.1.19-retro-phase-iii-chocobo1`
+- Local DB schema: **6**
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **14** unchanged
-- Twitch prefix: `!` unchanged
+- Hosted sync compatibility: `1.1.15-wayfarer` unchanged
+- Portal Action protocol: **15**
+- Twitch command prefix: `!` unchanged
 - Player reset: **none**
-- OAuth / environment changes: **none**
-
-Existing inventories, Fellowship facility tiers, active project progress, contributed materials, and all player progression are preserved.
+- OAuth changes: **none**
+- New environment variables: **none**

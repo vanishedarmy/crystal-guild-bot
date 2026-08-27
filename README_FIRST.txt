@@ -1,6 +1,9 @@
-Crystal Guild Bot v1.1.19 — Retro Phase III / Facility Supply Balance
-Runtime: 1.1.19-retro-phase-iii-balance1
+Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits
+Runtime: 1.1.19-retro-phase-iii-chocobo1
+Local DB schema: 6
+Hosted sync schema: 1
+Portal Action protocol: 15
+Twitch command prefix: !
 
-Paired balance update for Fellowship facility materials. Existing project requirements and player progress are preserved; multiple level-appropriate monster sources now supply Ancient Coin, Hi-Potion, Mythril Ore, Wyvern Scale, Elemental Crystal, and Demon Horn.
-
-No database migration, player reset, OAuth change, new environment variable, or Portal Action protocol change is required.
+IMPORTANT: deploy the matching Web iii13 build because the portrait feature uses Portal Action protocol 15.
+Preserve your existing .env, Twitch token storage, and crystal_guild.db during upgrade.

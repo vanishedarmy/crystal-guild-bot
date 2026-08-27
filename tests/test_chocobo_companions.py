@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import tempfile
 import time
 import unittest
@@ -7,6 +8,8 @@ from pathlib import Path
 
 from crystal_guild.chocobo import (
     CHOC_MAX_LEVEL,
+    DEFAULT_PORTRAIT_ID,
+    PORTRAITS,
     QUEST_ID,
     STABLE_FACILITY_ID,
     WRIT_ACTIVATION_SECONDS,
@@ -66,8 +69,8 @@ class ChocoboCompanionTests(unittest.TestCase):
         )
         self.assertTrue(self.game.register_chocobo(player_id, name).ok)
 
-    def test_schema_four_and_stable_project_are_additive(self):
-        self.assertEqual(self.db.schema_version(), 5)
+    def test_schema_six_and_stable_project_are_additive(self):
+        self.assertEqual(self.db.schema_version(), 6)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobos'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobo_traits'"))
         project = PROJECTS["chocobo_stable_t1"]
@@ -76,6 +79,31 @@ class ChocoboCompanionTests(unittest.TestCase):
         self.assertEqual(requirements["gil"], 5000)
         self.assertEqual(requirements["activity:venture_complete"], 10)
         self.assertEqual(requirements["fellowship_level"], 2)
+
+    def test_schema_five_chocobo_rows_migrate_to_default_portrait_with_backup(self):
+        self.db.execute(
+            "INSERT INTO player_chocobos(player_id,name,registered_at) VALUES ('100','Legacy Bird',CURRENT_TIMESTAMP) "
+            "ON CONFLICT(player_id) DO UPDATE SET name='Legacy Bird',registered_at=CURRENT_TIMESTAMP"
+        )
+        db_path = Path(self.temp.name) / "guild.db"
+        self.db.close()
+
+        conn = sqlite3.connect(db_path)
+        conn.execute("ALTER TABLE player_chocobos DROP COLUMN portrait_id")
+        conn.execute("DELETE FROM schema_migrations WHERE version=6")
+        conn.commit()
+        conn.close()
+
+        migrated = Database(db_path)
+        try:
+            self.assertEqual(migrated.schema_version(), 6)
+            row = migrated.one("SELECT portrait_id FROM player_chocobos WHERE player_id='100'")
+            self.assertEqual(str(row["portrait_id"]), DEFAULT_PORTRAIT_ID)
+            self.assertIsNotNone(migrated.pre_migration_backup_path)
+            self.assertIn("pre_schema_6", Path(migrated.pre_migration_backup_path).name)
+        finally:
+            migrated.close()
+        self.db = Database(":memory:")
 
     def test_personal_quest_requires_level_ventures_and_c_rank_hunt(self):
         state = self.game._chocobo_state_data("100")
@@ -142,6 +170,31 @@ class ChocoboCompanionTests(unittest.TestCase):
         self.assertEqual(self.game._chocobo_state_data("100")["companion"]["name"], "Drumstick")
         self.assertFalse(self.game.rename_chocobo("100", "!").ok)
 
+    def test_registered_chocobo_has_persistent_selectable_portrait(self):
+        self.prepare_registered_chocobo()
+        state = self.game._chocobo_state_data("100")
+        self.assertEqual(state["companion"]["portrait_id"], DEFAULT_PORTRAIT_ID)
+        self.assertEqual(len(state["portraits"]), 10)
+        self.assertEqual({item["id"] for item in state["portraits"]}, set(PORTRAITS))
+
+        changed = self.game.set_chocobo_portrait("100", "arcane_violet")
+        self.assertTrue(changed.ok)
+        self.assertEqual(self.game._chocobo_state_data("100")["companion"]["portrait_id"], "arcane_violet")
+        row = self.db.one("SELECT portrait_id FROM player_chocobos WHERE player_id='100'")
+        self.assertEqual(str(row["portrait_id"]), "arcane_violet")
+        self.assertFalse(self.game.set_chocobo_portrait("100", "not_a_real_portrait").ok)
+
+        snapshot = self.game.portal_chocobo_state("100")
+        self.assertEqual(snapshot.data["chocobo_state"]["companion"]["portrait_id"], "arcane_violet")
+
+    def test_portal_portrait_change_is_replay_safe(self):
+        self.prepare_registered_chocobo()
+        first = self.game.portal_set_chocobo_portrait("100", "cobalt_blue", "portrait-replay")
+        second = self.game.portal_set_chocobo_portrait("100", "cobalt_blue", "portrait-replay")
+        self.assertTrue(first.ok)
+        self.assertTrue(second.ok)
+        self.assertEqual(self.game._chocobo_state_data("100")["companion"]["portrait_id"], "cobalt_blue")
+
     def test_bond_xp_levels_without_adding_combat_stats(self):
         self.prepare_registered_chocobo()
         notes = self.game._award_chocobo_xp("100", 50)
@@ -178,6 +231,11 @@ class ChocoboCompanionTests(unittest.TestCase):
         ok, message, _ = worker._execute(bad)
         self.assertFalse(ok)
         self.assertIn("name", message.lower())
+        self.prepare_registered_chocobo()
+        portrait = dict(base, id="portrait-action", type="SET_CHOCOBO_PORTRAIT", payload={"portrait_id": "rose_pink"})
+        ok, message, data = worker._execute(portrait)
+        self.assertTrue(ok, message)
+        self.assertEqual(data["chocobo_state"]["companion"]["portrait_id"], "rose_pink")
 
     def test_portal_purchase_and_registration_are_replay_safe(self):
         self.open_stable()

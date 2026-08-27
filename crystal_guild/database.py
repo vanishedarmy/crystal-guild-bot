@@ -251,7 +251,8 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- pre-migration Crystal Guild schema; version 2 adds persistent MP/AP;
 -- version 3 adds additive Fellowship progression tables; version 4 adds
 -- persistent Chocobo companion and registration-writ state; version 5 adds
--- persistent per-player Wayfarer Solo Expedition state.
+-- persistent per-player Wayfarer Solo Expedition state; version 6 adds
+-- persistent Chocobo portrait selection.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -259,7 +260,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 5
+DATABASE_SCHEMA_VERSION = 6
 
 
 class Database:
@@ -543,6 +544,32 @@ class Database:
                     INSERT INTO schema_migrations(version,name) VALUES (5,'wayfarer_solo_expeditions');
                     COMMIT;
                     """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v6 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=6").fetchone()
+        )
+        chocobo_columns = {str(row[1]) for row in self.conn.execute("PRAGMA table_info(player_chocobos)").fetchall()}
+        if not already_v6:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(6)
+            self.conn.execute("BEGIN IMMEDIATE")
+            try:
+                if "portrait_id" not in chocobo_columns:
+                    self.conn.execute(
+                        "ALTER TABLE player_chocobos ADD COLUMN portrait_id TEXT NOT NULL DEFAULT 'classic_gold'"
+                    )
+                self.conn.execute(
+                    "UPDATE player_chocobos SET portrait_id='classic_gold' "
+                    "WHERE portrait_id IS NULL OR TRIM(portrait_id)=''"
+                )
+                self.conn.execute(
+                    "INSERT OR REPLACE INTO schema_migrations(version,name,applied_at) "
+                    "VALUES (6,'chocobo_portraits',CURRENT_TIMESTAMP)"
                 )
                 self.conn.commit()
             except Exception:

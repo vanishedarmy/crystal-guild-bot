@@ -39,7 +39,7 @@ class FellowshipTests(unittest.TestCase):
         self.assertEqual(snapshot["level_label"], "LVL 1")
         self.assertFalse(member["founding_member"])
         self.assertEqual(member["rank"]["name"], "Recruit")
-        self.assertEqual(self.db.schema_version(), 5)
+        self.assertEqual(self.db.schema_version(), 6)
 
     def test_duplicate_activity_event_does_not_double_award_renown(self):
         first = self.game.fellowship_system.record_activity("1", "venture_complete", event_key="venture:once")
@@ -134,14 +134,14 @@ class FellowshipMigrationTests(unittest.TestCase):
 
             db = Database(path)
             try:
-                self.assertEqual(db.schema_version(), 5)
+                self.assertEqual(db.schema_version(), 6)
                 player = db.one("SELECT level,xp,gil,current_hp,current_mp,current_ap FROM players WHERE twitch_id='100'")
                 self.assertEqual(tuple(player), (17, 4321, 9876, 81, 7, 9))
                 member = db.one("SELECT founding_member,renown FROM fellowship_members WHERE player_id='100'")
                 self.assertEqual(int(member["founding_member"]), 1)
                 self.assertEqual(int(member["renown"]), 0)
                 self.assertIsNotNone(db.pre_migration_backup_path)
-                self.assertIn("pre_schema_5", Path(db.pre_migration_backup_path).name)
+                self.assertIn("pre_schema_6", Path(db.pre_migration_backup_path).name)
                 self.assertTrue(Path(db.pre_migration_backup_path).exists())
                 verify = sqlite3.connect(db.pre_migration_backup_path)
                 try:
@@ -152,9 +152,11 @@ class FellowshipMigrationTests(unittest.TestCase):
                     self.assertIsNotNone(verify.execute(
                         "SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobos'"
                     ).fetchone())
-                    self.assertIsNone(verify.execute(
+                    self.assertIsNotNone(verify.execute(
                         "SELECT name FROM sqlite_master WHERE type='table' AND name='solo_expeditions'"
                     ).fetchone())
+                    chocobo_cols = {row[1] for row in verify.execute("PRAGMA table_info(player_chocobos)").fetchall()}
+                    self.assertNotIn("portrait_id", chocobo_cols)
                 finally:
                     verify.close()
             finally:

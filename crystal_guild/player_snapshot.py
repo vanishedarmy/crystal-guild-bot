@@ -11,7 +11,7 @@ from urllib.parse import unquote
 
 from .active_battle import battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
-from .chocobo import TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp
+from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp
 from .data import GameData
 from .fellowship import (DEEDS, FACILITIES, GUILD_RANKS, PROJECTS, facility_effects, fellowship_level_progress, guild_rank_for_renown, weekly_orders, weekly_period_key)
 
@@ -203,7 +203,7 @@ class PortalRepository:
     def _chocobo_public(self, conn: sqlite3.Connection, player_id: str) -> dict[str, Any] | None:
         try:
             row = conn.execute(
-                "SELECT name,level,xp,registered_at FROM player_chocobos WHERE player_id=?",
+                "SELECT name,level,xp,registered_at,portrait_id FROM player_chocobos WHERE player_id=?",
                 (str(player_id),),
             ).fetchone()
         except sqlite3.Error:
@@ -224,12 +224,17 @@ class PortalRepository:
             trait = CHOCOBO_TRAITS.get(trait_id)
             if trait:
                 traits.append({"id": trait_id, **trait})
+        portrait_id = str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID)
+        if portrait_id not in CHOCOBO_PORTRAITS:
+            portrait_id = CHOCOBO_DEFAULT_PORTRAIT_ID
         return {
             "name": str(row["name"]),
             "level": int(level),
             "xp_current": int(xp_current),
             "xp_next": int(xp_next),
             "traits": traits,
+            "portrait_id": portrait_id,
+            "portrait_name": CHOCOBO_PORTRAITS[portrait_id]["name"],
             "registered_at": str(row["registered_at"]),
         }
 

@@ -14,7 +14,7 @@ from urllib.request import Request, urlopen
 from .engine import CrystalGuildEngine
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 14
+ACTION_PROTOCOL_VERSION = 15
 
 
 class PortalActionWorker:
@@ -371,6 +371,14 @@ class PortalActionWorker:
             if not name:
                 return False, "Chocobo rename request is missing a name.", {}
             result = self.game.portal_rename_chocobo(twitch_id, name, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "SET_CHOCOBO_PORTRAIT":
+            portrait_id = str(payload.get("portrait_id") or "").strip().lower()
+            if not portrait_id:
+                return False, "Chocobo portrait request is missing a portrait.", {}
+            result = self.game.portal_set_chocobo_portrait(
+                twitch_id, portrait_id, str(action.get("id") or "")
+            )
             return self._game_result(result)
         if action_type == "ADVENTURE_STATE":
             result = self.game.portal_adventure_state(twitch_id)

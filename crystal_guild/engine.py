@@ -89,6 +89,8 @@ from .fellowship_system import FellowshipSystem
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
+    DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID,
+    PORTRAITS as CHOCOBO_PORTRAITS,
     QUEST_DESCRIPTION as CHOCOBO_QUEST_DESCRIPTION,
     QUEST_ID as CHOCOBO_QUEST_ID,
     QUEST_NAME as CHOCOBO_QUEST_NAME,
@@ -5788,8 +5790,17 @@ class CrystalGuildEngine:
                 "xp_current": xp_into_level if registered else 0,
                 "xp_next": xp_next if registered else 0,
                 "traits": traits,
+                "portrait_id": (
+                    str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID)
+                    if row and str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID) in CHOCOBO_PORTRAITS
+                    else CHOCOBO_DEFAULT_PORTRAIT_ID
+                ),
                 "registered_at": str(row["registered_at"] or "") if row else "",
             },
+            "portraits": [
+                {"id": portrait_id, "name": meta["name"]}
+                for portrait_id, meta in CHOCOBO_PORTRAITS.items()
+            ],
             "gil": max(0, int(p["gil"] or 0)),
             "expedition": {
                 "board_ready": board_ready,
@@ -5951,6 +5962,28 @@ class CrystalGuildEngine:
         )
         return GameResult.success(f"CHOCOBO RENAMED — {old_name} is now {clean_name}.")
 
+    def set_chocobo_portrait(self, twitch_id: str, portrait_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        clean_id = str(portrait_id or "").strip().lower()
+        if clean_id not in CHOCOBO_PORTRAITS:
+            return GameResult.fail("That Chocobo portrait is not available.")
+        row = self.db.one("SELECT name,registered_at,portrait_id FROM player_chocobos WHERE player_id=?", (twitch_id,))
+        if not row or not row["registered_at"]:
+            return GameResult.fail("Register a Chocobo before choosing a portrait.")
+        current = str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID)
+        if current == clean_id:
+            return GameResult.success(
+                f"CHOCOBO PORTRAIT — {row['name']} is already using {CHOCOBO_PORTRAITS[clean_id]['name']}."
+            )
+        self.db.execute(
+            "UPDATE player_chocobos SET portrait_id=?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+            (clean_id, twitch_id),
+        )
+        return GameResult.success(
+            f"CHOCOBO PORTRAIT — {row['name']} now uses {CHOCOBO_PORTRAITS[clean_id]['name']}."
+        )
+
     def _award_chocobo_xp(self, twitch_id: str, amount: int) -> list[str]:
         row = self.db.one("SELECT name,xp,registered_at FROM player_chocobos WHERE player_id=?", (twitch_id,))
         if not row or not row["registered_at"]:
@@ -6022,6 +6055,11 @@ class CrystalGuildEngine:
 
     def portal_rename_chocobo(self, twitch_id: str, name: str, action_id: str) -> GameResult:
         return self._portal_chocobo_mutation(twitch_id, action_id, lambda: self.rename_chocobo(twitch_id, name))
+
+    def portal_set_chocobo_portrait(self, twitch_id: str, portrait_id: str, action_id: str) -> GameResult:
+        return self._portal_chocobo_mutation(
+            twitch_id, action_id, lambda: self.set_chocobo_portrait(twitch_id, portrait_id)
+        )
 
     def portal_adventure_state(self, twitch_id: str) -> GameResult:
         if not self._player(twitch_id):

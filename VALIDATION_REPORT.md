@@ -1,38 +1,29 @@
-# Crystal Guild v1.1.19 — Facility Supply Balance Validation Report
+# Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits Validation Report
 
 ## Automated validation
 
-- Bot unittest suite: **389 / 389 PASS**.
-- Facility-material targeted regression tests: **5 / 5 PASS** within the full suite.
-- Python source compile sweep: recorded in final package validation.
+- Bot unittest suite: **392 / 392 PASS**.
+- Python test run completed against the finalized Chocobo Portrait Bot source.
+- Chocobo migration, persistence, portrait mutation, snapshot publication, invalid-ID rejection, and Portal replay/idempotency behavior are covered by the packaged regression suite.
 
-## Facility supply coverage
+## Chocobo portrait feature checks
 
-The recurring Fellowship facility materials were checked against the authoritative monster catalog.
-
-| Material | Monster sources | Earliest source | Earliest rate |
-|---|---:|---|---:|
-| Ancient Coin | 4 | Ossuary Knight Lv.10 | 12% |
-| Hi-Potion | 3 | Goblin Chieftain Lv.4 | 10% |
-| Mythril Ore | 5 | Spriggan Lv.11 | 12% |
-| Wyvern Scale | 6 | Cockatrice Lv.7 | 10% |
-| Elemental Crystal | 8 | Flan Lv.5 | 10% |
-| Demon Horn | 6 | Imp Lv.5 | 10% |
-
-Targeted guards verify that:
-- every recurring facility material has at least three monster sources;
-- every recurring facility material has an early source at Lv.11 or below;
-- the earliest source is not below a 10% practical drop rate;
-- no configured facility drop exceeds the 80% upper balance bound;
-- all facility material IDs still resolve to valid catalog items;
-- project requirement item IDs were not changed, preserving active contribution progress.
+- Existing schema-5 installations migrate additively to schema **6**.
+- Existing registered Chocobos receive `classic_gold` as the default portrait without changing name, Bond XP, traits, registration data, inventory, or other player progression.
+- The authoritative portrait catalog exposes exactly 10 supported IDs.
+- `SET_CHOCOBO_PORTRAIT` accepts supported portrait IDs and rejects unknown IDs.
+- Selected portrait IDs persist in `player_chocobos` and are published through player snapshots.
+- Portal action replay safety remains active for portrait changes.
+- Facility Supply Balance monster-drop changes from the previous paired checkpoint remain present.
 
 ## Compatibility
 
-- Bot runtime: `1.1.19-retro-phase-iii-balance1`
-- Local DB schema: **5** unchanged
+- Bot runtime: `1.1.19-retro-phase-iii-chocobo1`
+- Local DB schema: **6**
 - Hosted sync schema: **1** unchanged
 - Hosted sync compatibility identity: `1.1.15-wayfarer` unchanged
-- Portal Action protocol: **14** unchanged
+- Portal Action protocol: **15**
 - Twitch prefix: `!` unchanged
 - Player reset: **none**
+- OAuth changes: **none**
+- New environment variables: **none**

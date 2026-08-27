@@ -1,8 +1,14 @@
-Crystal Guild Bot v1.1.19 — Retro Phase III
-Runtime: 1.1.19-retro-phase-iii-balance1
-Local DB schema: 5
+Package: Crystal Guild v1.1.19 — Retro Phase III / Chocobo Portraits Bot
+Runtime: 1.1.19-retro-phase-iii-chocobo1
+Local DB schema: 6
 Hosted sync schema: 1
-Portal Action protocol: 14
+Hosted sync compatibility: 1.1.15-wayfarer
+Portal Action protocol: 15
 Twitch prefix: !
 
-Facility Supply Balance: Fellowship facility materials now have multiple level-appropriate monster sources with bounded drop rates. Passive Recovery Hotfix behavior remains intact.
+Primary feature files:
+- crystal_guild/chocobo.py — authoritative portrait catalog/default
+- crystal_guild/database.py — schema 6 migration
+- crystal_guild/engine.py — portrait state and mutation
+- crystal_guild/player_snapshot.py — public portrait publication
+- crystal_guild/portal_actions.py — SET_CHOCOBO_PORTRAIT routing/protocol 15
