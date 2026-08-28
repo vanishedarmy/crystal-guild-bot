@@ -6100,11 +6100,18 @@ class CrystalGuildEngine:
             combatants, _, _ = self._initialize_active_combat(encounter)
             if combatants == 0:
                 return GameResult.fail("Your hero is not in fighting condition for this Expedition encounter.")
+            route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
+            route_pressure = float(route_config.get("combat_pressure_mult", 1.0) or 1.0)
+            encounter["enemy_pressure_mult"] = route_pressure
             if bool(state.get("legendary_contract")) and bool(state.get("boss_encounter")):
-                scaled_hp = max(1, int(round(int(encounter.get("monster_max_hp", monster.get("hp", 1))) * 1.25)))
+                # Beta 1 balance pass: Legendary bosses remain meaningfully stronger,
+                # but the Alpha 3 stack (extra stage + 25% HP + 15% pressure) was
+                # too punishing in conservative simulations. Keep the challenge
+                # while allowing route choice to matter on the final boss.
+                scaled_hp = max(1, int(round(int(encounter.get("monster_max_hp", monster.get("hp", 1))) * 1.20)))
                 encounter["monster_max_hp"] = scaled_hp
                 encounter["monster_hp"] = scaled_hp
-                encounter["enemy_pressure_mult"] = 1.15
+                encounter["enemy_pressure_mult"] = route_pressure * 1.10
                 encounter["legendary_contract"] = True
             encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
             state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
@@ -6377,6 +6384,8 @@ class CrystalGuildEngine:
             p = self._player(twitch_id)
             max_hp = self._max_hp(p) if p else 1
             percent = self.rng.uniform(0.06, 0.12)
+            route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
+            percent *= float(route_config.get("hazard_damage_mult", 1.0) or 1.0)
             percent *= expedition_hazard_damage_multiplier(traits, chocobo_level)
             region_progress = self._expedition_progress(twitch_id, str(region.get("id") or ""))
             if region_progress.get("mastered"):

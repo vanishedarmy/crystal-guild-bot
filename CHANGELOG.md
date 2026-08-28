@@ -1,3 +1,11 @@
+# v1.2.0 — Expeditions Beta 1
+- Freezes v1.2 feature scope for balance validation and release stabilization.
+- Adds a reproducible 3,000-run Expedition simulator/report covering route, depth, level-band, Regional Boss, and Legendary Contract scenarios.
+- Makes Safe/Unknown/Push Deeper modify actual combat and hazard pressure, not only event weighting and rewards.
+- Slightly smooths Legendary final-boss HP/pressure while preserving it as the repeatable Expedition endgame.
+- Keeps Alpha 5 Hunt Seal stipends unchanged after the economy audit.
+- Keeps local DB schema 8, hosted sync schema 1, and Portal Action protocol 20 unchanged.
+
 # v1.2.0 — Expeditions Alpha 2
 - Adds five regional objective chains with 25/50/75/100% exploration milestones.
 - Unlocks dedicated Regional Boss Contracts at 75% exploration: Elder Ochu, Inferno Drake, Malboro Sovereign, Frost Behemoth, and Rift Wyrm.

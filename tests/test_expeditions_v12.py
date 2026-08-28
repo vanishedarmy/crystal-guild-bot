@@ -10,7 +10,7 @@ from unittest.mock import patch
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine
-from crystal_guild.expeditions import defeat_cache_keep, effective_travel_seconds, resource_yield_bonus
+from crystal_guild.expeditions import ROUTES, defeat_cache_keep, effective_travel_seconds, resource_yield_bonus
 from crystal_guild.chocobo import expedition_specialization, total_xp_floor_for_level
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -277,7 +277,7 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertTrue(resolved.ok, resolved.messages)
         state = self.game._expedition_load("100")
         encounter = state["combat"]["encounter"]
-        self.assertEqual(encounter.get("enemy_pressure_mult"), 1.15)
+        self.assertAlmostEqual(encounter.get("enemy_pressure_mult"), 1.10)
         self.assertTrue(encounter.get("legendary_contract"))
         with patch.object(self.game, "_resolve_active_attack", side_effect=lambda actor, monster, log: self.game.active_encounter.__setitem__("monster_hp", 0)):
             result = self.game.expedition_combat_action("100", "attack")
@@ -406,6 +406,51 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertEqual(self.game._expedition_stipend(boss, "complete"), 10)
         self.assertEqual(self.game._expedition_stipend(legendary, "complete"), 15)
         self.assertEqual(self.game._expedition_stipend(legendary, "defeat"), 0)
+
+
+    def test_beta1_route_risk_changes_actual_pressure_not_only_event_labels(self):
+        self.assertLess(float(ROUTES["safe"]["combat_pressure_mult"]), 1.0)
+        self.assertLess(float(ROUTES["safe"]["hazard_damage_mult"]), 1.0)
+        self.assertEqual(float(ROUTES["unknown"]["combat_pressure_mult"]), 1.0)
+        self.assertEqual(float(ROUTES["unknown"]["hazard_damage_mult"]), 1.0)
+        self.assertGreater(float(ROUTES["deep"]["combat_pressure_mult"]), 1.0)
+        self.assertGreater(float(ROUTES["deep"]["hazard_damage_mult"]), 1.0)
+
+    def test_beta1_safe_and_deep_routes_apply_combat_pressure_to_actual_encounters(self):
+        self.unlock()
+        for route_id, expected in (("safe", 0.90), ("deep", 1.10)):
+            self.game._expedition_delete("100")
+            p = self.game._player("100")
+            self.db.execute("UPDATE players SET current_hp=? WHERE twitch_id='100'", (self.game._max_hp(p),))
+            self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "scout").ok)
+            state = self.game._expedition_load("100")
+            state["route"] = route_id
+            state["travel_ready_at"] = 0
+            self.game._expedition_save("100", state)
+            with patch("crystal_guild.engine.expedition_event_weights", return_value=(["combat"], [1.0])), patch.object(self.game, "_expedition_select_monster", return_value=self.data.monsters["goblin"]), patch.object(self.game.rng, "random", return_value=1.0):
+                result = self.game.expedition_resolve_stage("100")
+            self.assertTrue(result.ok, result.messages)
+            combat_state = self.game._expedition_load("100")
+            self.assertAlmostEqual(float(combat_state["combat"]["encounter"]["enemy_pressure_mult"]), expected)
+
+    def test_beta1_legendary_scaling_is_challenging_without_alpha3_cliff(self):
+        self.unlock()
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress,boss_clears) VALUES ('100','emerald_wilds',100,1) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=100,boss_clears=1"
+        )
+        self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "legendary").ok)
+        state = self.game._expedition_load("100")
+        state["stage"] = state["base_stages"]
+        state["route"] = "unknown"
+        state["status"] = "travel"
+        state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        self.assertTrue(self.game.expedition_resolve_stage("100").ok)
+        encounter = self.game._expedition_load("100")["combat"]["encounter"]
+        base_hp = int(self.data.monsters["elder_ochu"]["hp"])
+        self.assertEqual(int(encounter["monster_max_hp"]), int(round(base_hp * 1.20)))
+        self.assertAlmostEqual(float(encounter["enemy_pressure_mult"]), 1.10)
 
     def test_adventure_state_exposes_compact_expedition_board(self):
         self.unlock("keen_eye")

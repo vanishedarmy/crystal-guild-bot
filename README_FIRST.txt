@@ -1,6 +1,6 @@
-Crystal Guild v1.2.0 — Expeditions Alpha 5 Bot
-Runtime: 1.2.0-expeditions-a5
+Crystal Guild v1.2.0 — Expeditions Beta 1 Bot
+Runtime: 1.2.0-expeditions-b1
 Local DB schema: 8
 Portal Action protocol: 20
 
-Alpha 5 adds automatic Chocobo Expedition Specialization, Bond-scaled specialty effects, Expedition accomplishments, and Hunt Seal completion stipends. No migration or player reset is required. Deploy the matching Alpha 5 Web package.
+Beta 1 freezes feature scope, tunes real route pressure, smooths Legendary final-boss scaling, and adds the reproducible Expedition balance simulator/report. Alpha 5 Chocobo specialties, accomplishments, Hunt Seal stipends, and all existing progression are preserved. No migration or player reset is required. Deploy the matching Beta 1 Web package.

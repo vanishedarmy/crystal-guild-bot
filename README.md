@@ -1,8 +1,8 @@
-# Crystal Guild v1.2.0 — Expeditions Alpha 5
+# Crystal Guild v1.2.0 — Expeditions Beta 1
 
-Expeditions Alpha 5 adds automatic Chocobo Expedition Specialization, Bond-scaled specialty tiers, Expedition accomplishment records, and modest Hunt Seal completion stipends. Alpha 4 Regional Discovery, the Expedition Atlas, Regional Boss Contracts, Legendary Contracts, and permanent Mastery remain intact.
+Beta 1 freezes the v1.2 feature set for balance and release stabilization. Safe/Unknown/Push Deeper now change actual combat and hazard pressure, Legendary final-boss scaling is slightly smoothed, and the Bot ships a reproducible 3,000-run Expedition balance simulator/report. Alpha 5 Chocobo specialization and completion stipends remain intact.
 
-Runtime `1.2.0-expeditions-a5` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
+Runtime `1.2.0-expeditions-b1` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
 
 
 Latest Hunt timing: C 15m · B 30m · A 2h · S 5h. Hunts resolve autonomously with no round-by-round chat input.
