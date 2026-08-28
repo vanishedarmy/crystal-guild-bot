@@ -5563,6 +5563,15 @@ class CrystalGuildEngine:
         boss = dict(region.get("boss") or {})
         boss_unlock = int(boss.get("unlock_progress", 75) or 75)
         mastery = dict(region.get("mastery") or {})
+        landmarks = []
+        for landmark in region.get("landmarks", []):
+            unlock_progress = max(0, min(100, int(landmark.get("unlock_progress", 0) or 0)))
+            landmarks.append({
+                "name": str(landmark.get("name") or "Uncharted Landmark"),
+                "description": str(landmark.get("description") or ""),
+                "unlock_progress": unlock_progress,
+                "discovered": progress >= unlock_progress,
+            })
         return {
             "progress": progress,
             "stages_cleared": int(row["stages_cleared"] or 0) if row else 0,
@@ -5574,6 +5583,8 @@ class CrystalGuildEngine:
             "objectives": objectives,
             "next_objective": next_objective,
             "mastery_bonus": str(mastery.get("bonus") or ""),
+            "landmarks": landmarks,
+            "landmarks_found": sum(1 for landmark in landmarks if landmark["discovered"]),
         }
 
     def _expedition_atlas(self, twitch_id: str) -> dict[str, Any]:
@@ -5603,6 +5614,8 @@ class CrystalGuildEngine:
             next_threshold = next((threshold for threshold, _, _ in reversed(ranks[:-1]) if threshold > average_progress), None)
             next_row = next((row for row in ranks if row[0] == next_threshold), None) if next_threshold is not None else None
             next_rank = {"progress": int(next_threshold), "name": str(next_row[2])} if next_row else {"progress": 100, "name": "Master Cartographer"}
+        landmark_count = sum(len(row.get("landmarks", [])) for row in progress_rows)
+        landmarks_found = sum(int(row.get("landmarks_found", 0)) for row in progress_rows)
         return {
             "rank_name": rank_name,
             "overall_progress": average_progress,
@@ -5611,6 +5624,8 @@ class CrystalGuildEngine:
             "all_mastered": all_mastered,
             "legendary_contracts_unlocked": legendary_unlocked,
             "total_boss_clears": sum(int(row.get("boss_clears", 0)) for row in progress_rows),
+            "landmarks_found": landmarks_found,
+            "landmark_count": landmark_count,
             "next_rank": next_rank,
         }
 
@@ -5760,11 +5775,18 @@ class CrystalGuildEngine:
         maximum = min(region_max, level + cap_above) if region_max < 99 else level + cap_above
         candidates: list[dict[str, Any]] = []
         weights: list[float] = []
-        entries = list(region.get("encounters", []))
+        entries: list[tuple[dict[str, Any], bool]] = [(dict(entry), False) for entry in region.get("encounters", [])]
         progress = self._expedition_progress(twitch_id, str(region.get("id") or state.get("region_id") or ""))
         if progress.get("boss_unlocked"):
-            entries.extend(list(region.get("rare_encounters", [])))
-        for entry in entries:
+            entries.extend((dict(entry), True) for entry in region.get("rare_encounters", []))
+        route_config = EXPEDITION_ROUTES.get(route, EXPEDITION_ROUTES["unknown"])
+        rare_mult = float(route_config.get("rare_encounter_mult", 1.0) or 1.0)
+        _, traits = self._expedition_chocobo_traits(twitch_id)
+        if "keen_eye" in traits:
+            rare_mult *= 1.15
+        if "lucky_plume" in traits:
+            rare_mult *= 1.10
+        for entry, is_rare in entries:
             monster = self.data.monsters.get(str(entry.get("monster_id") or ""))
             if not monster:
                 continue
@@ -5773,13 +5795,14 @@ class CrystalGuildEngine:
                 candidates.append(monster)
                 delta = monster_level - level
                 danger_bias = 1.0 + max(0, delta) * (0.12 if route == "deep" else 0.04)
-                weights.append(max(0.01, float(entry.get("weight", 1)) * danger_bias))
+                rarity_bias = rare_mult if is_rare else 1.0
+                weights.append(max(0.01, float(entry.get("weight", 1)) * danger_bias * rarity_bias))
         if not candidates:
-            for entry in entries:
+            for entry, is_rare in entries:
                 monster = self.data.monsters.get(str(entry.get("monster_id") or ""))
                 if monster and int(monster.get("level", 1)) <= maximum:
                     candidates.append(monster)
-                    weights.append(max(0.01, float(entry.get("weight", 1))))
+                    weights.append(max(0.01, float(entry.get("weight", 1)) * (rare_mult if is_rare else 1.0)))
         return self.rng.choices(candidates, weights=weights, k=1)[0] if candidates else None
 
     def _expedition_roll_treasure(self, twitch_id: str) -> dict[str, Any] | None:
@@ -6136,7 +6159,7 @@ class CrystalGuildEngine:
                 return GameResult.fail("Choose Scout, Journey, Deep Expedition, or an unlocked Regional Boss contract.")
         now = int(time.time())
         state = {
-            "version": 2,
+            "version": 3,
             "started_at": now,
             "updated_at": now,
             "region_id": str(region["id"]),
@@ -6158,6 +6181,7 @@ class CrystalGuildEngine:
             "event": None,
             "chocobo_xp": 0,
             "discoveries_seen": [],
+            "rare_events_seen": [],
         }
         seconds = self._expedition_begin_travel(twitch_id, state, "unknown")
         self.db.update_record_stats(twitch_id, {"expeditions_started": 1})
@@ -6167,6 +6191,65 @@ class CrystalGuildEngine:
             expedition_boss_contract=bool(boss_contract),
             expedition_legendary_contract=bool(legendary_contract),
         )
+
+    def _expedition_regional_flavor(self, region: dict[str, Any], event_type: str) -> str:
+        pools = dict(region.get("regional_events") or {})
+        values = [str(value) for value in pools.get(str(event_type), []) if str(value).strip()]
+        return self.rng.choice(values) if values else ""
+
+    def _expedition_resolve_rare_event(
+        self, twitch_id: str, state: dict[str, Any], region: dict[str, Any], traits: set[str], event: dict[str, Any]
+    ) -> GameResult:
+        kind = str(event.get("kind") or "treasure").lower()
+        name = str(event.get("name") or "Rare Discovery")
+        description = str(event.get("description") or "An unusual opportunity appears along the route.")
+        mult = self._expedition_reward_multiplier(state)
+        cache = self._expedition_cache(state)
+        stage = int(state.get("stage", 1))
+        payload: dict[str, Any] = {"type": "rare", "subtype": kind, "name": name, "rare": True}
+        progress_gain = 3
+        outcome = ""
+        if kind == "resource":
+            materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
+            item_id = self.rng.choice(materials) if materials else ""
+            qty = self.rng.randint(2, 3) + (1 if "forager" in traits else 0)
+            row = self._expedition_cache_add_item(state, item_id, qty, source="rare_resource") if item_id else None
+            payload["item"] = row
+            outcome = f" Recovered {row['name']} x{row['quantity']}." if row else " The opportunity fades before anything can be recovered."
+        elif kind == "recovery":
+            player = self._player(twitch_id)
+            healed = 0
+            if player:
+                max_hp = self._max_hp(player)
+                before = max(0, int(player["current_hp"] or 0))
+                healed = max(0, min(max_hp, before + max(1, int(max_hp * 0.20))) - before)
+                if healed:
+                    self._save_hp(twitch_id, before + healed)
+            bonus_gil = max(20, int((30 + stage * 10) * mult))
+            cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
+            payload.update({"healing": healed, "gil": bonus_gil})
+            outcome = f" Restored {healed} HP and added {bonus_gil} Gil to the cache."
+        elif kind == "chocobo":
+            state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + 16
+            state["chocobo_travel_boost"] = True
+            payload["bond_xp"] = 16
+            outcome = " Your Chocobo earns 16 Bond XP and shortens the next travel leg."
+        elif kind == "survey":
+            bonus_gil = max(30, int((45 + stage * 12) * mult))
+            cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
+            payload["gil"] = bonus_gil
+            progress_gain = 7
+            outcome = f" The survey advances rapidly and {bonus_gil} Gil is added to the cache."
+        else:
+            item = self._expedition_roll_treasure(twitch_id)
+            row = self._expedition_cache_add_item(state, str(item["id"]), 1, source="rare_treasure") if item else None
+            bonus_gil = max(40, int((60 + stage * 18) * mult))
+            cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
+            payload.update({"item": row, "gil": bonus_gil})
+            outcome = (f" Secured {row['name']} and {bonus_gil} Gil." if row else f" Secured {bonus_gil} Gil.")
+        payload["label"] = f"RARE — {name}: {description}{outcome}"
+        state.setdefault("rare_events_seen", []).append(str(event.get("id") or name))
+        return self._expedition_stage_resolved(twitch_id, state, payload, progress_gain=progress_gain)
 
     @_state_guard
     def expedition_resolve_stage(self, twitch_id: str) -> GameResult:
@@ -6197,6 +6280,20 @@ class CrystalGuildEngine:
             weights[kinds.index(preferred)] *= float(mastery.get("event_mult", 1.0) or 1.0)
         if not kinds:
             return GameResult.fail("This Expedition region has no resolvable stage events.")
+        rare_events = [dict(value) for value in region.get("rare_events", []) if isinstance(value, dict)]
+        route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
+        rare_chance = float(route_config.get("rare_event_chance", 0.05) or 0.05)
+        if "keen_eye" in traits:
+            rare_chance += 0.015
+        if "lucky_plume" in traits:
+            rare_chance += 0.010
+        if progress.get("mastered"):
+            rare_chance += 0.010
+        if rare_events and self.rng.random() < min(0.15, rare_chance):
+            seen = set(str(value) for value in state.get("rare_events_seen", []))
+            unseen = [value for value in rare_events if str(value.get("id") or value.get("name")) not in seen]
+            rare_event = self.rng.choice(unseen or rare_events)
+            return self._expedition_resolve_rare_event(twitch_id, state, region, traits, rare_event)
         event_type = self.rng.choices(kinds, weights=weights, k=1)[0]
         mult = self._expedition_reward_multiplier(state)
         cache = self._expedition_cache(state)
@@ -6213,7 +6310,9 @@ class CrystalGuildEngine:
             item_id = self.rng.choice(materials) if materials else ""
             qty = self.rng.randint(1, 2) + (1 if "forager" in traits else 0)
             row = self._expedition_cache_add_item(state, item_id, qty, source="resource") if item_id else None
-            label = f"Gathered {row['name']} x{row['quantity']}." if row else "A promising resource node turns out to be picked clean."
+            flavor = self._expedition_regional_flavor(region, "resource")
+            outcome = f"Gathered {row['name']} x{row['quantity']}." if row else "The resource node turns out to be picked clean."
+            label = f"{flavor} {outcome}".strip()
             return self._expedition_stage_resolved(twitch_id, state, {"type": "resource", "label": label, "item": row})
 
         if event_type == "treasure":
@@ -6221,7 +6320,9 @@ class CrystalGuildEngine:
             row = self._expedition_cache_add_item(state, str(item["id"]), 1, source="treasure") if item else None
             bonus_gil = max(20, int((30 + stage * 12) * mult))
             cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
-            label = f"Found {row['name']} and {bonus_gil} Gil in a hidden cache." if row else f"Recovered {bonus_gil} Gil from an abandoned cache."
+            flavor = self._expedition_regional_flavor(region, "treasure")
+            outcome = f"Found {row['name']} and {bonus_gil} Gil." if row else f"Recovered {bonus_gil} Gil."
+            label = f"{flavor} {outcome}".strip()
             return self._expedition_stage_resolved(twitch_id, state, {"type": "treasure", "label": label, "item": row, "gil": bonus_gil})
 
         if event_type == "hazard":
@@ -6237,7 +6338,9 @@ class CrystalGuildEngine:
             current_hp = max(1, int(p["current_hp"] or 1)) if p else 1
             new_hp = max(1, current_hp - damage)
             self._save_hp(twitch_id, new_hp)
-            label = f"{region.get('hazard', 'Regional hazard')} costs {current_hp - new_hp} HP, but the party keeps moving."
+            flavor = self._expedition_regional_flavor(region, "hazard")
+            outcome = f"{region.get('hazard', 'Regional hazard')} costs {current_hp - new_hp} HP, but the party keeps moving."
+            label = f"{flavor} {outcome}".strip()
             return self._expedition_stage_resolved(twitch_id, state, {"type": "hazard", "label": label, "damage": current_hp - new_hp})
 
         if event_type == "discovery":
@@ -6248,7 +6351,9 @@ class CrystalGuildEngine:
                 state["discoveries_seen"].append(landmark)
             bonus_gil = max(10, int((20 + stage * 8) * mult))
             cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
-            label = f"Discovered {landmark}. Survey value added to the Guild map."
+            flavor = self._expedition_regional_flavor(region, "discovery")
+            outcome = f"Discovered {landmark}. Survey value added to the Guild map."
+            label = f"{flavor} {outcome}".strip()
             return self._expedition_stage_resolved(twitch_id, state, {"type": "discovery", "label": label, "landmark": landmark, "gil": bonus_gil}, progress_gain=4)
 
         if event_type == "traveler":
@@ -6263,13 +6368,16 @@ class CrystalGuildEngine:
                 healed = 0
             bonus_gil = max(15, int((25 + stage * 10) * mult))
             cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
-            label = f"A wayfarer shares supplies: +{bonus_gil} Gil to the cache" + (f" and {healed} HP restored." if healed else ".")
+            flavor = self._expedition_regional_flavor(region, "traveler")
+            outcome = f"+{bonus_gil} Gil to the cache" + (f" and {healed} HP restored." if healed else ".")
+            label = f"{flavor} {outcome}".strip()
             return self._expedition_stage_resolved(twitch_id, state, {"type": "traveler", "label": label, "gil": bonus_gil, "healing": healed})
 
         if event_type == "chocobo":
             state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + 8
             state["chocobo_travel_boost"] = True
-            label = "Your Chocobo finds a hidden trail. The next travel leg is shortened and Bond XP is earned."
+            flavor = self._expedition_regional_flavor(region, "chocobo")
+            label = f"{flavor} The next travel leg is shortened and Bond XP is earned.".strip()
             return self._expedition_stage_resolved(twitch_id, state, {"type": "chocobo", "label": label, "bond_xp": 8})
 
         return self._expedition_stage_resolved(twitch_id, state, {"type": "event", "label": "The stage passes without incident."})
@@ -6720,12 +6828,24 @@ class CrystalGuildEngine:
                 "boss_unlocked": bool(progress.get("boss_unlocked")),
                 "mastered": bool(progress.get("mastered")),
                 "legendary_unlocked": bool(progress.get("mastered")) and int(progress.get("boss_clears", 0)) > 0,
-                "objectives": [
-                    {"threshold": int(obj.get("threshold", 0)), "name": str(obj.get("name") or "Milestone")}
+                "milestones": [
+                    [int(obj.get("threshold", 0)), str(obj.get("name") or "Milestone")]
                     for obj in progress.get("objectives", [])
                 ],
+                "landmarks_found": int(progress.get("landmarks_found", 0)),
+                "landmarks": [
+                    {
+                        "name": str(landmark.get("name") or "Landmark"),
+                        "unlock_progress": int(landmark.get("unlock_progress", 0)),
+                    }
+                    for landmark in progress.get("landmarks", []) if bool(landmark.get("discovered"))
+                ],
+                "next_landmark_progress": next(
+                    (int(landmark.get("unlock_progress", 0)) for landmark in progress.get("landmarks", []) if not bool(landmark.get("discovered"))),
+                    None,
+                ),
             }
-            regions.append({
+            region_payload = {
                 "id": str(region["id"]),
                 "name": str(region["name"]),
                 "min_level": int(region.get("min_level", 1)),
@@ -6738,10 +6858,12 @@ class CrystalGuildEngine:
                     if str(item_id) in self.data.items
                 ],
                 "unlocked": unlocked,
-                "reason": "" if unlocked else f"Requires Lv.{int(region.get('min_level', 1))}.",
                 "progress": compact_progress,
                 "boss_name": str((region.get("boss") or {}).get("name") or region.get("boss_name") or "Regional Boss"),
-            })
+            }
+            if not unlocked:
+                region_payload["reason"] = f"Requires Lv.{int(region.get('min_level', 1))}."
+            regions.append(region_payload)
         return {
             "board_ready": board_ready,
             "chocobo_ready": bool(chocobo),
@@ -6758,7 +6880,11 @@ class CrystalGuildEngine:
                 for value in EXPEDITION_DEPTHS.values()
             ],
             "routes": [
-                {"id": str(value["id"]), "name": str(value["name"]), "reward_mult": float(value["reward_mult"])}
+                {
+                    "id": str(value["id"]), "name": str(value["name"]),
+                    "reward_mult": float(value["reward_mult"]),
+                    "rare_event_chance": float(value.get("rare_event_chance", 0.05) or 0.05),
+                }
                 for value in EXPEDITION_ROUTES.values()
             ],
             "regions": regions,

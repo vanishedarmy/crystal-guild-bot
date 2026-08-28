@@ -303,6 +303,60 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertTrue(atlas["all_mastered"])
         self.assertEqual(atlas["rank_name"], "Master Cartographer")
 
+    def test_alpha4_landmarks_derive_permanently_from_region_progress(self):
+        self.unlock()
+        initial = self.game._expedition_progress("100", "emerald_wilds")
+        self.assertEqual(len(initial["landmarks"]), 4)
+        self.assertEqual(initial["landmarks_found"], 0)
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress) VALUES ('100','emerald_wilds',40) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=40"
+        )
+        progress = self.game._expedition_progress("100", "emerald_wilds")
+        self.assertEqual(progress["landmarks_found"], 2)
+        self.assertEqual([row["name"] for row in progress["landmarks"] if row["discovered"]], ["Whisperroot Gate", "Silverfall Crossing"])
+        atlas = self.game._expedition_atlas("100")
+        self.assertEqual(atlas["landmarks_found"], 2)
+        self.assertEqual(atlas["landmark_count"], 20)
+
+    def test_alpha4_route_metadata_exposes_risk_and_rare_event_odds(self):
+        self.unlock()
+        board = self.game._expedition_board_state("100")
+        routes = {row["id"]: row for row in board["routes"]}
+        self.assertLess(routes["safe"]["rare_event_chance"], routes["unknown"]["rare_event_chance"])
+        self.assertLess(routes["unknown"]["rare_event_chance"], routes["deep"]["rare_event_chance"])
+
+    def test_alpha4_rare_regional_event_is_saved_to_journal(self):
+        self.unlock("keen_eye")
+        self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "scout").ok)
+        state = self.game._expedition_load("100")
+        state["travel_ready_at"] = 0
+        state["route"] = "deep"
+        self.game._expedition_save("100", state)
+        with patch.object(self.game.rng, "random", return_value=0.0):
+            result = self.game.expedition_resolve_stage("100")
+        self.assertTrue(result.ok, result.messages)
+        state = self.game._expedition_load("100")
+        self.assertEqual(state["status"], "choice")
+        self.assertEqual(state["event"]["type"], "rare")
+        self.assertTrue(state["rare_events_seen"])
+        self.assertEqual(state["history"][-1]["type"], "rare")
+        public = self.game._expedition_public("100")
+        self.assertEqual(public["history"][-1]["type"], "rare")
+
+    def test_alpha4_normal_events_use_region_specific_copy(self):
+        self.unlock("forager")
+        self.assertTrue(self.game.expedition_start("100", "ashen_highlands", "scout").ok)
+        state = self.game._expedition_load("100")
+        state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        with patch.object(self.game.rng, "random", return_value=1.0), patch("crystal_guild.engine.expedition_event_weights", return_value=(["resource"], [1.0])):
+            result = self.game.expedition_resolve_stage("100")
+        self.assertTrue(result.ok, result.messages)
+        label = self.game._expedition_load("100")["event"]["label"]
+        regional = self.data.expedition_regions["ashen_highlands"]["regional_events"]["resource"]
+        self.assertTrue(any(label.startswith(prefix) for prefix in regional), label)
+
     def test_adventure_state_exposes_compact_expedition_board(self):
         self.unlock("keen_eye")
         state = self.game._portal_adventure_state_data("100")

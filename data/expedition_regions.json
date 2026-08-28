@@ -79,7 +79,7 @@
         "threshold": 75,
         "name": "Heart of the Wilds",
         "description": "Map the overgrown sanctuary where the oldest Ochu nests.",
-        "unlock": "Rare encounters \u00b7 Regional Boss"
+        "unlock": "Rare encounters · Regional Boss"
       },
       {
         "threshold": 100,
@@ -122,7 +122,76 @@
       "bonus": "Discovery events +5% in Emerald Wilds",
       "event_type": "discovery",
       "event_mult": 1.05
-    }
+    },
+    "landmarks": [
+      {
+        "name": "Whisperroot Gate",
+        "unlock_progress": 10,
+        "description": "A living arch of roots marks the oldest surviving entrance to the Wilds."
+      },
+      {
+        "name": "Silverfall Crossing",
+        "unlock_progress": 35,
+        "description": "A narrow stone crossing hidden behind a bright curtain of falling water."
+      },
+      {
+        "name": "Crystal Waystation",
+        "unlock_progress": 60,
+        "description": "An abandoned Guild-era shelter still humming faintly with crystal light."
+      },
+      {
+        "name": "Heartgrove Sanctuary",
+        "unlock_progress": 85,
+        "description": "A secluded green basin where the oldest trails converge beneath colossal trees."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "A hidden herb terrace survives beneath the canopy.",
+        "Fresh tracks lead to a rich gathering hollow.",
+        "A fallen waystone exposes untouched roots and mineral seams."
+      ],
+      "treasure": [
+        "A vine-choked survey chest waits beside the old road.",
+        "Sunlight catches on something tucked beneath a ruined shrine.",
+        "A forgotten courier cache survived surprisingly well."
+      ],
+      "hazard": [
+        "The trail vanishes beneath grasping roots and thorned brush.",
+        "A rain-swollen crossing gives way without warning.",
+        "A cloud of territorial spores erupts from the undergrowth."
+      ],
+      "traveler": [
+        "A wandering botanist waves the party toward a sheltered rest.",
+        "A Moogle surveyor insists this shortcut was absolutely on the map.",
+        "A Chocobo caravan shares provisions beside an old marker stone."
+      ],
+      "chocobo": [
+        "Your Chocobo catches the scent of an old stable trail.",
+        "A flock of wild Chocobos reveals a path hidden by the brush.",
+        "Your companion recognizes weathered hoof-marks beneath the moss."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "moogle_survey_camp",
+        "name": "Moogle Survey Camp",
+        "kind": "recovery",
+        "description": "A tiny Guild survey camp appears where no map says one should be. The Moogle refuses to discuss this."
+      },
+      {
+        "id": "golden_cactuar_trail",
+        "name": "Golden Cactuar Trail",
+        "kind": "treasure",
+        "description": "A glittering set of impossible footprints leads to a cache before abruptly ending at a tree."
+      },
+      {
+        "id": "ancient_chocobo_shrine",
+        "name": "Ancient Chocobo Shrine",
+        "kind": "chocobo",
+        "description": "An old stone shrine answers your companion with a warm crystal glow."
+      }
+    ]
   },
   {
     "id": "ashen_highlands",
@@ -204,7 +273,7 @@
         "threshold": 75,
         "name": "Forge of the Ancients",
         "description": "Reach the volcanic forge complex and identify its guardian.",
-        "unlock": "Rare encounters \u00b7 Regional Boss"
+        "unlock": "Rare encounters · Regional Boss"
       },
       {
         "threshold": 100,
@@ -247,7 +316,76 @@
       "bonus": "Resource events +5% in Ashen Highlands",
       "event_type": "resource",
       "event_mult": 1.05
-    }
+    },
+    "landmarks": [
+      {
+        "name": "Cinderwatch Gate",
+        "unlock_progress": 10,
+        "description": "The scorched gatehouse that once controlled passage into the highland mines."
+      },
+      {
+        "name": "Mythril Hollow",
+        "unlock_progress": 35,
+        "description": "A collapsed mining chamber where exposed Mythril still glints through black stone."
+      },
+      {
+        "name": "Magitek Wreckfield",
+        "unlock_progress": 60,
+        "description": "A broad slope littered with silent armor plates, conduits, and half-buried engines."
+      },
+      {
+        "name": "Forgeheart Caldera",
+        "unlock_progress": 85,
+        "description": "A volcanic bowl surrounding the ancient forge complex at the region’s heart."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "A fractured mine wall exposes a fresh mineral seam.",
+        "Cooling lava has uncovered salvageable Magitek components.",
+        "The Chocobo paws at ash covering a forgotten supply vein."
+      ],
+      "treasure": [
+        "A scorched quartermaster chest remains wedged beneath fallen masonry.",
+        "A Magitek wreck still contains a sealed maintenance compartment.",
+        "An abandoned mining lift holds one last locked crate."
+      ],
+      "hazard": [
+        "Loose shale gives way beneath the mountain road.",
+        "A dormant vent erupts in a wave of furnace heat.",
+        "Unstable Magitek debris spits sparks across the trail."
+      ],
+      "traveler": [
+        "A soot-covered smith trades directions for a moment near the fire.",
+        "A mining crew shares water and a safer route through the ridge.",
+        "A scavenger points out which Magitek wrecks are least likely to explode."
+      ],
+      "chocobo": [
+        "Your Chocobo finds firm footing through a field of hot ash.",
+        "A sheltered mining road lets your companion pick up the pace.",
+        "Your Chocobo refuses one path so decisively that everyone agrees not to ask why."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "dormant_magitek_cache",
+        "name": "Dormant Magitek Cache",
+        "kind": "treasure",
+        "description": "A sealed Imperial field cache flickers back to life just long enough to open."
+      },
+      {
+        "id": "mythril_motherlode",
+        "name": "Mythril Motherlode",
+        "kind": "resource",
+        "description": "A cave-in reveals a mineral pocket untouched since the old mines closed."
+      },
+      {
+        "id": "forgekeepers_rest",
+        "name": "Forgekeeper’s Rest",
+        "kind": "recovery",
+        "description": "A stone shelter beside the forge road still radiates a strangely comforting warmth."
+      }
+    ]
   },
   {
     "id": "mistfen_marshes",
@@ -329,7 +467,7 @@
         "threshold": 75,
         "name": "The Drowned Bell",
         "description": "Reach the deepest temple basin and identify the sovereign Malboro.",
-        "unlock": "Rare encounters \u00b7 Regional Boss"
+        "unlock": "Rare encounters · Regional Boss"
       },
       {
         "threshold": 100,
@@ -371,7 +509,76 @@
       "title_id": "mistfen_delver",
       "bonus": "Hazard damage -5% in Mistfen Marshes",
       "hazard_mult": 0.95
-    }
+    },
+    "landmarks": [
+      {
+        "name": "Lantern Bog",
+        "unlock_progress": 10,
+        "description": "A field of luminous fungi that turns the fog green-blue after dusk."
+      },
+      {
+        "name": "Sunken Causeway",
+        "unlock_progress": 35,
+        "description": "The remains of an old stone road visible only where the marsh water runs clear."
+      },
+      {
+        "name": "Temple of Reeds",
+        "unlock_progress": 60,
+        "description": "A half-drowned temple complex hidden behind walls of whispering reeds."
+      },
+      {
+        "name": "The Drowned Bell",
+        "unlock_progress": 85,
+        "description": "A vast bronze bell beneath the deepest temple basin, heard when the water is still."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "A cluster of luminous fungi hides useful marsh reagents.",
+        "The reeds part around a rare patch of medicinal growth.",
+        "A half-submerged altar has gathered valuable scales and spores."
+      ],
+      "treasure": [
+        "A shrine offering box rests just above the black waterline.",
+        "Something metallic gleams beneath a mat of floating reeds.",
+        "A sunken pilgrim pack is caught between the causeway stones."
+      ],
+      "hazard": [
+        "The ground becomes water one step later than anyone would have preferred.",
+        "A pocket of toxic marsh gas rolls across the route.",
+        "Thick fog turns the marked path into three equally suspicious paths."
+      ],
+      "traveler": [
+        "A lantern-bearing herbalist offers a draught and a warning.",
+        "A ferryman appears from the fog, accepts no payment, and answers no questions.",
+        "A soaked treasure hunter shares the location of the one dry patch for miles."
+      ],
+      "chocobo": [
+        "Your Chocobo finds a sequence of barely submerged stepping stones.",
+        "Your companion stops before a patch of reeds moments before it collapses into deep water.",
+        "A distant Chocobo call guides the party through the fog."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "tonberry_lantern_procession",
+        "name": "Tonberry Lantern Procession",
+        "kind": "treasure",
+        "description": "A silent line of Tonberries crosses the path. One leaves a small parcel behind. Nobody follows them."
+      },
+      {
+        "id": "healing_fen_spring",
+        "name": "Healing Fen Spring",
+        "kind": "recovery",
+        "description": "Clear water bubbles from an ancient stone basin untouched by the surrounding mire."
+      },
+      {
+        "id": "sunken_reliquary",
+        "name": "Sunken Reliquary",
+        "kind": "treasure",
+        "description": "A collapsed temple wall reveals a sealed reliquary beneath the water."
+      }
+    ]
   },
   {
     "id": "frostveil_reach",
@@ -453,7 +660,7 @@
         "threshold": 75,
         "name": "Frostveil Bastion",
         "description": "Open the buried fortress approach and locate its guardian.",
-        "unlock": "Rare encounters \u00b7 Regional Boss"
+        "unlock": "Rare encounters · Regional Boss"
       },
       {
         "threshold": 100,
@@ -495,7 +702,76 @@
       "title_id": "frostveil_warden",
       "bonus": "Expedition Camp recovery +5% in Frostveil Reach",
       "camp_bonus": 0.05
-    }
+    },
+    "landmarks": [
+      {
+        "name": "Whitewind Cairn",
+        "unlock_progress": 10,
+        "description": "A towering trail marker built from black stone and permanently rimed with ice."
+      },
+      {
+        "name": "Glass-Ice Lake",
+        "unlock_progress": 35,
+        "description": "A frozen lake so clear the old road can still be seen far beneath its surface."
+      },
+      {
+        "name": "Buried Watchtower",
+        "unlock_progress": 60,
+        "description": "The upper floor of a fortress watchtower protruding from a century of snow."
+      },
+      {
+        "name": "Frostveil Bastion",
+        "unlock_progress": 85,
+        "description": "The half-buried fortress that once guarded the northern pass."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "Wind strips snow from a ridge and exposes valuable frozen deposits.",
+        "A sheltered ice cave preserves materials in remarkable condition.",
+        "Tracks lead to a windbreak where useful remains have accumulated."
+      ],
+      "treasure": [
+        "An old patrol chest is frozen into the wall of a ruined outpost.",
+        "A crack in the lake ice reveals a supply sled trapped below.",
+        "The remains of a watch post still hold a sealed emergency cache."
+      ],
+      "hazard": [
+        "A whiteout erases the horizon in seconds.",
+        "A shelf of packed snow breaks loose above the trail.",
+        "The temperature drops sharply as the route climbs into exposed wind."
+      ],
+      "traveler": [
+        "A bundled ranger shares hot broth and the next safe marker.",
+        "A stranded patrol has a fire going and room for one more traveler.",
+        "A merchant with terrible route-planning skills is nevertheless carrying excellent supplies."
+      ],
+      "chocobo": [
+        "Your Chocobo digs out an old marker buried under fresh snow.",
+        "Your companion finds a wind-shadowed trail along the ridge.",
+        "A set of old Chocobo prints crosses the ice toward safer ground."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "aurora_crystalfall",
+        "name": "Aurora Crystalfall",
+        "kind": "resource",
+        "description": "An aurora ignites the ice and tiny crystal fragments begin falling like snow."
+      },
+      {
+        "id": "lost_expedition_camp",
+        "name": "Lost Expedition Camp",
+        "kind": "recovery",
+        "description": "A preserved Guild camp emerges from the drift with its stove and stores intact."
+      },
+      {
+        "id": "snow_chocobo_trail",
+        "name": "Snow Chocobo Trail",
+        "kind": "chocobo",
+        "description": "Fresh Chocobo tracks cut across terrain no ordinary traveler could cross safely."
+      }
+    ]
   },
   {
     "id": "astral_scar",
@@ -585,7 +861,7 @@
         "threshold": 75,
         "name": "The Broken Meridian",
         "description": "Trace the dimensional breach to the Rift Wyrm nesting ground.",
-        "unlock": "Rare encounters \u00b7 Regional Boss"
+        "unlock": "Rare encounters · Regional Boss"
       },
       {
         "threshold": 100,
@@ -632,6 +908,75 @@
       "bonus": "Treasure events +5% in the Astral Scar",
       "event_type": "treasure",
       "event_mult": 1.05
-    }
+    },
+    "landmarks": [
+      {
+        "name": "Crystal Fault",
+        "unlock_progress": 10,
+        "description": "A glowing fracture in the earth where crystal growths pulse with unstable light."
+      },
+      {
+        "name": "Floating Reliquary",
+        "unlock_progress": 35,
+        "description": "A small ruin suspended above the ground by forces the Guild has chosen not to name."
+      },
+      {
+        "name": "Shattered Observatory",
+        "unlock_progress": 60,
+        "description": "Broken astronomical instruments orbit the ruins of an ancient observatory."
+      },
+      {
+        "name": "The Broken Meridian",
+        "unlock_progress": 85,
+        "description": "A vast line of fractured crystal marking the deepest stable route into the Scar."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "A crystal bloom forms around a pocket of condensed aether.",
+        "A floating ruin sheds a fragment rich with salvageable material.",
+        "Reality briefly becomes generous and deposits something useful beside the trail."
+      ],
+      "treasure": [
+        "A chest drifts several feet above where the floor used to be.",
+        "A sealed reliquary rotates slowly inside a pocket of still air.",
+        "A time-worn pack appears beside the route before its owner does."
+      ],
+      "hazard": [
+        "Gravity changes its mind halfway across the path.",
+        "A pulse from the Scar turns stable ground into floating shards.",
+        "A ripple of astral distortion tears across the route."
+      ],
+      "traveler": [
+        "A time-lost scholar asks what year it is, then offers useful supplies.",
+        "A Moogle cartographer appears, checks three compasses, and quietly puts all of them away.",
+        "Another expedition emerges from a route that does not currently exist."
+      ],
+      "chocobo": [
+        "Your Chocobo reacts to a distortion moments before the road folds sideways.",
+        "Your companion chooses a path through floating stones with alarming confidence.",
+        "A shimmer reveals hoofprints hanging briefly in midair."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "rift_cache",
+        "name": "Rift Cache",
+        "kind": "treasure",
+        "description": "A supply chest flickers between two positions until your Chocobo chooses the correct one."
+      },
+      {
+        "id": "time_lost_moogle",
+        "name": "Time-Lost Moogle",
+        "kind": "recovery",
+        "description": "A confused Moogle insists the Guild sent them yesterday. Their supplies are still useful."
+      },
+      {
+        "id": "celestial_crystal_bloom",
+        "name": "Celestial Crystal Bloom",
+        "kind": "survey",
+        "description": "A vast crystal flower opens as the Scar stabilizes for a few precious moments."
+      }
+    ]
   }
 ]

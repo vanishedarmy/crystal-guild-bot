@@ -20,16 +20,22 @@ DEPTHS: dict[str, dict[str, Any]] = {
 ROUTES: dict[str, dict[str, Any]] = {
     "safe": {
         "id": "safe", "name": "Safe Route", "reward_mult": 0.90,
+        "risk": "Low", "rare_event_chance": 0.02, "rare_encounter_mult": 0.65,
+        "signals": ["Less combat", "Fewer hazards", "Steadier discoveries"],
         "description": "Lower combat and hazard pressure. Slower rewards, safer footing.",
         "weight_mult": {"combat": 0.72, "hazard": 0.62, "treasure": 0.85, "resource": 0.95, "discovery": 1.10},
     },
     "unknown": {
         "id": "unknown", "name": "Unknown Route", "reward_mult": 1.00,
+        "risk": "Balanced", "rare_event_chance": 0.05, "rare_encounter_mult": 1.00,
+        "signals": ["Balanced encounters", "Balanced rewards", "Unpredictable events"],
         "description": "Balanced risk. You take the road as it comes.",
         "weight_mult": {},
     },
     "deep": {
         "id": "deep", "name": "Push Deeper", "reward_mult": 1.20,
+        "risk": "High", "rare_event_chance": 0.09, "rare_encounter_mult": 1.75,
+        "signals": ["More combat", "More hazards", "Better rare-event odds"],
         "description": "More danger, but much stronger treasure and material opportunities.",
         "weight_mult": {"combat": 1.22, "hazard": 1.25, "treasure": 1.30, "resource": 1.18, "discovery": 1.10},
     },
