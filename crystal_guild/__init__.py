@@ -1,3 +1,3 @@
 """Crystal Guild package."""
 
-__version__ = "1.1.19-retro-phase-iii-rc1h9"
+__version__ = "1.2.0-expeditions-a1"

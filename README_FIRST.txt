@@ -1,10 +1,10 @@
-Crystal Guild v1.1.19 — Retro Phase III / RC1 Hotfix 9 Bot
-Runtime: 1.1.19-retro-phase-iii-rc1h9
-Local DB schema: 7
+Crystal Guild v1.2.0 — Expeditions Alpha 1 Bot
+Runtime: 1.2.0-expeditions-a1
+Local DB schema: 8
 Hosted sync schema: 1
-Portal Action protocol: 19
+Portal Action protocol: 20
 Twitch prefix: !
 
-Hotfix 9 sets Rally Venture timing to 60s join / 30s rounds and Raid timing to 90s join / 60s rounds. Portal boss spawns now stage the normal rally announcement to Twitch when LIVE. Eligible field recovery items can support another adventurer outside battle while LIVE, including through the Portal target field and `!use <item> | <username>`. The Web also uses Bot server time for countdowns and clears the overlay immediately after inactive raid completion.
+Expeditions Alpha 1 adds the five-region Expedition system: Emerald Wilds, Ashen Highlands, Mistfen Marshes, Frostveil Reach, and The Astral Scar. Expeditions require a registered Chocobo plus the completed Fellowship Expedition Board and support Scout, Journey, and Deep routes with persistent multi-stage travel, combat, choices, cache rewards, camp, safe return, Chocobo rescue, exploration progress, and persistent confirmed results.
 
-No database migration or player reset is required. Deploy the paired RC1H9 Web build because Portal Action protocol 19 is required.
+The upgrade from v1.1.19 RC1 Hotfix 9 migrates local DB schema 7 -> 8 with a verified pre-migration backup. Existing player progression is preserved. Deploy the matching v1.2 Web because Portal Action protocol 20 is required.

@@ -79,6 +79,14 @@ from .daily_provisions import (
     subscriber_perk,
 )
 from .data import GameData
+from .expeditions import (
+    BONUS_STAGES as EXPEDITION_BONUS_STAGES,
+    DEPTHS as EXPEDITION_DEPTHS,
+    ROUTES as EXPEDITION_ROUTES,
+    defeat_cache_keep as expedition_defeat_cache_keep,
+    effective_travel_seconds as expedition_travel_seconds,
+    event_weights as expedition_event_weights,
+)
 from .enemy_combat import (
     choose_enemy_action,
     effective_status_chance,
@@ -733,6 +741,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change Jobs while resting at camp.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Jobs after committing to an active encounter or raid.")
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Return from your Expedition before changing Jobs.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing Jobs.")
         if str(twitch_id) in self.active_hunts:
@@ -824,6 +834,8 @@ class CrystalGuildEngine:
             return GameResult.success(f"Mastered Jobs: {mastered_text}", f"Equipped Masteries: {equipped_text}. Equip with !mastery <job> <1|2>")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Return from your Expedition before changing Masteries.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing Masteries.")
         if str(twitch_id) in self.active_hunts:
@@ -848,6 +860,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Return from your Expedition before changing Masteries.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing Masteries.")
         if str(twitch_id) in self.active_hunts:
@@ -868,6 +882,8 @@ class CrystalGuildEngine:
             return GameResult.success(f"Current stance: {p['stance']}. Options: balanced, aggressive, defensive, magical, cautious.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change stance after committing to an active encounter or raid.")
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Return from your Expedition before changing stance.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing stance.")
         if str(twitch_id) in self.active_hunts:
@@ -894,6 +910,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Use Expedition Camp or return from your Expedition before normal Camp recovery.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before setting up camp.")
         if str(twitch_id) in self.active_hunts:
@@ -959,6 +977,8 @@ class CrystalGuildEngine:
             return self.battle_item(twitch_id, item_query)
         if twitch_id in self.raid_roster and self.active_boss and self.active_boss.get("state") == "combat":
             return self.battle_item(twitch_id, item_query)
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("While on an Expedition, use items through Expedition combat or return to the Guild first.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("While on a Solo Venture, use battle items through the Adventure Board. Return or retreat before using field items.")
         if str(twitch_id) in self.active_hunts:
@@ -992,6 +1012,8 @@ class CrystalGuildEngine:
 
         if target_id in self.encounter_roster or target_id in self.raid_roster:
             return GameResult.fail(f"{target['display_name']} is currently in battle; use battle targeting instead.")
+        if self._expedition_load(target_id):
+            return GameResult.fail(f"{target['display_name']} is away on an Expedition and cannot receive field items right now.")
         if self._solo_expedition_load(target_id):
             return GameResult.fail(f"{target['display_name']} is away on a Solo Venture and cannot receive field items right now.")
         if str(target_id) in self.active_hunts:
@@ -4961,6 +4983,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Return from your Expedition before changing equipment.")
         if str(twitch_id) in self.active_hunts:
             return GameResult.fail("Equipment is locked while your hero is away on a Hunt.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
@@ -4995,6 +5019,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
+        if self._expedition_load(twitch_id):
+            return GameResult.fail("Return from your Expedition before changing equipment.")
         if str(twitch_id) in self.active_hunts:
             return GameResult.fail("Equipment is locked while your hero is away on a Hunt.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
@@ -5458,6 +5484,1044 @@ class CrystalGuildEngine:
             "recommended_item_name": recommendation["name"] if recommendation else None,
         }
 
+    # ---------- v1.2 Expeditions ----------
+    def _expedition_load(self, twitch_id: str) -> dict[str, Any] | None:
+        row = self.db.one("SELECT state_json FROM player_expeditions WHERE player_id=?", (str(twitch_id),))
+        if not row:
+            return None
+        try:
+            state = json.loads(str(row["state_json"]))
+            return state if isinstance(state, dict) else None
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return None
+
+    def _expedition_save(self, twitch_id: str, state: dict[str, Any]) -> None:
+        now = int(time.time())
+        started = int(state.get("started_at") or now)
+        state["updated_at"] = now
+        self.db.execute(
+            "INSERT INTO player_expeditions(player_id,state_json,started_at,updated_at) VALUES (?,?,?,?) "
+            "ON CONFLICT(player_id) DO UPDATE SET state_json=excluded.state_json,updated_at=excluded.updated_at",
+            (str(twitch_id), json.dumps(state, separators=(",", ":"), sort_keys=True), started, now),
+        )
+
+    def _expedition_delete(self, twitch_id: str) -> None:
+        self.db.execute("DELETE FROM player_expeditions WHERE player_id=?", (str(twitch_id),))
+
+    def _expedition_board_ready(self) -> bool:
+        row = self.db.one("SELECT expedition_board_complete FROM fellowship_state WHERE singleton_id=1")
+        return bool(row and int(row["expedition_board_complete"] or 0))
+
+    def _expedition_chocobo_traits(self, twitch_id: str) -> tuple[dict[str, Any] | None, set[str]]:
+        row = self.db.one(
+            "SELECT name,level,xp,registered_at,portrait_id FROM player_chocobos WHERE player_id=?",
+            (str(twitch_id),),
+        )
+        if not row or not row["registered_at"] or not row["name"]:
+            return None, set()
+        traits = {
+            str(item["trait_id"])
+            for item in self.db.all(
+                "SELECT trait_id FROM player_chocobo_traits WHERE player_id=? ORDER BY unlocked_at,trait_id",
+                (str(twitch_id),),
+            )
+            if str(item["trait_id"]) in CHOCOBO_TRAITS
+        }
+        level, xp_current, xp_next = chocobo_level_from_total_xp(int(row["xp"] or 0))
+        payload = {
+            "name": str(row["name"]),
+            "level": int(level),
+            "xp_current": int(xp_current),
+            "xp_next": int(xp_next),
+            "portrait_id": str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID),
+            "traits": [
+                {"id": trait_id, **CHOCOBO_TRAITS[trait_id]}
+                for trait_id in sorted(traits)
+            ],
+        }
+        return payload, traits
+
+    def _expedition_progress(self, twitch_id: str, region_id: str) -> dict[str, Any]:
+        row = self.db.one(
+            "SELECT progress,stages_cleared,completed_runs,boss_clears FROM player_region_exploration WHERE player_id=? AND region_id=?",
+            (str(twitch_id), str(region_id)),
+        )
+        progress = max(0, min(100, int(row["progress"] or 0))) if row else 0
+        return {
+            "progress": progress,
+            "stages_cleared": int(row["stages_cleared"] or 0) if row else 0,
+            "completed_runs": int(row["completed_runs"] or 0) if row else 0,
+            "boss_clears": int(row["boss_clears"] or 0) if row else 0,
+            "boss_unlocked": progress >= 75,
+            "mastered": progress >= 100,
+        }
+
+    def _expedition_add_progress(
+        self,
+        twitch_id: str,
+        region_id: str,
+        amount: int,
+        *,
+        stage_cleared: bool = False,
+        completed_run: bool = False,
+    ) -> dict[str, Any]:
+        amount = max(0, int(amount))
+        with self.db.tx() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO player_region_exploration(player_id,region_id,progress) VALUES (?,?,0)",
+                (str(twitch_id), str(region_id)),
+            )
+            conn.execute(
+                "UPDATE player_region_exploration SET "
+                "progress=MIN(100,progress+?), stages_cleared=stages_cleared+?, completed_runs=completed_runs+?, updated_at=CURRENT_TIMESTAMP "
+                "WHERE player_id=? AND region_id=?",
+                (
+                    amount,
+                    1 if stage_cleared else 0,
+                    1 if completed_run else 0,
+                    str(twitch_id),
+                    str(region_id),
+                ),
+            )
+        return self._expedition_progress(twitch_id, region_id)
+
+    @staticmethod
+    def _expedition_cache(state: dict[str, Any]) -> dict[str, Any]:
+        cache = state.setdefault("cache", {"xp": 0, "jp": 0, "gil": 0, "items": []})
+        cache.setdefault("xp", 0)
+        cache.setdefault("jp", 0)
+        cache.setdefault("gil", 0)
+        cache.setdefault("items", [])
+        return cache
+
+    def _expedition_cache_add_item(
+        self,
+        state: dict[str, Any],
+        item_id: str,
+        quantity: int,
+        *,
+        source: str,
+    ) -> dict[str, Any] | None:
+        item = self.data.items.get(str(item_id))
+        quantity = max(0, int(quantity))
+        if not item or quantity <= 0:
+            return None
+        cache = self._expedition_cache(state)
+        for row in cache["items"]:
+            if str(row.get("id")) == str(item_id) and str(row.get("source")) == str(source):
+                row["quantity"] = int(row.get("quantity", 0)) + quantity
+                return row
+        result = {
+            "id": str(item_id),
+            "name": str(item.get("name") or item_id),
+            "quantity": quantity,
+            "source": str(source),
+            "rarity": str(item.get("rarity") or "common").title(),
+            "category": str(item.get("type") or "item").replace("_", " ").title(),
+        }
+        cache["items"].append(result)
+        return result
+
+    def _expedition_reward_multiplier(self, state: dict[str, Any]) -> float:
+        depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
+        route = EXPEDITION_ROUTES.get(str(state.get("route")), EXPEDITION_ROUTES["unknown"])
+        base_stages = int(state.get("base_stages") or depth["stages"])
+        stage = int(state.get("stage") or 1)
+        bonus = 1.0 + max(0, stage - base_stages) * 0.25
+        return float(depth["reward_mult"]) * float(route["reward_mult"]) * bonus
+
+    def _expedition_begin_travel(self, twitch_id: str, state: dict[str, Any], route_id: str) -> int:
+        route_id = str(route_id or "unknown").lower()
+        if route_id not in EXPEDITION_ROUTES:
+            route_id = "unknown"
+        _, traits = self._expedition_chocobo_traits(twitch_id)
+        depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
+        seconds = expedition_travel_seconds(int(depth["travel_seconds"]), traits)
+        penalty = max(0, int(state.pop("travel_penalty_seconds", 0) or 0))
+        if penalty:
+            seconds += penalty
+        if bool(state.pop("chocobo_travel_boost", False)):
+            seconds = max(30, int(round(seconds * 0.80)))
+        now = int(time.time())
+        state["route"] = route_id
+        state["status"] = "travel"
+        state["travel_started_at"] = now
+        state["travel_ready_at"] = now + seconds
+        state["event"] = None
+        state["combat"] = None
+        state["camp_used_stage"] = False
+        self._expedition_save(twitch_id, state)
+        return seconds
+
+    def _expedition_select_monster(
+        self, twitch_id: str, state: dict[str, Any], region: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        p = self._player(twitch_id)
+        if not p:
+            return None
+        level = int(p["level"] or 1)
+        route = str(state.get("route") or "unknown")
+        cap_above = 2 if route == "safe" else 5 if route == "deep" else 3
+        region_min = int(region.get("min_level", 1))
+        region_max = int(region.get("recommended_max_level", 99))
+        minimum = max(region_min, level - 3)
+        maximum = min(region_max, level + cap_above) if region_max < 99 else level + cap_above
+        candidates: list[dict[str, Any]] = []
+        weights: list[float] = []
+        for entry in region.get("encounters", []):
+            monster = self.data.monsters.get(str(entry.get("monster_id") or ""))
+            if not monster:
+                continue
+            monster_level = int(monster.get("level", 1))
+            if minimum <= monster_level <= maximum:
+                candidates.append(monster)
+                delta = monster_level - level
+                danger_bias = 1.0 + max(0, delta) * (0.12 if route == "deep" else 0.04)
+                weights.append(max(0.01, float(entry.get("weight", 1)) * danger_bias))
+        if not candidates:
+            for entry in region.get("encounters", []):
+                monster = self.data.monsters.get(str(entry.get("monster_id") or ""))
+                if monster and int(monster.get("level", 1)) <= maximum:
+                    candidates.append(monster)
+                    weights.append(max(0.01, float(entry.get("weight", 1))))
+        return self.rng.choices(candidates, weights=weights, k=1)[0] if candidates else None
+
+    def _expedition_roll_treasure(self, twitch_id: str) -> dict[str, Any] | None:
+        p = self._player(twitch_id)
+        if not p:
+            return None
+        _, _, candidates = self._venture_treasure_candidates(int(p["level"] or 1))
+        items = [item for values in candidates.values() for item in values]
+        if not items:
+            return None
+        return self.rng.choices(
+            items,
+            weights=[VENTURE_TREASURE_RARITY_WEIGHTS.get(str(item.get("rarity", "common")).lower(), 1) for item in items],
+            k=1,
+        )[0]
+
+    def _expedition_combat_rewards(
+        self, twitch_id: str, state: dict[str, Any], monster: dict[str, Any]
+    ) -> dict[str, Any]:
+        p = self._player(twitch_id)
+        if not p:
+            return {"xp": 0, "jp": 0, "gil": 0, "items": []}
+        mult = self._expedition_reward_multiplier(state)
+        level_factor = encounter_reward_factor(int(p["level"]), int(monster["level"]))
+        job_level = self._job_level(twitch_id, p["current_job"])
+        jp_factor = jp_reward_factor(int(p["level"]), job_level, int(monster["level"]))
+        xp = max(5, int(int(monster["xp"]) * level_factor * mult * self.rng.uniform(0.92, 1.08)))
+        jp = self.fellowship_system.apply_jp_bonus(
+            max(2, int(int(monster["jp"]) * jp_factor * mult * self.rng.uniform(0.95, 1.10)))
+        )
+        gil = max(1, int(int(monster["gil"]) * level_factor * mult * self.rng.uniform(0.85, 1.18)))
+        job = self.data.jobs[p["current_job"]]
+        effects = self._effects(twitch_id, p["current_job"])
+        gil = int(gil * (1 + job.get("gil_bonus", 0) + effects.get("gil_bonus", 0)))
+        loot_bonus = float(job.get("loot_bonus", 0)) + float(effects.get("loot_bonus", 0))
+        drops: list[dict[str, Any]] = []
+        for drop in monster.get("drops", []):
+            chance = min(0.95, float(drop.get("chance", 0)) * (1 + loot_bonus))
+            if self.rng.random() <= chance:
+                qty = self.rng.randint(int(drop.get("min", 1)), int(drop.get("max", 1)))
+                item_id = str(drop.get("item_id") or "")
+                if item_id in self.data.items:
+                    drops.append({"id": item_id, "quantity": qty})
+        return {"xp": xp, "jp": jp, "gil": gil, "items": drops}
+
+    def _expedition_bank_cache(
+        self,
+        twitch_id: str,
+        state: dict[str, Any],
+        *,
+        keep_ratio: float = 1.0,
+        source: str = "expedition",
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        keep_ratio = max(0.0, min(1.0, float(keep_ratio)))
+        cache = self._expedition_cache(state)
+        kept = {
+            "xp": int(round(int(cache.get("xp", 0)) * keep_ratio)),
+            "jp": int(round(int(cache.get("jp", 0)) * keep_ratio)),
+            "gil": int(round(int(cache.get("gil", 0)) * keep_ratio)),
+            "items": [],
+        }
+        lost = {
+            "xp": max(0, int(cache.get("xp", 0)) - int(kept["xp"])),
+            "jp": max(0, int(cache.get("jp", 0)) - int(kept["jp"])),
+            "gil": max(0, int(cache.get("gil", 0)) - int(kept["gil"])),
+            "items": [],
+        }
+        for row in list(cache.get("items") or []):
+            qty = max(0, int(row.get("quantity", 0)))
+            if keep_ratio >= 0.999:
+                keep_qty = qty
+            else:
+                keep_qty = sum(1 for _ in range(qty) if self.rng.random() <= keep_ratio)
+            lose_qty = qty - keep_qty
+            if keep_qty:
+                kept["items"].append({**row, "quantity": keep_qty})
+            if lose_qty:
+                lost["items"].append({**row, "quantity": lose_qty})
+
+        p = self._player(twitch_id)
+        if p:
+            with self.db.tx() as conn:
+                conn.execute(
+                    "UPDATE players SET xp=xp+?,gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                    (int(kept["xp"]), int(kept["gil"]), str(twitch_id)),
+                )
+                conn.execute(
+                    "UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?",
+                    (int(kept["jp"]), str(twitch_id), str(p["current_job"])),
+                )
+                if int(kept["gil"]):
+                    conn.execute(
+                        "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,?)",
+                        (str(twitch_id), int(kept["gil"]), str(source)),
+                    )
+            for row in kept["items"]:
+                self._change_item(str(twitch_id), str(row["id"]), int(row["quantity"]), str(source))
+            kept["levelups"] = self._process_levels(str(twitch_id), str(p["current_job"]))
+            kept["achievements"] = self._check_achievements(str(twitch_id))
+        return kept, lost
+
+    def _expedition_result_summary(
+        self,
+        twitch_id: str,
+        state: dict[str, Any],
+        *,
+        outcome: str,
+        kept: dict[str, Any],
+        lost: dict[str, Any],
+    ) -> dict[str, Any]:
+        region = self.data.expedition_regions.get(str(state.get("region_id"))) or {}
+        return {
+            "type": "expedition_v12",
+            "outcome": str(outcome),
+            "title": "Expedition Complete" if outcome == "complete" else "Expedition Returned" if outcome == "returned" else "Expedition Rescue",
+            "region_name": str(region.get("name") or "Unknown Region"),
+            "depth": str((EXPEDITION_DEPTHS.get(str(state.get("depth"))) or {}).get("name") or state.get("depth") or "Expedition"),
+            "stages": int(state.get("stage") or 1),
+            "base_stages": int(state.get("base_stages") or 0),
+            "rewards": {
+                "xp": int(kept.get("xp", 0)),
+                "jp": int(kept.get("jp", 0)),
+                "gil": int(kept.get("gil", 0)),
+                "loot": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in kept.get("items", [])],
+                "achievements": list(kept.get("achievements") or [])[:4],
+                "levelups": list(kept.get("levelups") or [])[:4],
+            },
+            "lost": {
+                "xp": int(lost.get("xp", 0)),
+                "jp": int(lost.get("jp", 0)),
+                "gil": int(lost.get("gil", 0)),
+                "items": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in lost.get("items", [])],
+            },
+            "history": copy.deepcopy(list(state.get("history") or [])[-10:]),
+            "player": self._solo_result_vitals(twitch_id),
+            "interactive": True,
+        }
+
+    def _remember_expedition_result(self, twitch_id: str, summary: dict[str, Any]) -> None:
+        result = {
+            "title": str(summary.get("title") or "Expedition Result"),
+            "won": str(summary.get("outcome") or "") != "defeat",
+            "finished_at": int(time.time()),
+            "kind": "expedition",
+            "monster_name": "",
+            "hunt_name": None,
+            "messages": [],
+            "summary": copy.deepcopy(summary),
+        }
+        self._persist_portal_adventure_result(str(twitch_id), "expedition", result)
+
+    def _expedition_finish(
+        self,
+        twitch_id: str,
+        state: dict[str, Any],
+        *,
+        outcome: str,
+        keep_ratio: float = 1.0,
+    ) -> GameResult:
+        reached_objective = int(state.get("stage") or 0) >= int(state.get("base_stages") or 999)
+        kept, lost = self._expedition_bank_cache(
+            twitch_id,
+            state,
+            keep_ratio=keep_ratio,
+            source="expedition_return" if keep_ratio >= 0.999 else "expedition_rescue",
+        )
+        if reached_objective and outcome in {"complete", "returned"}:
+            self._expedition_add_progress(
+                twitch_id,
+                str(state.get("region_id")),
+                5,
+                completed_run=True,
+            )
+        chocobo_xp = max(0, int(state.get("chocobo_xp", 0))) + max(4, int(state.get("stage", 1)) * 3)
+        chocobo_notes = self._award_chocobo_xp(twitch_id, chocobo_xp)
+        summary = self._expedition_result_summary(twitch_id, state, outcome=outcome, kept=kept, lost=lost)
+        summary["chocobo_notes"] = chocobo_notes[:2]
+        summary["exploration"] = self._expedition_progress(twitch_id, str(state.get("region_id")))
+        self._remember_expedition_result(twitch_id, summary)
+        self._expedition_delete(twitch_id)
+        if outcome == "defeat":
+            return GameResult.success(
+                f"EXPEDITION RESCUE — Your Chocobo gets you home with {int(round(keep_ratio * 100))}% of the Expedition Cache.",
+                expedition_finished=True,
+                expedition_result=summary,
+                won=False,
+            )
+        return GameResult.success(
+            f"EXPEDITION RETURN — {summary['region_name']} cache secured: +{kept['xp']} XP / +{kept['jp']} JP / {kept['gil']} Gil.",
+            expedition_finished=True,
+            expedition_result=summary,
+            won=True,
+        )
+
+    def _expedition_initialize_combat(
+        self, twitch_id: str, state: dict[str, Any], monster: dict[str, Any]
+    ) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        encounter = {
+            "id": int(state.get("started_at", time.time())) * 100 + int(state.get("stage", 1)),
+            "kind": "expedition",
+            "state": "combat",
+            "monster_id": str(monster["id"]),
+            "region_id": str(state.get("region_id")),
+            "created_at": int(time.time()),
+            "starter_id": str(twitch_id),
+        }
+        roster = {
+            str(twitch_id): {
+                "name": str(p["display_name"]),
+                "username": str(p["username"]),
+                "job_id": str(p["current_job"]),
+            }
+        }
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter, self.encounter_roster = encounter, roster
+            combatants, _, _ = self._initialize_active_combat(encounter)
+            if combatants == 0:
+                return GameResult.fail("Your hero is not in fighting condition for this Expedition encounter.")
+            encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+            state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
+        state["event"] = {
+            "type": "combat",
+            "label": f"{monster['name']} blocks the route.",
+            "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])},
+        }
+        state["status"] = "combat"
+        state.setdefault("history", []).append(
+            {"stage": int(state.get("stage", 1)), "type": "combat", "label": f"Encountered {monster['name']}"}
+        )
+        self._expedition_save(twitch_id, state)
+        return GameResult.success(
+            f"EXPEDITION · STAGE {int(state.get('stage', 1))} — {monster['name']} (Lv.{monster['level']}) blocks the route.",
+            expedition_combat=True,
+        )
+
+    def _expedition_stage_resolved(self, twitch_id: str, state: dict[str, Any], event: dict[str, Any], progress_gain: int = 1) -> GameResult:
+        state["event"] = event
+        state["status"] = "choice"
+        state.setdefault("history", []).append(
+            {"stage": int(state.get("stage", 1)), "type": str(event.get("type") or "event"), "label": str(event.get("label") or "Stage resolved")}
+        )
+        self._expedition_add_progress(
+            twitch_id,
+            str(state.get("region_id")),
+            progress_gain,
+            stage_cleared=True,
+        )
+        self._expedition_save(twitch_id, state)
+        return GameResult.success(
+            f"EXPEDITION · STAGE {int(state.get('stage', 1))} — {event.get('label', 'Stage resolved.')}",
+            expedition_stage_complete=True,
+        )
+
+    @_state_guard
+    def expedition_start(self, twitch_id: str, region_id: str, depth_id: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        if self._expedition_load(twitch_id):
+            return GameResult.success("Your Expedition is already underway. Continue it from the Adventure Board.", expedition_active=True)
+        if not self._expedition_board_ready():
+            return GameResult.fail("The Fellowship Expedition Board must be completed before distant Expeditions can launch.")
+        chocobo, _ = self._expedition_chocobo_traits(twitch_id)
+        if not chocobo:
+            return GameResult.fail("A registered Chocobo is required for Expeditions.")
+        if p["current_job"] == "adventurer":
+            return GameResult.fail("Choose a Job before launching an Expedition.")
+        blocked = self._activity_block(twitch_id)
+        if blocked:
+            return GameResult.fail(blocked)
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return GameResult.fail("Finish your active encounter or raid before launching an Expedition.")
+        if self.active_boss or self.active_encounter:
+            return GameResult.fail("A Guild battle is already active. Launch the Expedition after it clears.")
+        region = self.data.expedition_regions.get(str(region_id))
+        if not region:
+            return GameResult.fail("That Expedition region is not available.")
+        if int(p["level"] or 1) < int(region.get("min_level", 1)):
+            return GameResult.fail(f"{region['name']} is recommended from Lv.{int(region.get('min_level', 1))}.")
+        depth = EXPEDITION_DEPTHS.get(str(depth_id))
+        if not depth:
+            return GameResult.fail("Choose Scout, Journey, or Deep Expedition.")
+        now = int(time.time())
+        state = {
+            "version": 1,
+            "started_at": now,
+            "updated_at": now,
+            "region_id": str(region["id"]),
+            "depth": str(depth["id"]),
+            "stage": 1,
+            "base_stages": int(depth["stages"]),
+            "max_stages": int(depth["stages"]) + int(EXPEDITION_BONUS_STAGES),
+            "status": "travel",
+            "route": "unknown",
+            "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []},
+            "history": [],
+            "last_round": None,
+            "combat": None,
+            "event": None,
+            "chocobo_xp": 0,
+            "discoveries_seen": [],
+        }
+        seconds = self._expedition_begin_travel(twitch_id, state, "unknown")
+        self.db.update_record_stats(twitch_id, {"expeditions_started": 1})
+        return GameResult.success(
+            f"EXPEDITION LAUNCHED — {region['name']} · {depth['name']}. Stage 1 travel: {self._format_seconds(seconds)}.",
+            expedition_started=True,
+        )
+
+    @_state_guard
+    def expedition_resolve_stage(self, twitch_id: str) -> GameResult:
+        state = self._expedition_load(twitch_id)
+        if not state:
+            return GameResult.fail("No Expedition is currently underway.")
+        if str(state.get("status")) != "travel":
+            return GameResult.fail("This Expedition stage is not waiting on travel.")
+        remaining = max(0, int(state.get("travel_ready_at", 0)) - int(time.time()))
+        if remaining > 0:
+            return GameResult.fail(f"Travel completes in {self._format_seconds(remaining)}.")
+        region = self.data.expedition_regions.get(str(state.get("region_id")))
+        if not region:
+            return GameResult.fail("This Expedition region is unavailable in the current data build.")
+        _, traits = self._expedition_chocobo_traits(twitch_id)
+        kinds, weights = expedition_event_weights(region, str(state.get("route") or "unknown"), traits)
+        if not kinds:
+            return GameResult.fail("This Expedition region has no resolvable stage events.")
+        event_type = self.rng.choices(kinds, weights=weights, k=1)[0]
+        mult = self._expedition_reward_multiplier(state)
+        cache = self._expedition_cache(state)
+        stage = int(state.get("stage", 1))
+
+        if event_type == "combat":
+            monster = self._expedition_select_monster(twitch_id, state, region)
+            if monster:
+                return self._expedition_initialize_combat(twitch_id, state, monster)
+            event_type = "discovery"
+
+        if event_type == "resource":
+            materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
+            item_id = self.rng.choice(materials) if materials else ""
+            qty = self.rng.randint(1, 2) + (1 if "forager" in traits else 0)
+            row = self._expedition_cache_add_item(state, item_id, qty, source="resource") if item_id else None
+            label = f"Gathered {row['name']} x{row['quantity']}." if row else "A promising resource node turns out to be picked clean."
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "resource", "label": label, "item": row})
+
+        if event_type == "treasure":
+            item = self._expedition_roll_treasure(twitch_id)
+            row = self._expedition_cache_add_item(state, str(item["id"]), 1, source="treasure") if item else None
+            bonus_gil = max(20, int((30 + stage * 12) * mult))
+            cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
+            label = f"Found {row['name']} and {bonus_gil} Gil in a hidden cache." if row else f"Recovered {bonus_gil} Gil from an abandoned cache."
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "treasure", "label": label, "item": row, "gil": bonus_gil})
+
+        if event_type == "hazard":
+            p = self._player(twitch_id)
+            max_hp = self._max_hp(p) if p else 1
+            percent = self.rng.uniform(0.06, 0.12)
+            if "steady_strider" in traits:
+                percent *= 0.65
+            damage = max(1, int(max_hp * percent))
+            current_hp = max(1, int(p["current_hp"] or 1)) if p else 1
+            new_hp = max(1, current_hp - damage)
+            self._save_hp(twitch_id, new_hp)
+            label = f"{region.get('hazard', 'Regional hazard')} costs {current_hp - new_hp} HP, but the party keeps moving."
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "hazard", "label": label, "damage": current_hp - new_hp})
+
+        if event_type == "discovery":
+            discoveries = [str(value) for value in region.get("discoveries", [])]
+            unseen = [value for value in discoveries if value not in set(state.get("discoveries_seen") or [])]
+            landmark = self.rng.choice(unseen or discoveries or ["Uncharted Landmark"])
+            if landmark not in state.setdefault("discoveries_seen", []):
+                state["discoveries_seen"].append(landmark)
+            bonus_gil = max(10, int((20 + stage * 8) * mult))
+            cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
+            label = f"Discovered {landmark}. Survey value added to the Guild map."
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "discovery", "label": label, "landmark": landmark, "gil": bonus_gil}, progress_gain=4)
+
+        if event_type == "traveler":
+            p = self._player(twitch_id)
+            if p:
+                max_hp = self._max_hp(p)
+                before = max(0, int(p["current_hp"] or 0))
+                healed = max(0, min(max_hp, before + max(1, int(max_hp * 0.12))) - before)
+                if healed:
+                    self._save_hp(twitch_id, before + healed)
+            else:
+                healed = 0
+            bonus_gil = max(15, int((25 + stage * 10) * mult))
+            cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
+            label = f"A wayfarer shares supplies: +{bonus_gil} Gil to the cache" + (f" and {healed} HP restored." if healed else ".")
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "traveler", "label": label, "gil": bonus_gil, "healing": healed})
+
+        if event_type == "chocobo":
+            state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + 8
+            state["chocobo_travel_boost"] = True
+            label = "Your Chocobo finds a hidden trail. The next travel leg is shortened and Bond XP is earned."
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "chocobo", "label": label, "bond_xp": 8})
+
+        return self._expedition_stage_resolved(twitch_id, state, {"type": "event", "label": "The stage passes without incident."})
+
+    def _expedition_combat_public(self, twitch_id: str, state: dict[str, Any]) -> dict[str, Any] | None:
+        combat = state.get("combat") or {}
+        encounter = combat.get("encounter") or {}
+        roster = combat.get("roster") or {}
+        meta = roster.get(str(twitch_id))
+        monster = self.data.monsters.get(str(encounter.get("monster_id") or ""))
+        if not encounter or not meta or not monster:
+            return None
+        return {
+            "round": int(encounter.get("round", 1)),
+            "max_rounds": int(encounter.get("max_rounds", 12)),
+            "enemy": {
+                "id": str(monster["id"]),
+                "name": str(monster["name"]),
+                "level": int(monster["level"]),
+                "hp": max(0, int(encounter.get("monster_hp", 0))),
+                "max_hp": max(1, int(encounter.get("monster_max_hp", 1))),
+                "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action"),
+            },
+            "player": {
+                "name": str(meta.get("name") or "Hero"),
+                "job_id": str(meta.get("job_id") or ""),
+                "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"),
+                "hp": int(meta.get("hp", 0)),
+                "max_hp": int(meta.get("max_hp", 0)),
+                "mp": int(meta.get("mp", 0)),
+                "max_mp": int(meta.get("max_mp", 0)),
+                "ap": int(meta.get("ap", 0)),
+                "max_ap": int(meta.get("max_ap", 0)),
+                "statuses": status_text(meta.get("statuses", {}), limit=4),
+            },
+            "abilities": self._solo_ability_rows(meta),
+            "items": self._solo_owned_battle_items(twitch_id, meta),
+        }
+
+    def _finish_expedition_combat_victory(
+        self,
+        twitch_id: str,
+        state: dict[str, Any],
+        monster: dict[str, Any],
+        meta: dict[str, Any],
+        round_no: int,
+        log: list[str],
+    ) -> GameResult:
+        self._save_hp(twitch_id, int(meta.get("hp", 0)))
+        self._save_resources_from_meta(twitch_id, meta)
+        rewards = self._expedition_combat_rewards(twitch_id, state, monster)
+        cache = self._expedition_cache(state)
+        cache["xp"] = int(cache.get("xp", 0)) + int(rewards["xp"])
+        cache["jp"] = int(cache.get("jp", 0)) + int(rewards["jp"])
+        cache["gil"] = int(cache.get("gil", 0)) + int(rewards["gil"])
+        for drop in rewards.get("items", []):
+            self._expedition_cache_add_item(state, str(drop["id"]), int(drop["quantity"]), source="combat")
+        with self.db.tx() as conn:
+            conn.execute(
+                "UPDATE players SET monsters_defeated=monsters_defeated+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                (str(twitch_id),),
+            )
+            conn.execute(
+                "INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) "
+                "ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1",
+                (str(twitch_id), str(monster["id"])),
+            )
+        self._record_combat_metrics(
+            twitch_id,
+            meta.get("job_id"),
+            monster["id"],
+            battle_type="venture",
+            won=True,
+            knocked_out=False,
+            damage_dealt=int(meta.get("damage", 0)),
+            damage_taken=int(meta.get("damage_taken", 0)),
+            healing_done=int(meta.get("healing", 0)),
+            best_hit=int(meta.get("best_hit", 0)),
+        )
+        state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+        state["combat"] = None
+        event = {
+            "type": "combat_victory",
+            "label": f"Defeated {monster['name']}. +{rewards['xp']} XP / +{rewards['jp']} JP / {rewards['gil']} Gil added to the Expedition Cache.",
+            "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])},
+            "rounds": round_no,
+            "rewards": {"xp": rewards["xp"], "jp": rewards["jp"], "gil": rewards["gil"]},
+        }
+        return self._expedition_stage_resolved(twitch_id, state, event)
+
+    def _finish_expedition_combat_defeat(
+        self,
+        twitch_id: str,
+        state: dict[str, Any],
+        monster: dict[str, Any],
+        meta: dict[str, Any],
+        round_no: int,
+        log: list[str],
+    ) -> GameResult:
+        self._save_hp(twitch_id, max(0, int(meta.get("hp", 0))))
+        self._save_resources_from_meta(twitch_id, meta)
+        self._record_combat_metrics(
+            twitch_id,
+            meta.get("job_id"),
+            monster["id"],
+            battle_type="venture",
+            won=False,
+            knocked_out=True,
+            damage_dealt=int(meta.get("damage", 0)),
+            damage_taken=int(meta.get("damage_taken", 0)),
+            healing_done=int(meta.get("healing", 0)),
+            best_hit=int(meta.get("best_hit", 0)),
+        )
+        _, traits = self._expedition_chocobo_traits(twitch_id)
+        keep_ratio = expedition_defeat_cache_keep(traits)
+        state.setdefault("history", []).append(
+            {"stage": int(state.get("stage", 1)), "type": "defeat", "label": f"Defeated by {monster['name']}"}
+        )
+        state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+        return self._expedition_finish(twitch_id, state, outcome="defeat", keep_ratio=keep_ratio)
+
+    @_state_guard
+    def expedition_combat_action(self, twitch_id: str, action_kind: str) -> GameResult:
+        state = self._expedition_load(twitch_id)
+        if not state or str(state.get("status")) != "combat":
+            return GameResult.fail("No Expedition battle is waiting for an action.")
+        combat = state.get("combat") or {}
+        encounter = copy.deepcopy(combat.get("encounter") or {})
+        roster = copy.deepcopy(combat.get("roster") or {})
+        meta = roster.get(str(twitch_id))
+        if not encounter or not meta or int(meta.get("hp", 0)) <= 0:
+            return GameResult.fail("Your Expedition combat state cannot accept an action.")
+        action_kind = str(action_kind or "").lower().strip()
+        if action_kind == "attack":
+            meta["action"] = {"kind": "attack"}
+        elif action_kind == "defend":
+            meta["action"] = {"kind": "defend"}
+        elif action_kind.startswith("ability:"):
+            ability_id = action_kind.split(":", 1)[1]
+            ability = next(
+                (row for row in self.data.active_abilities.get(str(meta.get("job_id")), []) if str(row.get("id")) == ability_id),
+                None,
+            )
+            job = self.data.jobs.get(str(meta.get("job_id"))) or {}
+            if not ability or int(ability.get("level", 1)) > int(meta.get("job_level", 0)):
+                return GameResult.fail("That ability is not available to your current Job level.")
+            resource = ability_resource(ability, job)
+            cost = ability_cost(ability)
+            if int(meta.get(resource, 0)) < cost:
+                return GameResult.fail(f"{ability['name']} needs {cost} {resource.upper()}.")
+            if resource == "mp" and has_status(meta.get("statuses", {}), "silence"):
+                return GameResult.fail("Silence prevents that MP ability.")
+            if any(effect.get("type") == "revive" for effect in ability.get("effects", [])):
+                return GameResult.fail("Revive abilities need another KO'd ally and cannot be used on a solo Expedition.")
+            target_mode = str(ability.get("target") or "enemy")
+            target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+            meta["action"] = {
+                "kind": "ability",
+                "ability_id": str(ability["id"]),
+                "target_id": target_id,
+                "resource": resource,
+                "cost": cost,
+            }
+        elif action_kind.startswith("item:"):
+            item_id = action_kind.split(":", 1)[1]
+            item = self.data.items.get(item_id)
+            use = item.get("use") if item and isinstance(item.get("use"), dict) else None
+            if not item or not use or self._inventory_qty(twitch_id, item_id) <= 0:
+                return GameResult.fail("That battle item is not available.")
+            if any(effect.get("type") == "revive" for effect in use.get("effects", [])):
+                return GameResult.fail("Revive items cannot be used on your conscious hero here.")
+            target_mode = str(use.get("target", "ally"))
+            target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+            meta["action"] = {"kind": "item", "item_id": item_id, "target_id": target_id}
+        else:
+            return GameResult.fail("Choose Attack, Ability, Use Item, or Defend.")
+
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter, self.encounter_roster = encounter, roster
+            monster = self.data.monsters[str(encounter["monster_id"])]
+            round_no = int(encounter.get("round", 1))
+            action = self.encounter_roster[str(twitch_id)].get("action")
+            actor = self.encounter_roster[str(twitch_id)]
+            log: list[str] = []
+            actor["actions"] = int(actor.get("actions", 0)) + 1
+            if has_status(actor.get("statuses", {}), "stun"):
+                log.append(f"{actor['name']} is stunned and loses their action.")
+            elif action["kind"] == "defend":
+                actor["defending"] = True
+                actor["defends"] = int(actor.get("defends", 0)) + 1
+                recovered: list[str] = []
+                if int(actor.get("max_ap", 0)) > 0:
+                    before = int(actor.get("ap", 0))
+                    actor["ap"] = min(int(actor["max_ap"]), before + defend_ap_restore(int(actor["max_ap"])))
+                    if int(actor["ap"]) > before:
+                        recovered.append(f"{int(actor['ap']) - before} AP")
+                if int(actor.get("max_mp", 0)) > 0:
+                    before = int(actor.get("mp", 0))
+                    actor["mp"] = min(int(actor["max_mp"]), before + defend_mp_restore(int(actor["max_mp"])))
+                    if int(actor["mp"]) > before:
+                        recovered.append(f"{int(actor['mp']) - before} MP")
+                log.append(f"{actor['name']} Defends" + (f" and recovers {' and '.join(recovered)}." if recovered else "."))
+            elif action["kind"] == "item":
+                self._resolve_active_item(str(twitch_id), actor, action, log)
+            elif action["kind"] == "ability":
+                self._resolve_active_ability(actor, action, monster, log)
+            else:
+                self._resolve_active_attack(actor, monster, log)
+
+            if int(encounter.get("monster_hp", 0)) <= 0:
+                return self._finish_expedition_combat_victory(twitch_id, state, monster, actor, round_no, log)
+
+            self._solo_resolve_enemy_intent(monster, encounter, log)
+            if int(encounter.get("monster_hp", 0)) <= 0:
+                return self._finish_expedition_combat_victory(twitch_id, state, monster, actor, round_no, log)
+
+            if has_status(actor.get("statuses", {}), "poison") and int(actor.get("hp", 0)) > 0:
+                poison = max(1, int(int(actor.get("max_hp", 1)) * max(0.03, status_magnitude(actor.get("statuses", {}), "poison"))))
+                actor["hp"] = max(0, int(actor["hp"]) - poison)
+                actor["damage_taken"] = int(actor.get("damage_taken", 0)) + poison
+                log.append(f"{actor['name']} suffers {poison} Poison damage.")
+            if has_status(actor.get("statuses", {}), "regen") and int(actor.get("hp", 0)) > 0:
+                healed = self._apply_battle_heal(actor, actor, status_magnitude(actor.get("statuses", {}), "regen"))
+                if healed:
+                    log.append(f"{actor['name']} regenerates {healed} HP.")
+            tick_statuses(actor.setdefault("statuses", {}))
+            actor["action"] = None
+            actor["defending"] = False
+            self._save_hp(twitch_id, int(actor.get("hp", 0)))
+            self._save_resources_from_meta(twitch_id, actor)
+
+            monster_statuses = encounter.setdefault("monster_statuses", {})
+            if has_status(monster_statuses, "regen") and int(encounter.get("monster_hp", 0)) > 0:
+                before = int(encounter["monster_hp"])
+                heal = max(1, int(int(encounter["monster_max_hp"]) * status_magnitude(monster_statuses, "regen")))
+                encounter["monster_hp"] = min(int(encounter["monster_max_hp"]), before + heal)
+                if int(encounter["monster_hp"]) > before:
+                    log.append(f"{monster['name']} regenerates {int(encounter['monster_hp']) - before} HP.")
+            tick_statuses(monster_statuses)
+
+            state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+            if int(actor.get("hp", 0)) <= 0:
+                return self._finish_expedition_combat_defeat(twitch_id, state, monster, actor, round_no, log)
+            if round_no >= int(encounter.get("max_rounds", 12)):
+                return self._finish_expedition_combat_defeat(
+                    twitch_id,
+                    state,
+                    monster,
+                    actor,
+                    round_no,
+                    log + ["The encounter reaches its round safety limit."],
+                )
+            encounter["round"] = round_no + 1
+            encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+            state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
+            self._expedition_save(twitch_id, state)
+            return GameResult.success(
+                f"EXPEDITION ROUND {round_no} — {round_summary(log)}",
+                expedition_round=True,
+                round_log=list(log),
+            )
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
+
+    @_state_guard
+    def expedition_continue(self, twitch_id: str, route_id: str) -> GameResult:
+        state = self._expedition_load(twitch_id)
+        if not state or str(state.get("status")) != "choice":
+            return GameResult.fail("Clear the current Expedition stage before choosing the next route.")
+        if int(state.get("stage", 1)) >= int(state.get("max_stages", 1)):
+            return self._expedition_finish(twitch_id, state, outcome="complete", keep_ratio=1.0)
+        state["stage"] = int(state.get("stage", 1)) + 1
+        state["last_round"] = None
+        seconds = self._expedition_begin_travel(twitch_id, state, route_id)
+        return GameResult.success(
+            f"EXPEDITION — Stage {state['stage']} route selected: {EXPEDITION_ROUTES.get(str(state.get('route')), EXPEDITION_ROUTES['unknown'])['name']}. Travel {self._format_seconds(seconds)}.",
+            expedition_continued=True,
+        )
+
+    @_state_guard
+    def expedition_camp(self, twitch_id: str) -> GameResult:
+        state = self._expedition_load(twitch_id)
+        if not state or str(state.get("status")) != "choice":
+            return GameResult.fail("You can establish Expedition Camp only after clearing a stage.")
+        if state.get("camp_used_stage"):
+            return GameResult.fail("You already made camp after this stage.")
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        max_hp = self._max_hp(p)
+        current_hp = max(0, int(p["current_hp"] or 0))
+        heal = max(0, min(max_hp, current_hp + max(1, int((max_hp - current_hp) * 0.55))) - current_hp)
+        if heal:
+            self._save_hp(twitch_id, current_hp + heal)
+        resources = self._resource_state_for(self._player(twitch_id))
+        max_mp = int(resources.get("max_mp", 0)); max_ap = int(resources.get("max_ap", 0))
+        new_mp = int(resources.get("mp", 0)); new_ap = int(resources.get("ap", 0))
+        if max_mp > 0:
+            new_mp = min(max_mp, new_mp + max(1, int((max_mp - new_mp) * 0.55)))
+        if max_ap > 0:
+            new_ap = min(max_ap, new_ap + max(1, int((max_ap - new_ap) * 0.55)))
+        self._save_resources_from_meta(twitch_id, {"mp": new_mp, "max_mp": max_mp, "ap": new_ap, "max_ap": max_ap})
+        state["camp_used_stage"] = True
+        state["last_camp_penalty"] = 2 * 60
+        state["travel_penalty_seconds"] = 2 * 60
+        state.setdefault("history", []).append(
+            {"stage": int(state.get("stage", 1)), "type": "camp", "label": "Made Expedition Camp"}
+        )
+        self._expedition_save(twitch_id, state)
+        return GameResult.success(
+            f"EXPEDITION CAMP — Restored {heal} HP and part of your battle resources. The next travel leg takes 2 minutes longer.",
+            expedition_camped=True,
+        )
+
+    @_state_guard
+    def expedition_return(self, twitch_id: str) -> GameResult:
+        state = self._expedition_load(twitch_id)
+        if not state:
+            return GameResult.fail("No Expedition is currently underway.")
+        if str(state.get("status")) == "combat":
+            return GameResult.fail("Retreat from the active encounter before attempting a normal return.")
+        outcome = "complete" if int(state.get("stage", 0)) >= int(state.get("base_stages", 999)) else "returned"
+        return self._expedition_finish(twitch_id, state, outcome=outcome, keep_ratio=1.0)
+
+    @_state_guard
+    def expedition_retreat(self, twitch_id: str) -> GameResult:
+        state = self._expedition_load(twitch_id)
+        if not state:
+            return GameResult.fail("No Expedition is currently underway.")
+        if str(state.get("status")) != "combat":
+            return GameResult.fail("Use Return to Guild outside of combat; Retreat is for escaping an active Expedition encounter.")
+        combat = state.get("combat") or {}
+        meta = (combat.get("roster") or {}).get(str(twitch_id)) or {}
+        if meta:
+            self._save_hp(twitch_id, max(1, int(meta.get("hp", 1))))
+            self._save_resources_from_meta(twitch_id, meta)
+        _, traits = self._expedition_chocobo_traits(twitch_id)
+        keep_ratio = expedition_defeat_cache_keep(traits)
+        state.setdefault("history", []).append(
+            {"stage": int(state.get("stage", 1)), "type": "retreat", "label": "Retreated from an Expedition encounter"}
+        )
+        return self._expedition_finish(twitch_id, state, outcome="defeat", keep_ratio=keep_ratio)
+
+    def _expedition_public(self, twitch_id: str) -> dict[str, Any] | None:
+        state = self._expedition_load(twitch_id)
+        if not state:
+            return None
+        region = self.data.expedition_regions.get(str(state.get("region_id"))) or {}
+        depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
+        route = EXPEDITION_ROUTES.get(str(state.get("route")), EXPEDITION_ROUTES["unknown"])
+        now = int(time.time())
+        ready_at = int(state.get("travel_ready_at", 0) or 0)
+        remaining = max(0, ready_at - now) if str(state.get("status")) == "travel" else 0
+        stage = int(state.get("stage", 1))
+        base_stages = int(state.get("base_stages") or depth["stages"])
+        max_stages = int(state.get("max_stages") or (base_stages + EXPEDITION_BONUS_STAGES))
+        return {
+            "active": True,
+            "status": str(state.get("status") or "travel"),
+            "region": {"id": str(region.get("id") or state.get("region_id") or ""), "name": str(region.get("name") or "Unknown Region")},
+            "depth": {"id": str(depth["id"]), "name": str(depth["name"])},
+            "route": {"id": str(route["id"]), "name": str(route["name"])},
+            "stage": stage,
+            "base_stages": base_stages,
+            "max_stages": max_stages,
+            "bonus_stage": stage > base_stages,
+            "objective_complete": str(state.get("status")) == "choice" and stage >= base_stages,
+            "travel_ready_at": ready_at,
+            "travel_remaining": remaining,
+            "travel_ready": str(state.get("status")) == "travel" and remaining <= 0,
+            "cache": copy.deepcopy(self._expedition_cache(state)),
+            "event": copy.deepcopy(state.get("event")),
+            "history": copy.deepcopy(list(state.get("history") or [])[-8:]),
+            "last_round": copy.deepcopy(state.get("last_round")),
+            "combat": self._expedition_combat_public(twitch_id, state) if str(state.get("status")) == "combat" else None,
+            "can_return": str(state.get("status")) != "combat",
+            "can_retreat": str(state.get("status")) == "combat",
+            "can_camp": str(state.get("status")) == "choice" and not bool(state.get("camp_used_stage")),
+            "can_continue": str(state.get("status")) == "choice" and stage < max_stages,
+            "progress": self._expedition_progress(twitch_id, str(state.get("region_id"))),
+        }
+
+    def _expedition_board_state(self, twitch_id: str) -> dict[str, Any]:
+        p = self._player(twitch_id)
+        if not p:
+            return {}
+        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
+        board_ready = self._expedition_board_ready()
+        active = self._expedition_public(twitch_id)
+        level = int(p["level"] or 1)
+        regions = []
+        for region in sorted(self.data.expedition_regions.values(), key=lambda row: int(row.get("min_level", 1))):
+            progress = self._expedition_progress(twitch_id, str(region["id"]))
+            unlocked = level >= int(region.get("min_level", 1))
+            regions.append({
+                "id": str(region["id"]),
+                "name": str(region["name"]),
+                "min_level": int(region.get("min_level", 1)),
+                "recommended_max_level": int(region.get("recommended_max_level", 99)),
+                "description": str(region.get("description") or ""),
+                "identity": str(region.get("identity") or "Exploration"),
+                "hazard": str(region.get("hazard") or "Regional Hazards"),
+                "materials": [
+                    {"id": str(item_id), "name": str((self.data.items.get(str(item_id)) or {}).get("name") or item_id)}
+                    for item_id in region.get("materials", [])
+                    if str(item_id) in self.data.items
+                ],
+                "unlocked": unlocked,
+                "reason": "" if unlocked else f"Requires Lv.{int(region.get('min_level', 1))}.",
+                "progress": progress,
+            })
+        return {
+            "board_ready": board_ready,
+            "chocobo_ready": bool(chocobo),
+            "ready": bool(board_ready and chocobo),
+            "reason": "" if board_ready and chocobo else "Complete the Fellowship Expedition Board and register a Chocobo first.",
+            "chocobo": chocobo,
+            "traits_active": [str(value) for value in sorted(traits)],
+            "depths": [
+                {
+                    "id": str(value["id"]), "name": str(value["name"]),
+                    "stages": int(value["stages"]), "travel_seconds": int(value["travel_seconds"]),
+                    "reward_mult": float(value["reward_mult"]),
+                }
+                for value in EXPEDITION_DEPTHS.values()
+            ],
+            "routes": [
+                {"id": str(value["id"]), "name": str(value["name"]), "reward_mult": float(value["reward_mult"])}
+                for value in EXPEDITION_ROUTES.values()
+            ],
+            "regions": regions,
+            "active": active,
+        }
+
+
     # ---------- Portal Actions Phase 9: Adventure Board ----------
     def _portal_adventure_state_data(self, twitch_id: str, *, stream_live: bool | None = None) -> dict[str, Any]:
         """Return live, player-safe Adventure Board state.
@@ -5480,6 +6544,8 @@ class CrystalGuildEngine:
         joined_raid = twitch_id in self.raid_roster
         solo_expedition = self._solo_expedition_public(twitch_id)
         solo_expedition_active = bool(solo_expedition)
+        field_expedition = self._expedition_public(twitch_id)
+        field_expedition_active = bool(field_expedition)
         active_hunt = self._active_hunt_public(twitch_id)
         active_hunt_running = bool(active_hunt)
         ko = bool(p["current_job"] != "adventurer" and int(p["current_hp"] or 0) <= 0)
@@ -5490,7 +6556,9 @@ class CrystalGuildEngine:
         needs_mp = int(camp_resources.get("max_mp", 0)) > 0 and int(camp_resources.get("mp", 0)) < int(camp_resources.get("max_mp", 0))
         needs_ap = int(camp_resources.get("max_ap", 0)) > 0 and int(camp_resources.get("ap", 0)) < int(camp_resources.get("max_ap", 0))
         camp_reason = ""
-        if solo_expedition_active:
+        if field_expedition_active:
+            camp_reason = "Return from your Expedition before using normal Camp."
+        elif solo_expedition_active:
             camp_reason = "Return or retreat from your Solo Venture before setting up camp."
         elif active_hunt_running:
             camp_reason = f"Your hunter returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
@@ -5530,6 +6598,8 @@ class CrystalGuildEngine:
                 reason = activity_reason
             elif joined_encounter or joined_raid:
                 reason = "Finish your active encounter or raid before traveling."
+            elif field_expedition_active:
+                reason = "Return from your Expedition before normal regional travel."
             elif solo_expedition_active:
                 reason = "Return from your Solo Venture before traveling."
             elif active_hunt_running:
@@ -5541,7 +6611,7 @@ class CrystalGuildEngine:
                 "min_level": int(region.get("min_level", 1)),
                 "current": str(region["id"]) == str(p["current_region"]),
                 "unlocked": unlocked,
-                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not solo_expedition_active and not active_hunt_running),
+                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not field_expedition_active and not solo_expedition_active and not active_hunt_running),
                 "reason": reason,
             })
 
@@ -5623,7 +6693,9 @@ class CrystalGuildEngine:
                 global_battle_reason = "An encounter is already active."
 
         venture_reason = ""
-        if p["current_job"] == "adventurer":
+        if field_expedition_active:
+            venture_reason = "Expedition in progress."
+        elif p["current_job"] == "adventurer":
             venture_reason = "Choose a Job before venturing."
         elif active_hunt_running:
             venture_reason = f"Hunt in progress — returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
@@ -5636,7 +6708,9 @@ class CrystalGuildEngine:
         venture_ready = not venture_reason
 
         solo_venture_reason = ""
-        if solo_expedition_active:
+        if field_expedition_active:
+            solo_venture_reason = "Expedition in progress."
+        elif solo_expedition_active:
             solo_venture_reason = "Solo Venture in progress."
         elif active_hunt_running:
             solo_venture_reason = f"Hunt in progress — returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
@@ -5662,6 +6736,8 @@ class CrystalGuildEngine:
             available_at = int(cooldowns.get(f"hunt:{hunt_id}", 0))
             remaining = max(0, available_at - now)
             reason_parts: list[str] = []
+            if field_expedition_active:
+                reason_parts.append("Return from your Expedition before accepting a Hunt.")
             if p["current_job"] == "adventurer":
                 reason_parts.append("Choose a Job before accepting a Hunt.")
             if resting or ko:
@@ -5754,6 +6830,7 @@ class CrystalGuildEngine:
                 "in_encounter": joined_encounter,
                 "in_raid": joined_raid,
                 "on_hunt": active_hunt_running,
+                "on_expedition": field_expedition_active,
             },
             "camp": {
                 "resting": resting,
@@ -5792,6 +6869,7 @@ class CrystalGuildEngine:
                 "portal_start_enabled": False,
                 "portal_join_enabled": False,
             },
+            "expeditions": self._expedition_board_state(twitch_id),
             "solo_venture": {
                 "ready": bool(solo_venture_ready),
                 "reason": solo_venture_reason,
@@ -5981,7 +7059,7 @@ class CrystalGuildEngine:
                 "message": (
                     "Expedition ready — registered Chocobo and Guild Expedition Board are prepared."
                     if board_ready and registered
-                    else "Expeditions will require both a registered Chocobo and the completed Guild Expedition Board."
+                    else "Expeditions require both a registered Chocobo and the completed Guild Expedition Board."
                 ),
             },
         }
@@ -6290,6 +7368,62 @@ class CrystalGuildEngine:
         if replay is not None:
             return replay
         result = self.solo_expedition_retreat(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_start(self, twitch_id: str, region_id: str, depth_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_start(twitch_id, region_id, depth_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_resolve_stage(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_resolve_stage(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_action(self, twitch_id: str, action_kind: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_combat_action(twitch_id, action_kind)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_continue(self, twitch_id: str, route_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_continue(twitch_id, route_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_camp(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_camp(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_return(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_return(twitch_id)
+        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_expedition_retreat(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.expedition_retreat(twitch_id)
         return self._portal_adventure_mutation_result(action_id, result, twitch_id)
 
     @_state_guard
@@ -7278,10 +8412,11 @@ class CrystalGuildEngine:
 
         This is intentionally narrower than ``!resettimers`` and safer than a
         database reset. It clears the shared field/Rally encounter, all timed
-        Hunt assignments, and every persisted Wayfarer Solo Venture. Player
-        progression, inventory, current persisted HP/MP/AP, cooldowns, camps,
-        shops, achievements, titles, and any active raid/world boss are left
-        untouched.
+        Hunt assignments, every persisted Wayfarer Solo Venture, and every
+        active v1.2 Expedition. Player progression, inventory, current persisted
+        HP/MP/AP, cooldowns, camps, shops, achievements, titles, secured
+        Expedition results/exploration progress, and any active raid/world boss
+        are left untouched.
 
         Solo Venture combat writes its vitals/resources after every completed
         round, so deleting an orphaned expedition returns the player to the
@@ -7291,6 +8426,8 @@ class CrystalGuildEngine:
         """
         solo_rows = self.db.one("SELECT COUNT(*) AS n FROM solo_expeditions")
         solo_count = int(solo_rows["n"] or 0) if solo_rows else 0
+        expedition_rows = self.db.one("SELECT COUNT(*) AS n FROM player_expeditions")
+        expedition_count = int(expedition_rows["n"] or 0) if expedition_rows else 0
         hunt_count = len(self.active_hunts)
 
         encounter_count = 1 if self.active_encounter else 0
@@ -7302,6 +8439,11 @@ class CrystalGuildEngine:
         # Schema 5 makes Solo Ventures authoritative rows, so a single delete
         # is sufficient even when a row can no longer be rendered by Portal.
         self.db.execute("DELETE FROM solo_expeditions")
+
+        # v1.2 Expeditions are authoritative database rows as well. Emergency
+        # clearing abandons unbanked cache but keeps already-secured region
+        # exploration and persistent result history untouched.
+        self.db.execute("DELETE FROM player_expeditions")
 
         # Timed Hunts live in the runtime checkpoint. Clearing the in-memory
         # map inside @_state_guard atomically persists the empty assignment set.
@@ -7319,14 +8461,15 @@ class CrystalGuildEngine:
         if encounter_count:
             self._last_battle_history = None
 
-        total = solo_count + hunt_count + encounter_count
+        total = solo_count + expedition_count + hunt_count + encounter_count
         if total == 0:
             return GameResult.success(
-                "ADVENTURES CLEAR — No active field encounter, timed Hunt, or Solo Venture was found.",
+                "ADVENTURES CLEAR — No active field encounter, timed Hunt, Solo Venture, or Expedition was found.",
                 adventures_cleared=0,
                 encounters_cleared=0,
                 hunts_cleared=0,
                 solo_ventures_cleared=0,
+                expeditions_cleared=0,
                 cooldowns_unchanged=True,
                 raid_unchanged=bool(self.active_boss),
             )
@@ -7338,6 +8481,8 @@ class CrystalGuildEngine:
             pieces.append(f"{hunt_count} timed Hunt assignment{'s' if hunt_count != 1 else ''}")
         if solo_count:
             pieces.append(f"{solo_count} Solo Venture{'s' if solo_count != 1 else ''}")
+        if expedition_count:
+            pieces.append(f"{expedition_count} Expedition{'s' if expedition_count != 1 else ''}")
         summary = ", ".join(pieces)
         return GameResult.success(
             f"ADVENTURES CLEARED — abandoned {summary}.",
@@ -7347,6 +8492,7 @@ class CrystalGuildEngine:
             encounters_cleared=encounter_count,
             hunts_cleared=hunt_count,
             solo_ventures_cleared=solo_count,
+            expeditions_cleared=expedition_count,
             cooldowns_unchanged=True,
             raid_unchanged=bool(self.active_boss),
         )
@@ -9404,6 +10550,8 @@ class CrystalGuildEngine:
             return f"Your hero is resting at camp for another {self._format_seconds(remaining)}. Full HP/MP/AP recovery awaits; patience is apparently a stat now."
         if p["current_hp"] <= 0 and p["current_job"] != "adventurer":
             return "Your hero is KO'd. Use !rest for Camp recovery (15m LIVE / 1h OFFLINE base), !use phoenix down, or !use tent."
+        if self._expedition_load(player_id):
+            return "Your hero is currently on an Expedition. Return from the Adventure Board first."
         if self._solo_expedition_load(player_id):
             return "Your hero is currently on a Solo Venture. Return or retreat from the Adventure Board first."
         if str(player_id) in self.active_hunts:

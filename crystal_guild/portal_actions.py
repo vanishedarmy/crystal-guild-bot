@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 19
+ACTION_PROTOCOL_VERSION = 20
 
 
 class PortalActionWorker:
@@ -466,6 +466,35 @@ class PortalActionWorker:
             if not region_id:
                 return False, "Travel request is missing a region.", {}
             result = self.game.portal_travel_region(twitch_id, region_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_START":
+            region_id = str(payload.get("region_id") or "").strip().lower()
+            depth_id = str(payload.get("depth") or "").strip().lower()
+            if not region_id or not depth_id:
+                return False, "Expedition launch requires a region and depth.", {}
+            result = self.game.portal_expedition_start(twitch_id, region_id, depth_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_RESOLVE_STAGE":
+            result = self.game.portal_expedition_resolve_stage(twitch_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_ACTION":
+            action_kind = str(payload.get("action") or "").strip().lower()
+            if not action_kind:
+                return False, "Expedition combat action is missing.", {}
+            result = self.game.portal_expedition_action(twitch_id, action_kind, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_CONTINUE":
+            route_id = str(payload.get("route") or "unknown").strip().lower()
+            result = self.game.portal_expedition_continue(twitch_id, route_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_CAMP":
+            result = self.game.portal_expedition_camp(twitch_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_RETURN":
+            result = self.game.portal_expedition_return(twitch_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "EXPEDITION_RETREAT":
+            result = self.game.portal_expedition_retreat(twitch_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "SOLO_VENTURE":
             action_id = str(action.get("id") or "")

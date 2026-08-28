@@ -11,6 +11,7 @@ class GameData:
         self.jobs = self._load_map("jobs.json")
         self.monsters = self._load_map("monsters.json")
         self.regions = self._load_map("regions.json")
+        self.expedition_regions = self._load_map("expedition_regions.json")
         self.items = self._load_map("items.json")
         self.achievements = self._load_map("achievements.json")
         self.bosses = self._load_map("bosses.json")
@@ -256,6 +257,30 @@ class GameData:
         for job_id in self.jobs:
             if job_id not in self.active_abilities:
                 errors.append(f"job {job_id}: missing active battle ability catalog")
+
+        for region in self.expedition_regions.values():
+            if int(region.get("min_level", 0)) < 1:
+                errors.append(f"expedition region {region.get('id')}: min_level must be >= 1")
+            if int(region.get("recommended_max_level", 0)) < int(region.get("min_level", 1)):
+                errors.append(f"expedition region {region.get('id')}: recommended_max_level must be >= min_level")
+            materials = list(region.get("materials") or [])
+            if not materials:
+                errors.append(f"expedition region {region.get('id')}: needs at least one material")
+            for item_id in materials:
+                require(self.items, str(item_id), f"expedition region {region.get('id')} material")
+            encounters = list(region.get("encounters") or [])
+            if not encounters:
+                errors.append(f"expedition region {region.get('id')}: needs encounter entries")
+            for encounter in encounters:
+                require(self.monsters, str(encounter.get("monster_id") or ""), f"expedition region {region.get('id')} encounter")
+                if float(encounter.get("weight", 0) or 0) <= 0:
+                    errors.append(f"expedition region {region.get('id')}: encounter weight must be > 0")
+            weights = dict(region.get("event_weights") or {})
+            for kind in ("combat", "resource", "treasure", "hazard", "discovery", "traveler", "chocobo"):
+                if float(weights.get(kind, 0) or 0) < 0:
+                    errors.append(f"expedition region {region.get('id')}: invalid {kind} event weight")
+            if sum(max(0.0, float(v or 0)) for v in weights.values()) <= 0:
+                errors.append(f"expedition region {region.get('id')}: event weights cannot all be zero")
 
         # Enemy combat data is intentionally separate from the base monster
         # ``special`` field used by other resolvers. That lets

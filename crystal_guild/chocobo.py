@@ -37,23 +37,23 @@ QUEST_REQUIREMENTS: list[dict[str, Any]] = [
 TRAITS: dict[str, dict[str, str]] = {
     "steady_strider": {
         "name": "Steady Strider",
-        "description": "Calm footing and good instincts. Planned to reduce Expedition mishap risk.",
+        "description": "Calm footing reduces Expedition hazard risk and improves cache recovery after a rescue.",
     },
     "keen_eye": {
         "name": "Keen Eye",
-        "description": "Notices what others miss. Planned to improve Expedition discovery checks.",
+        "description": "Notices what others miss, improving Expedition discovery events.",
     },
     "fleet_feet": {
         "name": "Fleet Feet",
-        "description": "Built to move. Planned to improve Expedition travel efficiency.",
+        "description": "Built to move, reducing Expedition travel time by 15%.",
     },
     "forager": {
         "name": "Forager",
-        "description": "Has a suspicious talent for finding useful things. Planned to improve material finds.",
+        "description": "Has a suspicious talent for finding useful things, improving Expedition material finds and yield.",
     },
     "lucky_plume": {
         "name": "Lucky Plume",
-        "description": "The Guild cannot prove this feather is lucky, which has never stopped anyone before.",
+        "description": "Improves Expedition treasure and Chocobo events and slightly improves cache recovery after rescue.",
     },
 }
 

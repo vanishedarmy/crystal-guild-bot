@@ -1,0 +1,119 @@
+[
+  {
+    "id": "emerald_wilds",
+    "name": "Emerald Wilds",
+    "min_level": 1,
+    "recommended_max_level": 12,
+    "description": "Vast greenwoods, ruined waystones, waterfalls, and old Chocobo trails. The safest place to learn how far the road can really go.",
+    "identity": "Exploration",
+    "hazard": "Overgrown Trails",
+    "boss_name": "Elder Ochu",
+    "materials": ["ochu_vine", "cockatrice_pinion", "ancient_cloth"],
+    "encounters": [
+      {"monster_id": "goblin", "weight": 18},
+      {"monster_id": "wolf", "weight": 18},
+      {"monster_id": "mandragora", "weight": 16},
+      {"monster_id": "goblin_guard", "weight": 12},
+      {"monster_id": "cockatrice", "weight": 11},
+      {"monster_id": "ochu", "weight": 9},
+      {"monster_id": "spriggan", "weight": 7},
+      {"monster_id": "cactuar", "weight": 2}
+    ],
+    "event_weights": {"combat": 28, "resource": 18, "treasure": 14, "hazard": 8, "discovery": 20, "traveler": 7, "chocobo": 5},
+    "discoveries": ["Forgotten Waystone", "Mossbound Shrine", "Silverfall Crossing", "Old Chocobo Road"]
+  },
+  {
+    "id": "ashen_highlands",
+    "name": "Ashen Highlands",
+    "min_level": 8,
+    "recommended_max_level": 20,
+    "description": "Broken mountain roads, abandoned mines, blackened forts, and old Magitek debris scattered among volcanic ridges.",
+    "identity": "Combat & Materials",
+    "hazard": "Unstable Terrain",
+    "boss_name": "Inferno Drake",
+    "materials": ["basilisk_eye", "dragon_scale", "magitek_capacitor"],
+    "encounters": [
+      {"monster_id": "bomb", "weight": 18},
+      {"monster_id": "basilisk", "weight": 16},
+      {"monster_id": "gigas", "weight": 14},
+      {"monster_id": "imp", "weight": 12},
+      {"monster_id": "gargoyle", "weight": 10},
+      {"monster_id": "antlion", "weight": 8},
+      {"monster_id": "mindflayer", "weight": 7},
+      {"monster_id": "cactuar_jack", "weight": 2}
+    ],
+    "event_weights": {"combat": 38, "resource": 23, "treasure": 10, "hazard": 13, "discovery": 8, "traveler": 4, "chocobo": 4},
+    "discoveries": ["Cinderwatch Fort", "Collapsed Mythril Shaft", "Ancient Forge Road", "Magitek Wreckfield"]
+  },
+  {
+    "id": "mistfen_marshes",
+    "name": "Mistfen Marshes",
+    "min_level": 15,
+    "recommended_max_level": 28,
+    "description": "Fog, drowned temples, luminous fungi, and bog roads that seem determined to become lakes the moment you trust them.",
+    "identity": "Hazards & Route Risk",
+    "hazard": "Toxic Mire",
+    "boss_name": "Malboro Sovereign",
+    "materials": ["morbol_spore", "lamia_scale", "mindflayer_tentacle"],
+    "encounters": [
+      {"monster_id": "gigantoad", "weight": 16},
+      {"monster_id": "lamia", "weight": 14},
+      {"monster_id": "mindflayer", "weight": 12},
+      {"monster_id": "tonberry", "weight": 9},
+      {"monster_id": "malboro", "weight": 9},
+      {"monster_id": "black_flan", "weight": 9},
+      {"monster_id": "coeurl", "weight": 8},
+      {"monster_id": "magic_pot", "weight": 1}
+    ],
+    "event_weights": {"combat": 31, "resource": 15, "treasure": 11, "hazard": 24, "discovery": 9, "traveler": 4, "chocobo": 6},
+    "discoveries": ["Sunken Causeway", "Temple of Reeds", "Lantern Bog", "The Drowned Bell"]
+  },
+  {
+    "id": "frostveil_reach",
+    "name": "Frostveil Reach",
+    "min_level": 22,
+    "recommended_max_level": 38,
+    "description": "Frozen lakes, whiteout mountain passes, and the half-buried remains of a fortress that stopped sending reports long ago.",
+    "identity": "Endurance",
+    "hazard": "Bitter Cold",
+    "boss_name": "Frost Behemoth",
+    "materials": ["behemoth_hide", "dragon_scale", "celestial_thread"],
+    "encounters": [
+      {"monster_id": "sand_worm", "weight": 6},
+      {"monster_id": "chimera", "weight": 13},
+      {"monster_id": "adamantoise", "weight": 10},
+      {"monster_id": "ahriman", "weight": 11},
+      {"monster_id": "iron_giant", "weight": 12},
+      {"monster_id": "behemoth", "weight": 8},
+      {"monster_id": "evil_eye", "weight": 6},
+      {"monster_id": "malboro_great", "weight": 4}
+    ],
+    "event_weights": {"combat": 34, "resource": 12, "treasure": 10, "hazard": 25, "discovery": 8, "traveler": 3, "chocobo": 8},
+    "discoveries": ["Frostveil Bastion", "Glass-Ice Lake", "Whitewind Pass", "Buried Watchtower"]
+  },
+  {
+    "id": "astral_scar",
+    "name": "The Astral Scar",
+    "min_level": 30,
+    "recommended_max_level": 99,
+    "description": "A crystal-scarred battlefield where broken ruins float above fractured earth and reality behaves more like a suggestion.",
+    "identity": "Instability & Rare Encounters",
+    "hazard": "Astral Instability",
+    "boss_name": "Rift Wyrm",
+    "materials": ["celestial_thread", "nemesis_mark", "dragon_scale"],
+    "encounters": [
+      {"monster_id": "ahriman", "weight": 12},
+      {"monster_id": "iron_giant", "weight": 11},
+      {"monster_id": "behemoth", "weight": 10},
+      {"monster_id": "death_machine", "weight": 9},
+      {"monster_id": "crystal_wolf", "weight": 10},
+      {"monster_id": "crystal_golem", "weight": 8},
+      {"monster_id": "red_dragon", "weight": 6},
+      {"monster_id": "holy_dragon", "weight": 4},
+      {"monster_id": "storm_dragon", "weight": 3},
+      {"monster_id": "rift_drake", "weight": 2}
+    ],
+    "event_weights": {"combat": 36, "resource": 10, "treasure": 15, "hazard": 19, "discovery": 9, "traveler": 2, "chocobo": 9},
+    "discoveries": ["Shattered Observatory", "Floating Reliquary", "Crystal Fault", "The Broken Meridian"]
+  }
+]

@@ -1,12 +1,15 @@
-# Upgrade Guide — v1.1.19 Retro Phase III RC1 Hotfix 9
+# Upgrade Guide — v1.2.0 Expeditions Alpha 1
+
+Baseline: v1.1.19 Retro Phase III RC1 Hotfix 9.
 
 1. Stop the current Bot.
-2. Back up the database and persistent token data.
-3. Replace the Bot files with H9 while preserving `.env`, database, and Twitch token DB.
-4. Run `python upgrade_crystal_guild.py`. No DB migration is required. The helper updates only the exact prior stock timer values to the H9 defaults.
-5. If timer variables are explicitly configured in Render, set `ENCOUNTER_JOIN_SECONDS=60`, `ENCOUNTER_ROUND_SECONDS=30`, `RAID_JOIN_SECONDS=90`, and `RAID_ROUND_SECONDS=60`.
-6. Deploy the matching H9 Web package.
-7. Start the Bot and verify `!cgversion` reports `1.1.19-retro-phase-iii-rc1h9` and Portal Action protocol 19.
-8. Test a Streamer Portal boss spawn while LIVE, a Rally Venture, and cross-player field recovery.
+2. Back up the existing database and persistent Twitch token data.
+3. Apply the H9 -> v1.2 Bot patch or replace the Bot application files with the full v1.2 Bot package while preserving `.env`, the database, and token storage.
+4. Run `python upgrade_crystal_guild.py`.
+5. The Database constructor migrates local schema **7 -> 8** and creates/verifies a pre-migration backup before structural changes.
+6. Deploy the matching v1.2 Web package.
+7. Start the Bot and verify `!cgversion` reports runtime `1.2.0-expeditions-a1` and Portal Action protocol **20**.
+8. Verify an existing player can still load, then test the Chocobo Stable and Adventure Board.
+9. Complete/verify the Fellowship Expedition Board and registered Chocobo requirement, then launch an Emerald Wilds Scout Expedition.
 
-Schema remains **7** and all progression is preserved.
+Existing progression is preserved. Hosted sync schema remains **1**. H9 timer environment overrides remain compatible.

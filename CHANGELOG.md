@@ -1,5 +1,15 @@
 # Crystal Guild Changelog
 
+## v1.2.0 — Expeditions Alpha 1
+
+- Launches five persistent Chocobo-led Expedition regions with Scout, Journey, and Deep route depths.
+- Adds authoritative multi-stage travel, route decisions, combat, treasure/resources/hazards/discoveries, internal Expedition Camp, carried cache, safe return, Chocobo rescue, and region exploration progress.
+- Adds schema **7 → 8** migration with `player_expeditions` and `player_region_exploration`, preserving all existing progression behind a verified pre-migration backup.
+- Adds seven typed Expedition Portal actions and advances Portal Action protocol **19 → 20**; hosted sync schema remains **1**.
+- Locks equipment/Job/Mastery/stance/normal Camp and conflicting adventures while an Expedition is active.
+- Extends streamer `!clearadventures` / Portal Clear Adventures to abandon active v1.2 Expeditions without deleting secured region progress.
+- Keeps H9 Venture/Raid timing, LIVE field support, Streamer Inventory Admin, persistent Adventure results, dynamic Camp, Relic visuals, and overlay behavior intact.
+
 ## v1.1.17 — Arsenal II Hotfix 4
 
 - Rebalances Solo Venture stages to **80% Encounter / 20% Treasure**, reducing the chance that multi-stage runs are dominated by chests while preserving deeper-stage chest quality.

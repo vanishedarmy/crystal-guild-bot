@@ -201,17 +201,16 @@ for _facility_id, _facility in FACILITIES.items():
             "requirements": _project_requirements(_facility_id, _tier),
         }
 
-# v1.2 bridge: completing Guild Hall V unlocks the Board as a visible future-facing
-# project. It has no gameplay effect in Fellowship and is intentionally marked as
-# a teaser rather than silently enabling Expedition mechanics early.
+# v1.2 Expeditions: completing Guild Hall V unlocks the shared Expedition Board.
+# The completed Board is the Fellowship-wide launch gate for distant contracts.
 PROJECTS["expedition_board"] = {
     "id": "expedition_board",
     "facility_id": "guild_hall",
     "tier": 5,
     "name": "Expedition Board",
-    "description": "Prepare the Guild Hall for distant contracts. Expedition gameplay arrives in v1.2 and requires a registered Chocobo.",
+    "description": "Prepare the Guild Hall for distant contracts. Completing this Board unlocks Expeditions for adventurers with a registered Chocobo.",
     "required_level": 10,
-    "teaser": True,
+    "teaser": False,
     "requirements": [
         {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 200_000, "label": "Gil"},
         {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 100, "label": "Ancient Coin"},

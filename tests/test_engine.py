@@ -203,6 +203,18 @@ class EngineTests(unittest.TestCase):
         })
         self.assertIsNotNone(self.db.one("SELECT state_json FROM solo_expeditions WHERE player_id='1'"))
 
+        # Persist a v1.2 Expedition row as well. Emergency recovery must clear
+        # the authoritative run without touching exploration progression.
+        self.game._expedition_save("2", {
+            "version": 1, "started_at": int(time.time()), "region_id": "emerald_wilds",
+            "depth": "scout", "stage": 2, "status": "travel", "cache": {"gil": 77, "items": []},
+        })
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress,stages_cleared) VALUES ('2','emerald_wilds',12,3) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=12,stages_cleared=3"
+        )
+        self.assertIsNotNone(self.db.one("SELECT state_json FROM player_expeditions WHERE player_id='2'"))
+
         # Adventure cooldowns are intentionally not part of this emergency clear.
         self.game._set_cooldown("1", "solo_venture", 420)
         remaining_before = self.game._cooldown_remaining("1", "solo_venture")
@@ -216,11 +228,15 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(result.data["encounters_cleared"], 1)
         self.assertEqual(result.data["hunts_cleared"], 1)
         self.assertEqual(result.data["solo_ventures_cleared"], 1)
-        self.assertEqual(result.data["adventures_cleared"], 3)
+        self.assertEqual(result.data["expeditions_cleared"], 1)
+        self.assertEqual(result.data["adventures_cleared"], 4)
         self.assertIsNone(self.game.active_encounter)
         self.assertEqual(self.game.encounter_roster, {})
         self.assertEqual(self.game.active_hunts, {})
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM solo_expeditions")["n"], 0)
+        self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM player_expeditions")["n"], 0)
+        exploration = self.db.one("SELECT progress,stages_cleared FROM player_region_exploration WHERE player_id='2' AND region_id='emerald_wilds'")
+        self.assertEqual((exploration["progress"], exploration["stages_cleared"]), (12, 3))
         self.assertEqual(self.game.active_boss, raid_before)
         self.assertGreater(self.game._cooldown_remaining("1", "solo_venture"), 0)
         self.assertLessEqual(self.game._cooldown_remaining("1", "solo_venture"), remaining_before)
@@ -236,6 +252,7 @@ class EngineTests(unittest.TestCase):
         result = self.game.clear_all_adventures()
         self.assertTrue(result.ok)
         self.assertEqual(result.data["adventures_cleared"], 0)
+        self.assertEqual(result.data["expeditions_cleared"], 0)
         self.assertIn("No active", result.messages[0])
 
     def test_reset_all_player_timers_does_not_advance_active_combat_deadlines(self):
