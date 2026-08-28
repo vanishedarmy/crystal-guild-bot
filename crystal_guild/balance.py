@@ -75,8 +75,8 @@ VENTURE_MAX_LEVEL_ABOVE_PLAYER = 10
 # Portal-only Solo Venture remains lower-risk and more frequent than the shared
 # rally Venture. It has its own cooldown and a 50/50 encounter/treasure split.
 # Regular Venture accepts substantially higher encounter risk for live-stream
-# rally play, while Solo Venture keeps its tighter +3 enemy ceiling.
-SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER = 3
+# rally play, while Solo Venture keeps its tighter +5 enemy ceiling.
+SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER = 5
 SOLO_VENTURE_COOLDOWN_SECONDS = 7 * 60
 SOLO_VENTURE_TREASURE_CHANCE = 0.20
 SOLO_VENTURE_FELLOWSHIP_RENOWN = 4

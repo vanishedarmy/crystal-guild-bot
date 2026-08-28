@@ -1,7 +1,10 @@
-Crystal Guild v1.1.19 — Retro Phase III / RC1 Hotfix 7 Bot
-Runtime: 1.1.19-retro-phase-iii-rc1h7
+Crystal Guild v1.1.19 — Retro Phase III / RC1 Hotfix 9 Bot
+Runtime: 1.1.19-retro-phase-iii-rc1h9
 Local DB schema: 7
-Portal Action protocol: 18
+Hosted sync schema: 1
+Portal Action protocol: 19
+Twitch prefix: !
 
-Hotfix 7 adds streamer-only inventory administration. The owner can use !additem / !removeitem in Twitch chat or the authenticated Streamer Portal controls. Mutations are authoritative, ledgered, exact-quantity validated, and replay-safe when sent through the Portal. Hotfix 6 persistent Adventure results and all prior Retro Phase III behavior remain intact.
-IMPORTANT: deploy the paired RC1H7 Web build because Portal Action protocol 18 is required.
+Hotfix 9 sets Rally Venture timing to 60s join / 30s rounds and Raid timing to 90s join / 60s rounds. Portal boss spawns now stage the normal rally announcement to Twitch when LIVE. Eligible field recovery items can support another adventurer outside battle while LIVE, including through the Portal target field and `!use <item> | <username>`. The Web also uses Bot server time for countdowns and clears the overlay immediately after inactive raid completion.
+
+No database migration or player reset is required. Deploy the paired RC1H9 Web build because Portal Action protocol 19 is required.

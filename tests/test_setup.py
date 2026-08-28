@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from resolve_twitch_ids import _clean_login, _replace_env_values
-from upgrade_crystal_guild import _upgrade_command_prefix
+from upgrade_crystal_guild import _upgrade_command_prefix, _upgrade_combat_timing_defaults
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parent

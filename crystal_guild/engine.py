@@ -171,7 +171,7 @@ class GameResult:
 
 
 class CrystalGuildEngine:
-    def __init__(self, db: Database, data: GameData, venture_cooldown_seconds: int = 600, encounter_join_seconds: int = 45, camp_rest_seconds: int = 3600, raid_join_seconds: int = 60, raid_round_seconds: int = 15, overlay_state_path: str = "overlay/state.json", rng: random.Random | None = None, shop_refresh_seconds: int = 1800, encounter_round_seconds: int = 20, venture_treasure_chance: float = VENTURE_TREASURE_CHANCE):
+    def __init__(self, db: Database, data: GameData, venture_cooldown_seconds: int = 600, encounter_join_seconds: int = 60, camp_rest_seconds: int = 3600, raid_join_seconds: int = 90, raid_round_seconds: int = 60, overlay_state_path: str = "overlay/state.json", rng: random.Random | None = None, shop_refresh_seconds: int = 1800, encounter_round_seconds: int = 30, venture_treasure_chance: float = VENTURE_TREASURE_CHANCE):
         self.db = db
         self.data = data
         self.fellowship_system = FellowshipSystem(db, data)
@@ -938,14 +938,23 @@ class CrystalGuildEngine:
         )
 
     @_state_guard
-    def use_item(self, twitch_id: str, item_query: str) -> GameResult:
-        p = self._player(twitch_id)
-        if not p:
+    def use_item(
+        self,
+        twitch_id: str,
+        item_query: str,
+        *,
+        target_query: str | None = None,
+        stream_live: bool | None = None,
+    ) -> GameResult:
+        actor = self._player(twitch_id)
+        if not actor:
             return self._need_recruit()
         self._finish_rest_if_ready(twitch_id)
-        p = self._player(twitch_id)
-        # During Active Battle, !use becomes a queued combat action. Items are
-        # consumed only after their data-driven effects resolve successfully.
+        actor = self._player(twitch_id)
+
+        # During Active Battle, !use remains a queued combat action. Field
+        # targeting stays separate so support outside combat never bypasses the
+        # authoritative round/action system.
         if twitch_id in self.encounter_roster and self.active_encounter and self.active_encounter.get("state") == "combat":
             return self.battle_item(twitch_id, item_query)
         if twitch_id in self.raid_roster and self.active_boss and self.active_boss.get("state") == "combat":
@@ -954,6 +963,7 @@ class CrystalGuildEngine:
             return GameResult.fail("While on a Solo Venture, use battle items through the Adventure Board. Return or retreat before using field items.")
         if str(twitch_id) in self.active_hunts:
             return GameResult.fail("Your Hunt is resolving automatically; field items cannot be used until your hero returns.")
+
         item = self._find_by_name_or_id(self.data.items, item_query)
         use = item.get("use") if item else None
         if not item or not isinstance(use, dict) or not use.get("field"):
@@ -961,12 +971,36 @@ class CrystalGuildEngine:
         if self._inventory_qty(twitch_id, item["id"]) <= 0:
             return GameResult.fail(f"You do not own {item['name']}.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
-            return GameResult.fail("Wait for Active Battle to begin before using encounter items. Raid recovery still uses !revive for Phoenix Downs.")
+            return GameResult.fail("Wait until you are outside the active encounter or raid before using field items.")
 
-        max_hp = self._max_hp(p)
-        current = int(p["current_hp"])
+        target_id = str(twitch_id)
+        target = actor
+        requested_target = str(target_query or "").strip()
+        if requested_target:
+            matched = self._streamer_player_match(requested_target)
+            if not matched:
+                return GameResult.fail(
+                    f"Adventurer '{requested_target}' was not found or is ambiguous. Use their exact Twitch username."
+                )
+            target_id = str(matched["twitch_id"])
+            if target_id != str(twitch_id) and stream_live is not True:
+                return GameResult.fail("Using a field item on another adventurer is available only while the stream is LIVE.")
+            self._finish_rest_if_ready(target_id)
+            target = self._player(target_id)
+            if not target:
+                return GameResult.fail("That adventurer is no longer available.")
+
+        if target_id in self.encounter_roster or target_id in self.raid_roster:
+            return GameResult.fail(f"{target['display_name']} is currently in battle; use battle targeting instead.")
+        if self._solo_expedition_load(target_id):
+            return GameResult.fail(f"{target['display_name']} is away on a Solo Venture and cannot receive field items right now.")
+        if str(target_id) in self.active_hunts:
+            return GameResult.fail(f"{target['display_name']} is away on a Hunt and cannot receive field items right now.")
+
+        max_hp = self._max_hp(target)
+        current = int(target["current_hp"])
         new_hp = current
-        resources = self._resource_state_for(p)
+        resources = self._resource_state_for(target)
         new_mp = int(resources["mp"])
         new_ap = int(resources["ap"])
         max_mp = int(resources["max_mp"])
@@ -1006,15 +1040,13 @@ class CrystalGuildEngine:
                 new_hp = max(1, int(max_hp * fraction))
                 effects_done.append(f"revives at {new_hp} HP")
 
-        # Tent is the immediate full-rest field item. Because MP/AP now persist
-        # between encounters, a Tent restores all resources used by the current
-        # Job and cancels an in-progress camp timer.
+        # Tent is the immediate full-rest field item for the selected target.
         if item["id"] == "tent":
             needs_any = (
                 new_hp < max_hp
                 or (max_mp > 0 and new_mp < max_mp)
                 or (max_ap > 0 and new_ap < max_ap)
-                or int(p["camp_until"] or 0) > 0
+                or int(target["camp_until"] or 0) > 0
             )
             if needs_any:
                 new_hp = max_hp
@@ -1024,23 +1056,26 @@ class CrystalGuildEngine:
 
         if not effects_done:
             if current <= 0:
-                return GameResult.fail("You are KO'd. Use a Phoenix Down, a Tent, or !rest at camp.")
+                return GameResult.fail(f"{target['display_name']} is KO'd. Use a Phoenix Down or Tent to revive them.")
             full_parts = [current >= max_hp]
             if max_mp > 0:
                 full_parts.append(new_mp >= max_mp)
             if max_ap > 0:
                 full_parts.append(new_ap >= max_ap)
             if all(full_parts):
-                return GameResult.fail("Your applicable HP/MP/AP resources are already full.")
-            return GameResult.fail(f"{item['name']} has no useful field effect right now.")
+                return GameResult.fail(f"{target['display_name']}'s applicable HP/MP/AP resources are already full.")
+            return GameResult.fail(f"{item['name']} has no useful field effect on {target['display_name']} right now.")
 
         self._change_item(twitch_id, item["id"], -1, "field_use")
-        self.db.execute("UPDATE players SET current_hp=?, camp_until=0 WHERE twitch_id=?", (new_hp, twitch_id))
+        self.db.execute("UPDATE players SET current_hp=?, camp_until=0 WHERE twitch_id=?", (new_hp, target_id))
         resource_meta = {"mp": new_mp, "max_mp": max_mp, "ap": new_ap, "max_ap": max_ap}
-        self._save_resources_from_meta(twitch_id, resource_meta)
+        self._save_resources_from_meta(target_id, resource_meta)
         summary = [f"HP {new_hp}/{max_hp}", *self._resource_text_parts(resource_meta)]
+        actor_name = str(actor["display_name"] or actor["username"])
+        target_name = str(target["display_name"] or target["username"])
+        lead = f"{actor_name} uses {item['name']}" if target_id == str(twitch_id) else f"{actor_name} uses {item['name']} on {target_name}"
         return GameResult.success(
-            f"{p['display_name']} uses {item['name']} and {'; '.join(effects_done)}. " + " | ".join(summary) + "."
+            f"{lead} and {'; '.join(effects_done)}. " + " | ".join(summary) + "."
         )
 
     # ---------- regions ----------
@@ -1544,9 +1579,9 @@ class CrystalGuildEngine:
             if minimum <= monster_level <= maximum:
                 delta = monster_level - level
                 stage_bias = {
-                    1: {-2: 0.85, -1: 1.20, 0: 1.45, 1: 1.15, 2: 0.75, 3: 0.40},
-                    2: {-2: 0.45, -1: 0.85, 0: 1.25, 1: 1.45, 2: 1.10, 3: 0.70},
-                    3: {-2: 0.20, -1: 0.55, 0: 0.95, 1: 1.35, 2: 1.55, 3: 1.25},
+                    1: {-2: 0.85, -1: 1.20, 0: 1.45, 1: 1.15, 2: 0.75, 3: 0.40, 4: 0.22, 5: 0.12},
+                    2: {-2: 0.45, -1: 0.85, 0: 1.25, 1: 1.45, 2: 1.10, 3: 0.70, 4: 0.45, 5: 0.25},
+                    3: {-2: 0.20, -1: 0.55, 0: 0.95, 1: 1.35, 2: 1.55, 3: 1.25, 4: 0.90, 5: 0.60},
                 }.get(int(stage), {})
                 candidates.append(monster)
                 weights.append(max(0.01, float(encounter.get("weight", 1.0)) * float(stage_bias.get(delta, 1.0))))
@@ -6298,7 +6333,15 @@ class CrystalGuildEngine:
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
-    def portal_use_field_item(self, twitch_id: str, item_id: str, action_id: str) -> GameResult:
+    def portal_use_field_item(
+        self,
+        twitch_id: str,
+        item_id: str,
+        action_id: str,
+        *,
+        target_query: str | None = None,
+        stream_live: bool | None = None,
+    ) -> GameResult:
         item = self.data.items.get(str(item_id))
         use = item.get("use") if item and isinstance(item.get("use"), dict) else {}
         if not item or not use.get("field"):
@@ -6309,7 +6352,12 @@ class CrystalGuildEngine:
             return self._portal_store_nonmutating_result(
                 action_id, GameResult.fail("Recovery items are unavailable from the Portal during active combat.")
             )
-        return self._portal_recovery_mutation(twitch_id, action_id, lambda: self.use_item(twitch_id, str(item_id)))
+        return self._portal_recovery_mutation(
+            twitch_id, action_id,
+            lambda: self.use_item(
+                twitch_id, str(item_id), target_query=target_query, stream_live=stream_live
+            ),
+        )
 
     def portal_start_rest(self, twitch_id: str, action_id: str, *, stream_live: bool | None = None) -> GameResult:
         return self._portal_recovery_mutation(twitch_id, action_id, lambda: self.rest(twitch_id, stream_live=stream_live))

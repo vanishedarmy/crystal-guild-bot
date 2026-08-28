@@ -1,3 +1,3 @@
 """Crystal Guild package."""
 
-__version__ = "1.1.19-retro-phase-iii-rc1h7"
+__version__ = "1.1.19-retro-phase-iii-rc1h9"

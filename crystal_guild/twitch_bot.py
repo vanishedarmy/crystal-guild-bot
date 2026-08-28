@@ -220,7 +220,37 @@ class RPGCommands(commands.Component):
         )
         if in_timed_combat and not await self._require_stream_live(ctx, "Combat actions"):
             return
-        await send_result(ctx, self.game.use_item(uid, item_name))
+        if in_timed_combat:
+            await send_result(ctx, self.game.use_item(uid, item_name))
+            return
+
+        # Outside battle, field items may support another adventurer while LIVE.
+        # Existing `!use <item>` remains self-targeted; social targeting uses the
+        # explicit separator so multi-word item names stay unambiguous.
+        raw = str(item_name or "").strip()
+        target_query = None
+        if "|" in raw:
+            item_query, target = [part.strip() for part in raw.split("|", 1)]
+            if item_query and target:
+                raw = item_query
+                target_query = target
+        elif " on @" in raw.lower():
+            marker = raw.lower().rfind(" on @")
+            item_query, target = raw[:marker].strip(), raw[marker + 4:].strip()
+            if item_query and target:
+                raw = item_query
+                target_query = target
+        else:
+            parts = raw.rsplit(" ", 1)
+            if len(parts) == 2 and parts[1].startswith("@") and parts[0].strip():
+                raw = parts[0].strip()
+                target_query = parts[1].strip()
+        if target_query and not await self._require_stream_live(ctx, "Using field items on other adventurers"):
+            return
+        await send_result(
+            ctx,
+            self.game.use_item(uid, raw, target_query=target_query, stream_live=True if target_query else None),
+        )
 
     @commands.command(aliases=["region"])
     async def regions(self, ctx: commands.Context) -> None:

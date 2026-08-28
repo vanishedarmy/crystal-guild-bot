@@ -12,7 +12,7 @@ Solo Venture state is persisted per player and does not occupy the shared Rally/
 
 `!venture` now rolls one of two adventure outcomes:
 
-- **70% ENCOUNTER** — opens the normal joinable rally. The initiating hero joins automatically and the rally stays open for `ENCOUNTER_JOIN_SECONDS` (45 seconds by default). The monster roll is filtered so it can never be more than **10 levels above the initiating hero**. Other eligible heroes join with `!join` or `!venture`.
+- **70% ENCOUNTER** — opens the normal joinable rally. The initiating hero joins automatically and the rally stays open for `ENCOUNTER_JOIN_SECONDS` (60 seconds by default). The monster roll is filtered so it can never be more than **10 levels above the initiating hero**. Other eligible heroes join with `!join` or `!venture`.
 - **30% TREASURE CHEST** — immediately awards one level-appropriate item and ends the Venture without starting combat. Chest items are selected from roughly **5 levels below through 2 levels above** the venturing hero. Consumables, weapons, armor and accessories are eligible; Relic-progression weapons and explicitly unsellable progression pieces are excluded.
 
 Treasure Ventures consume the normal Venture cooldown and increment the player's Venture total, but they do **not** create a party encounter or rally.
@@ -23,7 +23,7 @@ When the rally timer ends, the **combat scheduler starts Active Battle automatic
 Rally → Round action window → Resolve → Next round / Finish
 ```
 
-The default action window is `ENCOUNTER_ROUND_SECONDS=20`. Every round resolves on its original scheduled deadline—even if all living heroes submit early. If a player submits nothing, their action safely defaults to Attack at that same deadline. Late actions are rejected instead of becoming the event that resolves the round.
+The default action window is `ENCOUNTER_ROUND_SECONDS=30`. Every round resolves on its original scheduled deadline—even if all living heroes submit early. If a player submits nothing, their action safely defaults to Attack at that same deadline. Late actions are rejected instead of becoming the event that resolves the round.
 
 Useful commands:
 
@@ -150,7 +150,7 @@ The broadcaster opens a raid with:
 !spawnboss <boss>
 ```
 
-The raid rally remains open for `RAID_JOIN_SECONDS` (60 seconds by default). Viewers join with `!raid`. The existing raid daemon continues to advance autonomous timed rounds every `RAID_ROUND_SECONDS` (15 seconds by default), including phases, enrage, Limit Breaks, Summons, revival, and contribution tracking.
+The raid rally remains open for `RAID_JOIN_SECONDS` (90 seconds by default). Viewers join with `!raid`. The existing raid daemon continues to advance autonomous timed rounds every `RAID_ROUND_SECONDS` (60 seconds by default), including phases, enrage, Limit Breaks, Summons, revival, and contribution tracking.
 
 ```text
 !limit

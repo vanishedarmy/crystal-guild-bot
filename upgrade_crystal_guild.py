@@ -36,11 +36,43 @@ def _upgrade_command_prefix(env_path: Path = Path(".env")) -> None:
         print("PASS — Twitch command prefix set to !.")
 
 
+def _upgrade_combat_timing_defaults(env_path: Path = Path(".env")) -> None:
+    """Move installations that still use the prior stock timers to H9 defaults.
+
+    Explicit non-default operator overrides are preserved. Only the exact
+    values shipped by the previous release are rewritten.
+    """
+    if not env_path.exists():
+        return
+    replacements = {
+        "ENCOUNTER_JOIN_SECONDS": ("45", "60"),
+        "ENCOUNTER_ROUND_SECONDS": ("20", "30"),
+        "RAID_JOIN_SECONDS": ("60", "90"),
+        "RAID_ROUND_SECONDS": ("15", "60"),
+    }
+    lines = env_path.read_text(encoding="utf-8").splitlines()
+    changed = []
+    for index, raw in enumerate(lines):
+        stripped = raw.strip()
+        for key, (old, new) in replacements.items():
+            if not stripped.startswith(f"{key}="):
+                continue
+            value = raw.split("=", 1)[1].strip().strip('"').strip("'")
+            if value == old:
+                lines[index] = f"{key}={new}"
+                changed.append(f"{key}={new}")
+            break
+    if changed:
+        env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print("PASS — updated prior stock combat timers: " + ", ".join(changed))
+
+
 def main() -> int:
     _upgrade_command_prefix()
+    _upgrade_combat_timing_defaults()
     load_dotenv()
     db_path = Path(os.getenv("DATABASE_PATH", "crystal_guild.db"))
-    print("Crystal Guild v1.1.17 — Arsenal II In-place Upgrade Check")
+    print("Crystal Guild v1.1.19 RC1 Hotfix 9 — In-place Upgrade Check")
     print(f"Database: {db_path}")
     if not db_path.exists():
         print("INFO — no existing Guild database found; nothing to migrate.")

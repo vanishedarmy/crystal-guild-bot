@@ -1325,3 +1325,46 @@ EngineTests.test_v6_shop_stock_is_persistent_and_job_appropriate = _test_v6_shop
 EngineTests.test_v6_job_change_invalidates_personal_shop = _test_v6_job_change_invalidates_personal_shop
 EngineTests.test_v6_buy_only_accepts_current_rotation_and_slot_numbers = _test_v6_buy_only_accepts_current_rotation_and_slot_numbers
 EngineTests.test_v6_shop_expansion_has_broad_job_gear_coverage = _test_v6_shop_expansion_has_broad_job_gear_coverage
+
+class H9FieldSupportTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.db = Database(Path(self.tmp.name) / "h9.db")
+        self.game = CrystalGuildEngine(self.db, GameData(ROOT / "data"), venture_cooldown_seconds=0, overlay_state_path=str(Path(self.tmp.name) / "overlay.json"), rng=random.Random(11))
+        self.game.recruit("1", "van", "Van")
+        self.game.recruit("2", "cloud", "Cloud")
+        self.game.choose_job("1", "warrior")
+        self.game.choose_job("2", "warrior")
+
+    def tearDown(self) -> None:
+        self.db.close()
+        self.tmp.cleanup()
+
+    def test_h9_requested_combat_timer_defaults(self):
+        self.assertEqual(self.game.encounter_join_seconds, 60)
+        self.assertEqual(self.game.encounter_round_seconds, 30)
+        self.assertEqual(self.game.raid_join_seconds, 90)
+        self.assertEqual(self.game.raid_round_seconds, 60)
+
+    def test_h9_field_item_can_support_other_player_while_live(self):
+        self.game._change_item("1", "potion", 1, "test")
+        target_max = self.game._max_hp(self.game._player("2"))
+        self.db.execute("UPDATE players SET current_hp=? WHERE twitch_id='2'", (max(1, target_max - 25),))
+        before_qty = self.game._inventory_qty("1", "potion")
+        result = self.game.use_item("1", "potion", target_query="cloud", stream_live=True)
+        self.assertTrue(result.ok, result.messages)
+        self.assertIn("on Cloud", result.messages[0])
+        self.assertGreater(int(self.game._player("2")["current_hp"]), max(1, target_max - 25))
+        self.assertEqual(self.game._inventory_qty("1", "potion"), before_qty - 1)
+
+    def test_h9_field_item_other_player_fails_closed_while_offline(self):
+        self.game._change_item("1", "potion", 1, "test")
+        target_max = self.game._max_hp(self.game._player("2"))
+        self.db.execute("UPDATE players SET current_hp=? WHERE twitch_id='2'", (max(1, target_max - 25),))
+        before_qty = self.game._inventory_qty("1", "potion")
+        before_hp = int(self.game._player("2")["current_hp"])
+        result = self.game.use_item("1", "potion", target_query="cloud", stream_live=False)
+        self.assertFalse(result.ok)
+        self.assertIn("only while the stream is LIVE", result.messages[0])
+        self.assertEqual(self.game._inventory_qty("1", "potion"), before_qty)
+        self.assertEqual(int(self.game._player("2")["current_hp"]), before_hp)

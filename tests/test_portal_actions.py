@@ -117,6 +117,45 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn("not authorized", message.lower())
 
+    def test_h9_portal_spawn_boss_posts_rally_to_chat_only_while_live_after_ack(self):
+        def run(live: bool, action_id: str):
+            announcements = []
+            wakes = []
+            worker = PortalActionWorker(
+                self.game, "https://guild.example", "sync-key", owner_id="100",
+                notify_result=announcements.append, stream_live_lookup=lambda: live,
+                wake_encounter=lambda: wakes.append("wake"),
+            )
+            action = self.action(
+                id=action_id, type="STREAMER_COMMAND",
+                payload={"command": "spawnboss", "argument": "Goblin King"},
+            )
+            def fake_post(path, payload):
+                if path == "/api/actions/claim":
+                    return {"ok": True, "protocol_version": ACTION_PROTOCOL_VERSION, "actions": [action]}
+                if path == "/api/actions/result":
+                    return {"ok": True}
+                raise AssertionError(path)
+            worker._post = fake_post
+            processed = worker.poll_once()
+            if self.game.active_boss:
+                self.game.active_boss = None
+                self.game.raid_roster.clear()
+                self.game._write_overlay({"active": False, "status": "IDLE"})
+            return processed, announcements, wakes
+
+        processed, announcements, wakes = run(True, "pa_spawn_live")
+        self.assertEqual(processed, 1)
+        self.assertEqual(wakes, ["wake"])
+        self.assertEqual(len(announcements), 1)
+        joined = " ".join(announcements[0].messages)
+        self.assertIn("Goblin King", joined)
+        self.assertIn("!raid", joined)
+
+        processed, announcements, _ = run(False, "pa_spawn_offline")
+        self.assertEqual(processed, 1)
+        self.assertEqual(announcements, [])
+
     def test_streamer_removeitem_auto_unequips_last_equipped_copy_and_logs_delta(self):
         equipped = self.game.equip("100", "hunters_axe")
         self.assertTrue(equipped.ok)
@@ -831,11 +870,25 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertEqual(solo["cooldown_seconds"], 420)
         self.assertEqual(solo["encounter_chance_percent"], 80)
         self.assertEqual(solo["treasure_chance_percent"], 20)
-        self.assertEqual(solo["max_enemy_levels_above_player"], 3)
+        self.assertEqual(solo["max_enemy_levels_above_player"], 5)
         self.assertEqual(solo["max_stages"], 3)
         self.assertEqual(solo["stage_bonus_percent"], 15)
         self.assertFalse(solo["resolves_immediately"])
         self.assertEqual(data["adventure_state"]["venture"]["max_enemy_levels_above_player"], 10)
+
+    def test_h9_solo_venture_allows_enemy_up_to_plus_five(self):
+        self.db.execute("UPDATE players SET level=6, current_region='greenwind_plains' WHERE twitch_id='100'")
+        player = self.game._player("100")
+        region = self.game.data.regions["greenwind_plains"]
+        with patch.object(
+            self.game.rng,
+            "choices",
+            side_effect=lambda population, weights=None, k=1: [max(population, key=lambda monster: int(monster["level"]))],
+        ):
+            monster = self.game._solo_select_monster(player, region, stage=3)
+        self.assertIsNotNone(monster)
+        self.assertEqual(int(monster["level"]), 11)
+        self.assertEqual(int(monster["level"]) - int(player["level"]), 5)
 
     def test_v111h1_regular_venture_allows_enemy_up_to_plus_ten(self):
         self.db.execute("UPDATE players SET level=1, current_region='greenwind_plains' WHERE twitch_id='100'")

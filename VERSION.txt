@@ -1,1 +1,1 @@
-v1.1.19 — Retro Phase III / RC1 Hotfix 7 — Streamer Inventory Admin
+v1.1.19 — Retro Phase III / RC1 Hotfix 9 — Raid Timing & Field Support

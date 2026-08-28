@@ -1,5 +1,7 @@
-Crystal Guild Bot — v1.1.19 Retro Phase III RC1 Hotfix 7
-Runtime: 1.1.19-retro-phase-iii-rc1h7
+Crystal Guild Bot — v1.1.19 Retro Phase III RC1 Hotfix 9
+Runtime: 1.1.19-retro-phase-iii-rc1h9
 Local DB schema: 7
-Portal Action protocol: 18
-Primary change: streamer-only add/remove player item administration via chat and Portal.
+Hosted sync schema: 1
+Portal Action protocol: 19
+Primary changes: combat timing alignment, LIVE Portal raid-rally announcement, LIVE out-of-battle field support targeting, upgrade-time stock timer repair.
+Solo Venture max enemy level: player level +5.

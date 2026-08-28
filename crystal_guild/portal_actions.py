@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 18
+ACTION_PROTOCOL_VERSION = 19
 
 
 class PortalActionWorker:
@@ -373,9 +373,13 @@ class PortalActionWorker:
             return self._game_result(result)
         if action_type == "USE_FIELD_ITEM":
             item_id = str(payload.get("item_id") or "").strip()
+            target_username = str(payload.get("target_username") or "").strip()
             if not item_id:
                 return False, "Recovery request is missing an item.", {}
-            result = self.game.portal_use_field_item(twitch_id, item_id, str(action.get("id") or ""))
+            result = self.game.portal_use_field_item(
+                twitch_id, item_id, str(action.get("id") or ""),
+                target_query=target_username or None, stream_live=self._stream_live(),
+            )
             return self._game_result(result)
         if action_type == "START_REST":
             result = self.game.portal_start_rest(twitch_id, str(action.get("id") or ""), stream_live=self._stream_live())
@@ -589,6 +593,10 @@ class PortalActionWorker:
             result = self.game.spawn_boss(text)
             if result.ok and result.data.get("raid_spawned"):
                 self._wake_encounter_scheduler()
+                # Portal-origin raid spawns should behave like the owner chat
+                # command while LIVE: publish the boss + rally call only after
+                # the hosted action acknowledgement succeeds.
+                self._stage_post_ack_announcement(action_id, result, live_only=True)
             return self._game_result(result)
         if command == "resolveboss":
             return self._game_result(self.game.resolve_boss())

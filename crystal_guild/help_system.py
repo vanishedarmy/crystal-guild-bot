@@ -19,7 +19,7 @@ HELP_TOPICS = {
         "!encounter shows a compact battle dashboard with enemy HP, party HP/MP/AP, statuses, queued actions and the timer. Ordinary enemy attacks target one hero; explicit party skills can hit multiple heroes. !battlelog shows recent resolved rounds without adding automatic chat spam.",
     ),
     "recovery": (
-        "RECOVERY — !rest starts a free camp recovery; use !rest again to check the timer. !use tent restores you immediately outside combat.",
+        "RECOVERY — !rest starts a free camp recovery; use !rest again to check the timer. !use tent restores you immediately outside combat. While LIVE, use !use <item> | <username> to apply eligible field recovery to another adventurer.",
         "In Active Battle, healing/Ether/Phoenix Down plus Antidote, Echo Herbs, and Remedy can be queued. Poison, Silence, and Blind are real battle statuses; items are consumed only on successful resolution.",
     ),
     "inventory": (
@@ -71,7 +71,7 @@ HELP_TOPICS = {
         "Use !registerchocobo <name> to register your companion, !chocobo to view Bond Level/traits/readiness, and !chocoboname <name> to rename it. Chocobos gain Bond XP from Ventures, treasure, and Hunts; Chocobo traits currently add no combat bonus.",
     ),
     "portal": (
-        "PLAYER PORTAL — the hosted Crystal Guild site shows live heroes, Jobs, equipment, inventory, Adventure Board, Chocobo Stable, Bestiary, Relics, achievements and records. Portal Solo Venture is a private three-stage Wayfarer run: 7-minute separate cooldown, 80% ENCOUNTER / 20% TREASURE per stage, roughly Lv.-2 to Lv.+3 enemies, player-paced Attack/Ability/Item/Defend combat, and Return-or-Press-On risk/reward.",
+        "PLAYER PORTAL — the hosted Crystal Guild site shows live heroes, Jobs, equipment, inventory, Adventure Board, Chocobo Stable, Bestiary, Relics, achievements and records. Portal Solo Venture is a private three-stage Wayfarer run: 7-minute separate cooldown, 80% ENCOUNTER / 20% TREASURE per stage, roughly Lv.-2 to Lv.+5 enemies, player-paced Attack/Ability/Item/Defend combat, and Return-or-Press-On risk/reward.",
         "Use the Player Guide link on the Adventurer Portal for the full command and progression reference. The website receives sanitized game-only data.",
     ),
 }

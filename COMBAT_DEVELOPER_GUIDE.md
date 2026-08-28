@@ -79,7 +79,7 @@ When adding a status:
 
 ## 5. Timing / anti-stall
 
-`ENCOUNTER_ROUND_SECONDS` defaults to 20 seconds and is clamped to a minimum of 5. **Timer invariant:** the scheduled deadline never moves earlier because players queue actions. If everyone submits immediately, the round still resolves at its original deadline. If someone does nothing, the round resolves at that same deadline and gives them Attack.
+`ENCOUNTER_ROUND_SECONDS` defaults to 30 seconds and is clamped to a minimum of 5. **Timer invariant:** the scheduled deadline never moves earlier because players queue actions. If everyone submits immediately, the round still resolves at its original deadline. If someone does nothing, the round resolves at that same deadline and gives them Attack.
 
 Player-facing commands must never perform an overdue transition. A late `!join`, `!venture`, `!encounter`, or battle action may read/reject state, but only `encounter_daemon.py` (or an explicit owner/admin recovery command) may start or advance timed combat. Chat can wake the daemon only when a *new timer is created* so the scheduler can re-arm itself.
 

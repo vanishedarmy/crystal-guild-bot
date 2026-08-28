@@ -1,25 +1,23 @@
-# Validation Report — RC1 Hotfix 7 Streamer Inventory Admin
+# Validation Report — RC1 Hotfix 9 Raid Timing & Field Support
 
 ## Identity
-- Runtime: `1.1.19-retro-phase-iii-rc1h7`
-- Local DB schema: 7 (unchanged)
-- Hosted sync schema: 1 (unchanged)
-- Portal Action protocol: 18
+- Runtime: `1.1.19-retro-phase-iii-rc1h9`
+- Local DB schema: 7
+- Hosted sync schema: 1
+- Portal Action protocol: 19
 - Twitch prefix: `!`
 
 ## Automated validation
-- Full Bot unittest suite: **403 / 403 passed**.
+- **408 tests plus 30 subtests across all Bot test modules passed**.
+- H9 timer, field-support, Portal announcement, Solo Venture +5 ceiling, release-contract, and setup/upgrade regression groups pass.
 - Changed Python modules compile successfully.
 
-## Inventory-admin coverage
-- `!additem` / `!giveitem` are owner-gated.
-- `!removeitem` / `!takeitem` are owner-gated.
-- Exact player and item resolution is authoritative in the Bot.
-- Quantity guardrail is 1–999.
-- Add/remove writes a normal item transaction ledger entry.
-- Over-removal is rejected.
-- Removing the final equipped copy automatically unequips the slot.
-- Portal inventory mutations store the replay marker in the same SQLite transaction as the item delta, preventing duplicate changes after acknowledgement retry.
-- Bot independently rejects Streamer Portal actions when the Twitch ID does not match the configured owner.
+## H9 coverage
+- Engine defaults are 60s Venture rally / 30s Venture rounds / 90s Raid rally / 60s Raid rounds.
+- LIVE cross-player field recovery succeeds and consumes the actor's item only on useful effect.
+- OFFLINE cross-player field recovery fails closed without changing HP or inventory.
+- Portal Spawn Boss posts a rally announcement only on the LIVE owner Portal path and only after action acknowledgement.
+- Upgrade helper changes prior stock combat timers and preserves unrelated/custom environment values.
+- Solo Venture selection is capped at **player level +5** and regression-tested against an exact +5 encounter.
 
-Existing simulated outage/recovery warnings in the test suite are intentional fault-injection coverage; all tests completed successfully.
+No DB migration or player reset is introduced.
