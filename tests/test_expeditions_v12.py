@@ -212,6 +212,97 @@ class ExpeditionV12Tests(unittest.TestCase):
         cache = self.game._expedition_load("100")["cache"]
         self.assertTrue(any(row["id"] == "ochu_vine" for row in cache["items"]))
 
+    def test_alpha3_atlas_derives_rank_and_mastery_from_existing_schema8_progress(self):
+        self.unlock()
+        values = {
+            "emerald_wilds": (100, 12, 3, 1),
+            "ashen_highlands": (80, 10, 2, 0),
+            "mistfen_marshes": (60, 8, 2, 0),
+            "frostveil_reach": (40, 6, 1, 0),
+            "astral_scar": (20, 4, 1, 0),
+        }
+        for region_id, (progress, stages, runs, clears) in values.items():
+            self.db.execute(
+                "INSERT INTO player_region_exploration(player_id,region_id,progress,stages_cleared,completed_runs,boss_clears) VALUES (?,?,?,?,?,?) "
+                "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=excluded.progress,stages_cleared=excluded.stages_cleared,completed_runs=excluded.completed_runs,boss_clears=excluded.boss_clears",
+                ("100", region_id, progress, stages, runs, clears),
+            )
+        atlas = self.game._expedition_atlas("100")
+        self.assertEqual(atlas["overall_progress"], 60)
+        self.assertEqual(atlas["rank_name"], "Surveyor")
+        self.assertEqual(atlas["regions_mastered"], 1)
+        self.assertEqual(atlas["legendary_contracts_unlocked"], 1)
+        board = self.game._expedition_board_state("100")
+        self.assertEqual(board["atlas"]["rank_name"], "Surveyor")
+        emerald = next(row for row in board["regions"] if row["id"] == "emerald_wilds")
+        self.assertTrue(emerald["progress"]["legendary_unlocked"])
+
+    def test_alpha3_legendary_contract_requires_mastery_and_prior_boss_clear(self):
+        self.unlock()
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress,boss_clears) VALUES ('100','emerald_wilds',100,0) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=100,boss_clears=0"
+        )
+        locked = self.game.expedition_start("100", "emerald_wilds", "legendary")
+        self.assertFalse(locked.ok)
+        self.assertIn("clearing", " ".join(locked.messages).lower())
+        self.db.execute("UPDATE player_region_exploration SET boss_clears=1 WHERE player_id='100' AND region_id='emerald_wilds'")
+        started = self.game.expedition_start("100", "emerald_wilds", "legendary")
+        self.assertTrue(started.ok, started.messages)
+        state = self.game._expedition_load("100")
+        self.assertTrue(state["boss_contract"])
+        self.assertTrue(state["legendary_contract"])
+        self.assertEqual(state["base_stages"], 5)
+        self.assertEqual(state["max_stages"], 5)
+        self.assertGreater(float(state["contract_reward_mult"]), 1.35)
+        self.assertGreater(int(state["contract_travel_seconds"]), 300)
+        public = self.game._expedition_public("100")
+        self.assertEqual(public["depth"]["id"], "legendary")
+        self.assertTrue(public["legendary_contract"])
+
+    def test_alpha3_legendary_final_boss_is_stronger_and_doubles_guaranteed_materials(self):
+        self.unlock()
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress,boss_clears) VALUES ('100','emerald_wilds',100,1) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=100,boss_clears=1"
+        )
+        self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "legendary").ok)
+        state = self.game._expedition_load("100")
+        state["stage"] = state["base_stages"]
+        state["status"] = "travel"
+        state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        resolved = self.game.expedition_resolve_stage("100")
+        self.assertTrue(resolved.ok, resolved.messages)
+        state = self.game._expedition_load("100")
+        encounter = state["combat"]["encounter"]
+        self.assertEqual(encounter.get("enemy_pressure_mult"), 1.15)
+        self.assertTrue(encounter.get("legendary_contract"))
+        with patch.object(self.game, "_resolve_active_attack", side_effect=lambda actor, monster, log: self.game.active_encounter.__setitem__("monster_hp", 0)):
+            result = self.game.expedition_combat_action("100", "attack")
+        self.assertTrue(result.ok, result.messages)
+        self.assertTrue(result.data.get("expedition_legendary_contract"))
+        cache = self.game._expedition_load("100")["cache"]
+        ochu = next(row for row in cache["items"] if row["id"] == "ochu_vine" and row.get("source") == "legendary_regional_boss")
+        cloth = next(row for row in cache["items"] if row["id"] == "ancient_cloth" and row.get("source") == "legendary_regional_boss")
+        self.assertEqual(ochu["quantity"], 6)
+        self.assertEqual(cloth["quantity"], 2)
+
+    def test_alpha3_all_region_mastery_unlocks_master_cartographer(self):
+        self.unlock()
+        for region_id in self.game.data.expedition_regions:
+            self.db.execute(
+                "INSERT INTO player_region_exploration(player_id,region_id,progress) VALUES (?,?,100) "
+                "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=100",
+                ("100", region_id),
+            )
+        unlocked = self.game._check_achievements("100")
+        self.assertTrue(any("No Blank Spots Left" in row for row in unlocked), unlocked)
+        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_titles WHERE player_id='100' AND title_id='master_cartographer'"))
+        atlas = self.game._expedition_atlas("100")
+        self.assertTrue(atlas["all_mastered"])
+        self.assertEqual(atlas["rank_name"], "Master Cartographer")
+
     def test_adventure_state_exposes_compact_expedition_board(self):
         self.unlock("keen_eye")
         state = self.game._portal_adventure_state_data("100")

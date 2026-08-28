@@ -3367,6 +3367,7 @@ class CrystalGuildEngine:
             1, int(self.active_encounter.get("monster_max_hp", 1))
         )
         pressure = enemy_damage_multiplier(profile, hp_ratio, scaling)
+        pressure *= max(0.10, float(self.active_encounter.get("enemy_pressure_mult", 1.0) or 1.0))
         if self.active_encounter.get("kind", "venture") == "hunt":
             hunt = self.data.hunts.get(self.active_encounter.get("hunt_id"), {})
             pressure *= active_hunt_pressure(hunt.get("rank", "C"))
@@ -5575,6 +5576,44 @@ class CrystalGuildEngine:
             "mastery_bonus": str(mastery.get("bonus") or ""),
         }
 
+    def _expedition_atlas(self, twitch_id: str) -> dict[str, Any]:
+        region_ids = list(self.data.expedition_regions)
+        progress_rows = [self._expedition_progress(twitch_id, region_id) for region_id in region_ids]
+        region_count = max(1, len(progress_rows))
+        total_progress = sum(int(row.get("progress", 0)) for row in progress_rows)
+        average_progress = int(round(total_progress / region_count))
+        regions_mastered = sum(1 for row in progress_rows if bool(row.get("mastered")))
+        legendary_unlocked = sum(
+            1 for row in progress_rows
+            if bool(row.get("mastered")) and int(row.get("boss_clears", 0)) > 0
+        )
+        all_mastered = bool(progress_rows) and regions_mastered == len(progress_rows)
+        ranks = [
+            (80, "cartographer", "Cartographer"),
+            (60, "surveyor", "Surveyor"),
+            (40, "pathfinder", "Pathfinder"),
+            (20, "trailblazer", "Trailblazer"),
+            (0, "guild_scout", "Guild Scout"),
+        ]
+        if all_mastered:
+            rank_id, rank_name = "master_cartographer", "Master Cartographer"
+            next_rank = None
+        else:
+            _, rank_id, rank_name = next(row for row in ranks if average_progress >= row[0])
+            next_threshold = next((threshold for threshold, _, _ in reversed(ranks[:-1]) if threshold > average_progress), None)
+            next_row = next((row for row in ranks if row[0] == next_threshold), None) if next_threshold is not None else None
+            next_rank = {"progress": int(next_threshold), "name": str(next_row[2])} if next_row else {"progress": 100, "name": "Master Cartographer"}
+        return {
+            "rank_name": rank_name,
+            "overall_progress": average_progress,
+            "regions_mastered": regions_mastered,
+            "region_count": len(progress_rows),
+            "all_mastered": all_mastered,
+            "legendary_contracts_unlocked": legendary_unlocked,
+            "total_boss_clears": sum(int(row.get("boss_clears", 0)) for row in progress_rows),
+            "next_rank": next_rank,
+        }
+
     def _expedition_add_progress(
         self,
         twitch_id: str,
@@ -5665,7 +5704,10 @@ class CrystalGuildEngine:
         if bool(state.get("boss_contract")):
             region = self.data.expedition_regions.get(str(state.get("region_id") or "")) or {}
             boss = dict(region.get("boss") or {})
-            depth = {"stages": int(state.get("base_stages") or boss.get("stages", 4) or 4), "reward_mult": float(boss.get("reward_mult", 1.35) or 1.35)}
+            depth = {
+                "stages": int(state.get("base_stages") or boss.get("stages", 4) or 4),
+                "reward_mult": float(state.get("contract_reward_mult") or boss.get("reward_mult", 1.35) or 1.35),
+            }
         else:
             depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
         route = EXPEDITION_ROUTES.get(str(state.get("route")), EXPEDITION_ROUTES["unknown"])
@@ -5682,7 +5724,7 @@ class CrystalGuildEngine:
         if bool(state.get("boss_contract")):
             region = self.data.expedition_regions.get(str(state.get("region_id") or "")) or {}
             boss = dict(region.get("boss") or {})
-            base_travel = int(boss.get("travel_seconds", 360) or 360)
+            base_travel = int(state.get("contract_travel_seconds") or boss.get("travel_seconds", 360) or 360)
         else:
             depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
             base_travel = int(depth["travel_seconds"])
@@ -5851,14 +5893,22 @@ class CrystalGuildEngine:
         region = self.data.expedition_regions.get(str(state.get("region_id"))) or {}
         boss = dict(region.get("boss") or {})
         boss_contract = bool(state.get("boss_contract"))
-        depth_name = f"Regional Boss · {boss.get('name', 'Boss')}" if boss_contract else str((EXPEDITION_DEPTHS.get(str(state.get("depth"))) or {}).get("name") or state.get("depth") or "Expedition")
+        legendary_contract = bool(state.get("legendary_contract"))
+        depth_name = (
+            f"Legendary Contract · {boss.get('name', 'Boss')}"
+            if legendary_contract else
+            f"Regional Boss · {boss.get('name', 'Boss')}"
+            if boss_contract else
+            str((EXPEDITION_DEPTHS.get(str(state.get("depth"))) or {}).get("name") or state.get("depth") or "Expedition")
+        )
         return {
             "type": "expedition_v12",
             "outcome": str(outcome),
-            "title": ("Regional Boss Contract Complete" if boss_contract and outcome == "complete" else "Expedition Complete" if outcome == "complete" else "Expedition Returned" if outcome == "returned" else "Expedition Rescue"),
+            "title": ("Legendary Contract Complete" if legendary_contract and outcome == "complete" else "Regional Boss Contract Complete" if boss_contract and outcome == "complete" else "Expedition Complete" if outcome == "complete" else "Expedition Returned" if outcome == "returned" else "Expedition Rescue"),
             "region_name": str(region.get("name") or "Unknown Region"),
             "depth": depth_name,
             "boss_contract": boss_contract,
+            "legendary_contract": legendary_contract,
             "boss_name": str(boss.get("name") or "") if boss_contract else "",
             "stages": int(state.get("stage") or 1),
             "base_stages": int(state.get("base_stages") or 0),
@@ -5979,6 +6029,12 @@ class CrystalGuildEngine:
             combatants, _, _ = self._initialize_active_combat(encounter)
             if combatants == 0:
                 return GameResult.fail("Your hero is not in fighting condition for this Expedition encounter.")
+            if bool(state.get("legendary_contract")) and bool(state.get("boss_encounter")):
+                scaled_hp = max(1, int(round(int(encounter.get("monster_max_hp", monster.get("hp", 1))) * 1.25)))
+                encounter["monster_max_hp"] = scaled_hp
+                encounter["monster_hp"] = scaled_hp
+                encounter["enemy_pressure_mult"] = 1.15
+                encounter["legendary_contract"] = True
             encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
             state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
         finally:
@@ -6054,17 +6110,25 @@ class CrystalGuildEngine:
             return GameResult.fail("That Expedition region is not available.")
         if int(p["level"] or 1) < int(region.get("min_level", 1)):
             return GameResult.fail(f"{region['name']} is recommended from Lv.{int(region.get('min_level', 1))}.")
-        boss_contract = str(depth_id).lower() == "boss"
+        contract_kind = str(depth_id).lower()
+        boss_contract = contract_kind in {"boss", "legendary"}
+        legendary_contract = contract_kind == "legendary"
         if boss_contract:
             progress = self._expedition_progress(twitch_id, str(region["id"]))
             boss = dict(region.get("boss") or {})
             if not boss or not progress.get("boss_unlocked"):
                 return GameResult.fail(f"Regional Boss Expeditions unlock at {int(progress.get('boss_unlock_progress', 75))}% exploration.")
+            if legendary_contract and not (progress.get("mastered") and int(progress.get("boss_clears", 0)) > 0):
+                return GameResult.fail("Legendary Contracts unlock after mastering the region and clearing its Regional Boss at least once.")
+            base_stages = int(boss.get("stages", 4) or 4) + (1 if legendary_contract else 0)
+            reward_mult = float(boss.get("reward_mult", 1.35) or 1.35) * (1.25 if legendary_contract else 1.0)
+            travel_seconds = int(round(int(boss.get("travel_seconds", 360) or 360) * (1.20 if legendary_contract else 1.0)))
             depth = {
-                "id": "boss", "name": f"Regional Boss · {boss.get('name', 'Boss')}",
-                "stages": int(boss.get("stages", 4) or 4),
-                "travel_seconds": int(boss.get("travel_seconds", 360) or 360),
-                "reward_mult": float(boss.get("reward_mult", 1.35) or 1.35),
+                "id": contract_kind,
+                "name": (f"Legendary Contract · {boss.get('name', 'Boss')}" if legendary_contract else f"Regional Boss · {boss.get('name', 'Boss')}"),
+                "stages": base_stages,
+                "travel_seconds": travel_seconds,
+                "reward_mult": reward_mult,
             }
         else:
             depth = EXPEDITION_DEPTHS.get(str(depth_id))
@@ -6078,6 +6142,9 @@ class CrystalGuildEngine:
             "region_id": str(region["id"]),
             "depth": str(depth["id"]),
             "boss_contract": bool(boss_contract),
+            "legendary_contract": bool(legendary_contract),
+            "contract_reward_mult": float(depth.get("reward_mult", 1.0)) if boss_contract else None,
+            "contract_travel_seconds": int(depth.get("travel_seconds", 0)) if boss_contract else None,
             "boss_id": str((region.get("boss") or {}).get("id") or "") if boss_contract else "",
             "stage": 1,
             "base_stages": int(depth["stages"]),
@@ -6098,6 +6165,7 @@ class CrystalGuildEngine:
             f"EXPEDITION LAUNCHED — {region['name']} · {depth['name']}. Stage 1 travel: {self._format_seconds(seconds)}.",
             expedition_started=True,
             expedition_boss_contract=bool(boss_contract),
+            expedition_legendary_contract=bool(legendary_contract),
         )
 
     @_state_guard
@@ -6290,18 +6358,20 @@ class CrystalGuildEngine:
         if is_boss:
             region = self.data.expedition_regions.get(str(state.get("region_id") or "")) or {}
             boss = dict(region.get("boss") or {})
+            legendary_mult = 2 if bool(state.get("legendary_contract")) else 1
             for reward in boss.get("guaranteed_rewards", []):
+                quantity = int(reward.get("quantity", 1) or 1) * legendary_mult
                 row = self._expedition_cache_add_item(
-                    state, str(reward.get("item_id") or ""), int(reward.get("quantity", 1) or 1), source="regional_boss"
+                    state, str(reward.get("item_id") or ""), quantity, source="legendary_regional_boss" if legendary_mult > 1 else "regional_boss"
                 )
                 if row:
-                    guaranteed.append(f"{row['name']} x{int(reward.get('quantity', 1) or 1)}")
+                    guaranteed.append(f"{row['name']} x{quantity}")
             boss_progress = self._expedition_record_boss_clear(twitch_id, str(state.get("region_id") or ""))
             state["boss_encounter"] = False
         event = {
             "type": "regional_boss_victory" if is_boss else "combat_victory",
             "label": (
-                f"Regional Boss defeated: {monster['name']}. The contract objective is complete."
+                (f"Legendary Regional Boss defeated: {monster['name']}. The contract objective is complete." if bool(state.get("legendary_contract")) else f"Regional Boss defeated: {monster['name']}. The contract objective is complete.")
                 if is_boss else
                 f"Defeated {monster['name']}. +{rewards['xp']} XP / +{rewards['jp']} JP / {rewards['gil']} Gil added to the Expedition Cache."
             ),
@@ -6316,7 +6386,12 @@ class CrystalGuildEngine:
             result.data["expedition_boss"] = {"id": str(monster["id"]), "name": str(monster["name"])}
             result.data["expedition_progress"] = boss_progress or self._expedition_progress(twitch_id, str(state.get("region_id") or ""))
             result.data["expedition_milestones"] = list((boss_progress or {}).get("new_milestones") or [])
-            result.data["expedition_announcement"] = f"REGIONAL BOSS — {monster['name']} has been defeated in {region.get('name', 'an Expedition region')}!"
+            result.data["expedition_legendary_contract"] = bool(state.get("legendary_contract"))
+            result.data["expedition_announcement"] = (
+                f"LEGENDARY CONTRACT — {monster['name']} has been defeated again in {region.get('name', 'an Expedition region')}!"
+                if bool(state.get("legendary_contract")) else
+                f"REGIONAL BOSS — {monster['name']} has been defeated in {region.get('name', 'an Expedition region')}!"
+            )
         return result
 
     def _finish_expedition_combat_defeat(
@@ -6583,7 +6658,12 @@ class CrystalGuildEngine:
         region = self.data.expedition_regions.get(str(state.get("region_id"))) or {}
         if bool(state.get("boss_contract")):
             boss = dict(region.get("boss") or {})
-            depth = {"id": "boss", "name": f"Regional Boss · {boss.get('name', 'Boss')}", "stages": int(state.get("base_stages") or boss.get("stages", 4) or 4)}
+            legendary_contract = bool(state.get("legendary_contract"))
+            depth = {
+                "id": "legendary" if legendary_contract else "boss",
+                "name": f"Legendary Contract · {boss.get('name', 'Boss')}" if legendary_contract else f"Regional Boss · {boss.get('name', 'Boss')}",
+                "stages": int(state.get("base_stages") or boss.get("stages", 4) or 4),
+            }
         else:
             depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
         route = EXPEDITION_ROUTES.get(str(state.get("route")), EXPEDITION_ROUTES["unknown"])
@@ -6604,6 +6684,7 @@ class CrystalGuildEngine:
             "max_stages": max_stages,
             "bonus_stage": stage > base_stages,
             "boss_contract": bool(state.get("boss_contract")),
+            "legendary_contract": bool(state.get("legendary_contract")),
             "boss_id": str(state.get("boss_id") or ""),
             "objective_complete": str(state.get("status")) == "choice" and stage >= base_stages,
             "travel_ready_at": ready_at,
@@ -6638,8 +6719,9 @@ class CrystalGuildEngine:
                 "boss_clears": int(progress.get("boss_clears", 0)),
                 "boss_unlocked": bool(progress.get("boss_unlocked")),
                 "mastered": bool(progress.get("mastered")),
+                "legendary_unlocked": bool(progress.get("mastered")) and int(progress.get("boss_clears", 0)) > 0,
                 "objectives": [
-                    {"threshold": int(obj.get("threshold", 0)), "name": str(obj.get("name") or "Milestone"), "complete": bool(obj.get("complete"))}
+                    {"threshold": int(obj.get("threshold", 0)), "name": str(obj.get("name") or "Milestone")}
                     for obj in progress.get("objectives", [])
                 ],
             }
@@ -6680,6 +6762,7 @@ class CrystalGuildEngine:
                 for value in EXPEDITION_ROUTES.values()
             ],
             "regions": regions,
+            "atlas": self._expedition_atlas(twitch_id),
             "active": active,
         }
 
@@ -10324,6 +10407,12 @@ class CrystalGuildEngine:
                 (player_id, str(req.get("region_id") or "")),
             )
             return int(row["progress"] or 0) if row else 0
+        if kind == "expedition_regions_mastered":
+            row = self.db.one(
+                "SELECT COUNT(*) AS n FROM player_region_exploration WHERE player_id=? AND progress>=100",
+                (player_id,),
+            )
+            return int(row["n"] or 0) if row else 0
         if kind == "job_battles":
             if req.get("job_id"):
                 row = self.db.one(
@@ -10399,6 +10488,8 @@ class CrystalGuildEngine:
         if kind == "expedition_region_progress":
             region = self.data.expedition_regions.get(str(req.get("region_id") or "")) or {}
             return f"Explore {region.get('name', 'region')} to {amount}% ({value}/{amount})"
+        if kind == "expedition_regions_mastered":
+            return f"Master {amount} Expedition regions ({value}/{amount})"
         if kind == "job_battles":
             job = self.data.jobs.get(req.get("job_id"), {}).get("name")
             subject = job or "a single Job"

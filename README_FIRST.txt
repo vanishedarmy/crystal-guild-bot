@@ -1,10 +1,10 @@
-Crystal Guild v1.2.0 — Expeditions Alpha 2 Bot
-Runtime: 1.2.0-expeditions-a2
+Crystal Guild v1.2.0 — Expeditions Alpha 3 Bot
+Runtime: 1.2.0-expeditions-a3
 Local DB schema: 8
 Hosted sync schema: 1
 Portal Action protocol: 20
 Twitch prefix: !
 
-Alpha 2 adds regional objective chains, 25/50/75/100% exploration milestones, five Regional Boss Contracts, rare regional encounters, Region Mastery achievements/titles, modest region-only Mastery bonuses, and LIVE-only notable Expedition milestone announcements.
+Alpha 3 adds the Expedition Atlas, cartography ranks, repeatable Legendary Regional Contracts, and the all-region Master Cartographer reward. Existing Alpha 2 region exploration and boss-clear records are reused directly.
 
-No database migration or player reset is required when upgrading from Expeditions Alpha 1. Deploy the matching Alpha 2 Web package so the new Region Progress and boss-contract controls are available.
+No database migration or player reset is required. Deploy the matching Alpha 3 Web package.

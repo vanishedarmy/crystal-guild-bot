@@ -480,7 +480,7 @@
   {
     "id": "floor_tank_25",
     "name": "Floor Tank",
-    "description": "Get KO\u2019d 25 times.",
+    "description": "Get KO’d 25 times.",
     "condition": {
       "type": "stat",
       "field": "deaths",
@@ -495,7 +495,7 @@
   {
     "id": "floor_tank_100",
     "name": "OSHA Would Like a Word",
-    "description": "Get KO\u2019d 100 times.",
+    "description": "Get KO’d 100 times.",
     "condition": {
       "type": "stat",
       "field": "deaths",
@@ -537,7 +537,7 @@
   },
   {
     "id": "tonberry_100",
-    "name": "Everybody\u2019s Grudge",
+    "name": "Everybody’s Grudge",
     "description": "Defeat 100 Tonberries.",
     "condition": {
       "type": "monster_kills",
@@ -904,7 +904,7 @@
   {
     "id": "tonberry_ko_10",
     "name": "???",
-    "description": "Be KO\u2019d by Tonberry 10 times.",
+    "description": "Be KO’d by Tonberry 10 times.",
     "condition": {
       "type": "monster_record_defeats",
       "monster_id": "tonberry",
@@ -920,7 +920,7 @@
   {
     "id": "malboro_ko_5",
     "name": "???",
-    "description": "Be KO\u2019d by Malboro 5 times.",
+    "description": "Be KO’d by Malboro 5 times.",
     "condition": {
       "type": "monster_record_defeats",
       "monster_id": "malboro",
@@ -1036,6 +1036,20 @@
     "category": "Expeditions",
     "tier": "crystal",
     "points": 100,
+    "secret": false
+  },
+  {
+    "id": "master_all_expedition_regions",
+    "name": "No Blank Spots Left",
+    "description": "Master all five Expedition regions and complete the Guild's first full Expedition Atlas.",
+    "condition": {
+      "type": "expedition_regions_mastered",
+      "amount": 5
+    },
+    "reward_title": "master_cartographer",
+    "category": "Expeditions",
+    "tier": "crystal",
+    "points": 150,
     "secret": false
   }
 ]

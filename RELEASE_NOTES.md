@@ -1,37 +1,39 @@
-# Crystal Guild v1.2.0 — Expeditions Alpha 2
+# Crystal Guild v1.2.0 — Expeditions Alpha 3
 
-## Regional progression
-- Expands all five Expedition regions with persistent **25% / 50% / 75% / 100% exploration milestones** and named regional objective chains.
-- Region progress now exposes the next objective, boss-unlock state, boss-clear count, and permanent Mastery state.
-- At 75% exploration, each region unlocks a dedicated Regional Boss Contract and begins admitting level-appropriate rare regional encounters.
+## Expedition Atlas
+Alpha 3 turns the five regional progression tracks into one permanent player-facing Atlas. The Adventure Board now derives an overall survey percentage, cartography rank, mastered-region count, total Regional Boss clears, and the number of Legendary routes unlocked from the schema-8 exploration records already earned in Alpha 2.
 
-## Regional Boss Contracts
-- **Emerald Wilds — Elder Ochu**
-- **Ashen Highlands — Inferno Drake**
-- **Mistfen Marshes — Malboro Sovereign**
-- **Frostveil Reach — Frost Behemoth**
-- **The Astral Scar — Rift Wyrm**
-- Boss Contracts are persistent multi-stage Expeditions with a guaranteed boss encounter on the final stage, stronger reward multipliers, and guaranteed regional material rewards on victory.
-- Regional boss victories increment a persistent clear counter and add additional regional exploration progress.
+Cartography ranks progress through **Guild Scout → Trailblazer → Pathfinder → Surveyor → Cartographer**, with **Master Cartographer** reserved for players who master all five launch regions.
 
-## Region Mastery
-Reaching 100% exploration permanently masters the region and awards a dedicated achievement/title. Each Mastery provides a small region-only Expedition benefit:
-- Emerald Wilds: +5% Discovery event weighting.
-- Ashen Highlands: +5% Resource event weighting.
-- Mistfen Marshes: 5% less Expedition hazard damage.
-- Frostveil Reach: +5% Expedition Camp recovery.
-- The Astral Scar: +5% Treasure event weighting.
+## Legendary Regional Contracts
+A mastered region with at least one Regional Boss clear now unlocks a repeatable **Legendary Contract** through the existing Expedition launch action. Legendary Contracts:
+- use five stages;
+- guarantee the region boss on the final stage;
+- increase the boss to **125% HP** and **115% outgoing pressure**;
+- use a **25% stronger contract reward multiplier** than the normal Regional Boss Contract;
+- take **20% longer base travel**; and
+- double the boss contract's guaranteed regional material quantities.
 
-## LIVE Portal milestones
-Portal-origin Expedition gameplay remains quiet by default. While Twitch is confirmed LIVE, only notable milestones may post to chat: regional discoveries/milestones, Region Mastery, and Regional Boss victories. Offline Portal play remains silent.
+The original 75%-exploration Regional Boss Contract remains available and unchanged.
 
-## Continuity
-- Existing Alpha 1 Expedition state, exploration progress, Chocobos, Fellowship progress, inventory, and character progression are preserved.
-- Alpha 1 Hotfix 1 Fellowship balance and the Alpha 1 Hotfix 3 Web presentation/artwork fixes remain intact.
+## All-region mastery reward
+Mastering all five Expedition regions unlocks the **No Blank Spots Left** achievement and the equippable **Master Cartographer** title. Existing Alpha 2 exploration is reused directly; no progress needs to be repeated.
 
-## Technical identity
-- Bot runtime: `1.2.0-expeditions-a2`
+## Portal & Guide
+- Adds the **Expedition Atlas** summary to the Distant Expedition Board.
+- Adds Legendary Contract controls only when a selected region is mastered; before the first boss clear the control explains the remaining requirement.
+- Updates active-run labels and saved result copy for Legendary Contracts.
+- Adds Alpha 3 to **What's New** while retaining Alpha 2 in the major-update history.
+- Expands the Player Guide Expeditions chapter with Atlas ranks, Legendary unlock rules, and the all-region mastery reward.
+- Retains the Alpha 2 Hotfix 3 Solo Venture and Relic Arsenal scenic backdrops.
+
+## Compatibility
+- Bot runtime: `1.2.0-expeditions-a3`
+- Hosted Web runtime: `1.2.0-expeditions-alpha3`
+- Frontend asset revision: `1.2.0-expeditions-a3`
 - Local DB schema: **8** (unchanged)
 - Hosted sync schema: **1** (unchanged)
 - Portal Action protocol: **20** (unchanged)
 - Twitch prefix: `!`
+- Player reset: **none**
+- New environment variables: **none**
