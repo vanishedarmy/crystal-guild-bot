@@ -1,37 +1,37 @@
-# Crystal Guild v1.2.0 — Expeditions Alpha 1
+# Crystal Guild v1.2.0 — Expeditions Alpha 2
 
-## Expedition foundation
-- Adds five launch regions: **Emerald Wilds**, **Ashen Highlands**, **Mistfen Marshes**, **Frostveil Reach**, and **The Astral Scar**.
-- Adds three expedition depths: **Scout (3 base stages)**, **Journey (5)**, and **Deep Expedition (8)**, plus up to two optional push-deeper stages.
-- Expeditions require both a registered Chocobo and the completed Fellowship Expedition Board.
-- Expedition state is authoritative and persistent across Portal refreshes, browser closure, reconnects, and Bot restarts.
+## Regional progression
+- Expands all five Expedition regions with persistent **25% / 50% / 75% / 100% exploration milestones** and named regional objective chains.
+- Region progress now exposes the next objective, boss-unlock state, boss-clear count, and permanent Mastery state.
+- At 75% exploration, each region unlocks a dedicated Regional Boss Contract and begins admitting level-appropriate rare regional encounters.
 
-## Stage loop
-- Authoritative travel timers lead into weighted regional events: combat, resources, treasure, hazards, discoveries, travelers, and Chocobo events.
-- Route choices support Safe Route, Unknown Route, and Push Deeper risk/reward profiles.
-- HP/MP/AP persist through the journey.
-- Expedition Camp restores part of HP/resources at the cost of additional travel time.
-- Safe Return banks 100% of the current Expedition Cache outside combat.
-- Retreat/defeat uses Chocobo rescue and keeps 70–85% of the carried cache depending on traits.
-- Completed results use the persistent Adventure result inbox and remain until Confirm Result.
+## Regional Boss Contracts
+- **Emerald Wilds — Elder Ochu**
+- **Ashen Highlands — Inferno Drake**
+- **Mistfen Marshes — Malboro Sovereign**
+- **Frostveil Reach — Frost Behemoth**
+- **The Astral Scar — Rift Wyrm**
+- Boss Contracts are persistent multi-stage Expeditions with a guaranteed boss encounter on the final stage, stronger reward multipliers, and guaranteed regional material rewards on victory.
+- Regional boss victories increment a persistent clear counter and add additional regional exploration progress.
 
-## Chocobo integration
-- Existing Chocobo Bond level/XP and traits are active in Expeditions.
-- Traits affect travel speed, hazard weighting, discoveries, resource finds, treasure/Chocobo events, and rescue cache protection.
-- Expeditions award additional Chocobo Bond XP.
+## Region Mastery
+Reaching 100% exploration permanently masters the region and awards a dedicated achievement/title. Each Mastery provides a small region-only Expedition benefit:
+- Emerald Wilds: +5% Discovery event weighting.
+- Ashen Highlands: +5% Resource event weighting.
+- Mistfen Marshes: 5% less Expedition hazard damage.
+- Frostveil Reach: +5% Expedition Camp recovery.
+- The Astral Scar: +5% Treasure event weighting.
 
-## Region progression
-- Per-player region exploration progress, stages cleared, completed runs, and boss-clear counters are persisted for future Expedition milestones.
-- Region progress survives emergency Clear Adventures and normal upgrades.
+## LIVE Portal milestones
+Portal-origin Expedition gameplay remains quiet by default. While Twitch is confirmed LIVE, only notable milestones may post to chat: regional discoveries/milestones, Region Mastery, and Regional Boss victories. Offline Portal play remains silent.
 
-## Safety / continuity
-- Equipment, Jobs, Masteries, stance, normal Camp, and conflicting Adventure modes are locked while an Expedition is active.
-- Streamer **Clear Adventures** now also clears active v1.2 Expeditions without touching secured exploration progress, inventory, player progression, cooldowns, or raids.
-- H9 Rally/Raid timing, LIVE field support, persistent Adventure results, Streamer Inventory Admin, dynamic Camp, Relic visuals, and overlay fixes remain intact.
+## Continuity
+- Existing Alpha 1 Expedition state, exploration progress, Chocobos, Fellowship progress, inventory, and character progression are preserved.
+- Alpha 1 Hotfix 1 Fellowship balance and the Alpha 1 Hotfix 3 Web presentation/artwork fixes remain intact.
 
 ## Technical identity
-- Bot runtime: `1.2.0-expeditions-a1`
-- Local DB schema: **8**
-- Hosted sync schema: **1**
-- Portal Action protocol: **20**
+- Bot runtime: `1.2.0-expeditions-a2`
+- Local DB schema: **8** (unchanged)
+- Hosted sync schema: **1** (unchanged)
+- Portal Action protocol: **20** (unchanged)
 - Twitch prefix: `!`

@@ -417,7 +417,7 @@
   },
   {
     "id": "everyones_grudge",
-    "name": "Everyone’s Grudge",
+    "name": "Everyone\u2019s Grudge",
     "description": "Has made the Tonberry community collectively aware of their existence.",
     "category": "Comedy",
     "rarity": "epic",
@@ -506,7 +506,7 @@
   {
     "id": "master_artisan",
     "name": "Master Artisan",
-    "description": "Crafted enough equipment to start criticizing other people’s hammer technique.",
+    "description": "Crafted enough equipment to start criticizing other people\u2019s hammer technique.",
     "category": "Crafting",
     "rarity": "epic",
     "source": "Achievement"
@@ -626,7 +626,7 @@
   {
     "id": "breath_test_failure",
     "name": "Breath Test Failure",
-    "description": "Has been KO’d by Malboro enough times to identify Bad Breath by vintage.",
+    "description": "Has been KO\u2019d by Malboro enough times to identify Bad Breath by vintage.",
     "category": "Secret",
     "rarity": "rare",
     "source": "Achievement"
@@ -678,5 +678,45 @@
     "category": "Hunts",
     "rarity": "uncommon",
     "source": "Hunt"
+  },
+  {
+    "id": "emerald_pathfinder",
+    "name": "Emerald Pathfinder",
+    "description": "Mapped every road, ruin, and suspiciously aggressive shrub in the Emerald Wilds.",
+    "category": "Expeditions",
+    "rarity": "rare",
+    "source": "Region Mastery"
+  },
+  {
+    "id": "highland_surveyor",
+    "name": "Highland Surveyor",
+    "description": "Charted the Ashen Highlands without becoming part of the geology.",
+    "category": "Expeditions",
+    "rarity": "rare",
+    "source": "Region Mastery"
+  },
+  {
+    "id": "mistfen_delver",
+    "name": "Mistfen Delver",
+    "description": "Returned from every drowned road the Mistfen tried to keep.",
+    "category": "Expeditions",
+    "rarity": "epic",
+    "source": "Region Mastery"
+  },
+  {
+    "id": "frostveil_warden",
+    "name": "Frostveil Warden",
+    "description": "Mastered the Reach and developed strong opinions about adequate socks.",
+    "category": "Expeditions",
+    "rarity": "epic",
+    "source": "Region Mastery"
+  },
+  {
+    "id": "scarwalker",
+    "name": "Scarwalker",
+    "description": "Mapped the Astral Scar despite reality repeatedly objecting.",
+    "category": "Expeditions",
+    "rarity": "legendary",
+    "source": "Region Mastery"
   }
 ]

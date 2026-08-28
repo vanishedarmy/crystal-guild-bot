@@ -480,7 +480,7 @@
   {
     "id": "floor_tank_25",
     "name": "Floor Tank",
-    "description": "Get KO’d 25 times.",
+    "description": "Get KO\u2019d 25 times.",
     "condition": {
       "type": "stat",
       "field": "deaths",
@@ -495,7 +495,7 @@
   {
     "id": "floor_tank_100",
     "name": "OSHA Would Like a Word",
-    "description": "Get KO’d 100 times.",
+    "description": "Get KO\u2019d 100 times.",
     "condition": {
       "type": "stat",
       "field": "deaths",
@@ -537,7 +537,7 @@
   },
   {
     "id": "tonberry_100",
-    "name": "Everybody’s Grudge",
+    "name": "Everybody\u2019s Grudge",
     "description": "Defeat 100 Tonberries.",
     "condition": {
       "type": "monster_kills",
@@ -904,7 +904,7 @@
   {
     "id": "tonberry_ko_10",
     "name": "???",
-    "description": "Be KO’d by Tonberry 10 times.",
+    "description": "Be KO\u2019d by Tonberry 10 times.",
     "condition": {
       "type": "monster_record_defeats",
       "monster_id": "tonberry",
@@ -920,7 +920,7 @@
   {
     "id": "malboro_ko_5",
     "name": "???",
-    "description": "Be KO’d by Malboro 5 times.",
+    "description": "Be KO\u2019d by Malboro 5 times.",
     "condition": {
       "type": "monster_record_defeats",
       "monster_id": "malboro",
@@ -961,6 +961,81 @@
     "category": "Social",
     "tier": "silver",
     "points": 25,
+    "secret": false
+  },
+  {
+    "id": "master_emerald_wilds",
+    "name": "Every Mossy Stone",
+    "description": "Reach 100% exploration in the Emerald Wilds.",
+    "condition": {
+      "type": "expedition_region_progress",
+      "region_id": "emerald_wilds",
+      "amount": 100
+    },
+    "reward_title": "emerald_pathfinder",
+    "category": "Expeditions",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "master_ashen_highlands",
+    "name": "No Mountain Left Unsinged",
+    "description": "Reach 100% exploration in the Ashen Highlands.",
+    "condition": {
+      "type": "expedition_region_progress",
+      "region_id": "ashen_highlands",
+      "amount": 100
+    },
+    "reward_title": "highland_surveyor",
+    "category": "Expeditions",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "master_mistfen_marshes",
+    "name": "Bog Standard Excellence",
+    "description": "Reach 100% exploration in the Mistfen Marshes.",
+    "condition": {
+      "type": "expedition_region_progress",
+      "region_id": "mistfen_marshes",
+      "amount": 100
+    },
+    "reward_title": "mistfen_delver",
+    "category": "Expeditions",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "master_frostveil_reach",
+    "name": "Whiteout Cartographer",
+    "description": "Reach 100% exploration in Frostveil Reach.",
+    "condition": {
+      "type": "expedition_region_progress",
+      "region_id": "frostveil_reach",
+      "amount": 100
+    },
+    "reward_title": "frostveil_warden",
+    "category": "Expeditions",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "master_astral_scar",
+    "name": "Reality Has Been Surveyed",
+    "description": "Reach 100% exploration in the Astral Scar.",
+    "condition": {
+      "type": "expedition_region_progress",
+      "region_id": "astral_scar",
+      "amount": 100
+    },
+    "reward_title": "scarwalker",
+    "category": "Expeditions",
+    "tier": "crystal",
+    "points": 100,
     "secret": false
   }
 ]

@@ -8,19 +8,121 @@
     "identity": "Exploration",
     "hazard": "Overgrown Trails",
     "boss_name": "Elder Ochu",
-    "materials": ["ochu_vine", "cockatrice_pinion", "ancient_cloth"],
-    "encounters": [
-      {"monster_id": "goblin", "weight": 18},
-      {"monster_id": "wolf", "weight": 18},
-      {"monster_id": "mandragora", "weight": 16},
-      {"monster_id": "goblin_guard", "weight": 12},
-      {"monster_id": "cockatrice", "weight": 11},
-      {"monster_id": "ochu", "weight": 9},
-      {"monster_id": "spriggan", "weight": 7},
-      {"monster_id": "cactuar", "weight": 2}
+    "materials": [
+      "ochu_vine",
+      "cockatrice_pinion",
+      "ancient_cloth"
     ],
-    "event_weights": {"combat": 28, "resource": 18, "treasure": 14, "hazard": 8, "discovery": 20, "traveler": 7, "chocobo": 5},
-    "discoveries": ["Forgotten Waystone", "Mossbound Shrine", "Silverfall Crossing", "Old Chocobo Road"]
+    "encounters": [
+      {
+        "monster_id": "goblin",
+        "weight": 18
+      },
+      {
+        "monster_id": "wolf",
+        "weight": 18
+      },
+      {
+        "monster_id": "mandragora",
+        "weight": 16
+      },
+      {
+        "monster_id": "goblin_guard",
+        "weight": 12
+      },
+      {
+        "monster_id": "cockatrice",
+        "weight": 11
+      },
+      {
+        "monster_id": "ochu",
+        "weight": 9
+      },
+      {
+        "monster_id": "spriggan",
+        "weight": 7
+      },
+      {
+        "monster_id": "cactuar",
+        "weight": 2
+      }
+    ],
+    "event_weights": {
+      "combat": 28,
+      "resource": 18,
+      "treasure": 14,
+      "hazard": 8,
+      "discovery": 20,
+      "traveler": 7,
+      "chocobo": 5
+    },
+    "discoveries": [
+      "Forgotten Waystone",
+      "Mossbound Shrine",
+      "Silverfall Crossing",
+      "Old Chocobo Road"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Forgotten Waystones",
+        "description": "Recover the first waystones and reopen the old survey trail.",
+        "unlock": "Expanded discoveries"
+      },
+      {
+        "threshold": 50,
+        "name": "Crystal Waystation",
+        "description": "Trace the ruined road to the abandoned Crystal Waystation.",
+        "unlock": "Improved treasure and resource finds"
+      },
+      {
+        "threshold": 75,
+        "name": "Heart of the Wilds",
+        "description": "Map the overgrown sanctuary where the oldest Ochu nests.",
+        "unlock": "Rare encounters \u00b7 Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Emerald Pathfinder",
+        "description": "Complete the Guild survey of the Emerald Wilds.",
+        "unlock": "Region Mastery"
+      }
+    ],
+    "boss": {
+      "id": "elder_ochu",
+      "name": "Elder Ochu",
+      "monster_id": "elder_ochu",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 300,
+      "reward_mult": 1.35,
+      "guaranteed_rewards": [
+        {
+          "item_id": "ochu_vine",
+          "quantity": 3
+        },
+        {
+          "item_id": "ancient_cloth",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "coeurl",
+        "weight": 5
+      },
+      {
+        "monster_id": "cactuar",
+        "weight": 3
+      }
+    ],
+    "mastery": {
+      "title_id": "emerald_pathfinder",
+      "bonus": "Discovery events +5% in Emerald Wilds",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    }
   },
   {
     "id": "ashen_highlands",
@@ -31,19 +133,121 @@
     "identity": "Combat & Materials",
     "hazard": "Unstable Terrain",
     "boss_name": "Inferno Drake",
-    "materials": ["basilisk_eye", "dragon_scale", "magitek_capacitor"],
-    "encounters": [
-      {"monster_id": "bomb", "weight": 18},
-      {"monster_id": "basilisk", "weight": 16},
-      {"monster_id": "gigas", "weight": 14},
-      {"monster_id": "imp", "weight": 12},
-      {"monster_id": "gargoyle", "weight": 10},
-      {"monster_id": "antlion", "weight": 8},
-      {"monster_id": "mindflayer", "weight": 7},
-      {"monster_id": "cactuar_jack", "weight": 2}
+    "materials": [
+      "basilisk_eye",
+      "dragon_scale",
+      "magitek_capacitor"
     ],
-    "event_weights": {"combat": 38, "resource": 23, "treasure": 10, "hazard": 13, "discovery": 8, "traveler": 4, "chocobo": 4},
-    "discoveries": ["Cinderwatch Fort", "Collapsed Mythril Shaft", "Ancient Forge Road", "Magitek Wreckfield"]
+    "encounters": [
+      {
+        "monster_id": "bomb",
+        "weight": 18
+      },
+      {
+        "monster_id": "basilisk",
+        "weight": 16
+      },
+      {
+        "monster_id": "gigas",
+        "weight": 14
+      },
+      {
+        "monster_id": "imp",
+        "weight": 12
+      },
+      {
+        "monster_id": "gargoyle",
+        "weight": 10
+      },
+      {
+        "monster_id": "antlion",
+        "weight": 8
+      },
+      {
+        "monster_id": "mindflayer",
+        "weight": 7
+      },
+      {
+        "monster_id": "cactuar_jack",
+        "weight": 2
+      }
+    ],
+    "event_weights": {
+      "combat": 38,
+      "resource": 23,
+      "treasure": 10,
+      "hazard": 13,
+      "discovery": 8,
+      "traveler": 4,
+      "chocobo": 4
+    },
+    "discoveries": [
+      "Cinderwatch Fort",
+      "Collapsed Mythril Shaft",
+      "Ancient Forge Road",
+      "Magitek Wreckfield"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Cinderwatch Survey",
+        "description": "Secure the first safe route through the broken highland roads.",
+        "unlock": "Expanded discoveries"
+      },
+      {
+        "threshold": 50,
+        "name": "Ancient Forge Road",
+        "description": "Locate the old forge road beneath the collapsed mining works.",
+        "unlock": "Improved treasure and resource finds"
+      },
+      {
+        "threshold": 75,
+        "name": "Forge of the Ancients",
+        "description": "Reach the volcanic forge complex and identify its guardian.",
+        "unlock": "Rare encounters \u00b7 Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Highland Surveyor",
+        "description": "Complete the Guild survey of the Ashen Highlands.",
+        "unlock": "Region Mastery"
+      }
+    ],
+    "boss": {
+      "id": "inferno_drake",
+      "name": "Inferno Drake",
+      "monster_id": "inferno_drake",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 360,
+      "reward_mult": 1.4,
+      "guaranteed_rewards": [
+        {
+          "item_id": "dragon_scale",
+          "quantity": 2
+        },
+        {
+          "item_id": "magitek_capacitor",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "iron_giant",
+        "weight": 4
+      },
+      {
+        "monster_id": "red_dragon",
+        "weight": 2
+      }
+    ],
+    "mastery": {
+      "title_id": "highland_surveyor",
+      "bonus": "Resource events +5% in Ashen Highlands",
+      "event_type": "resource",
+      "event_mult": 1.05
+    }
   },
   {
     "id": "mistfen_marshes",
@@ -54,19 +258,120 @@
     "identity": "Hazards & Route Risk",
     "hazard": "Toxic Mire",
     "boss_name": "Malboro Sovereign",
-    "materials": ["morbol_spore", "lamia_scale", "mindflayer_tentacle"],
-    "encounters": [
-      {"monster_id": "gigantoad", "weight": 16},
-      {"monster_id": "lamia", "weight": 14},
-      {"monster_id": "mindflayer", "weight": 12},
-      {"monster_id": "tonberry", "weight": 9},
-      {"monster_id": "malboro", "weight": 9},
-      {"monster_id": "black_flan", "weight": 9},
-      {"monster_id": "coeurl", "weight": 8},
-      {"monster_id": "magic_pot", "weight": 1}
+    "materials": [
+      "morbol_spore",
+      "lamia_scale",
+      "mindflayer_tentacle"
     ],
-    "event_weights": {"combat": 31, "resource": 15, "treasure": 11, "hazard": 24, "discovery": 9, "traveler": 4, "chocobo": 6},
-    "discoveries": ["Sunken Causeway", "Temple of Reeds", "Lantern Bog", "The Drowned Bell"]
+    "encounters": [
+      {
+        "monster_id": "gigantoad",
+        "weight": 16
+      },
+      {
+        "monster_id": "lamia",
+        "weight": 14
+      },
+      {
+        "monster_id": "mindflayer",
+        "weight": 12
+      },
+      {
+        "monster_id": "tonberry",
+        "weight": 9
+      },
+      {
+        "monster_id": "malboro",
+        "weight": 9
+      },
+      {
+        "monster_id": "black_flan",
+        "weight": 9
+      },
+      {
+        "monster_id": "coeurl",
+        "weight": 8
+      },
+      {
+        "monster_id": "magic_pot",
+        "weight": 1
+      }
+    ],
+    "event_weights": {
+      "combat": 31,
+      "resource": 15,
+      "treasure": 11,
+      "hazard": 24,
+      "discovery": 9,
+      "traveler": 4,
+      "chocobo": 6
+    },
+    "discoveries": [
+      "Sunken Causeway",
+      "Temple of Reeds",
+      "Lantern Bog",
+      "The Drowned Bell"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Sunken Causeway",
+        "description": "Mark a stable route through the first drowned roads.",
+        "unlock": "Expanded discoveries"
+      },
+      {
+        "threshold": 50,
+        "name": "Temple of Reeds",
+        "description": "Find the outer ruins of the temple beneath the fog.",
+        "unlock": "Improved treasure and resource finds"
+      },
+      {
+        "threshold": 75,
+        "name": "The Drowned Bell",
+        "description": "Reach the deepest temple basin and identify the sovereign Malboro.",
+        "unlock": "Rare encounters \u00b7 Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Mistfen Delver",
+        "description": "Complete the Guild survey of the Mistfen Marshes.",
+        "unlock": "Region Mastery"
+      }
+    ],
+    "boss": {
+      "id": "malboro_sovereign",
+      "name": "Malboro Sovereign",
+      "monster_id": "malboro_sovereign",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 390,
+      "reward_mult": 1.45,
+      "guaranteed_rewards": [
+        {
+          "item_id": "morbol_spore",
+          "quantity": 3
+        },
+        {
+          "item_id": "lamia_scale",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "malboro_great",
+        "weight": 4
+      },
+      {
+        "monster_id": "master_tonberry",
+        "weight": 2
+      }
+    ],
+    "mastery": {
+      "title_id": "mistfen_delver",
+      "bonus": "Hazard damage -5% in Mistfen Marshes",
+      "hazard_mult": 0.95
+    }
   },
   {
     "id": "frostveil_reach",
@@ -77,19 +382,120 @@
     "identity": "Endurance",
     "hazard": "Bitter Cold",
     "boss_name": "Frost Behemoth",
-    "materials": ["behemoth_hide", "dragon_scale", "celestial_thread"],
-    "encounters": [
-      {"monster_id": "sand_worm", "weight": 6},
-      {"monster_id": "chimera", "weight": 13},
-      {"monster_id": "adamantoise", "weight": 10},
-      {"monster_id": "ahriman", "weight": 11},
-      {"monster_id": "iron_giant", "weight": 12},
-      {"monster_id": "behemoth", "weight": 8},
-      {"monster_id": "evil_eye", "weight": 6},
-      {"monster_id": "malboro_great", "weight": 4}
+    "materials": [
+      "behemoth_hide",
+      "dragon_scale",
+      "celestial_thread"
     ],
-    "event_weights": {"combat": 34, "resource": 12, "treasure": 10, "hazard": 25, "discovery": 8, "traveler": 3, "chocobo": 8},
-    "discoveries": ["Frostveil Bastion", "Glass-Ice Lake", "Whitewind Pass", "Buried Watchtower"]
+    "encounters": [
+      {
+        "monster_id": "sand_worm",
+        "weight": 6
+      },
+      {
+        "monster_id": "chimera",
+        "weight": 13
+      },
+      {
+        "monster_id": "adamantoise",
+        "weight": 10
+      },
+      {
+        "monster_id": "ahriman",
+        "weight": 11
+      },
+      {
+        "monster_id": "iron_giant",
+        "weight": 12
+      },
+      {
+        "monster_id": "behemoth",
+        "weight": 8
+      },
+      {
+        "monster_id": "evil_eye",
+        "weight": 6
+      },
+      {
+        "monster_id": "malboro_great",
+        "weight": 4
+      }
+    ],
+    "event_weights": {
+      "combat": 34,
+      "resource": 12,
+      "treasure": 10,
+      "hazard": 25,
+      "discovery": 8,
+      "traveler": 3,
+      "chocobo": 8
+    },
+    "discoveries": [
+      "Frostveil Bastion",
+      "Glass-Ice Lake",
+      "Whitewind Pass",
+      "Buried Watchtower"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Whitewind Pass",
+        "description": "Establish a marked route through the first mountain pass.",
+        "unlock": "Expanded discoveries"
+      },
+      {
+        "threshold": 50,
+        "name": "Buried Watchtower",
+        "description": "Recover the watchtower records beneath the snow.",
+        "unlock": "Improved treasure and resource finds"
+      },
+      {
+        "threshold": 75,
+        "name": "Frostveil Bastion",
+        "description": "Open the buried fortress approach and locate its guardian.",
+        "unlock": "Rare encounters \u00b7 Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Frostveil Warden",
+        "description": "Complete the Guild survey of Frostveil Reach.",
+        "unlock": "Region Mastery"
+      }
+    ],
+    "boss": {
+      "id": "frost_behemoth",
+      "name": "Frost Behemoth",
+      "monster_id": "frost_behemoth",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 420,
+      "reward_mult": 1.5,
+      "guaranteed_rewards": [
+        {
+          "item_id": "behemoth_hide",
+          "quantity": 2
+        },
+        {
+          "item_id": "celestial_thread",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "behemoth_tyrant",
+        "weight": 3
+      },
+      {
+        "monster_id": "storm_dragon",
+        "weight": 2
+      }
+    ],
+    "mastery": {
+      "title_id": "frostveil_warden",
+      "bonus": "Expedition Camp recovery +5% in Frostveil Reach",
+      "camp_bonus": 0.05
+    }
   },
   {
     "id": "astral_scar",
@@ -100,20 +506,132 @@
     "identity": "Instability & Rare Encounters",
     "hazard": "Astral Instability",
     "boss_name": "Rift Wyrm",
-    "materials": ["celestial_thread", "nemesis_mark", "dragon_scale"],
-    "encounters": [
-      {"monster_id": "ahriman", "weight": 12},
-      {"monster_id": "iron_giant", "weight": 11},
-      {"monster_id": "behemoth", "weight": 10},
-      {"monster_id": "death_machine", "weight": 9},
-      {"monster_id": "crystal_wolf", "weight": 10},
-      {"monster_id": "crystal_golem", "weight": 8},
-      {"monster_id": "red_dragon", "weight": 6},
-      {"monster_id": "holy_dragon", "weight": 4},
-      {"monster_id": "storm_dragon", "weight": 3},
-      {"monster_id": "rift_drake", "weight": 2}
+    "materials": [
+      "celestial_thread",
+      "nemesis_mark",
+      "dragon_scale"
     ],
-    "event_weights": {"combat": 36, "resource": 10, "treasure": 15, "hazard": 19, "discovery": 9, "traveler": 2, "chocobo": 9},
-    "discoveries": ["Shattered Observatory", "Floating Reliquary", "Crystal Fault", "The Broken Meridian"]
+    "encounters": [
+      {
+        "monster_id": "ahriman",
+        "weight": 12
+      },
+      {
+        "monster_id": "iron_giant",
+        "weight": 11
+      },
+      {
+        "monster_id": "behemoth",
+        "weight": 10
+      },
+      {
+        "monster_id": "death_machine",
+        "weight": 9
+      },
+      {
+        "monster_id": "crystal_wolf",
+        "weight": 10
+      },
+      {
+        "monster_id": "crystal_golem",
+        "weight": 8
+      },
+      {
+        "monster_id": "red_dragon",
+        "weight": 6
+      },
+      {
+        "monster_id": "holy_dragon",
+        "weight": 4
+      },
+      {
+        "monster_id": "storm_dragon",
+        "weight": 3
+      },
+      {
+        "monster_id": "rift_drake",
+        "weight": 2
+      }
+    ],
+    "event_weights": {
+      "combat": 36,
+      "resource": 10,
+      "treasure": 15,
+      "hazard": 19,
+      "discovery": 9,
+      "traveler": 2,
+      "chocobo": 9
+    },
+    "discoveries": [
+      "Shattered Observatory",
+      "Floating Reliquary",
+      "Crystal Fault",
+      "The Broken Meridian"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Crystal Fault",
+        "description": "Stabilize the first survey route through the fractured ground.",
+        "unlock": "Expanded discoveries"
+      },
+      {
+        "threshold": 50,
+        "name": "Shattered Observatory",
+        "description": "Recover readings from the floating observatory ruins.",
+        "unlock": "Improved treasure and resource finds"
+      },
+      {
+        "threshold": 75,
+        "name": "The Broken Meridian",
+        "description": "Trace the dimensional breach to the Rift Wyrm nesting ground.",
+        "unlock": "Rare encounters \u00b7 Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Scarwalker",
+        "description": "Complete the Guild survey of the Astral Scar.",
+        "unlock": "Region Mastery"
+      }
+    ],
+    "boss": {
+      "id": "rift_wyrm",
+      "name": "Rift Wyrm",
+      "monster_id": "rift_wyrm",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 480,
+      "reward_mult": 1.6,
+      "guaranteed_rewards": [
+        {
+          "item_id": "celestial_thread",
+          "quantity": 2
+        },
+        {
+          "item_id": "nemesis_mark",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "holy_dragon",
+        "weight": 3
+      },
+      {
+        "monster_id": "storm_dragon",
+        "weight": 3
+      },
+      {
+        "monster_id": "rift_drake",
+        "weight": 4
+      }
+    ],
+    "mastery": {
+      "title_id": "scarwalker",
+      "bonus": "Treasure events +5% in the Astral Scar",
+      "event_type": "treasure",
+      "event_mult": 1.05
+    }
   }
 ]

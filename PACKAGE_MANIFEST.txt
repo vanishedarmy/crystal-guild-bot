@@ -1,33 +1,17 @@
-Crystal Guild v1.2.0 Expeditions Alpha 1 — Bot Package Manifest
-Runtime: 1.2.0-expeditions-a1
+Crystal Guild v1.2.0 Expeditions Alpha 2 — Bot Package Manifest
+Runtime: 1.2.0-expeditions-a2
 Local DB schema: 8
 Hosted sync schema: 1
 Portal Action protocol: 20
 
-Files (131):
+Files (132):
 .env.example
 .gitignore
 .python-version
+backup_database.bat
 CHANGELOG.md
 COMBAT_DEVELOPER_GUIDE.md
 COMBAT_GUIDE.md
-CRYSTAL_GUILD_CONTROL_PANEL.bat
-FINALIZATION_AUDIT.md
-FULL_SETUP_README.md
-GAME_DESIGN.md
-MANUAL_TEST_CHECKLIST.md
-README.md
-README_FIRST.txt
-RELEASE_NOTES.md
-RELEASE_NOTES_HOTFIX4.md
-RENDER_CLOUD_SETUP.md
-SIMPLE_RENDER_SETUP.md
-UPGRADE_GUIDE.md
-UPGRADE_GUIDE_HOTFIX4.md
-VALIDATION_REPORT.md
-VERSION.txt
-WEB_SYNC_SETUP.md
-backup_database.bat
 crystal_guild/__init__.py
 crystal_guild/active_battle.py
 crystal_guild/balance.py
@@ -55,6 +39,7 @@ crystal_guild/subscription_status.py
 crystal_guild/time_format.py
 crystal_guild/token_store.py
 crystal_guild/twitch_bot.py
+CRYSTAL_GUILD_CONTROL_PANEL.bat
 data/achievements.json
 data/active_abilities.json
 data/bosses.json
@@ -72,15 +57,25 @@ data/regions.json
 data/relics.json
 data/seal_shop.json
 data/titles.json
+FINALIZATION_AUDIT.md
+FULL_SETUP_README.md
+GAME_DESIGN.md
 generate_portal_sync_key.bat
 generate_portal_sync_key.py
 import_twitch_tokens.py
+MANUAL_TEST_CHECKLIST.md
 open_twitch_authorization.bat
 overlay/raid_overlay.html
 overlay/state.json
+PACKAGE_MANIFEST.txt
 prepare_render_migration.py
 pyproject.toml
+README.md
+README_FIRST.txt
+RELEASE_NOTES.md
+RELEASE_NOTES_HOTFIX4.md
 render.yaml
+RENDER_CLOUD_SETUP.md
 requirements.txt
 resolve_twitch_ids.bat
 resolve_twitch_ids.py
@@ -101,6 +96,7 @@ run_simulator.py
 run_stress_test.bat
 run_stress_test.py
 setup_windows.bat
+SIMPLE_RENDER_SETUP.md
 test_portal_sync.bat
 tests/test_achievements_titles.py
 tests/test_active_battle.py
@@ -136,3 +132,8 @@ tests/test_subscription_status.py
 tests/test_wayfarer.py
 upgrade_crystal_guild.bat
 upgrade_crystal_guild.py
+UPGRADE_GUIDE.md
+UPGRADE_GUIDE_HOTFIX4.md
+VALIDATION_REPORT.md
+VERSION.txt
+WEB_SYNC_SETUP.md

@@ -2207,5 +2207,30 @@
         }
       ]
     }
+  },
+  {
+    "id": "elder_ochu",
+    "profile": "berserker",
+    "ability": null
+  },
+  {
+    "id": "inferno_drake",
+    "profile": "caster",
+    "ability": null
+  },
+  {
+    "id": "malboro_sovereign",
+    "profile": "controller",
+    "ability": null
+  },
+  {
+    "id": "frost_behemoth",
+    "profile": "berserker",
+    "ability": null
+  },
+  {
+    "id": "rift_wyrm",
+    "profile": "caster",
+    "ability": null
   }
 ]

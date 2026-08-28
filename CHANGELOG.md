@@ -1,3 +1,11 @@
+# v1.2.0 — Expeditions Alpha 2
+- Adds five regional objective chains with 25/50/75/100% exploration milestones.
+- Unlocks dedicated Regional Boss Contracts at 75% exploration: Elder Ochu, Inferno Drake, Malboro Sovereign, Frost Behemoth, and Rift Wyrm.
+- Adds rare regional encounters at advanced exploration, persistent boss clears, guaranteed boss materials, and 100% Region Mastery.
+- Adds five Region Mastery achievements/titles and modest region-specific Expedition bonuses.
+- Adds LIVE-only Portal milestone announcements for major discoveries, Mastery, and Regional Boss victories.
+- Keeps local DB schema 8, hosted sync schema 1, and Portal Action protocol 20 unchanged.
+
 # Crystal Guild Changelog
 
 ## v1.2.0 — Expeditions Alpha 1

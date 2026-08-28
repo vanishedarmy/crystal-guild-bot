@@ -572,7 +572,7 @@ class GameData:
                 require(self.items, material.get("item_id"), f"forge +{tier.get('level')}")
         valid_categories = {
             "Adventure", "Combat", "Bestiary", "Hunts", "Jobs", "Crafting",
-            "Economy", "Relics", "Raids", "Social", "Comedy", "Boss", "Secret",
+            "Economy", "Relics", "Raids", "Social", "Comedy", "Boss", "Secret", "Expeditions",
         }
         valid_tiers = {"bronze", "silver", "gold", "crystal"}
         for achievement in self.achievements.values():

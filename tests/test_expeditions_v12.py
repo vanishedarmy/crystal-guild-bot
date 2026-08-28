@@ -147,6 +147,71 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertIn("Expedition", " ".join(equip.messages))
         self.assertIn("Expedition", " ".join(unequip.messages))
 
+
+    def test_alpha2_region_objectives_mastery_and_boss_unlock(self):
+        self.unlock()
+        initial = self.game._expedition_progress("100", "emerald_wilds")
+        self.assertEqual([row["threshold"] for row in initial["objectives"]], [25, 50, 75, 100])
+        self.assertFalse(initial["boss_unlocked"])
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress) VALUES ('100','emerald_wilds',75) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=75"
+        )
+        progress = self.game._expedition_progress("100", "emerald_wilds")
+        self.assertTrue(progress["boss_unlocked"])
+        board = self.game._expedition_board_state("100")
+        emerald = next(row for row in board["regions"] if row["id"] == "emerald_wilds")
+        self.assertEqual(emerald["boss_name"], "Elder Ochu")
+        self.assertTrue(emerald["progress"]["boss_unlocked"])
+
+    def test_alpha2_regional_boss_contract_is_guaranteed_final_stage(self):
+        self.unlock()
+        locked = self.game.expedition_start("100", "emerald_wilds", "boss")
+        self.assertFalse(locked.ok)
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress) VALUES ('100','emerald_wilds',75) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=75"
+        )
+        started = self.game.expedition_start("100", "emerald_wilds", "boss")
+        self.assertTrue(started.ok, started.messages)
+        state = self.game._expedition_load("100")
+        self.assertTrue(state["boss_contract"])
+        self.assertEqual(state["base_stages"], 4)
+        self.assertEqual(state["max_stages"], 4)
+        state["stage"] = 4
+        state["status"] = "travel"
+        state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        resolved = self.game.expedition_resolve_stage("100")
+        self.assertTrue(resolved.ok, resolved.messages)
+        state = self.game._expedition_load("100")
+        self.assertEqual(state["status"], "combat")
+        self.assertTrue(state["boss_encounter"])
+        self.assertEqual(state["combat"]["encounter"]["monster_id"], "elder_ochu")
+
+    def test_alpha2_regional_boss_clear_and_mastery_title(self):
+        self.unlock()
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress) VALUES ('100','emerald_wilds',90) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=90"
+        )
+        self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "boss").ok)
+        state = self.game._expedition_load("100")
+        state["stage"] = 4; state["status"] = "travel"; state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        self.assertTrue(self.game.expedition_resolve_stage("100").ok)
+        with patch.object(self.game, "_resolve_active_attack", side_effect=lambda actor, monster, log: self.game.active_encounter.__setitem__("monster_hp", 0)):
+            result = self.game.expedition_combat_action("100", "attack")
+        self.assertTrue(result.ok, result.messages)
+        self.assertTrue(result.data.get("expedition_boss_victory"))
+        progress = self.game._expedition_progress("100", "emerald_wilds")
+        self.assertEqual(progress["boss_clears"], 1)
+        self.assertEqual(progress["progress"], 100)
+        self.assertTrue(progress["mastered"])
+        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_titles WHERE player_id='100' AND title_id='emerald_pathfinder'"))
+        cache = self.game._expedition_load("100")["cache"]
+        self.assertTrue(any(row["id"] == "ochu_vine" for row in cache["items"]))
+
     def test_adventure_state_exposes_compact_expedition_board(self):
         self.unlock("keen_eye")
         state = self.game._portal_adventure_state_data("100")

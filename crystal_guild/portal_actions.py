@@ -197,6 +197,18 @@ class PortalActionWorker:
 
     def _stage_notable_portal_result(self, action: dict[str, Any], message: str, data: dict[str, Any]) -> None:
         action_type = str(action.get("type") or "").strip().upper()
+        if action_type.startswith("EXPEDITION_"):
+            announcement = " ".join(str(data.get("expedition_announcement") or "").split())[:360]
+            if announcement:
+                twitch_id = str(action.get("twitch_id") or "").strip()
+                player = self.game.db.one("SELECT display_name,username FROM players WHERE twitch_id=?", (twitch_id,))
+                display_name = str(player["display_name"] or player["username"]) if player else "Adventurer"
+                self._stage_post_ack_announcement(
+                    str(action.get("id") or ""),
+                    GameResult.success(f"EXPEDITION — {display_name}: {announcement}"),
+                    live_only=True,
+                )
+            return
         if action_type not in {
             "SOLO_VENTURE", "SOLO_EXPEDITION_ACTION", "SOLO_EXPEDITION_CONTINUE",
             "SOLO_EXPEDITION_RETURN", "SOLO_EXPEDITION_RETREAT",

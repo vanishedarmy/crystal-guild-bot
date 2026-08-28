@@ -2,7 +2,7 @@
 
 Expeditions Alpha 1 activates the five-region Chocobo Expedition system on top of the verified Retro Phase III / H9 runtime foundation.
 
-Runtime `1.2.0-expeditions-a1` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
+Runtime `1.2.0-expeditions-a2` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
 
 
 Latest Hunt timing: C 15m · B 30m · A 2h · S 5h. Hunts resolve autonomously with no round-by-round chat input.

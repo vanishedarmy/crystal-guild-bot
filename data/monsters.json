@@ -2837,7 +2837,7 @@
     "gil": 4523,
     "weakness": "Holy",
     "special": {
-      "name": "Pharaoh’s Curse",
+      "name": "Pharaoh\u2019s Curse",
       "chance": 0.256,
       "multiplier": 2.81
     },
@@ -3026,7 +3026,7 @@
   },
   {
     "id": "great_malboro_omega",
-    "name": "Great Malboro Ω",
+    "name": "Great Malboro \u03a9",
     "level": 92,
     "hp": 11358,
     "attack": 419,
@@ -3105,6 +3105,146 @@
       {
         "item_id": "magitek_core",
         "chance": 0.5
+      }
+    ]
+  },
+  {
+    "id": "elder_ochu",
+    "name": "Elder Ochu",
+    "level": 14,
+    "hp": 583,
+    "attack": 73,
+    "defense": 42,
+    "spirit": 40,
+    "xp": 233,
+    "jp": 93,
+    "gil": 142,
+    "weakness": "Fire",
+    "special": {
+      "name": "Ancient Root Crush",
+      "chance": 0.2,
+      "multiplier": 1.65
+    },
+    "drops": [
+      {
+        "item_id": "ochu_vine",
+        "chance": 0.65
+      },
+      {
+        "item_id": "ancient_cloth",
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "id": "inferno_drake",
+    "name": "Inferno Drake",
+    "level": 24,
+    "hp": 857,
+    "attack": 114,
+    "defense": 49,
+    "spirit": 27,
+    "xp": 474,
+    "jp": 73,
+    "gil": 211,
+    "weakness": "Ice",
+    "special": {
+      "name": "Cinder Breath",
+      "chance": 0.2,
+      "multiplier": 1.85
+    },
+    "drops": [
+      {
+        "item_id": "dragon_scale",
+        "chance": 0.55
+      },
+      {
+        "item_id": "magitek_capacitor",
+        "chance": 0.3
+      }
+    ]
+  },
+  {
+    "id": "malboro_sovereign",
+    "name": "Malboro Sovereign",
+    "level": 32,
+    "hp": 1498,
+    "attack": 154,
+    "defense": 70,
+    "spirit": 84,
+    "xp": 882,
+    "jp": 104,
+    "gil": 441,
+    "weakness": "Fire",
+    "special": {
+      "name": "Sovereign Bad Breath",
+      "chance": 0.2,
+      "multiplier": 1.9
+    },
+    "drops": [
+      {
+        "item_id": "morbol_spore",
+        "chance": 0.65
+      },
+      {
+        "item_id": "lamia_scale",
+        "chance": 0.28
+      }
+    ]
+  },
+  {
+    "id": "frost_behemoth",
+    "name": "Frost Behemoth",
+    "level": 42,
+    "hp": 2377,
+    "attack": 199,
+    "defense": 105,
+    "spirit": 93,
+    "xp": 1337,
+    "jp": 130,
+    "gil": 720,
+    "weakness": "Fire",
+    "special": {
+      "name": "Glacial Meteor",
+      "chance": 0.2,
+      "multiplier": 2.05
+    },
+    "drops": [
+      {
+        "item_id": "behemoth_hide",
+        "chance": 0.55
+      },
+      {
+        "item_id": "celestial_thread",
+        "chance": 0.22
+      }
+    ]
+  },
+  {
+    "id": "rift_wyrm",
+    "name": "Rift Wyrm",
+    "level": 50,
+    "hp": 2696,
+    "attack": 146,
+    "defense": 87,
+    "spirit": 90,
+    "xp": 2213,
+    "jp": 137,
+    "gil": 1278,
+    "weakness": "Holy",
+    "special": {
+      "name": "Meridian Rupture",
+      "chance": 0.2,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "nemesis_mark",
+        "chance": 0.38
+      },
+      {
+        "item_id": "celestial_thread",
+        "chance": 0.32
       }
     ]
   }
