@@ -1,3 +1,3 @@
 """Crystal Guild package."""
 
-__version__ = "1.2.0-expeditions-a1"
+__version__ = "1.2.0-expeditions-a1h1"

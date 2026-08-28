@@ -312,7 +312,7 @@ class PortalRepository:
             available = []
             for project in PROJECTS.values():
                 if project.get("teaser"):
-                    if expedition_done or hall < 5 or level < int(project["required_level"]):
+                    if expedition_done or hall < int(project.get("required_hall_tier", 5)) or level < int(project["required_level"]):
                         continue
                 else:
                     current = int(tiers.get(project["facility_id"], 0))

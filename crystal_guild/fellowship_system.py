@@ -193,7 +193,7 @@ class FellowshipSystem:
         result = []
         for project in PROJECTS.values():
             if project.get("teaser"):
-                if expedition_done or hall < 5 or level < int(project["required_level"]):
+                if expedition_done or hall < int(project.get("required_hall_tier", 5)) or level < int(project["required_level"]):
                     continue
             else:
                 current = int(tiers.get(project["facility_id"], 0))
@@ -332,6 +332,40 @@ class FellowshipSystem:
         base = ACTIVITY_RENOWN.get(activity, 0) if renown is None else int(renown)
         personal_renown = max(0, base * amount if activity in {"craft"} else base)
         return self._award_renown(str(player_id), personal_renown, event_key, activity, amount, progress_activity=True)
+
+    def record_shared_activity(
+        self,
+        activity: str,
+        *,
+        amount: int = 1,
+        event_key: str | None = None,
+        renown: int = 0,
+    ) -> list[str]:
+        """Record one Guild-wide activity event rather than one event per participant.
+
+        This is used for milestones such as a raid clear where the Fellowship should
+        advance once for the resolved raid, regardless of raid roster size.
+        """
+        amount = max(1, int(amount))
+        event_key = event_key or f"shared:{activity}:{time.time_ns()}"
+        old_state = self._state()
+        old_level = int(old_state["level"] if old_state else 1)
+        with self.db.tx() as conn:
+            inserted = conn.execute(
+                "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,?,?,?)",
+                (str(event_key), str(activity), int(renown), int(amount)),
+            ).rowcount
+            if not inserted:
+                return []
+            if renown:
+                conn.execute(
+                    "UPDATE fellowship_state SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+                    (int(renown),),
+                )
+            self._progress_project_activity(conn, None, activity, amount)
+            self._progress_orders(conn, None, activity, amount)
+            self._progress_deeds(conn, None, activity, amount)
+        return self._finalize_progress(None, old_level, None)
 
     def _award_renown(
         self,

@@ -91,6 +91,56 @@ class FellowshipTests(unittest.TestCase):
         self.assertEqual(self.game.fellowship_system.effective_forge_gil(1000), 900)
         self.assertEqual(self.game.fellowship_system.apply_jp_bonus(100), 105)
 
+
+    def test_guild_hall_projects_use_shared_raid_clears_not_project_completion(self):
+        project = self.game.fellowship_system.project_snapshot("guild_hall_t2")
+        reqs = {req["key"]: req for req in project["requirements"]}
+        self.assertIn("activity:raid_clear", reqs)
+        self.assertEqual(reqs["activity:raid_clear"]["target"], 3)
+        self.assertEqual(reqs["activity:raid_clear"]["label"], "Guild raids won")
+        self.assertNotIn("activity:project_complete", reqs)
+
+        self.db.execute("UPDATE fellowship_state SET level=2,renown=1000 WHERE singleton_id=1")
+        self.assertTrue(self.game.set_fellowship_project("guild_hall").ok)
+        for idx in range(2):
+            self.game.fellowship_system.record_shared_activity("raid_clear", event_key=f"guild-hall-raid:{idx}")
+        active = self.game.fellowship_system.project_snapshot()
+        raid_req = next(req for req in active["requirements"] if req["key"] == "activity:raid_clear")
+        self.assertEqual(raid_req["current"], 2)
+
+        # A duplicate shared raid event never advances construction twice.
+        self.game.fellowship_system.record_shared_activity("raid_clear", event_key="guild-hall-raid:1")
+        active = self.game.fellowship_system.project_snapshot()
+        raid_req = next(req for req in active["requirements"] if req["key"] == "activity:raid_clear")
+        self.assertEqual(raid_req["current"], 2)
+
+    def test_expedition_board_unlocks_at_lvl6_hall1_and_completes_as_board_not_hall_upgrade(self):
+        # Hall Tier 1 is the established baseline; LVL 5 is still too early.
+        self.db.execute("UPDATE fellowship_state SET level=5,renown=12999,expedition_board_complete=0 WHERE singleton_id=1")
+        ids = {p["id"] for p in self.game.fellowship_system.available_projects()}
+        self.assertNotIn("expedition_board", ids)
+
+        self.db.execute("UPDATE fellowship_state SET level=6,renown=13000 WHERE singleton_id=1")
+        available = {p["id"]: p for p in self.game.fellowship_system.available_projects()}
+        self.assertIn("expedition_board", available)
+        board = available["expedition_board"]
+        self.assertEqual(board["required_hall_tier"], 1)
+        reqs = {req["key"]: req for req in board["requirements"]}
+        self.assertEqual(reqs["fellowship_level"]["target"], 6)
+        self.assertEqual(reqs["activity:raid_clear"]["target"], 5)
+
+        self.assertTrue(self.game.set_fellowship_project("expedition_board").ok)
+        self.db.execute("UPDATE fellowship_project_progress SET current=200000 WHERE project_id='expedition_board' AND requirement_key='gil'")
+        self.db.execute("UPDATE fellowship_project_progress SET current=100 WHERE project_id='expedition_board' AND requirement_key='item:ancient_coin'")
+        for idx in range(5):
+            self.game.fellowship_system.record_shared_activity("raid_clear", event_key=f"board-raid:{idx}")
+
+        state = self.db.one("SELECT expedition_board_complete,active_project_id FROM fellowship_state WHERE singleton_id=1")
+        hall = self.db.one("SELECT tier FROM fellowship_facilities WHERE facility_id='guild_hall'")
+        self.assertEqual(int(state["expedition_board_complete"]), 1)
+        self.assertIsNone(state["active_project_id"])
+        self.assertEqual(int(hall["tier"]), 1)
+
     def test_project_completion_upgrades_facility_and_applies_shared_benefit(self):
         self.assertTrue(self.game.set_fellowship_project("infirmary").ok)
         self.db.execute(

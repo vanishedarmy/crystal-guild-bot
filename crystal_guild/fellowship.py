@@ -46,10 +46,10 @@ FACILITIES: dict[str, dict[str, Any]] = {
             "Tier II projects unlocked",
             "Tier III projects unlocked",
             "Tier IV projects unlocked",
-            "Expedition Board project unlocked",
+            "Guild project capacity maximized",
         ],
         "material": "ancient_coin",
-        "activity": "project_complete",
+        "activity": "raid_clear",
     },
     "infirmary": {
         "name": "Infirmary",
@@ -176,7 +176,8 @@ def _activity_label(activity: str) -> str:
         "combat_victory": "Combat victories",
         "monster_victory": "Monsters defeated",
         "hunt_win": "Hunts won",
-        "raid_win": "Raids won",
+        "raid_win": "Raid wins",
+        "raid_clear": "Guild raids won",
         "craft": "Items crafted",
         "forge": "Forge upgrades",
         "job_mastery": "Jobs mastered",
@@ -201,21 +202,22 @@ for _facility_id, _facility in FACILITIES.items():
             "requirements": _project_requirements(_facility_id, _tier),
         }
 
-# v1.2 Expeditions: completing Guild Hall V unlocks the shared Expedition Board.
-# The completed Board is the Fellowship-wide launch gate for distant contracts.
+# v1.2 Expeditions: the shared Expedition Board becomes available at Fellowship LVL 6 once Guild Hall Tier 1 is established.
+# Completing the Board is the Fellowship-wide launch gate for distant contracts.
 PROJECTS["expedition_board"] = {
     "id": "expedition_board",
     "facility_id": "guild_hall",
-    "tier": 5,
+    "tier": 1,
     "name": "Expedition Board",
     "description": "Prepare the Guild Hall for distant contracts. Completing this Board unlocks Expeditions for adventurers with a registered Chocobo.",
-    "required_level": 10,
-    "teaser": False,
+    "required_level": 6,
+    "required_hall_tier": 1,
+    "teaser": True,
     "requirements": [
         {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 200_000, "label": "Gil"},
         {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 100, "label": "Ancient Coin"},
-        {"key": "activity:project_complete", "kind": "activity", "asset_id": "project_complete", "target": 12, "label": "Projects completed"},
-        {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 10, "label": "Fellowship LVL"},
+        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 5, "label": "Guild raids won"},
+        {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 6, "label": "Fellowship LVL"},
     ],
 }
 
@@ -233,7 +235,7 @@ DEEDS = [
     {"id": "road_warriors", "name": "Road Warriors", "activity": "venture_complete", "target": 1_000, "renown": 750, "description": "Complete 1,000 Ventures."},
     {"id": "treasure_hunters", "name": "Treasure Hunters", "activity": "treasure", "target": 250, "renown": 600, "description": "Find 250 Venture treasure chests."},
     {"id": "bounty_board", "name": "Bounty Board", "activity": "hunt_win", "target": 100, "renown": 600, "description": "Defeat 100 Hunt marks."},
-    {"id": "giant_killers", "name": "Giant Killers", "activity": "raid_win", "target": 25, "renown": 1_000, "description": "Win 25 Guild raids."},
+    {"id": "giant_killers", "name": "Giant Killers", "activity": "raid_clear", "target": 25, "renown": 1_000, "description": "Win 25 Guild raids."},
     {"id": "master_artisans", "name": "Master Artisans", "activity": "craft", "target": 500, "renown": 650, "description": "Craft 500 items."},
     {"id": "tempered_steel", "name": "Tempered Steel", "activity": "forge", "target": 500, "renown": 650, "description": "Complete 500 forge upgrades."},
     {"id": "many_paths", "name": "Many Paths", "activity": "job_mastery", "target": 25, "renown": 750, "description": "Master 25 Jobs across the Fellowship."},
