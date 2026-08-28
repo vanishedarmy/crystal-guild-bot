@@ -10,7 +10,8 @@ from unittest.mock import patch
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine
-from crystal_guild.expeditions import defeat_cache_keep, effective_travel_seconds
+from crystal_guild.expeditions import defeat_cache_keep, effective_travel_seconds, resource_yield_bonus
+from crystal_guild.chocobo import expedition_specialization, total_xp_floor_for_level
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -356,6 +357,55 @@ class ExpeditionV12Tests(unittest.TestCase):
         label = self.game._expedition_load("100")["event"]["label"]
         regional = self.data.expedition_regions["ashen_highlands"]["regional_events"]["resource"]
         self.assertTrue(any(label.startswith(prefix) for prefix in regional), label)
+
+    def test_alpha5_specialization_scales_from_existing_trait_and_bond_level(self):
+        self.unlock("keen_eye")
+        self.db.execute("UPDATE player_chocobos SET xp=? WHERE player_id='100'", (total_xp_floor_for_level(20),))
+        spec = expedition_specialization({"keen_eye"}, 20)
+        self.assertEqual(spec["name"], "Scout")
+        self.assertEqual(spec["tier"], 5)
+        self.assertTrue(spec["maxed"])
+        board = self.game._expedition_board_state("100")
+        self.assertEqual(board["chocobo"]["specialization"]["name"], "Scout")
+        self.assertEqual(board["chocobo"]["specialization"]["tier"], 5)
+        stable = self.game._chocobo_state_data("100")
+        self.assertEqual(stable["companion"]["specialization"]["tier_name"], "Legendary Partner")
+
+    def test_alpha5_bond_tier_improves_pathfinder_and_forager_effects(self):
+        self.assertEqual(effective_travel_seconds(240, {"fleet_feet"}, 1), 204)
+        self.assertEqual(effective_travel_seconds(240, {"fleet_feet"}, 20), 194)
+        self.assertEqual(resource_yield_bonus({"forager"}, 1), 1)
+        self.assertEqual(resource_yield_bonus({"forager"}, 15), 2)
+        self.assertAlmostEqual(defeat_cache_keep({"steady_strider", "lucky_plume"}, 20), 0.90)
+
+    def test_alpha5_completed_expedition_awards_existing_hunt_seal_stipend(self):
+        self.unlock("fleet_feet")
+        before = int(self.game._player("100")["hunt_seals"] or 0)
+        self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "scout").ok)
+        state = self.game._expedition_load("100")
+        state["stage"] = state["base_stages"]
+        state["status"] = "choice"
+        state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        result = self.game.expedition_return("100")
+        self.assertTrue(result.ok, result.messages)
+        after = int(self.game._player("100")["hunt_seals"] or 0)
+        self.assertEqual(after - before, 2)
+        self.assertEqual(result.data["expedition_result"]["rewards"]["seals"], 2)
+        self.assertEqual(result.data["expedition_result"]["stipend_seals"], 2)
+        metric = self.db.one("SELECT value FROM player_record_stats WHERE player_id='100' AND metric='expeditions_completed'")
+        self.assertEqual(int(metric["value"]), 1)
+        stable = self.game._chocobo_state_data("100")
+        self.assertEqual(stable["companion"]["accomplishments"]["completed"], 1)
+
+    def test_alpha5_contract_stipends_reward_repeat_play_without_new_currency(self):
+        normal = {"depth": "deep"}
+        boss = {"boss_contract": True}
+        legendary = {"boss_contract": True, "legendary_contract": True}
+        self.assertEqual(self.game._expedition_stipend(normal, "complete"), 7)
+        self.assertEqual(self.game._expedition_stipend(boss, "complete"), 10)
+        self.assertEqual(self.game._expedition_stipend(legendary, "complete"), 15)
+        self.assertEqual(self.game._expedition_stipend(legendary, "defeat"), 0)
 
     def test_adventure_state_exposes_compact_expedition_board(self):
         self.unlock("keen_eye")

@@ -11,7 +11,7 @@ from urllib.parse import unquote
 
 from .active_battle import battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
-from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp
+from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
 from .fellowship import (DEEDS, FACILITIES, GUILD_RANKS, PROJECTS, facility_effects, fellowship_level_progress, guild_rank_for_renown, weekly_orders, weekly_period_key)
 
@@ -233,6 +233,7 @@ class PortalRepository:
             "xp_current": int(xp_current),
             "xp_next": int(xp_next),
             "traits": traits,
+            "specialization": chocobo_expedition_specialization({row["id"] for row in traits}, int(level)),
             "portrait_id": portrait_id,
             "portrait_name": CHOCOBO_PORTRAITS[portrait_id]["name"],
             "registered_at": str(row["registered_at"]),

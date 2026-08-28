@@ -58,6 +58,100 @@ TRAITS: dict[str, dict[str, str]] = {
 }
 
 
+BOND_TIERS: tuple[dict[str, Any], ...] = (
+    {"tier": 5, "min_level": 20, "name": "Legendary Partner"},
+    {"tier": 4, "min_level": 15, "name": "Veteran Partner"},
+    {"tier": 3, "min_level": 10, "name": "Proven Partner"},
+    {"tier": 2, "min_level": 5, "name": "Trailwise Partner"},
+    {"tier": 1, "min_level": 1, "name": "New Partner"},
+)
+
+SPECIALIZATIONS: dict[str, dict[str, str]] = {
+    "steady_strider": {
+        "id": "guardian",
+        "name": "Guardian",
+        "summary": "Keeps the party steady through hazards and protects more of the Expedition Cache during rescue.",
+    },
+    "keen_eye": {
+        "id": "scout",
+        "name": "Scout",
+        "summary": "Finds discoveries and rare regional opportunities more often.",
+    },
+    "fleet_feet": {
+        "id": "pathfinder",
+        "name": "Pathfinder",
+        "summary": "Cuts travel time and gets the party between Expedition stages faster.",
+    },
+    "forager": {
+        "id": "forager",
+        "name": "Forager",
+        "summary": "Improves resource-event weighting and the amount of regional material gathered.",
+    },
+    "lucky_plume": {
+        "id": "treasure_hunter",
+        "name": "Treasure Hunter",
+        "summary": "Improves treasure opportunities, rare events, and Chocobo rescue cache protection.",
+    },
+}
+
+
+def bond_tier_for_level(level: int) -> dict[str, Any]:
+    level = max(1, min(CHOC_MAX_LEVEL, int(level)))
+    current = next(row for row in BOND_TIERS if level >= int(row["min_level"]))
+    higher = sorted((row for row in BOND_TIERS if int(row["min_level"]) > level), key=lambda row: int(row["min_level"]))
+    return {
+        "tier": int(current["tier"]),
+        "name": str(current["name"]),
+        "min_level": int(current["min_level"]),
+        "next_level": int(higher[0]["min_level"]) if higher else None,
+        "maxed": not higher,
+    }
+
+
+def expedition_specialization(traits: set[str] | list[str] | tuple[str, ...], level: int) -> dict[str, Any] | None:
+    trait_set = {str(value) for value in traits}
+    trait_id = next((value for value in TRAITS if value in trait_set and value in SPECIALIZATIONS), None)
+    if not trait_id:
+        return None
+    tier = bond_tier_for_level(level)
+    tier_no = int(tier["tier"])
+    spec = SPECIALIZATIONS[trait_id]
+    if trait_id == "steady_strider":
+        effects = [
+            f"Hazard damage -{35 + (tier_no - 1) * 3}%",
+            f"Rescue cache protection +{10 + (tier_no - 1)} pts",
+        ]
+    elif trait_id == "keen_eye":
+        effects = [
+            f"Discovery weighting +{25 + (tier_no - 1) * 3}%",
+            f"Rare-event chance +{1.5 + (tier_no - 1) * 0.25:.1f} pts",
+        ]
+    elif trait_id == "fleet_feet":
+        effects = [f"Travel time -{15 + (tier_no - 1)}%", "Route boosts remain 20% faster"]
+    elif trait_id == "forager":
+        effects = [
+            f"Resource weighting +{25 + (tier_no - 1) * 3}%",
+            f"Regional material yield +{2 if tier_no >= 4 else 1}",
+        ]
+    else:
+        effects = [
+            f"Treasure weighting +{15 + (tier_no - 1) * 2.5:.0f}%",
+            f"Rare-event chance +{1.0 + (tier_no - 1) * 0.25:.1f} pts",
+        ]
+    return {
+        "id": str(spec["id"]),
+        "name": str(spec["name"]),
+        "trait_id": trait_id,
+        "trait_name": str(TRAITS[trait_id]["name"]),
+        "summary": str(spec["summary"]),
+        "tier": tier_no,
+        "tier_name": str(tier["name"]),
+        "next_tier_level": tier["next_level"],
+        "maxed": bool(tier["maxed"]),
+        "effects": effects,
+    }
+
+
 def xp_required_for_level(level: int) -> int:
     """XP needed to advance from *level* to the next Chocobo level."""
     level = max(1, min(CHOC_MAX_LEVEL, int(level)))

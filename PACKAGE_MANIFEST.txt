@@ -1,4 +1,4 @@
-Crystal Guild v1.2.0 Expeditions Alpha 4 — Bot Package Manifest
-Runtime: 1.2.0-expeditions-a4
+Crystal Guild v1.2.0 Expeditions Alpha 5 — Bot Package Manifest
+Runtime: 1.2.0-expeditions-a5
 Local DB schema: 8
 Portal Action protocol: 20

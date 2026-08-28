@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .chocobo import bond_tier_for_level
+
 DEPTHS: dict[str, dict[str, Any]] = {
     "scout": {
         "id": "scout", "name": "Scout", "stages": 3, "travel_seconds": 4 * 60,
@@ -43,29 +45,35 @@ ROUTES: dict[str, dict[str, Any]] = {
 
 BONUS_STAGES = 2
 BASE_DEFEAT_CACHE_KEEP = 0.70
-MAX_DEFEAT_CACHE_KEEP = 0.85
+MAX_DEFEAT_CACHE_KEEP = 0.90
 
 
-def effective_travel_seconds(base_seconds: int, traits: set[str]) -> int:
+def bond_tier(level: int) -> int:
+    return int(bond_tier_for_level(level)["tier"])
+
+
+def effective_travel_seconds(base_seconds: int, traits: set[str], level: int = 1) -> int:
     seconds = max(30, int(base_seconds))
     if "fleet_feet" in traits:
-        seconds = int(round(seconds * 0.85))
+        discount = 0.15 + 0.01 * max(0, bond_tier(level) - 1)
+        seconds = int(round(seconds * (1.0 - discount)))
     return max(30, seconds)
 
 
-def event_weights(region: dict[str, Any], route_id: str, traits: set[str]) -> tuple[list[str], list[float]]:
+def event_weights(region: dict[str, Any], route_id: str, traits: set[str], level: int = 1) -> tuple[list[str], list[float]]:
     raw = dict(region.get("event_weights") or {})
     route = ROUTES.get(route_id, ROUTES["unknown"])
     multipliers = dict(route.get("weight_mult") or {})
+    tier = bond_tier(level)
     if "steady_strider" in traits:
-        multipliers["hazard"] = float(multipliers.get("hazard", 1.0)) * 0.70
+        multipliers["hazard"] = float(multipliers.get("hazard", 1.0)) * max(0.50, 0.70 - 0.035 * (tier - 1))
     if "keen_eye" in traits:
-        multipliers["discovery"] = float(multipliers.get("discovery", 1.0)) * 1.25
+        multipliers["discovery"] = float(multipliers.get("discovery", 1.0)) * (1.25 + 0.03 * (tier - 1))
     if "forager" in traits:
-        multipliers["resource"] = float(multipliers.get("resource", 1.0)) * 1.25
+        multipliers["resource"] = float(multipliers.get("resource", 1.0)) * (1.25 + 0.03 * (tier - 1))
     if "lucky_plume" in traits:
-        multipliers["treasure"] = float(multipliers.get("treasure", 1.0)) * 1.15
-        multipliers["chocobo"] = float(multipliers.get("chocobo", 1.0)) * 1.10
+        multipliers["treasure"] = float(multipliers.get("treasure", 1.0)) * (1.15 + 0.025 * (tier - 1))
+        multipliers["chocobo"] = float(multipliers.get("chocobo", 1.0)) * (1.10 + 0.02 * (tier - 1))
     kinds: list[str] = []
     weights: list[float] = []
     for kind, value in raw.items():
@@ -76,10 +84,37 @@ def event_weights(region: dict[str, Any], route_id: str, traits: set[str]) -> tu
     return kinds, weights
 
 
-def defeat_cache_keep(traits: set[str]) -> float:
+def defeat_cache_keep(traits: set[str], level: int = 1) -> float:
     value = BASE_DEFEAT_CACHE_KEEP
+    tier = bond_tier(level)
     if "steady_strider" in traits:
-        value += 0.10
+        value += 0.10 + 0.01 * (tier - 1)
     if "lucky_plume" in traits:
-        value += 0.05
+        value += 0.05 + 0.005 * (tier - 1)
     return min(MAX_DEFEAT_CACHE_KEEP, value)
+
+
+def rare_event_bonus(traits: set[str], level: int = 1) -> float:
+    tier = bond_tier(level)
+    bonus = 0.0
+    if "keen_eye" in traits:
+        bonus += 0.015 + 0.0025 * (tier - 1)
+    if "lucky_plume" in traits:
+        bonus += 0.010 + 0.0025 * (tier - 1)
+    return bonus
+
+
+def resource_yield_bonus(traits: set[str], level: int = 1) -> int:
+    if "forager" not in traits:
+        return 0
+    return 2 if bond_tier(level) >= 4 else 1
+
+
+def hazard_damage_multiplier(traits: set[str], level: int = 1) -> float:
+    if "steady_strider" not in traits:
+        return 1.0
+    return max(0.50, 0.65 - 0.025 * (bond_tier(level) - 1))
+
+
+def chocobo_event_bond_xp(base_xp: int, level: int = 1) -> int:
+    return max(0, int(base_xp)) + max(0, bond_tier(level) - 1) * 2

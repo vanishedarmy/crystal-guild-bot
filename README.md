@@ -1,10 +1,8 @@
-# Crystal Guild v1.2.0 — Expeditions Alpha 4
+# Crystal Guild v1.2.0 — Expeditions Alpha 5
 
-Expeditions Alpha 4 adds Regional Discovery: permanent landmarks, region-specific events, rare discoveries, route-risk signals, and a saved Expedition Journal.
+Expeditions Alpha 5 adds automatic Chocobo Expedition Specialization, Bond-scaled specialty tiers, Expedition accomplishment records, and modest Hunt Seal completion stipends. Alpha 4 Regional Discovery, the Expedition Atlas, Regional Boss Contracts, Legendary Contracts, and permanent Mastery remain intact.
 
-Expeditions Alpha 3 extends the five-region Chocobo Expedition system with the Expedition Atlas, cartography ranks, Legendary Regional Contracts, and an all-region mastery reward.
-
-Runtime `1.2.0-expeditions-a4` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
+Runtime `1.2.0-expeditions-a5` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
 
 
 Latest Hunt timing: C 15m · B 30m · A 2h · S 5h. Hunts resolve autonomously with no round-by-round chat input.

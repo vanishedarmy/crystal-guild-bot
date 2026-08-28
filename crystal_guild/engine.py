@@ -86,6 +86,10 @@ from .expeditions import (
     defeat_cache_keep as expedition_defeat_cache_keep,
     effective_travel_seconds as expedition_travel_seconds,
     event_weights as expedition_event_weights,
+    rare_event_bonus as expedition_rare_event_bonus,
+    resource_yield_bonus as expedition_resource_yield_bonus,
+    hazard_damage_multiplier as expedition_hazard_damage_multiplier,
+    chocobo_event_bond_xp as expedition_chocobo_event_bond_xp,
 )
 from .enemy_combat import (
     choose_enemy_action,
@@ -111,6 +115,7 @@ from .chocobo import (
     level_from_total_xp as chocobo_level_from_total_xp,
     trait_for_player as chocobo_trait_for_player,
     total_xp_floor_for_level as chocobo_total_xp_floor_for_level,
+    expedition_specialization as chocobo_expedition_specialization,
 )
 
 
@@ -5540,7 +5545,36 @@ class CrystalGuildEngine:
                 for trait_id in sorted(traits)
             ],
         }
+        payload["specialization"] = chocobo_expedition_specialization(traits, int(level))
         return payload, traits
+
+    def _expedition_chocobo_level(self, twitch_id: str) -> int:
+        chocobo, _ = self._expedition_chocobo_traits(twitch_id)
+        return max(1, int((chocobo or {}).get("level", 1) or 1))
+
+    def _expedition_stipend(self, state: dict[str, Any], outcome: str) -> int:
+        if str(outcome) != "complete":
+            return 0
+        if bool(state.get("legendary_contract")):
+            return 15
+        if bool(state.get("boss_contract")):
+            return 10
+        return {"scout": 2, "journey": 4, "deep": 7}.get(str(state.get("depth") or ""), 0)
+
+    def _award_expedition_stipend(self, twitch_id: str, state: dict[str, Any], outcome: str) -> int:
+        seals = self._expedition_stipend(state, outcome)
+        if seals <= 0:
+            return 0
+        with self.db.tx() as conn:
+            conn.execute(
+                "UPDATE players SET hunt_seals=hunt_seals+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                (seals, str(twitch_id)),
+            )
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'hunt_seals','hunt_seals',?,'expedition_stipend')",
+                (str(twitch_id), seals),
+            )
+        return seals
 
     def _expedition_progress(self, twitch_id: str, region_id: str) -> dict[str, Any]:
         row = self.db.one(
@@ -5735,7 +5769,7 @@ class CrystalGuildEngine:
         route_id = str(route_id or "unknown").lower()
         if route_id not in EXPEDITION_ROUTES:
             route_id = "unknown"
-        _, traits = self._expedition_chocobo_traits(twitch_id)
+        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
         if bool(state.get("boss_contract")):
             region = self.data.expedition_regions.get(str(state.get("region_id") or "")) or {}
             boss = dict(region.get("boss") or {})
@@ -5743,7 +5777,8 @@ class CrystalGuildEngine:
         else:
             depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
             base_travel = int(depth["travel_seconds"])
-        seconds = expedition_travel_seconds(base_travel, traits)
+        chocobo_level = max(1, int((chocobo or {}).get("level", 1) or 1))
+        seconds = expedition_travel_seconds(base_travel, traits, chocobo_level)
         penalty = max(0, int(state.pop("travel_penalty_seconds", 0) or 0))
         if penalty:
             seconds += penalty
@@ -5939,6 +5974,7 @@ class CrystalGuildEngine:
                 "xp": int(kept.get("xp", 0)),
                 "jp": int(kept.get("jp", 0)),
                 "gil": int(kept.get("gil", 0)),
+                "seals": int(self._expedition_stipend(state, outcome)),
                 "loot": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in kept.get("items", [])],
                 "achievements": list(kept.get("achievements") or [])[:4],
                 "levelups": list(kept.get("levelups") or [])[:4],
@@ -5990,10 +6026,21 @@ class CrystalGuildEngine:
                 5,
                 completed_run=True,
             )
+        stipend_seals = self._award_expedition_stipend(twitch_id, state, outcome)
+        if outcome == "complete":
+            metrics = {"expeditions_completed": 1}
+            if bool(state.get("legendary_contract")):
+                metrics["legendary_contracts_completed"] = 1
+            elif bool(state.get("boss_contract")):
+                metrics["regional_boss_contracts_completed"] = 1
+            self.db.update_record_stats(twitch_id, metrics)
+        elif outcome == "defeat":
+            self.db.update_record_stats(twitch_id, {"expedition_rescues": 1})
         chocobo_xp = max(0, int(state.get("chocobo_xp", 0))) + max(4, int(state.get("stage", 1)) * 3)
         chocobo_notes = self._award_chocobo_xp(twitch_id, chocobo_xp)
         summary = self._expedition_result_summary(twitch_id, state, outcome=outcome, kept=kept, lost=lost)
         summary["chocobo_notes"] = chocobo_notes[:2]
+        summary["stipend_seals"] = stipend_seals
         summary["exploration"] = self._expedition_progress(twitch_id, str(state.get("region_id")))
         self._remember_expedition_result(twitch_id, summary)
         self._expedition_delete(twitch_id)
@@ -6015,8 +6062,9 @@ class CrystalGuildEngine:
                 expedition_announcement=announcement,
                 won=False,
             )
+        stipend_text = f" / +{int(summary.get('stipend_seals', 0))} Hunt Seals" if int(summary.get("stipend_seals", 0)) else ""
         return GameResult.success(
-            f"EXPEDITION RETURN — {summary['region_name']} cache secured: +{kept['xp']} XP / +{kept['jp']} JP / {kept['gil']} Gil.",
+            f"EXPEDITION RETURN — {summary['region_name']} cache secured: +{kept['xp']} XP / +{kept['jp']} JP / {kept['gil']} Gil{stipend_text}.",
             expedition_finished=True,
             expedition_result=summary,
             expedition_milestones=milestones,
@@ -6198,7 +6246,7 @@ class CrystalGuildEngine:
         return self.rng.choice(values) if values else ""
 
     def _expedition_resolve_rare_event(
-        self, twitch_id: str, state: dict[str, Any], region: dict[str, Any], traits: set[str], event: dict[str, Any]
+        self, twitch_id: str, state: dict[str, Any], region: dict[str, Any], traits: set[str], chocobo_level: int, event: dict[str, Any]
     ) -> GameResult:
         kind = str(event.get("kind") or "treasure").lower()
         name = str(event.get("name") or "Rare Discovery")
@@ -6212,7 +6260,7 @@ class CrystalGuildEngine:
         if kind == "resource":
             materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
             item_id = self.rng.choice(materials) if materials else ""
-            qty = self.rng.randint(2, 3) + (1 if "forager" in traits else 0)
+            qty = self.rng.randint(2, 3) + expedition_resource_yield_bonus(traits, chocobo_level)
             row = self._expedition_cache_add_item(state, item_id, qty, source="rare_resource") if item_id else None
             payload["item"] = row
             outcome = f" Recovered {row['name']} x{row['quantity']}." if row else " The opportunity fades before anything can be recovered."
@@ -6230,10 +6278,11 @@ class CrystalGuildEngine:
             payload.update({"healing": healed, "gil": bonus_gil})
             outcome = f" Restored {healed} HP and added {bonus_gil} Gil to the cache."
         elif kind == "chocobo":
-            state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + 16
+            bond_xp = expedition_chocobo_event_bond_xp(16, chocobo_level)
+            state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + bond_xp
             state["chocobo_travel_boost"] = True
-            payload["bond_xp"] = 16
-            outcome = " Your Chocobo earns 16 Bond XP and shortens the next travel leg."
+            payload["bond_xp"] = bond_xp
+            outcome = f" Your Chocobo earns {bond_xp} Bond XP and shortens the next travel leg."
         elif kind == "survey":
             bonus_gil = max(30, int((45 + stage * 12) * mult))
             cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
@@ -6249,6 +6298,7 @@ class CrystalGuildEngine:
             outcome = (f" Secured {row['name']} and {bonus_gil} Gil." if row else f" Secured {bonus_gil} Gil.")
         payload["label"] = f"RARE — {name}: {description}{outcome}"
         state.setdefault("rare_events_seen", []).append(str(event.get("id") or name))
+        self.db.update_record_stats(twitch_id, {"expedition_rare_events": 1})
         return self._expedition_stage_resolved(twitch_id, state, payload, progress_gain=progress_gain)
 
     @_state_guard
@@ -6264,7 +6314,8 @@ class CrystalGuildEngine:
         region = self.data.expedition_regions.get(str(state.get("region_id")))
         if not region:
             return GameResult.fail("This Expedition region is unavailable in the current data build.")
-        _, traits = self._expedition_chocobo_traits(twitch_id)
+        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
+        chocobo_level = max(1, int((chocobo or {}).get("level", 1) or 1))
         if bool(state.get("boss_contract")) and int(state.get("stage", 1)) >= int(state.get("base_stages", 4)):
             boss = dict(region.get("boss") or {})
             monster = self.data.monsters.get(str(boss.get("monster_id") or ""))
@@ -6272,7 +6323,7 @@ class CrystalGuildEngine:
                 return GameResult.fail("This Regional Boss contract is missing its combat profile.")
             state["boss_encounter"] = True
             return self._expedition_initialize_combat(twitch_id, state, monster)
-        kinds, weights = expedition_event_weights(region, str(state.get("route") or "unknown"), traits)
+        kinds, weights = expedition_event_weights(region, str(state.get("route") or "unknown"), traits, chocobo_level)
         progress = self._expedition_progress(twitch_id, str(region.get("id") or ""))
         mastery = dict(region.get("mastery") or {}) if progress.get("mastered") else {}
         preferred = str(mastery.get("event_type") or "")
@@ -6283,17 +6334,14 @@ class CrystalGuildEngine:
         rare_events = [dict(value) for value in region.get("rare_events", []) if isinstance(value, dict)]
         route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
         rare_chance = float(route_config.get("rare_event_chance", 0.05) or 0.05)
-        if "keen_eye" in traits:
-            rare_chance += 0.015
-        if "lucky_plume" in traits:
-            rare_chance += 0.010
+        rare_chance += expedition_rare_event_bonus(traits, chocobo_level)
         if progress.get("mastered"):
             rare_chance += 0.010
         if rare_events and self.rng.random() < min(0.15, rare_chance):
             seen = set(str(value) for value in state.get("rare_events_seen", []))
             unseen = [value for value in rare_events if str(value.get("id") or value.get("name")) not in seen]
             rare_event = self.rng.choice(unseen or rare_events)
-            return self._expedition_resolve_rare_event(twitch_id, state, region, traits, rare_event)
+            return self._expedition_resolve_rare_event(twitch_id, state, region, traits, chocobo_level, rare_event)
         event_type = self.rng.choices(kinds, weights=weights, k=1)[0]
         mult = self._expedition_reward_multiplier(state)
         cache = self._expedition_cache(state)
@@ -6308,7 +6356,7 @@ class CrystalGuildEngine:
         if event_type == "resource":
             materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
             item_id = self.rng.choice(materials) if materials else ""
-            qty = self.rng.randint(1, 2) + (1 if "forager" in traits else 0)
+            qty = self.rng.randint(1, 2) + expedition_resource_yield_bonus(traits, chocobo_level)
             row = self._expedition_cache_add_item(state, item_id, qty, source="resource") if item_id else None
             flavor = self._expedition_regional_flavor(region, "resource")
             outcome = f"Gathered {row['name']} x{row['quantity']}." if row else "The resource node turns out to be picked clean."
@@ -6329,8 +6377,7 @@ class CrystalGuildEngine:
             p = self._player(twitch_id)
             max_hp = self._max_hp(p) if p else 1
             percent = self.rng.uniform(0.06, 0.12)
-            if "steady_strider" in traits:
-                percent *= 0.65
+            percent *= expedition_hazard_damage_multiplier(traits, chocobo_level)
             region_progress = self._expedition_progress(twitch_id, str(region.get("id") or ""))
             if region_progress.get("mastered"):
                 percent *= float((region.get("mastery") or {}).get("hazard_mult", 1.0) or 1.0)
@@ -6374,11 +6421,12 @@ class CrystalGuildEngine:
             return self._expedition_stage_resolved(twitch_id, state, {"type": "traveler", "label": label, "gil": bonus_gil, "healing": healed})
 
         if event_type == "chocobo":
-            state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + 8
+            bond_xp = expedition_chocobo_event_bond_xp(8, chocobo_level)
+            state["chocobo_xp"] = int(state.get("chocobo_xp", 0)) + bond_xp
             state["chocobo_travel_boost"] = True
             flavor = self._expedition_regional_flavor(region, "chocobo")
-            label = f"{flavor} The next travel leg is shortened and Bond XP is earned.".strip()
-            return self._expedition_stage_resolved(twitch_id, state, {"type": "chocobo", "label": label, "bond_xp": 8})
+            label = f"{flavor} The next travel leg is shortened and {bond_xp} Bond XP is earned.".strip()
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "chocobo", "label": label, "bond_xp": bond_xp})
 
         return self._expedition_stage_resolved(twitch_id, state, {"type": "event", "label": "The stage passes without incident."})
 
@@ -6525,8 +6573,8 @@ class CrystalGuildEngine:
             healing_done=int(meta.get("healing", 0)),
             best_hit=int(meta.get("best_hit", 0)),
         )
-        _, traits = self._expedition_chocobo_traits(twitch_id)
-        keep_ratio = expedition_defeat_cache_keep(traits)
+        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
+        keep_ratio = expedition_defeat_cache_keep(traits, max(1, int((chocobo or {}).get("level", 1) or 1)))
         state.setdefault("history", []).append(
             {"stage": int(state.get("stage", 1)), "type": "defeat", "label": f"Defeated by {monster['name']}"}
         )
@@ -6752,8 +6800,8 @@ class CrystalGuildEngine:
         if meta:
             self._save_hp(twitch_id, max(1, int(meta.get("hp", 1))))
             self._save_resources_from_meta(twitch_id, meta)
-        _, traits = self._expedition_chocobo_traits(twitch_id)
-        keep_ratio = expedition_defeat_cache_keep(traits)
+        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
+        keep_ratio = expedition_defeat_cache_keep(traits, max(1, int((chocobo or {}).get("level", 1) or 1)))
         state.setdefault("history", []).append(
             {"stage": int(state.get("stage", 1)), "type": "retreat", "label": "Retreated from an Expedition encounter"}
         )
@@ -6815,6 +6863,16 @@ class CrystalGuildEngine:
         if not p:
             return {}
         chocobo, traits = self._expedition_chocobo_traits(twitch_id)
+        if chocobo:
+            chocobo = copy.deepcopy(chocobo)
+            chocobo.pop("traits", None)
+            spec = chocobo.get("specialization") or {}
+            if spec:
+                chocobo["specialization"] = {
+                    "name": str(spec.get("name") or "Expedition Partner"),
+                    "tier": int(spec.get("tier", 1) or 1),
+                    "effects": list(spec.get("effects") or [])[:2],
+                }
         board_ready = self._expedition_board_ready()
         active = self._expedition_public(twitch_id)
         level = int(p["level"] or 1)
@@ -7373,6 +7431,27 @@ class CrystalGuildEngine:
             not registered and stable_tier >= 1 and quest_done and writ_quantity <= 0
             and int(p["gil"] or 0) >= CHOCOBO_WRIT_COST_GIL
         )
+        specialization = chocobo_expedition_specialization({str(row["id"]) for row in traits}, level) if registered else None
+        record_rows = {
+            str(item["metric"]): int(item["value"] or 0)
+            for item in self.db.all(
+                "SELECT metric,value FROM player_record_stats WHERE player_id=? AND metric IN ('expeditions_started','expeditions_completed','expedition_rescues','expedition_rare_events','legendary_contracts_completed','regional_boss_contracts_completed')",
+                (str(twitch_id),),
+            )
+        }
+        boss_clear_row = self.db.one(
+            "SELECT COALESCE(SUM(boss_clears),0) AS n FROM player_region_exploration WHERE player_id=?",
+            (str(twitch_id),),
+        )
+        accomplishments = {
+            "started": int(record_rows.get("expeditions_started", 0)),
+            "completed": int(record_rows.get("expeditions_completed", 0)),
+            "rescues": int(record_rows.get("expedition_rescues", 0)),
+            "rare_events": int(record_rows.get("expedition_rare_events", 0)),
+            "boss_contracts": int(record_rows.get("regional_boss_contracts_completed", 0)),
+            "legendary_contracts": int(record_rows.get("legendary_contracts_completed", 0)),
+            "boss_clears": int(boss_clear_row["n"] or 0) if boss_clear_row else 0,
+        }
         return {
             "server_now": now,
             "stable": {
@@ -7411,6 +7490,8 @@ class CrystalGuildEngine:
                 "xp_current": xp_into_level if registered else 0,
                 "xp_next": xp_next if registered else 0,
                 "traits": traits,
+                "specialization": specialization,
+                "accomplishments": accomplishments,
                 "portrait_id": (
                     str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID)
                     if row and str(row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID) in CHOCOBO_PORTRAITS
