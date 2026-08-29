@@ -1,24 +1,37 @@
-# Crystal Guild v1.2.0 — Expeditions RC1
-## Release Candidate 1
+# Crystal Guild v1.2.0 — Expeditions
 
-RC1 freezes the v1.2 Expeditions feature set and prepares the branch for final release. No new gameplay systems are added in this checkpoint.
+Crystal Guild v1.2.0 ships the full Expeditions system and promotes the RC1 feature set unchanged into the final release.
 
-### Player Guide cleanup
-- Removes Beta 1–4 release-engineering/history blocks from the Expeditions chapter.
-- Removes implementation language such as schema, SQLite/replay receipts, authoritative timers, Bot restarts, simulation details, and feature-freeze notes from player instructions.
-- Keeps the information players actually need: unlock requirements, regions, route lengths, risk signals, Cache/return rules, landmarks, regional bosses, Mastery, Atlas/Legendary Contracts, Chocobo specialties, Hunt Seal stipends, and active-run restrictions.
-- Rewords saved-run behavior in player language: journeys and pending decisions remain available when the player leaves and returns.
+## Expeditions
+- Five launch regions: Emerald Wilds, Ashen Highlands, Mistfen Marshes, Frostveil Reach, and the Astral Scar.
+- Scout, Journey, Deep Expedition, Regional Boss Contract, and Legendary Contract routes.
+- Safe / Unknown / Push Deeper route choices with distinct survival-versus-reward pressure.
+- Persistent HP, MP, AP, inventory use, Expedition Cache, Journal, route state, and return/rescue behavior.
+- Regional exploration milestones, permanent landmarks, Regional Bosses, Mastery rewards, Expedition Atlas ranks, and Master Cartographer progression.
+- Region-specific encounters, hazards, resources, travelers, rare events, and discoveries.
 
-### RC verification
-- Beta 4 persistence, duplicate-reward protection, Long Rest/stream-refresh safeguards, restart recovery, and schema-7 → schema-8 migration coverage remain intact.
-- Beta 3 mobile/accessibility behavior and Beta 2 viewport-preserving detail cards remain intact.
-- Explicit routed artwork and portrait scenic backgrounds are audited before packaging.
-- Release packages exclude live databases, tokens, `.env`, logs, bytecode, caches, and other runtime-private files.
+## Chocobo expedition partnership
+- Guardian, Scout, Pathfinder, Forager, and Treasure Hunter specialties derive from existing Chocobo traits.
+- Specialty effects scale with Bond milestones.
+- The Stable records shared Expedition accomplishments.
+- Completed routes award restrained Hunt Seal stipends while Hunts remain the primary Hunt Seal activity.
 
-### Compatibility
-- Bot runtime: `1.2.0-expeditions-rc1`
-- Hosted Web runtime: `1.2.0-expeditions-rc1`
-- Frontend asset revision: `1.2.0-expeditions-rc1`
+## Player experience
+- Adventure Board information is action-first and secondary progression can collapse.
+- Detail cards open in the current viewport without moving the background page.
+- Portrait-format scenic artwork fills long Solo Venture, Relics, Blacksmith, Chocobo Stable, and Moogle Emporium tabs.
+- Mobile layouts, touch targets, keyboard navigation, focus handling, contrast support, reduced-motion support, and device safe areas have been polished.
+- The Player Guide Expeditions chapter contains play and usage information only; development and release-engineering history is kept out of player instructions.
+
+## Release hardening
+- Persistent Solo/Expedition mutations and replay receipts commit atomically to prevent duplicate rewards after retries.
+- Active persistent Adventures block Long Rest and stream-start resource refreshes until the run ends.
+- Active Expeditions survive restart/reconnect and schema-7 → schema-8 migration preserves existing player progression.
+
+## Compatibility
+- Bot runtime: `1.2.0-expeditions`
+- Hosted Web runtime: `1.2.0-expeditions`
+- Frontend asset revision: `1.2.0-expeditions`
 - Local DB schema: **8**
 - Hosted sync schema: **1**
 - Portal Action protocol: **20**
