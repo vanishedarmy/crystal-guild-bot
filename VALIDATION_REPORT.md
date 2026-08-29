@@ -1,52 +1,58 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 1 Validation Report
+# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 2 Validation Report
 
 ## Result
 **PASS**
 
 ## Automated suites
-- Bot Python unittest suite: **498 / 498 PASS**.
-- Frontend Node regression suite: **372 / 372 PASS**.
+- Bot Python unittest suite: **504 / 504 PASS**.
+- Frontend Node regression suite: **376 / 376 PASS**.
 - Hosted Web/API Python unittest suite: **47 / 47 PASS**.
 
-The Bot suite includes intentional simulated acknowledgement loss, temporary Twitch/live-status failures, corrupt checkpoint recovery, restart recovery, database recovery drills, and synthetic stress scenarios. Their warning/error log lines are expected test fixtures and are not Alpha 1 failures.
+The Bot suite includes intentional simulated acknowledgement loss, temporary Twitch/live-status failures, corrupt checkpoint recovery, restart recovery, database recovery drills, and synthetic stress scenarios. Their warning/error log lines are expected test fixtures.
 
-## Dungeon Alpha 1 coverage
-- Schema **9 → 10** migration creates a verified pre-schema-10 backup and preserves existing player/Guild progression.
-- Active Dungeon state persists in the database and survives engine/database restart.
-- The Forgotten Ossuary unlock requires character Lv. 10 plus 25% Emerald Wilds Expedition exploration.
-- Seven-chamber progression covers entrance, combat, treasure, hazard, miniboss, sanctuary, and boss room types.
-- HP, MP/AP, consumed items, combat state, and Dungeon Cache persist across chambers.
-- Full clear banks 100% of the cache plus completion bonus; retreat banks 50%; defeat recovers 25%.
-- Dungeon victories feed existing Bestiary/monster-defeat records.
-- Active-run and permanent Dungeon-progress records are separate; `!clearadventures` clears the active run without erasing completed Dungeon history.
-- Portal Dungeon actions are bound to the exact run ID and chamber ID visible in the browser. Stale tabs fail closed after another tab advances/replaces the Dungeon state.
-- Dungeon actions remain covered by the existing Portal replay/idempotency path.
-- Existing incompatible Adventure/Portal mutations are blocked while a Dungeon run is active.
+## Alpha 2 Dungeon coverage
+- Local schema remains **10**; Alpha 1 persistent Dungeon tables and migration path remain covered.
+- Portal Action protocol advances **23 → 24** for typed `DUNGEON_CHOICE` mutations.
+- The Dungeon Board exposes **2 Dungeons**, both with **8 chambers** and one Crossroads route decision.
+- **The Forgotten Ossuary** retains its Lv.10 + 25% Emerald Wilds unlock and gains the Forked Crypt Crossroads.
+- **The Emberglass Foundry** unlocks at Lv.18 + 35% Ashen Highlands and carries its own combat, treasure, Crossroads, hazard, miniboss, sanctuary, boss, completion bonus, and scene art.
+- Crossroads effects cover HP damage/healing, MP/AP recovery, Cache Gil/material rewards, and named discoveries.
+- Route choices are replay-safe and remain bound to the exact run/chamber shown in the browser.
+- Alpha 1 HP/MP/AP persistence, item consumption, Bestiary credit, Cache settlement, retreat/defeat rules, restart recovery, stale-tab protection, and `!clearadventures` continuity remain green.
+- Adventure-state serialization remains below the existing **16 KiB** guardrail with the expanded Dungeon catalog.
 
-## Source and asset validation
-- Python source compilation: **92 / 92 PASS** across Alpha 1 Bot + Web source trees.
-- Frontend JS/JSX/MJS TypeScript-parser sweep: **189 / 189 PASS**.
-- Plain JS/MJS `node --check`: **149 / 149 PASS**.
-- Explicit literal asset-route audit: **148 routes checked / 0 missing**.
-- Game data validation: **0 errors**; **1 Dungeon** loaded.
+## Shared collapse-pointer correction
+- Closed controls render the **right-pointing hand**; open controls render the **down-pointing hand**.
+- Portal collapse controls use one canonical **1.35rem** pointer box.
+- Player Guide disclosure hands use the matching **22px** rendered size.
+- The What’s New control is regression-covered by the same shared sizing rule rather than inheriting a larger local icon size.
+- Obsolete pre-Alpha-2 pointer files are removed from the final Web tree; the cache-busted `-a2.webp` pair is authoritative.
+
+## Source / asset validation
+- Python compilation sweep: **93 / 93 PASS** across Bot + Web Python source/tests/tools.
+- Frontend JS/JSX/MJS TypeScript-parser sweep: **190 / 190 PASS**.
+- Plain JS/MJS `node --check`: **150 / 150 PASS**.
+- Game data validation: **0 errors**; **2 Dungeons** loaded.
+- New/current Dungeon scene routes and collapse-pointer assets resolve in the full frontend regression suite.
 - Public artwork remains **0 PNG / 575 WebP**.
 
 ## Continuity
-- v1.3.1 Asset Optimization and UI4 behavior remain regression-covered.
+- v1.3.1 Asset Optimization and UI4 behavior remain covered.
 - v1.3 Guild Expansion shared-state, Fellowship, Airship, Workshop, Weekly Order, Legacy, and recovery protections remain covered by the full suites.
-- v1.2 Expedition behavior remains covered by the full suites.
-- Public Previous major updates remains stable-release-only.
+- v1.2 Expedition behavior remains covered.
+- Public Previous major updates remains stable-release-only beneath the current Alpha 2 What’s New card.
 - Existing non-Dungeon gameplay/economy balance is unchanged.
-- Bot/Web/frontend runtime: `1.4.0-dungeons-a1`.
-- Local DB schema: **10**.
+- Bot/Web/frontend runtime: `1.4.0-dungeons-a2`.
+- Local DB schema: **10** unchanged.
 - Hosted sync schema: **1** unchanged.
-- Portal Action protocol: **23**.
+- Portal Action protocol: **24**.
 - Twitch prefix: `!`.
+- Database migration from Alpha 1: **none**.
 - Player reset: **none**.
 - OAuth change: **none**.
 - New environment variables: **none**.
 
 ## Packaging verification
-- v1.3.1 Bot → Alpha 1 Bot patch: **36 changed/new files, 0 deletions**; reconstructs **147 / 147** shipping Bot files exactly.
-- v1.3.1 UI4 Web → Alpha 1 Web patch: **57 changed/new files, 0 deletions**; reconstructs **816 / 816** shipping Web files exactly.
-- Final archive CRC/integrity, runtime/private-artifact hygiene, and SHA-256 verification: **PASS**.
+- Alpha 1 → Alpha 2 Bot patch: **25 changed/new files, 0 deletions**; reconstructs **148 / 148** shipping Bot files exactly.
+- Alpha 1 → Alpha 2 Web patch: **58 changed/new files, 2 obsolete pointer deletions**; reconstructs **817 / 817** shipping Web files exactly.
+- Final ZIP CRC/integrity, runtime/private-artifact hygiene, exact reconstruction, and SHA-256 verification: **PASS**.

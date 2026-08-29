@@ -610,13 +610,29 @@ class GameData:
                     errors.append(f"dungeon {dungeon['id']}: missing/duplicate room id {room_id!r}")
                 seen_rooms.add(room_id)
                 room_type = str(room.get("type") or "").strip().lower()
-                if room_type not in {"entrance", "combat", "treasure", "hazard", "miniboss", "sanctuary", "boss"}:
+                if room_type not in {"entrance", "combat", "treasure", "hazard", "choice", "miniboss", "sanctuary", "boss"}:
                     errors.append(f"dungeon {dungeon['id']} room {room_id}: invalid type {room_type!r}")
                 monster_id = str(room.get("monster_id") or "").strip()
                 if room_type in {"combat", "miniboss", "boss"}:
                     require(self.monsters, monster_id, f"dungeon {dungeon['id']} room {room_id}")
                 for loot in list(room.get("loot") or []):
                     require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} loot")
+                if room_type == "choice":
+                    options = list(room.get("options") or [])
+                    if len(options) < 2:
+                        errors.append(f"dungeon {dungeon['id']} room {room_id}: choice rooms need at least 2 options")
+                    seen_options: set[str] = set()
+                    for option in options:
+                        option_id = str(option.get("id") or "").strip()
+                        if not option_id or option_id in seen_options:
+                            errors.append(f"dungeon {dungeon['id']} room {room_id}: missing/duplicate choice id {option_id!r}")
+                        seen_options.add(option_id)
+                        for effect in list(option.get("effects") or []):
+                            effect_type = str(effect.get("type") or "").strip().lower()
+                            if effect_type not in {"cache_gil", "cache_item", "damage_percent", "heal_percent", "restore_resource_percent"}:
+                                errors.append(f"dungeon {dungeon['id']} room {room_id} choice {option_id}: invalid effect {effect_type!r}")
+                            if effect_type == "cache_item":
+                                require(self.items, str(effect.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} choice {option_id}")
             bonus = dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {}
             for loot in list(bonus.get("items") or []):
                 require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} completion loot")

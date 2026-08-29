@@ -40,10 +40,10 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         self.db.close()
         self.tmp.cleanup()
 
-    def test_schema10_and_protocol23_are_current(self):
+    def test_schema10_and_protocol24_are_current(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
         self.assertEqual(self.db.schema_version(), 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 23)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 24)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeons'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeon_progress'"))
 
@@ -77,11 +77,11 @@ class DungeonsAlpha1Tests(unittest.TestCase):
 
     def test_dungeon_board_unlocks_from_existing_expedition_progress(self):
         board = self.game._dungeon_board_state("140")
-        self.assertEqual(len(board["dungeons"]), 1)
+        self.assertEqual(len(board["dungeons"]), 2)
         entry = board["dungeons"][0]
         self.assertEqual(entry["id"], "forgotten_ossuary")
         self.assertTrue(entry["unlocked"])
-        self.assertEqual(entry["rooms"], 7)
+        self.assertEqual(entry["rooms"], 8)
         self.assertEqual(entry["missing"], [])
 
     def test_dungeon_run_persists_and_continues_into_combat(self):
@@ -150,13 +150,13 @@ class DungeonsAlpha1Tests(unittest.TestCase):
     def test_portal_completion_replay_cannot_pay_or_count_twice(self):
         self.assertTrue(self.game.dungeon_start("140", "forgotten_ossuary").ok)
         state = self.game._dungeon_load("140")
-        state["room_index"] = 6
+        state["room_index"] = 7
         state["status"] = "choice"
         state["cache"] = {"xp": 25, "jp": 5, "gil": 40, "items": []}
         self.game._dungeon_save("140", state)
         before = self.db.one("SELECT xp,gil FROM players WHERE twitch_id='140'")
         run_id = str(state["run_id"])
-        room_id = str(self.game.data.dungeons["forgotten_ossuary"]["rooms"][6]["id"])
+        room_id = str(self.game.data.dungeons["forgotten_ossuary"]["rooms"][7]["id"])
         first = self.game.portal_dungeon_continue("140", run_id, room_id, "pa_dungeon_final")
         second = self.game.portal_dungeon_continue("140", run_id, room_id, "pa_dungeon_final")
         self.assertTrue(first.ok, first.messages)
@@ -209,7 +209,7 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         self.assertTrue(self.game.dungeon_start("140", "forgotten_ossuary").ok)
         self.db.execute("UPDATE players SET current_hp=20,current_ap=0,current_mp=0 WHERE twitch_id='140'")
         state = self.game._dungeon_load("140")
-        state["room_index"] = 5
+        state["room_index"] = 6
         state["status"] = "choice"
         result = self.game._dungeon_begin_room("140", state)
         self.assertTrue(result.ok, result.messages)

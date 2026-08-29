@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 23
+ACTION_PROTOCOL_VERSION = 24
 
 
 class PortalActionWorker:
@@ -548,6 +548,14 @@ class PortalActionWorker:
             if not run_id or not room_id:
                 return False, "Dungeon continue is missing its run or room.", {}
             result = self.game.portal_dungeon_continue(twitch_id, run_id, room_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "DUNGEON_CHOICE":
+            run_id = str(payload.get("run_id") or "").strip().lower()
+            room_id = str(payload.get("room_id") or "").strip().lower()
+            choice_id = str(payload.get("choice_id") or "").strip().lower()
+            if not run_id or not room_id or not choice_id:
+                return False, "Dungeon choice is missing its run, room, or route.", {}
+            result = self.game.portal_dungeon_choice(twitch_id, run_id, room_id, choice_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "DUNGEON_RETREAT":
             run_id = str(payload.get("run_id") or "").strip().lower()

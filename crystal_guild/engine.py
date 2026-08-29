@@ -7178,6 +7178,19 @@ class CrystalGuildEngine:
         state["combat"] = None
         if kind in {"combat", "miniboss", "boss"}:
             return self._dungeon_begin_combat(twitch_id, state, room)
+        if kind == "choice":
+            options = []
+            for option in list(room.get("options") or []):
+                options.append({
+                    "id": str(option.get("id") or ""),
+                    "label": str(option.get("label") or "Choose this path"),
+                    "description": str(option.get("description") or ""),
+                })
+            state["event"]["options"] = options
+            state["status"] = "decision"
+            state.setdefault("history", []).append({"room": room_index + 1, "type": "choice", "label": f"Reached {room.get('name', 'a crossroads')}"})
+            self._dungeon_save(twitch_id, state)
+            return GameResult.success(f"DUNGEON CHOICE · {room.get('name', 'Crossroads')} — choose how to proceed.", dungeon_choice=True)
         if kind == "treasure":
             cache = self._dungeon_cache(state)
             cache["gil"] = int(cache.get("gil", 0)) + max(0, int(room.get("gil", 0) or 0))
@@ -7233,6 +7246,7 @@ class CrystalGuildEngine:
             "dungeon_id": str(state.get("dungeon_id") or ""),
             "name": str(dungeon.get("name") or "Dungeon"),
             "subtitle": str(dungeon.get("subtitle") or ""),
+            "art": str(dungeon.get("art") or ""),
             "status": str(state.get("status") or "choice"),
             "room_index": room_index,
             "room_number": min(len(rooms), room_index + 1),
@@ -7241,9 +7255,11 @@ class CrystalGuildEngine:
             "cache": copy.deepcopy(self._dungeon_cache(state)),
             "event": copy.deepcopy(state.get("event")),
             "history": copy.deepcopy(list(state.get("history") or [])[-8:]),
+            "discoveries": copy.deepcopy(list(state.get("discoveries") or [])),
+            "choices": copy.deepcopy(list((state.get("event") or {}).get("options") or [])) if str(state.get("status")) == "decision" else [],
             "last_round": copy.deepcopy(state.get("last_round")),
             "can_continue": str(state.get("status")) == "choice" and room_index < max(0, len(rooms) - 1),
-            "can_retreat": str(state.get("status")) in {"choice", "combat"},
+            "can_retreat": str(state.get("status")) in {"choice", "combat", "decision"},
         }
         combat = state.get("combat") or {}
         encounter = combat.get("encounter") or {}
@@ -7271,7 +7287,12 @@ class CrystalGuildEngine:
             progress = self._dungeon_progress(twitch_id, str(dungeon["id"]))
             entry = {
                 "id": str(dungeon["id"]), "name": str(dungeon["name"]),
-                "min_level": int(dungeon.get("min_level", 1)), "rooms": len(list(dungeon.get("rooms") or [])),
+                "subtitle": str(dungeon.get("subtitle") or ""),
+                "art": str(dungeon.get("art") or ""),
+                "min_level": int(dungeon.get("min_level", 1)),
+                "recommended_level": int(dungeon.get("recommended_level", dungeon.get("min_level", 1)) or dungeon.get("min_level", 1)),
+                "rooms": len(list(dungeon.get("rooms") or [])),
+                "choice_rooms": sum(1 for room in list(dungeon.get("rooms") or []) if str(room.get("type") or "").lower() == "choice"),
                 "unlocked": bool(unlocked), "missing": [str(value) for value in missing],
             }
             if int(progress.get("clears", 0)) or int(progress.get("best_rooms", 0)):
@@ -7299,7 +7320,7 @@ class CrystalGuildEngine:
         now = int(time.time())
         state = {
             "version": 1, "run_id": uuid.uuid4().hex, "dungeon_id": str(dungeon["id"]), "started_at": now, "updated_at": now,
-            "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "event": None, "combat": None, "last_round": None,
+            "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "discoveries": [], "event": None, "combat": None, "last_round": None,
         }
         self._dungeon_save(twitch_id, state)
         return self._dungeon_begin_room(twitch_id, state)
@@ -7316,6 +7337,72 @@ class CrystalGuildEngine:
         state["last_round"] = None
         self._dungeon_save(twitch_id, state)
         return self._dungeon_begin_room(twitch_id, state)
+
+    def dungeon_choose(self, twitch_id: str, choice_id: str) -> GameResult:
+        state = self._dungeon_load(twitch_id)
+        if not state or str(state.get("status")) != "decision":
+            return GameResult.fail("No Dungeon crossroads is waiting for a choice.")
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        rooms = list(dungeon.get("rooms") or [])
+        room_index = int(state.get("room_index", 0) or 0)
+        room = dict(rooms[room_index]) if 0 <= room_index < len(rooms) else {}
+        if str(room.get("type") or "").lower() != "choice":
+            return GameResult.fail("That Dungeon chamber is not waiting for a route choice.")
+        selected = next((dict(row) for row in list(room.get("options") or []) if str(row.get("id") or "") == str(choice_id or "")), None)
+        if not selected:
+            return GameResult.fail("That Dungeon route is no longer available. Refresh the Adventure Board.")
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        effect_notes: list[str] = []
+        for effect in list(selected.get("effects") or []):
+            kind = str(effect.get("type") or "").lower().strip()
+            if kind == "cache_gil":
+                amount = max(0, int(effect.get("value", 0) or 0))
+                self._dungeon_cache(state)["gil"] = int(self._dungeon_cache(state).get("gil", 0)) + amount
+                if amount: effect_notes.append(f"+{amount} Gil cache")
+            elif kind == "cache_item":
+                item_id = str(effect.get("item_id") or "")
+                quantity = max(0, int(effect.get("quantity", 1) or 1))
+                if item_id in self.data.items and quantity:
+                    self._dungeon_cache_add_item(state, item_id, quantity)
+                    effect_notes.append(f"{self.data.items[item_id]['name']} x{quantity}")
+            elif kind == "damage_percent":
+                max_hp = self._max_hp(p)
+                before = max(1, int(p["current_hp"] or 1))
+                damage = max(1, int(round(max_hp * max(0.0, float(effect.get("value", 0) or 0)) / 100.0)))
+                after = max(1, before - damage)
+                self._save_hp(twitch_id, after)
+                effect_notes.append(f"-{before-after} HP")
+                p = self._player(twitch_id) or p
+            elif kind == "heal_percent":
+                max_hp = self._max_hp(p)
+                before = max(0, int(p["current_hp"] or 0))
+                after = min(max_hp, before + max(1, int(round(max_hp * max(0.0, float(effect.get("value", 0) or 0)) / 100.0))))
+                if after > before:
+                    self._save_hp(twitch_id, after)
+                    effect_notes.append(f"+{after-before} HP")
+                p = self._player(twitch_id) or p
+            elif kind == "restore_resource_percent":
+                resources = self._resource_state_for(p)
+                pct_restore = max(0.0, float(effect.get("value", 0) or 0) / 100.0)
+                before_mp, before_ap = int(resources.get("mp", 0)), int(resources.get("ap", 0))
+                new_mp = min(int(resources.get("max_mp", 0)), before_mp + int(int(resources.get("max_mp", 0)) * pct_restore))
+                new_ap = min(int(resources.get("max_ap", 0)), before_ap + int(int(resources.get("max_ap", 0)) * pct_restore))
+                self._save_resources_from_meta(twitch_id, {"mp": new_mp, "max_mp": int(resources.get("max_mp", 0)), "ap": new_ap, "max_ap": int(resources.get("max_ap", 0))})
+                if new_mp > before_mp: effect_notes.append(f"+{new_mp-before_mp} MP")
+                if new_ap > before_ap: effect_notes.append(f"+{new_ap-before_ap} AP")
+        discovery = str(selected.get("discovery") or "").strip()
+        if discovery and discovery not in state.setdefault("discoveries", []):
+            state["discoveries"].append(discovery)
+        choice_label = str(selected.get("label") or "Chosen route")
+        description = str(selected.get("description") or "")
+        state.setdefault("history", []).append({"room": room_index + 1, "type": "choice", "label": f"Chose {choice_label}"})
+        state["event"] = {"type": "choice_resolved", "room_id": str(room.get("id") or ""), "name": choice_label, "description": description, "choice_id": str(selected.get("id") or ""), "effects": effect_notes, "discovery": discovery}
+        state["status"] = "choice"
+        self._dungeon_save(twitch_id, state)
+        suffix = f" ({', '.join(effect_notes)})" if effect_notes else ""
+        return GameResult.success(f"DUNGEON ROUTE — {choice_label}.{suffix}", dungeon_choice_resolved=True)
 
     def dungeon_action(self, twitch_id: str, action_kind: str) -> GameResult:
         state = self._dungeon_load(twitch_id)
@@ -7509,7 +7596,7 @@ class CrystalGuildEngine:
             "title": f"{dungeon.get('name', 'Dungeon')} Cleared" if outcome == "complete" else f"{dungeon.get('name', 'Dungeon')} Retreat" if outcome == "retreat" else f"{dungeon.get('name', 'Dungeon')} Defeat",
             "dungeon_name": str(dungeon.get("name") or "Dungeon"), "rooms": int(reached), "room_count": int(room_count),
             "rewards": {"xp": int(rewards.get("xp", 0)), "jp": int(rewards.get("jp", 0)), "gil": int(rewards.get("gil", 0)), "loot": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in rewards.get("items", [])], "achievements": list(rewards.get("achievements") or [])[:4], "levelups": list(rewards.get("levelups") or [])[:4]},
-            "history": copy.deepcopy(list(state.get("history") or [])[-10:]), "player": self._solo_result_vitals(twitch_id), "interactive": True,
+            "history": copy.deepcopy(list(state.get("history") or [])[-10:]), "discoveries": copy.deepcopy(list(state.get("discoveries") or [])), "player": self._solo_result_vitals(twitch_id), "interactive": True,
         }
         self._persist_portal_adventure_result(str(twitch_id), "dungeon", {"title": summary["title"], "won": outcome == "complete", "finished_at": now, "kind": "dungeon", "monster_name": "", "hunt_name": None, "messages": [], "summary": summary})
         self._dungeon_delete(twitch_id)
@@ -7798,10 +7885,7 @@ class CrystalGuildEngine:
                     "seals": int(rewards.get("seals", 0) or 0),
                 },
                 "clears": int(progress["clears"] or 0) if progress else 0,
-                "first_cleared_at": progress["first_cleared_at"] if progress else None,
                 "cooldown_available_at": available_at if remaining > 0 else 0,
-                "cooldown_remaining": remaining,
-                "requirements_met": bool(met),
                 "missing": [str(value) for value in missing[:5]],
                 "challengeable": bool(not reason_parts),
                 "reason": " ".join(value for value in reason_parts if value),
@@ -8483,6 +8567,12 @@ class CrystalGuildEngine:
     def portal_dungeon_continue(self, twitch_id: str, run_id: str, room_id: str, action_id: str) -> GameResult:
         return self._portal_adventure_mutation(
             twitch_id, action_id, lambda: self.dungeon_continue(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+        )
+
+    @_state_guard
+    def portal_dungeon_choice(self, twitch_id: str, run_id: str, room_id: str, choice_id: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.dungeon_choose(twitch_id, choice_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
         )
 
     @_state_guard

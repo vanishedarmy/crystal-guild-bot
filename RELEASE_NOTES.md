@@ -1,48 +1,46 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 1
+# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 2
 
-## Dungeon Foundations
-Alpha 1 introduces Crystal Guild's first persistent, multi-room Dungeon loop while preserving the established v1.3.1 Guild, Expedition, Hunt, economy, and combat balance outside the new Dungeon system.
+## Routes, Risk & a Second Delve
 
-### The Forgotten Ossuary
-- Adds one complete seven-chamber proof-of-concept Dungeon to **Adventure Board → Dungeons & Delves**.
-- Unlocks at character **Lv. 10** after reaching **25% Emerald Wilds Expedition exploration**.
-- Chamber flow includes an entrance, normal combat, treasure, a hazard, a miniboss, a sanctuary, and a final boss.
-- Dungeon runs persist through Portal refreshes, reconnects, and Bot restarts.
+Alpha 2 expands the persistent Dungeon foundation without changing established Guild, Expedition, Hunt, combat, or economy balance outside Dungeons.
 
-### Player-paced Dungeon combat
-- Dungeon combat is controlled from the Portal one round at a time with **Attack, Job Ability, Item, and Defend**.
-- HP, MP/AP, consumed items, and combat pressure carry from chamber to chamber instead of refreshing after each encounter.
-- Dungeon victories feed the existing Bestiary and monster-defeat records.
-- The sanctuary chamber provides limited recovery without resetting the run.
+### Two persistent Dungeons
+- **The Forgotten Ossuary** now contains **8 chambers** and adds a Crossroads route decision while preserving its Lv. 10 + 25% Emerald Wilds unlock.
+- **The Emberglass Foundry** joins the Dungeon Board as a second **8-chamber** delve, unlocking at **Lv. 18 + 35% Ashen Highlands exploration**.
+- The Foundry introduces its own combat, treasure, hazard, miniboss, sanctuary, final boss, completion bonus, and visual identity.
 
-### Dungeon Cache & outcomes
-- Enemy rewards and chamber treasure accumulate in a temporary **Dungeon Cache** while the run is active.
-- Clearing the Dungeon banks **100%** of the cache plus the Dungeon completion bonus.
-- Voluntary retreat banks **50%** of the current cache.
-- Defeat recovers **25%** of the current cache.
-- Clear, defeat, retreat, best-room, and recent-outcome records persist separately from the active run.
+### Crossroads route choices
+- New **choice chambers** pause progression until the player deliberately selects a route.
+- Safer routes can preserve or restore HP/MP/AP.
+- Riskier routes can deal immediate damage in exchange for additional Gil, materials, or other Dungeon Cache value.
+- Named route discoveries are carried with the active delve and shown in the final Dungeon report.
+- Portal route choices are replay-safe and remain bound to the exact run/chamber shown in the submitting browser tab.
 
-### Persistence & safety
-- Adds persistent per-player active Dungeon state and permanent Dungeon progress/history.
-- Portal Dungeon actions are replay-safe and are bound to the exact **run ID and chamber ID** visible in the submitting browser tab. A stale tab fails closed after another tab advances or replaces the run.
-- Only one active adventure can be held at a time; Dungeons block incompatible Venture, Hunt, Expedition, Camp, equipment, shop, crafting, job, and similar mutations while a run is active.
-- Streamer emergency `!clearadventures` now clears an active Dungeon run without erasing completed Dungeon records.
-- Schema **9 → 10** is additive and creates a verified pre-schema-10 backup before migration.
+### Dungeon Board expansion
+- Dungeon cards now show scene art, minimum/recommended level, chamber count, route-choice count, unlock state, and permanent progress.
+- Active runs show their Dungeon scene, current discoveries, route options when a Crossroads is reached, persistent condition, Cache, combat controls, and history.
+- The Player Guide now documents both current Dungeons and Crossroads behavior.
 
-### Player-facing integration
-- Adds Dungeon status, unlock requirements, current chamber, persistent condition, cache, controls, and history to the Adventure Board.
-- Adds Dungeons & Delves coverage to the Player Guide.
-- Keeps the public **Previous major updates** history limited to shipped stable releases; Alpha 1 appears only as the current What's New entry.
+### Shared UI cleanup
+- The retro collapse hand keeps the established state language: **right when closed, down when open**.
+- All supported collapsible surfaces now share one canonical rendered pointer size so Overview/What’s New controls do not appear oversized relative to Adventure Board, Fellowship, Streamer Dashboard, or Player Guide disclosures.
+
+### Payload / stability discipline
+- The Adventure-state payload remains below the existing 16 KiB regression ceiling even with a second Dungeon by omitting redundant Hunt fields that the frontend does not consume.
+- Alpha 1 persistent Dungeon state, restart recovery, cache settlement, stale-tab protection, and `!clearadventures` behavior remain intact.
 
 ## Compatibility
-- Bot runtime: `1.4.0-dungeons-a1`
-- Hosted Web runtime: `1.4.0-dungeons-a1`
-- Frontend asset revision: `1.4.0-dungeons-a1`
-- Local DB schema: **10** (automatic additive migration from schema 9 with verified backup)
+- Bot runtime: `1.4.0-dungeons-a2`
+- Hosted Web runtime: `1.4.0-dungeons-a2`
+- Frontend asset revision: `1.4.0-dungeons-a2`
+- Local DB schema: **10** unchanged from Alpha 1
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **23** (advances from 22 for Dungeon actions)
+- Portal Action protocol: **24** (advances from 23 for `DUNGEON_CHOICE`)
 - Twitch prefix: `!`
+- Database migration from Alpha 1: **none**
 - Player reset: **none**
 - OAuth changes: **none**
 - New environment variables: **none**
-- Existing non-Dungeon gameplay/economy balance changes: **none**
+- Existing non-Dungeon gameplay/economy changes: **none**
+
+Because the Portal Action protocol advances, deploy the matching Alpha 2 Web and Bot together.

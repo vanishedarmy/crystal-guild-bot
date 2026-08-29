@@ -2,7 +2,7 @@
   {
     "id": "forgotten_ossuary",
     "name": "The Forgotten Ossuary",
-    "subtitle": "A sealed crypt beneath the old frontier road.",
+    "subtitle": "A sealed crypt beneath the old frontier road, where every detour asks what you are willing to risk.",
     "min_level": 10,
     "recommended_level": 12,
     "unlock": {
@@ -14,7 +14,10 @@
       "jp": 35,
       "gil": 260,
       "items": [
-        {"item_id": "ancient_coin", "quantity": 1}
+        {
+          "item_id": "ancient_coin",
+          "quantity": 1
+        }
       ]
     },
     "rooms": [
@@ -37,10 +40,57 @@
         "type": "treasure",
         "description": "A row of intact offering bowls survived the centuries.",
         "loot": [
-          {"item_id": "potion", "quantity": 2},
-          {"item_id": "bone_chip", "quantity": 2}
+          {
+            "item_id": "potion",
+            "quantity": 2
+          },
+          {
+            "item_id": "bone_chip",
+            "quantity": 2
+          }
         ],
         "gil": 90
+      },
+      {
+        "id": "forked_crypt",
+        "name": "Forked Crypt",
+        "type": "choice",
+        "description": "Two passages split beneath a cracked funerary seal. One is warded and quiet; the other promises richer grave goods behind a dangerous breach.",
+        "options": [
+          {
+            "id": "warded_stair",
+            "label": "Take the Warded Stair",
+            "description": "Follow the intact funerary wards and conserve strength for the chambers ahead.",
+            "discovery": "Warden’s Route",
+            "effects": [
+              {
+                "type": "restore_resource_percent",
+                "value": 12
+              }
+            ]
+          },
+          {
+            "id": "sealed_reliquary",
+            "label": "Break the Reliquary Seal",
+            "description": "Force open the sealed side chamber. The backlash hurts, but the old offerings are still inside.",
+            "discovery": "Sealed Reliquary",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 8
+              },
+              {
+                "type": "cache_gil",
+                "value": 110
+              },
+              {
+                "type": "cache_item",
+                "item_id": "ancient_coin",
+                "quantity": 1
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "falling_vault",
@@ -71,9 +121,147 @@
         "name": "Sealed Belfry",
         "type": "boss",
         "monster_id": "gargoyle",
-        "hp_multiplier": 1.30,
-        "reward_multiplier": 1.50,
+        "hp_multiplier": 1.3,
+        "reward_multiplier": 1.5,
         "description": "Stone wings unfold above the burial bell. The Ossuary's final sentinel has been waiting for a challenger."
+      }
+    ],
+    "art": "/retro-phase-ii/regions-hd/whispering_caverns.webp"
+  },
+  {
+    "id": "emberglass_foundry",
+    "name": "The Emberglass Foundry",
+    "subtitle": "A ruined mountain forge where crystal furnaces still burn beneath the Ashen Highlands.",
+    "min_level": 18,
+    "recommended_level": 21,
+    "art": "/expeditions/ashen-highlands.webp",
+    "unlock": {
+      "expedition_region": "ashen_highlands",
+      "progress": 35
+    },
+    "completion_bonus": {
+      "xp": 320,
+      "jp": 55,
+      "gil": 420,
+      "items": [
+        {
+          "item_id": "mythril_ore",
+          "quantity": 2
+        },
+        {
+          "item_id": "bomb_core",
+          "quantity": 1
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "foundry_gate",
+        "name": "Foundry Gate",
+        "type": "entrance",
+        "description": "Heat rolls through a broken mountain gate. The old furnaces beyond still pulse with a dull orange glow."
+      },
+      {
+        "id": "slag_vats",
+        "name": "Slag Vats",
+        "type": "combat",
+        "monster_id": "black_flan",
+        "description": "A living mass of furnace slag peels itself from the cooling trench and blocks the gantry."
+      },
+      {
+        "id": "foreman_cache",
+        "name": "Foreman’s Cache",
+        "type": "treasure",
+        "description": "A locked shift chest survived beneath a collapsed workbench.",
+        "loot": [
+          {
+            "item_id": "hi_potion",
+            "quantity": 1
+          },
+          {
+            "item_id": "bomb_fragment",
+            "quantity": 2
+          }
+        ],
+        "gil": 140
+      },
+      {
+        "id": "furnace_split",
+        "name": "The Furnace Split",
+        "type": "choice",
+        "description": "The main gallery divides around the furnace core. The cooling galleries are safer; the forge heart is shorter, hotter, and richer.",
+        "options": [
+          {
+            "id": "cooling_gallery",
+            "label": "Take the Cooling Galleries",
+            "description": "Circle the furnace through the old coolant channels and recover in the cooler air.",
+            "discovery": "Cooling Galleries",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 10
+              },
+              {
+                "type": "restore_resource_percent",
+                "value": 10
+              }
+            ]
+          },
+          {
+            "id": "forge_heart",
+            "label": "Cross the Forge Heart",
+            "description": "Cut directly across the live furnace floor and salvage what the workers abandoned.",
+            "discovery": "Forge Heart",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 10
+              },
+              {
+                "type": "cache_gil",
+                "value": 180
+              },
+              {
+                "type": "cache_item",
+                "item_id": "mythril_ore",
+                "quantity": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "slag_chute",
+        "name": "Slag Chute",
+        "type": "hazard",
+        "description": "A cracked sluice suddenly vents molten debris across the only remaining walkway.",
+        "damage_percent": 15
+      },
+      {
+        "id": "buried_pit",
+        "name": "Buried Pit",
+        "type": "miniboss",
+        "monster_id": "antlion",
+        "hp_multiplier": 1.18,
+        "reward_multiplier": 1.3,
+        "description": "The foundry floor collapses into an old ore pit. Something enormous has made the rubble its nest."
+      },
+      {
+        "id": "engineers_font",
+        "name": "Engineer’s Font",
+        "type": "sanctuary",
+        "description": "A maintenance crystal still feeds clean aether into a sheltered alcove beneath the master forge.",
+        "hp_restore_percent": 22,
+        "resource_restore_percent": 25
+      },
+      {
+        "id": "master_crucible",
+        "name": "Master Crucible",
+        "type": "boss",
+        "monster_id": "inferno_drake",
+        "hp_multiplier": 1.35,
+        "reward_multiplier": 1.55,
+        "description": "An Inferno Drake coils around the master crucible, feeding on the furnace flame that has burned here for generations."
       }
     ]
   }

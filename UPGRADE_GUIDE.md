@@ -1,18 +1,18 @@
-# Upgrade Guide — v1.4.0 Dungeons & Delves Alpha 1
+# Upgrade Guide — v1.4.0 Dungeons & Delves Alpha 2
 
-Baseline: **v1.3.1 Asset Optimization UI4 Web + v1.3.1 Asset Optimization Bot**. Portal Action protocol advances **22 → 23**, so deploy the matching Alpha 1 Web and Bot together.
+Baseline: **v1.4.0 Dungeons & Delves Alpha 1 Web + Bot**. Portal Action protocol advances **23 → 24**, so deploy the matching Alpha 2 Web and Bot together.
 
 1. Back up the current player database and persistent Twitch/token data.
 2. Stop the Bot cleanly.
-3. Apply the v1.3.1 → v1.4 Alpha 1 Bot patch, or replace the Bot source while preserving `.env`, the live database, token storage, and persistent-disk configuration.
-4. Deploy the UI4 → v1.4 Alpha 1 Web patch or the full Alpha 1 Web package.
-5. Start the Bot. On first startup, schema **9 → 10** runs automatically and creates a verified pre-schema-10 database backup.
-6. Redeploy/restart the hosted Web service.
-7. Verify `!cgversion` reports `1.4.0-dungeons-a1` and local schema **10**.
-8. Verify `/api/health` reports Web/frontend `1.4.0-dungeons-a1`, hosted sync schema **1**, and Portal Action protocol **23**.
-9. Open **Adventure Board → Dungeons & Delves**. Confirm The Forgotten Ossuary is locked until Lv. 10 + 25% Emerald Wilds exploration, then test starting a run on an eligible character.
-10. Advance at least one chamber and, if practical, leave an older browser tab open. Confirm an action from the stale tab is rejected and asks for a refresh rather than mutating the newer run/chamber.
-11. Confirm HP/MP/AP, Dungeon Cache, and current chamber persist after a Portal refresh. If practical in staging, restart the Bot and confirm the active run resumes intact.
-12. Confirm existing player, Fellowship, Airship, Expedition, inventory, Bestiary, achievement, title, and equipment progression remains intact.
+3. Apply the **Alpha 1 → Alpha 2 Bot patch**, or replace the Bot source while preserving `.env`, the live database, token storage, and persistent-disk configuration.
+4. Deploy the matching **Alpha 1 → Alpha 2 Web patch** or full Alpha 2 Web package.
+5. Restart the Bot and hosted Web service.
+6. Verify `!cgversion` reports `1.4.0-dungeons-a2` and local schema **10**.
+7. Verify `/api/health` reports Web/frontend `1.4.0-dungeons-a2`, hosted sync schema **1**, and Portal Action protocol **24**.
+8. Open **Adventure Board → Dungeons & Delves** and confirm both The Forgotten Ossuary and The Emberglass Foundry appear with their unlock requirements.
+9. On an eligible character, reach a Crossroads and verify a route choice applies once, records its discovery, and advances back to the normal Continue/Retreat state.
+10. If practical, leave a stale browser tab open at that Crossroads and confirm a second stale mutation cannot change the resolved route.
+11. Confirm the shared collapse hand is consistently sized and shows **right when closed / down when open**, including What’s New.
+12. Confirm active Dungeon condition, Cache, discoveries, and current chamber survive a Portal refresh and Bot restart.
 
-No player reset, OAuth change, or new environment variable is required. The schema migration is additive and preserves existing data.
+No database migration is required from Alpha 1; schema **10** remains current. Existing player, Fellowship, Airship, Expedition, inventory, Bestiary, achievement, title, equipment, and Dungeon progress are preserved. No player reset, OAuth change, or new environment variable is required.
