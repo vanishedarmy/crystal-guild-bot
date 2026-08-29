@@ -1,6 +1,6 @@
-Crystal Guild v1.2.0 Expeditions Beta 1 — Bot Package Manifest
-Runtime: 1.2.0-expeditions-b1
+Crystal Guild v1.2.0 Expeditions Beta 4 — Bot Package Manifest
+Runtime: 1.2.0-expeditions-b4
 Local DB schema: 8
 Hosted sync schema: 1
 Portal Action protocol: 20
-Includes: Expedition balance simulator + fixed-seed 3,000-run report
+Feature state: frozen / release hardening

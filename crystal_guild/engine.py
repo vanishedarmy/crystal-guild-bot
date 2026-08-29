@@ -434,6 +434,21 @@ class CrystalGuildEngine:
         )
         return {"hp": max_hp, "mp": max_mp, "ap": max_ap}
 
+    def _persistent_run_blocks_passive_refresh(self, player_id: str) -> bool:
+        """Return True while a player-paced run owns HP/MP/AP continuity.
+
+        Long Rest and stream-live roster refreshes are intentionally passive.
+        They must never heal through an active Wayfarer or v1.2 Expedition,
+        including after Bot restarts, because those runs persist their own
+        resource-pressure state in SQLite.
+        """
+        uid = str(player_id)
+        if self.db.one("SELECT 1 FROM player_expeditions WHERE player_id=?", (uid,)):
+            return True
+        if self.db.one("SELECT 1 FROM solo_expeditions WHERE player_id=?", (uid,)):
+            return True
+        return False
+
     def record_player_action(self, player_id: str, *, now: int | None = None) -> dict[str, Any]:
         """Record an intentional player interaction and apply an eight-hour Long Rest once due.
 
@@ -454,7 +469,8 @@ class CrystalGuildEngine:
         # first post-upgrade interaction rather than receiving a surprise heal
         # based on unrelated historical database writes.
         last_refresh = int(state.get("last_refresh_at") or 0)
-        if last_action and current - last_action >= LONG_REST_SECONDS and last_refresh < last_action:
+        refresh_blocked = self._persistent_run_blocks_passive_refresh(uid)
+        if last_action and current - last_action >= LONG_REST_SECONDS and last_refresh < last_action and not refresh_blocked:
             resources = self._full_refresh_player_row(player, clear_camp=True)
             refreshed = True
             LOGGER.info(
@@ -473,6 +489,7 @@ class CrystalGuildEngine:
             "tracked": True,
             "inactive_seconds": max(0, current - last_action) if last_action else 0,
             "resources": resources or {},
+            "refresh_blocked_by_active_run": bool(refresh_blocked),
         }
 
     def refresh_due_long_rests(self, *, now: int | None = None) -> dict[str, Any]:
@@ -485,6 +502,7 @@ class CrystalGuildEngine:
         """
         current = int(time.time()) if now is None else int(now)
         refreshed_ids: list[str] = []
+        skipped_active_ids: list[str] = []
         with self._state_lock, self.db.tx():
             for player in self.db.all("SELECT * FROM players ORDER BY twitch_id"):
                 uid = str(player["twitch_id"])
@@ -492,6 +510,9 @@ class CrystalGuildEngine:
                 last_action = int(state.get("last_action_at") or 0)
                 last_refresh = int(state.get("last_refresh_at") or 0)
                 if not last_action or current - last_action < LONG_REST_SECONDS or last_refresh >= last_action:
+                    continue
+                if self._persistent_run_blocks_passive_refresh(uid):
+                    skipped_active_ids.append(uid)
                     continue
                 self._full_refresh_player_row(player, clear_camp=True)
                 self._save_player_activity_state(
@@ -503,7 +524,12 @@ class CrystalGuildEngine:
                 refreshed_ids.append(uid)
         if refreshed_ids:
             LOGGER.info("Long Rest scheduler refreshed %s player(s): %s", len(refreshed_ids), ",".join(refreshed_ids))
-        return {"count": len(refreshed_ids), "player_ids": refreshed_ids, "checked_at": current}
+        return {
+            "count": len(refreshed_ids),
+            "player_ids": refreshed_ids,
+            "skipped_active_run_ids": skipped_active_ids,
+            "checked_at": current,
+        }
 
     def refresh_all_players_for_stream(self, started_at: str) -> dict[str, Any]:
         """Refresh every hero once per Twitch stream session.
@@ -526,9 +552,15 @@ class CrystalGuildEngine:
                     return {"refreshed": False, "count": 0, "session": session}
             players = self.db.all("SELECT * FROM players ORDER BY twitch_id")
             refreshed_at = int(time.time())
+            refreshed_ids: list[str] = []
+            skipped_active_ids: list[str] = []
             for player in players:
                 uid = str(player["twitch_id"])
+                if self._persistent_run_blocks_passive_refresh(uid):
+                    skipped_active_ids.append(uid)
+                    continue
                 self._full_refresh_player_row(player, clear_camp=True)
+                refreshed_ids.append(uid)
                 activity = self._load_player_activity_state(uid)
                 self._save_player_activity_state(
                     uid,
@@ -539,12 +571,26 @@ class CrystalGuildEngine:
             self.db.set_runtime_state(
                 STREAM_REFRESH_STATE_KEY,
                 json.dumps(
-                    {"started_at": session, "refreshed_at": refreshed_at, "count": len(players)},
+                    {
+                        "started_at": session,
+                        "refreshed_at": refreshed_at,
+                        "count": len(refreshed_ids),
+                        "skipped_active_run_ids": skipped_active_ids,
+                    },
                     separators=(",", ":"),
                 ),
             )
-        LOGGER.info("Stream-live refresh restored %s Crystal Guild players for session %s", len(players), session)
-        return {"refreshed": True, "count": len(players), "session": session}
+        LOGGER.info(
+            "Stream-live refresh restored %s Crystal Guild players for session %s; skipped %s active persistent run(s)",
+            len(refreshed_ids), session, len(skipped_active_ids),
+        )
+        return {
+            "refreshed": True,
+            "count": len(refreshed_ids),
+            "player_ids": refreshed_ids,
+            "skipped_active_run_ids": skipped_active_ids,
+            "session": session,
+        }
 
     # ---------- players ----------
     def recruit(self, twitch_id: str, username: str, display_name: str | None = None) -> GameResult:
@@ -7777,7 +7823,33 @@ class CrystalGuildEngine:
             return self._need_recruit()
         return GameResult.success("Adventure Board refreshed.", adventure_state=self._portal_adventure_state_data(twitch_id, stream_live=stream_live))
 
+    def _portal_adventure_mutation(self, twitch_id: str, action_id: str, operation) -> GameResult:
+        """Commit an Adventure mutation and its replay receipt atomically.
+
+        A hosted acknowledgement can be lost after the Bot commits locally. By
+        placing the gameplay operation inside the same outer SQLite transaction
+        as the bounded Portal replay receipt, a retry can never duplicate cache
+        banking, Hunt Seals, exploration progress, item use, or stage advances.
+        Nested engine write helpers use savepoints and therefore remain safely
+        composable inside this release-hardening transaction.
+        """
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        with self.db.tx() as conn:
+            result = operation()
+            if self._player(twitch_id):
+                result.data["adventure_state"] = self._portal_adventure_state_data(twitch_id)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
     def _portal_adventure_mutation_result(self, action_id: str, result: GameResult, twitch_id: str) -> GameResult:
+        """Legacy Adventure receipt helper for mutations with in-memory coordination.
+
+        Timed Hunts still coordinate through the live in-memory hunt registry, so
+        they retain their established receipt flow. Persistent Solo/Expedition
+        runs use ``_portal_adventure_mutation`` above for crash-atomic commits.
+        """
         result.data["adventure_state"] = self._portal_adventure_state_data(twitch_id)
         with self.db.tx() as conn:
             self._portal_action_store_sql(conn, action_id, result)
@@ -7785,107 +7857,65 @@ class CrystalGuildEngine:
 
     @_state_guard
     def portal_travel_region(self, twitch_id: str, region_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.travel(twitch_id, str(region_id or "").strip())
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.travel(twitch_id, str(region_id or "").strip())
+        )
 
     @_state_guard
     def portal_solo_venture(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.solo_venture(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.solo_venture(twitch_id))
 
     @_state_guard
     def portal_solo_expedition_action(self, twitch_id: str, action_kind: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.solo_expedition_action(twitch_id, action_kind)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.solo_expedition_action(twitch_id, action_kind)
+        )
 
     @_state_guard
     def portal_solo_expedition_continue(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.solo_expedition_continue(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.solo_expedition_continue(twitch_id))
 
     @_state_guard
     def portal_solo_expedition_return(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.solo_expedition_return(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.solo_expedition_return(twitch_id))
 
     @_state_guard
     def portal_solo_expedition_retreat(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.solo_expedition_retreat(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.solo_expedition_retreat(twitch_id))
 
     @_state_guard
     def portal_expedition_start(self, twitch_id: str, region_id: str, depth_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_start(twitch_id, region_id, depth_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.expedition_start(twitch_id, region_id, depth_id)
+        )
 
     @_state_guard
     def portal_expedition_resolve_stage(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_resolve_stage(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.expedition_resolve_stage(twitch_id))
 
     @_state_guard
     def portal_expedition_action(self, twitch_id: str, action_kind: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_combat_action(twitch_id, action_kind)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.expedition_combat_action(twitch_id, action_kind)
+        )
 
     @_state_guard
     def portal_expedition_continue(self, twitch_id: str, route_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_continue(twitch_id, route_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.expedition_continue(twitch_id, route_id)
+        )
 
     @_state_guard
     def portal_expedition_camp(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_camp(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.expedition_camp(twitch_id))
 
     @_state_guard
     def portal_expedition_return(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_return(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.expedition_return(twitch_id))
 
     @_state_guard
     def portal_expedition_retreat(self, twitch_id: str, action_id: str) -> GameResult:
-        replay = self._portal_action_replay(action_id)
-        if replay is not None:
-            return replay
-        result = self.expedition_retreat(twitch_id)
-        return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.expedition_retreat(twitch_id))
 
     @_state_guard
     def portal_challenge_hunt(self, twitch_id: str, hunt_id: str, action_id: str) -> GameResult:

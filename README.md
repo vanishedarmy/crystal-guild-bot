@@ -1,17 +1,7 @@
-# Crystal Guild v1.2.0 — Expeditions Beta 1
+# Crystal Guild v1.2.0 — Expeditions Beta 4
 
-Beta 1 freezes the v1.2 feature set for balance and release stabilization. Safe/Unknown/Push Deeper now change actual combat and hazard pressure, Legendary final-boss scaling is slightly smoothed, and the Bot ships a reproducible 3,000-run Expedition balance simulator/report. Alpha 5 Chocobo specialization and completion stipends remain intact.
+Beta 4 freezes gameplay/content and hardens the v1.2 release path. Persistent Solo/Expedition runs retain HP/MP/AP pressure through Long Rest and stream-start refresh events, while persistent Adventure Portal mutations now commit their gameplay writes and replay receipt in one SQLite transaction so acknowledgement retries cannot duplicate rewards or stage progress.
 
-Runtime `1.2.0-expeditions-b1` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
+Runtime `1.2.0-expeditions-b4` · local DB schema **8** · hosted sync schema **1** · hosted sync compatibility `1.1.15-wayfarer` · Portal Action protocol **20** · Twitch prefix `!`.
 
-
-Latest Hunt timing: C 15m · B 30m · A 2h · S 5h. Hunts resolve autonomously with no round-by-round chat input.
-
-## RC1 Hotfix 9 — Raid Timing & Field Support
-Rally Venture now uses 60s rallies and 30s combat rounds; Raids use 90s rallies and 60s rounds. Streamer Portal boss spawns announce their rally in Twitch chat while LIVE, and field recovery items may support another adventurer outside battle while LIVE. Portal Action protocol is 19; DB schema remains 7.
-
-## RC1 Hotfix 7 — Streamer Inventory Admin
-Adds owner-only `!additem <player> | <item> | [quantity]` and `!removeitem <player> | <item> | [quantity]`, plus matching authenticated Streamer Portal controls. Inventory changes use the authoritative item catalog, reject over-removal, ledger every delta, auto-unequip the final removed equipped copy, and are replay-safe for Portal acknowledgement retries. Local DB schema remains 7; Portal Action protocol advances to 18.
-
-## RC1 Hotfix 6 — Persistent Adventure Results
-Adds a durable per-player Adventure Board result inbox. Portal Solo Venture outcomes and Portal-origin timed Hunt results persist across page changes, time away, and Bot restarts until the player confirms the individual card. Hotfix 5 Streamer Controls and LIVE-only notable Portal announcements remain intact. Deploy with the matching Web build because local DB schema 7 and Portal Action protocol 17 are required.
+Use `python run_maintenance.py --recovery-drill` for the non-destructive backup/restore drill and `python run_stress_test.py` for the synthetic concurrency/integrity test. The bundled release validation also covers persistent Expedition restart recovery and the direct pre-v1.2 schema-7 → schema-8 migration path.

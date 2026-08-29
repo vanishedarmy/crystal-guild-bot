@@ -6,7 +6,7 @@ title Crystal Guild v1.2.0 - Expeditions Alpha 1
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.2.0 - EXPEDITIONS ALPHA 1
+echo              CRYSTAL GUILD v1.2.0 - EXPEDITIONS BETA 4
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.
