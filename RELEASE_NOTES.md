@@ -1,49 +1,39 @@
-# Crystal Guild v1.3.0 — Guild Expansion Beta 1
+# Crystal Guild v1.3.0 — Guild Expansion Beta 3
 
-## Guild Economy & Progression Balance
+## Shared-State Hardening & Stability
 
-Beta 1 is the balance checkpoint for the v1.3 Fellowship/Airship expansion. It does not add a new gameplay system; it tunes the late Guild progression curve so the Airship arrives over meaningful weeks while Tier III remains a long-term goal.
+Beta 3 keeps the v1.3 feature set and Beta 1 balance frozen while hardening the shared Fellowship/Airship mutation paths used by multiple players, browser tabs, reconnects, and the streamer controls.
 
-### Airship Dock
-- Lv. 1: 60,000 Gil · 25 Ancient Coins · 4 Guild raid wins · Fellowship LVL 7.
-- Lv. 2: 100,000 Gil · 35 Ancient Coins · 6 Guild raid wins · Fellowship LVL 8.
-- Lv. 3: 170,000 Gil · 55 Ancient Coins · 9 Guild raid wins · Fellowship LVL 9.
+### Fellowship contribution safety
+- Guild contributions now recompute the live remaining requirement while holding the authoritative Guild write lock. Simultaneous contributors cannot overfill a requirement or lose more Gil/materials than the project still needs.
+- The final contribution, contribution Renown, project completion, facility/Airship upgrade, shared reward, Fellowship level synchronization, Orders/Deeds, and Legacy settlement complete beneath one outer transaction.
+- Active-project selection is validated and changed under the same serialized Guild lock, preventing a project switch from splitting a just-completed requirement from its upgrade/reward.
+- Portal contribution actions now carry the `project_id` that was visible in the player's Fellowship tab. If the streamer changed projects before the action arrives, the contribution fails closed and returns refreshed Fellowship state instead of donating to the wrong project.
 
-### Crystal Guild Airship construction
-- 140,000 Gil
-- 35 Mythril Ore
-- 18 Wyvern Scales
-- 20 Elemental Crystals
-- 10 Ancient Coins
-- 6 Guild raid wins
-- Fellowship LVL 8
+### Multi-tab / replay safety
+- Fellowship Portal mutations re-check the bounded Portal replay receipt after obtaining the write lock. Two tabs/retries that arrive before the first acknowledgement commits can no longer both execute the same mutation.
+- Existing replay-safe Workshop actions inherit the same stronger locked re-check.
 
-### Airship upgrade curve
-Every upgrade tier now uses 25,000 / 55,000 / 95,000 Gil and 1 / 2 / 2 Guild raid wins. Material quantities are rarity-aware instead of one flat curve:
-- Hull — Adamantite: 2 / 4 / 6
-- Engine — Magitek Capacitors: 3 / 5 / 8
-- Cargo Hold — Mythril Ore: 4 / 7 / 10
-- Survey Array — Elemental Crystals: 4 / 7 / 10
-- Crystal Core — Dark Matter: 2 / 4 / 6
+### Airship hardening
+- Airship mission launch is serialized and conditionally starts only while no other run is active. Concurrent streamer launch requests cannot overwrite one another.
+- Due mission settlement re-reads the active run inside the write transaction and scopes cleanup to that exact run ID.
+- Guild Renown, contributor Gil/personal Renown, mission history, completion counters, and replay receipts settle together.
+- Restart/reconnect settlement remains automatic and cannot duplicate contributor rewards or clear a newer mission.
 
-### Intentionally unchanged
-- Weekly Fellowship Order shared and personal rewards.
-- Supply Drive and Guild Objective rewards.
-- Workshop refining recipes and service fees.
-- Fellowship LVL thresholds and personal Guild Rank thresholds.
-- Guild Legacy accomplishment targets/rewards.
-- Airship mission duration, progress, and reward formulas.
+### Player-facing behavior
+- What's New explains the reliability changes without exposing internal database/transaction terminology.
+- The Beta 2 Fellowship priority layout, remembered disclosures, Founding Hall portrait art, collapsible Equipment inventory groups, Beta 1 economy tuning, Alpha 3 services, Airship formulas, Weekly Order payouts, and Guild Legacy targets are unchanged.
 
-## Fixed-seed balance simulation
-The shipping simulator runs 1,000 seasons each for Casual, Core, and Active Guild profiles — 3,000 total. In the conservative Core profile, the median timing is roughly 6.1 weeks to Fellowship LVL 8, 11.1 weeks to Airship Dock Lv. 1, 13.3 weeks to the completed Airship, 24.0 weeks to all five major facilities at Lv. 3, and 33.4 weeks to all Airship upgrade tracks at Tier III. Contribution Renown is intentionally excluded from the model, so real progression can be somewhat faster.
-
-## Compatibility
-- Bot/Web runtime: `1.3.0-guild-expansion-b1`
-- Frontend asset revision: `1.3.0-guild-expansion-b1`
+### Compatibility
+- Bot runtime: `1.3.0-guild-expansion-b3`
+- Hosted Web runtime: `1.3.0-guild-expansion-b3`
+- Frontend asset revision: `1.3.0-guild-expansion-b3`
 - Local DB schema: **9** unchanged
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **21** unchanged
+- Portal Action protocol: **22** (advanced from 21 for project-bound Fellowship contributions)
 - Twitch prefix: `!`
-- Database migration: **none**
 - Player reset: **none**
-- OAuth/environment changes: **none**
+- New environment variables: **none**
+- OAuth changes: **none**
+
+Because the Portal Action protocol advances, deploy the Beta 3 Web and Bot together.

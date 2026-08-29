@@ -8075,22 +8075,34 @@ class CrystalGuildEngine:
         if replay is not None:
             return replay
         with self.db.tx() as conn:
+            # Re-check after taking the write lock. Two tabs/retries can arrive
+            # before the first action has committed its receipt; only the first
+            # mutation is allowed to execute.
+            replay = self._portal_action_replay(action_id)
+            if replay is not None:
+                return replay
             result = operation()
             if self._player(twitch_id):
                 result.data["fellowship_state"] = self._portal_fellowship_state_data(twitch_id)
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
-    def portal_contribute_gil(self, twitch_id: str, amount: int, action_id: str) -> GameResult:
+    def portal_contribute_gil(
+        self, twitch_id: str, amount: int, action_id: str, expected_project_id: str | None = None
+    ) -> GameResult:
         if amount < 1 or amount > 1_000_000:
             return self._portal_store_nonmutating_result(
                 action_id, GameResult.fail("Gil contribution must be between 1 and 1,000,000.")
             )
         return self._portal_fellowship_mutation(
-            twitch_id, action_id, lambda: self.contribute_fellowship(twitch_id, f"gil {amount}")
+            twitch_id, action_id, lambda: self.contribute_fellowship(
+                twitch_id, f"gil {amount}", expected_project_id=expected_project_id
+            )
         )
 
-    def portal_contribute_item(self, twitch_id: str, item_id: str, quantity: int, action_id: str) -> GameResult:
+    def portal_contribute_item(
+        self, twitch_id: str, item_id: str, quantity: int, action_id: str, expected_project_id: str | None = None
+    ) -> GameResult:
         item_id = str(item_id or "").strip()
         if not item_id or item_id not in self.data.items:
             return self._portal_store_nonmutating_result(
@@ -8101,7 +8113,9 @@ class CrystalGuildEngine:
                 action_id, GameResult.fail("Material contribution quantity must be between 1 and 999.")
             )
         return self._portal_fellowship_mutation(
-            twitch_id, action_id, lambda: self.contribute_fellowship(twitch_id, f"{quantity} {item_id}")
+            twitch_id, action_id, lambda: self.contribute_fellowship(
+                twitch_id, f"{quantity} {item_id}", expected_project_id=expected_project_id
+            )
         )
 
     def workshop_refine(self, twitch_id: str, exchange_id: str, batches: int = 1) -> GameResult:
@@ -8935,8 +8949,12 @@ class CrystalGuildEngine:
         founding = " Founding Member." if member["founding_member"] else ""
         return GameResult.success(f"GUILD RANK — {p['display_name']}: {rank['name']} | {member['renown']:,} Renown. {progress}{founding}")
 
-    def contribute_fellowship(self, twitch_id: str, contribution: str) -> GameResult:
-        ok, message, notes = self.fellowship_system.contribute(twitch_id, contribution)
+    def contribute_fellowship(
+        self, twitch_id: str, contribution: str, *, expected_project_id: str | None = None
+    ) -> GameResult:
+        ok, message, notes = self.fellowship_system.contribute(
+            twitch_id, contribution, expected_project_id=expected_project_id
+        )
         if not ok:
             return GameResult.fail(message)
         result = GameResult.success(message, *notes[:2])

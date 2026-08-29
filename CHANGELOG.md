@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.3.0 — Guild Expansion Beta 3
+- Hardens simultaneous Fellowship contributions, project switching, Portal replay handling, and Airship launch/settlement.
+- Binds Portal contributions to the project shown in the submitting tab; stale tabs fail closed after a project change.
+- Advances Portal Action protocol 21 → 22; schema 9 and Beta 1 balance remain unchanged.
+
 ## v1.3.0 — Guild Expansion Beta 1
 - Adds the fixed-seed Guild economy/progression simulator and 3,000-season balance report.
 - Tunes Airship Dock, Airship construction, and rarity-aware Airship upgrade requirements.

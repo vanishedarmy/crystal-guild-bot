@@ -40,7 +40,7 @@ class GuildExpansionAlpha4Tests(unittest.TestCase):
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='fellowship_airship_state'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='fellowship_airship_upgrades'"))
         self.assertEqual(int(self.db.one("SELECT COUNT(*) AS n FROM players")["n"]), 1)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 21)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 22)
 
     def test_direct_alpha3_schema8_upgrade_preserves_progress_and_adds_airship(self):
         path = Path(self.tmp.name) / "alpha3-schema8.db"

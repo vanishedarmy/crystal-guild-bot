@@ -501,7 +501,7 @@ class PortalActionWorkerTests(unittest.TestCase):
     def test_phase_six_gil_contribution_caps_refreshes_and_is_replay_safe(self):
         self.assertTrue(self.game.set_fellowship_project("infirmary").ok)
         self.db.execute("UPDATE players SET gil=10000 WHERE twitch_id='100'")
-        action = self.action(id="pa_fellowship_gil", type="CONTRIBUTE_GIL", payload={"amount": 7000})
+        action = self.action(id="pa_fellowship_gil", type="CONTRIBUTE_GIL", payload={"amount": 7000, "project_id": "infirmary_t1"})
 
         first = self.worker._execute(action)
         self.assertTrue(first[0])
@@ -523,7 +523,7 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertTrue(self.game.set_fellowship_project("infirmary").ok)
         self.game._change_item("100", "hi_potion", 6, "test")
         action = self.action(
-            id="pa_fellowship_item", type="CONTRIBUTE_ITEM", payload={"item_id": "hi_potion", "quantity": 3}
+            id="pa_fellowship_item", type="CONTRIBUTE_ITEM", payload={"item_id": "hi_potion", "quantity": 3, "project_id": "infirmary_t1"}
         )
         first = self.worker._execute(action)
         self.assertTrue(first[0])

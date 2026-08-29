@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 21
+ACTION_PROTOCOL_VERSION = 22
 
 
 class PortalActionWorker:
@@ -404,7 +404,12 @@ class PortalActionWorker:
                 amount = int(payload.get("amount"))
             except (TypeError, ValueError):
                 return False, "Fellowship contribution has an invalid Gil amount.", {}
-            result = self.game.portal_contribute_gil(twitch_id, amount, str(action.get("id") or ""))
+            project_id = str(payload.get("project_id") or "").strip()
+            if not project_id:
+                return False, "Fellowship contribution is missing the project version. Refresh Fellowship and try again.", {}
+            result = self.game.portal_contribute_gil(
+                twitch_id, amount, str(action.get("id") or ""), expected_project_id=project_id
+            )
             return self._game_result(result)
         if action_type == "CONTRIBUTE_ITEM":
             item_id = str(payload.get("item_id") or "").strip()
@@ -414,7 +419,12 @@ class PortalActionWorker:
                 return False, "Fellowship contribution has an invalid item quantity.", {}
             if not item_id:
                 return False, "Fellowship contribution is missing an item.", {}
-            result = self.game.portal_contribute_item(twitch_id, item_id, quantity, str(action.get("id") or ""))
+            project_id = str(payload.get("project_id") or "").strip()
+            if not project_id:
+                return False, "Fellowship contribution is missing the project version. Refresh Fellowship and try again.", {}
+            result = self.game.portal_contribute_item(
+                twitch_id, item_id, quantity, str(action.get("id") or ""), expected_project_id=project_id
+            )
             return self._game_result(result)
         if action_type == "WORKSHOP_EXCHANGE":
             exchange_id = str(payload.get("exchange_id") or "").strip().lower()

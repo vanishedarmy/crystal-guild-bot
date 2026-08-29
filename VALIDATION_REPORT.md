@@ -1,57 +1,47 @@
-# Crystal Guild v1.3.0 — Guild Expansion Beta 1 Validation Report
+# Crystal Guild v1.3.0 — Guild Expansion Beta 3 Validation Report
 
 ## Result
 **PASS**
 
-## Regression suites
-- Bot unittest suite: **475 / 475 PASS**.
-- Frontend Node regression suite: **349 / 349 PASS**.
-- Hosted Web/API unittest suite: **47 / 47 PASS**.
-- Focused Beta 1 balance regressions: **5 / 5 PASS** (included in the Bot total).
+## Automated suites
+- Bot Python unittest suite: **482 / 482 PASS**.
+- Frontend Node regression suite: **354 / 354 PASS**.
+- Hosted Web/API Python unittest suite: **47 / 47 PASS**.
+- Focused Beta 3 shared-state hardening suite: **7 / 7 PASS** (included in Bot total).
 
-The Bot log still includes intentional simulated Twitch outage, acknowledgement-loss, checkpoint recovery, and temporary availability warnings from resilience tests; those scenarios pass and are not Beta 1 failures.
+The Bot log includes intentional simulated acknowledgement loss, temporary Twitch/live-status failures, and runtime-checkpoint recovery cases. Those scenarios pass and are not Beta 3 failures.
 
-## Guild balance simulation
-- Fixed seed: **1301**.
-- **1,000** seasons each for Casual, Core, and Active Guild profiles.
-- Total: **3,000 simulated Guild seasons**.
-- Conservative Core profile medians: Fellowship LVL 8 **6.1 weeks**; Airship Dock Lv.1 **11.1 weeks**; Airship built **13.3 weeks**; all five major facilities Lv.3 **24.0 weeks**; all Airship upgrades Tier III **33.4 weeks**.
-- Contribution Renown is excluded from the model, intentionally biasing the simulation toward slower progression.
+## Beta 3 hardening coverage
+- Simultaneous Guild contributions recompute the live remaining requirement under the serialized Guild mutation lock, preventing overfill and excess resource deduction.
+- Near-simultaneous executions of the same Portal action ID re-check replay state after obtaining the write lock and mutate Fellowship state once.
+- Fellowship contribution actions carry the project ID the player actually had open. If the streamer has changed projects, the stale action fails closed instead of donating to the replacement project.
+- Project selection and project-completion finalization are serialized so facility/reward settlement cannot split from the completed requirement.
+- Concurrent Airship mission launch requests create only one active run.
+- Due Airship missions survive restart/reconnect, settle exactly once, and cannot duplicate contributor rewards.
+- Airship settlement cleanup is scoped to the exact active run ID so stale work cannot clear a newer mission.
 
-The complete report is packaged at `reports/GUILD_BALANCE_SIMULATION.md` and the underlying result set at `reports/GUILD_BALANCE_SIMULATION.json`.
+## Source validation
+- Python source compilation: **89 / 89 PASS** across Beta 3 Web + Bot source trees.
+- Frontend JS/JSX TypeScript-parser sweep: **67 / 67 PASS**.
+- Plain JS/MJS `node --check`: **145 / 145 PASS**.
+- Explicit literal image/font route audit: **145 routes checked / 0 missing**. Dynamic template routes are covered by the existing frontend artwork regression suites.
 
-## Balance verification
-- Airship Dock costs use the Beta 1 60k/100k/170k Gil, 25/35/55 Ancient Coin, and 4/6/9 raid-clear curve.
-- Crystal Guild Airship construction uses 140k Gil, 35 Mythril Ore, 18 Wyvern Scales, 20 Elemental Crystals, 10 Ancient Coins, and 6 Guild raid wins.
-- Airship upgrade Gil is 25k/55k/95k and raid requirements are 1/2/2 per track.
-- Artifact tracks use fewer materials than common-material tracks: Adamantite/Dark Matter 2/4/6; Magitek Capacitors 3/5/8; Mythril Ore/Elemental Crystals 4/7/10.
-- Weekly Order rewards, Supply Drives, Guild Objectives, Workshop refining, Fellowship thresholds, Airship mission formulas, and Legacy milestones are unchanged.
+## Continuity
+- Beta 1 Guild economy tuning remains unchanged.
+- Beta 2 Fellowship UX/mobile consolidation remains unchanged.
+- Alpha 5 Hotfix 1 Founding Hall portrait and collapsible Equipment inventory groups remain intact.
+- Local DB schema: **9** unchanged.
+- Hosted sync schema: **1** unchanged.
+- Portal Action protocol: **22** (advanced from 21 only for project-bound Fellowship contribution safety).
+- Twitch prefix: `!`.
+- Database migration: **none**.
+- Player reset: **none**.
+- OAuth change: **none**.
+- New environment variables: **none**.
 
-## Source and asset validation
-- Python compile sweep: **88 / 88 PASS** across Web + Bot source/tests/tools.
-- Web JavaScript/MJS `node --check`: **143 / 143 PASS**.
-- Frontend JS/JSX TypeScript-parser syntax sweep: **65 / 65 PASS**.
-- Explicit literal image/font route audit: **145 unique routes checked, 0 missing**.
-
-## Compatibility
-- Bot runtime: `1.3.0-guild-expansion-b1`
-- Hosted Web runtime: `1.3.0-guild-expansion-b1`
-- Frontend asset revision: `1.3.0-guild-expansion-b1`
-- Local DB schema: **9** unchanged
-- Hosted sync schema: **1** unchanged
-- Portal Action protocol: **21** unchanged
-- Twitch prefix: `!`
-- Database migration: **none**
-- Player reset: **none**
-- OAuth change: **none**
-- New environment variables: **none**
-
-## Packaging verification
-- Alpha 5 → Beta 1 Bot patch: **17 changed/new files, 0 deletions**; reconstructs **145 / 145** final Bot files exactly.
-- Alpha 5 Hotfix 1 → Beta 1 Web patch: **38 changed/new files, 0 deletions**; reconstructs **803 / 803** final Web files exactly.
-- Full Bot archive vs final Bot tree: **145 / 145 exact**.
-- Full Web archive vs final Web tree: **803 / 803 exact**.
-- Complete archive Bot/Web subtrees: **exact**.
+## Final package verification
+- Beta 1 Bot → Beta 3 Bot patch: **21 changed/new files, 0 deletions**; reconstructs **146 / 146** final Bot files exactly.
+- Beta 2 Web → Beta 3 Web patch: **38 changed/new files, 0 deletions**; reconstructs **805 / 805** final Web files exactly.
 - ZIP CRC/integrity: **6 / 6 PASS**.
-- Runtime/private-artifact hygiene: **0 violations**.
-- SHA-256 verification: **PASS**.
+- Runtime/private-artifact hygiene: **0 violations** across all release archives.
+- SHA-256 checksum verification: **PASS**.

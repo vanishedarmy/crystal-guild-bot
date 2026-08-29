@@ -167,56 +167,84 @@ class FellowshipSystem:
             )
 
     def _settle_airship_mission_if_due(self, now: int | None = None) -> list[str]:
+        """Settle a due Airship run as one serialized, replay-safe mutation.
+
+        The active run is re-read after taking the database write lock. This
+        prevents a stale heartbeat/reconnect worker from clearing or paying a
+        newer mission that launched after another worker already settled the
+        old run.
+        """
         now = int(time.time()) if now is None else int(now)
-        state = self._airship_state()
-        if not state or not state["active_mission_id"] or not state["active_run_id"]:
-            return []
-        if state["ends_at"] is None or now < int(state["ends_at"]):
-            return []
-        mission = self._airship_mission_definition(str(state["active_mission_id"]))
-        if not mission:
-            with self.db.tx() as conn:
-                conn.execute(
-                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_failed=missions_failed+1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
-                )
-            return ["AIRSHIP — The returning mission record was invalid and has been cleared."]
-        run_id = str(state["active_run_id"])
-        progress = max(0, int(state["progress"] or 0))
-        target = max(1, int(state["target"] or mission["target"]))
-        success = progress >= target
-        old_state = self._state()
-        old_level = int(old_state["level"] if old_state else 1)
-        upgrades = self.airship_upgrades()
-        survey = max(0, min(3, int(upgrades.get("survey", 0))))
-        cargo = max(0, min(3, int(upgrades.get("cargo", 0))))
-        guild_reward = int(round(int(mission["guild_renown"]) * (1.0 + 0.05 * survey))) if success else 0
-        personal_gil = int(round(int(mission["personal_gil"]) * (1.0 + 0.10 * cargo))) if success else 0
-        personal_renown = int(mission["personal_renown"]) if success else 0
-        participants = self.db.all(
-            "SELECT player_id,contribution FROM fellowship_airship_mission_members WHERE run_id=? ORDER BY contribution DESC,player_id",
-            (run_id,),
-        )
         with self.db.tx() as conn:
+            state = conn.execute(
+                "SELECT * FROM fellowship_airship_state WHERE singleton_id=1"
+            ).fetchone()
+            if not state or not state["active_mission_id"] or not state["active_run_id"]:
+                return []
+            if state["ends_at"] is None or now < int(state["ends_at"]):
+                return []
+
+            run_id = str(state["active_run_id"])
+            mission = self._airship_mission_definition(str(state["active_mission_id"]))
+            if not mission:
+                conn.execute(
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_failed=missions_failed+1,updated_at=CURRENT_TIMESTAMP "
+                    "WHERE singleton_id=1 AND active_run_id=?",
+                    (run_id,),
+                )
+                return ["AIRSHIP — The returning mission record was invalid and has been cleared."]
+
+            progress = max(0, int(state["progress"] or 0))
+            target = max(1, int(state["target"] or mission["target"]))
+            success = progress >= target
+            guild_state = conn.execute(
+                "SELECT level FROM fellowship_state WHERE singleton_id=1"
+            ).fetchone()
+            old_level = int(guild_state["level"] if guild_state else 1)
+            upgrades = {
+                str(row["upgrade_id"]): max(0, min(3, int(row["tier"] or 0)))
+                for row in conn.execute("SELECT upgrade_id,tier FROM fellowship_airship_upgrades").fetchall()
+            }
+            survey = max(0, min(3, int(upgrades.get("survey", 0))))
+            cargo = max(0, min(3, int(upgrades.get("cargo", 0))))
+            guild_reward = int(round(int(mission["guild_renown"]) * (1.0 + 0.05 * survey))) if success else 0
+            personal_gil = int(round(int(mission["personal_gil"]) * (1.0 + 0.10 * cargo))) if success else 0
+            personal_renown = int(mission["personal_renown"]) if success else 0
+            participants = conn.execute(
+                "SELECT player_id,contribution FROM fellowship_airship_mission_members WHERE run_id=? ORDER BY contribution DESC,player_id",
+                (run_id,),
+            ).fetchall()
+
             event_key = f"airship_mission_settle:{run_id}"
             inserted = conn.execute(
                 "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'airship_mission_settle',?,1)",
                 (event_key, guild_reward),
             ).rowcount
             if not inserted:
+                # A prior worker already settled this exact run. Only clear the
+                # state if the same stale run is still present; never clear a
+                # newer mission that may have launched meanwhile.
                 conn.execute(
-                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,updated_at=CURRENT_TIMESTAMP "
+                    "WHERE singleton_id=1 AND active_run_id=?",
+                    (run_id,),
                 )
                 return []
+
             if success and guild_reward:
                 conn.execute(
                     "UPDATE fellowship_state SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
                     (guild_reward,),
                 )
+
             rewarded = 0
             if success:
                 for row in participants:
                     participant_id = str(row["player_id"])
-                    self.ensure_member(participant_id)
+                    conn.execute(
+                        "INSERT OR IGNORE INTO fellowship_members(player_id) VALUES (?)",
+                        (participant_id,),
+                    )
                     reward_key = f"airship_mission_reward:{run_id}:{participant_id}"
                     reward_inserted = conn.execute(
                         "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,?,'airship_mission_reward',0,1)",
@@ -225,7 +253,10 @@ class FellowshipSystem:
                     if not reward_inserted:
                         continue
                     if personal_gil:
-                        conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (personal_gil, participant_id))
+                        conn.execute(
+                            "UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                            (personal_gil, participant_id),
+                        )
                         conn.execute(
                             "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'guild_airship')",
                             (participant_id, personal_gil),
@@ -236,6 +267,7 @@ class FellowshipSystem:
                             (personal_renown, participant_id),
                         )
                     rewarded += 1
+
             outcome = "success" if success else "failed"
             conn.execute(
                 "INSERT OR REPLACE INTO fellowship_airship_mission_history(run_id,mission_id,started_at,ended_at,outcome,progress,target,guild_renown,participant_count) VALUES (?,?,?,?,?,?,?,?,?)",
@@ -243,7 +275,9 @@ class FellowshipSystem:
             )
             if success:
                 conn.execute(
-                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_completed=missions_completed+1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_completed=missions_completed+1,updated_at=CURRENT_TIMESTAMP "
+                    "WHERE singleton_id=1 AND active_run_id=?",
+                    (run_id,),
                 )
                 conn.execute(
                     "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_complete',?,?)",
@@ -251,52 +285,72 @@ class FellowshipSystem:
                 )
             else:
                 conn.execute(
-                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_failed=missions_failed+1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_failed=missions_failed+1,updated_at=CURRENT_TIMESTAMP "
+                    "WHERE singleton_id=1 AND active_run_id=?",
+                    (run_id,),
                 )
                 conn.execute(
                     "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_failed',?,0)",
                     (mission["name"],),
                 )
-        notes = self._finalize_progress(None, old_level, None)
-        if success:
-            return [
-                f"AIRSHIP MISSION COMPLETE — {mission['name']} (+{guild_reward} Fellowship Renown).",
-                f"Airship crew support — {rewarded} contributor{'s' if rewarded != 1 else ''} received {personal_gil:,}g +{personal_renown} personal Renown.",
-                *notes[:2],
-            ]
-        return [f"AIRSHIP MISSION FAILED — {mission['name']} returned at {progress}/{target} mission progress."]
+
+            # Keep Guild level/Legacy/project settlement in the same outer
+            # transaction as the mission payout so no concurrent Guild action
+            # can observe a half-settled return.
+            notes = self._finalize_progress(None, old_level, None)
+
+            if success:
+                return [
+                    f"AIRSHIP MISSION COMPLETE — {mission['name']} (+{guild_reward} Fellowship Renown).",
+                    f"Airship crew support — {rewarded} contributor{'s' if rewarded != 1 else ''} received {personal_gil:,}g +{personal_renown} personal Renown.",
+                    *notes[:2],
+                ]
+            return [f"AIRSHIP MISSION FAILED — {mission['name']} returned at {progress}/{target} mission progress."]
 
     def start_airship_mission(self, query: str) -> tuple[bool, str, dict[str, Any] | None]:
         self._settle_airship_mission_if_due()
-        state = self._airship_state()
-        if not state or not int(state["built"] or 0):
-            return False, "The Crystal Guild Airship has not been completed yet.", None
-        if state["active_mission_id"]:
-            active = self.airship_snapshot().get("active_mission")
-            return False, f"The Airship is already away on {active['name'] if active else 'a mission'}.", active
         norm = str(query or "").strip().lower().replace("-", "_").replace(" ", "_")
-        upgrades = self.airship_upgrades()
-        core = int(upgrades.get("crystal_core", 0))
-        unlocked = [mission for mission in AIRSHIP_MISSIONS if int(mission.get("required_core", 0)) <= core]
-        mission = next((item for item in unlocked if item["id"] == norm), None)
-        if mission is None:
-            mission = next((item for item in unlocked if str(item["name"]).lower() == str(query or "").strip().lower()), None)
-        if mission is None:
-            names = ", ".join(item["name"] for item in unlocked) or "none"
-            return False, f"Airship mission unavailable. Unlocked missions: {names}.", None
-        now = int(time.time())
-        duration = self._airship_mission_duration(mission, upgrades)
-        target = self._airship_mission_target(mission, upgrades)
-        run_id = f"{mission['id']}:{time.time_ns()}"
         with self.db.tx() as conn:
-            conn.execute(
-                "UPDATE fellowship_airship_state SET active_mission_id=?,active_run_id=?,started_at=?,ends_at=?,progress=0,target=?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+            # Re-read after taking the write lock. Two owner actions arriving
+            # together may never overwrite one another's active run.
+            state = conn.execute(
+                "SELECT * FROM fellowship_airship_state WHERE singleton_id=1"
+            ).fetchone()
+            if not state or not int(state["built"] or 0):
+                return False, "The Crystal Guild Airship has not been completed yet.", None
+            if state["active_mission_id"]:
+                mission = self._airship_mission_definition(str(state["active_mission_id"]))
+                return False, f"The Airship is already away on {mission['name'] if mission else 'a mission'}.", None
+
+            upgrades = {
+                str(row["upgrade_id"]): max(0, min(3, int(row["tier"] or 0)))
+                for row in conn.execute("SELECT upgrade_id,tier FROM fellowship_airship_upgrades").fetchall()
+            }
+            core = int(upgrades.get("crystal_core", 0))
+            unlocked = [mission for mission in AIRSHIP_MISSIONS if int(mission.get("required_core", 0)) <= core]
+            mission = next((item for item in unlocked if item["id"] == norm), None)
+            if mission is None:
+                mission = next((item for item in unlocked if str(item["name"]).lower() == str(query or "").strip().lower()), None)
+            if mission is None:
+                names = ", ".join(item["name"] for item in unlocked) or "none"
+                return False, f"Airship mission unavailable. Unlocked missions: {names}.", None
+
+            now = int(time.time())
+            duration = self._airship_mission_duration(mission, upgrades)
+            target = self._airship_mission_target(mission, upgrades)
+            run_id = f"{mission['id']}:{time.time_ns()}"
+            updated = conn.execute(
+                "UPDATE fellowship_airship_state SET active_mission_id=?,active_run_id=?,started_at=?,ends_at=?,progress=0,target=?,updated_at=CURRENT_TIMESTAMP "
+                "WHERE singleton_id=1 AND active_mission_id IS NULL AND active_run_id IS NULL",
                 (mission["id"], run_id, now, now + duration, target),
-            )
+            ).rowcount
+            if not updated:
+                return False, "The Airship received another mission order first. Check its current deployment.", None
             conn.execute(
                 "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_started',?,?)",
                 (mission["name"], target),
             )
+
         snapshot = self.airship_snapshot()
         active = snapshot.get("active_mission")
         return True, f"AIRSHIP MISSION — {mission['name']} launched. Return in {active['duration_label'] if active else 'scheduled time'}; goal {target} progress.", active
@@ -685,33 +739,44 @@ class FellowshipSystem:
 
     def set_active_project(self, query: str) -> tuple[bool, str, dict[str, Any] | None]:
         norm = str(query or "").strip().lower().replace(" ", "_").replace("-", "_")
-        available = self.available_projects()
-        match = next((p for p in available if p["id"] == norm), None)
-        if not match:
-            match = next((p for p in available if p.get("facility_id") == norm), None)
-        if not match:
-            match = next((p for p in available if str(p["name"]).lower() == str(query).strip().lower()), None)
-        if not match:
-            # Compatibility lane: a streamer may finish/select one of the old
-            # v1.2 support-facility steps by its exact facility name even though
-            # those legacy services are no longer advertised on the v1.3 Board.
-            state = self._state()
-            level = int(state["level"] if state else 1)
-            tiers = self.facility_tiers()
-            legacy = [
-                project for project in PROJECTS.values()
-                if project.get("legacy")
-                and project.get("facility_id") == norm
-                and int(project.get("tier", 0)) == int(tiers.get(norm, 0)) + 1
-                and level >= int(project.get("required_level", 1))
-            ]
-            if legacy:
-                match = self.project_snapshot(legacy[0]["id"]) or legacy[0]
-        if not match:
-            names = ", ".join(p["name"] for p in available[:6]) or "none currently unlocked"
-            return False, f"Project unavailable. Unlocked projects: {names}.", None
-        project_id = match["id"]
         with self.db.tx() as conn:
+            # Resolve availability while holding the Guild write lock. This
+            # prevents a project selection based on facility/level state that
+            # changed between validation and the actual switch.
+            available = self.available_projects()
+            match = next((p for p in available if p["id"] == norm), None)
+            if not match:
+                match = next((p for p in available if p.get("facility_id") == norm), None)
+            if not match:
+                match = next((p for p in available if str(p["name"]).lower() == str(query).strip().lower()), None)
+            if not match:
+                # Compatibility lane for v1.2 support-facility steps.
+                state = conn.execute("SELECT level FROM fellowship_state WHERE singleton_id=1").fetchone()
+                level = int(state["level"] if state else 1)
+                tiers = {
+                    str(row["facility_id"]): int(row["tier"])
+                    for row in conn.execute("SELECT facility_id,tier FROM fellowship_facilities").fetchall()
+                }
+                legacy = [
+                    project for project in PROJECTS.values()
+                    if project.get("legacy")
+                    and project.get("facility_id") == norm
+                    and int(project.get("tier", 0)) == int(tiers.get(norm, 0)) + 1
+                    and level >= int(project.get("required_level", 1))
+                ]
+                if legacy:
+                    match = self.project_snapshot(legacy[0]["id"]) or legacy[0]
+            if not match:
+                names = ", ".join(p["name"] for p in available[:6]) or "none currently unlocked"
+                return False, f"Project unavailable. Unlocked projects: {names}.", None
+
+            project_id = match["id"]
+            current = conn.execute(
+                "SELECT active_project_id FROM fellowship_state WHERE singleton_id=1"
+            ).fetchone()
+            if current and str(current["active_project_id"] or "") == project_id:
+                return True, f"ACTIVE PROJECT — {PROJECTS[project_id]['name']} is already selected.", self.project_snapshot(project_id)
+
             conn.execute(
                 "UPDATE fellowship_state SET active_project_id=?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
                 (project_id,),
@@ -726,19 +791,21 @@ class FellowshipSystem:
                 "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'project_selected',?,0)",
                 (PROJECTS[project_id]["name"],),
             )
-        return True, f"ACTIVE PROJECT — {PROJECTS[project_id]['name']} selected.", self.project_snapshot(project_id)
+            snapshot = self.project_snapshot(project_id)
+        return True, f"ACTIVE PROJECT — {PROJECTS[project_id]['name']} selected.", snapshot
 
-    def contribute(self, player_id: str, raw: str) -> tuple[bool, str, list[str]]:
-        player = self.db.one("SELECT display_name,gil FROM players WHERE twitch_id=?", (str(player_id),))
-        if not player:
-            return False, "Recruit a hero before contributing to the Fellowship.", []
-        project = self.project_snapshot()
-        if not project:
-            return False, "The Fellowship has no active project. The streamer can choose one with !fellowshipproject.", []
+    def contribute(
+        self,
+        player_id: str,
+        raw: str,
+        *,
+        expected_project_id: str | None = None,
+    ) -> tuple[bool, str, list[str]]:
         text = str(raw or "").strip()
         parts = text.split()
         if len(parts) < 2:
             return False, "Use !contribute gil <amount> or !contribute <amount> <item>.", []
+
         kind = "item"
         asset_id = ""
         if parts[0].lower() == "gil":
@@ -762,34 +829,83 @@ class FellowshipSystem:
             asset_id = item["id"]
         if amount <= 0:
             return False, "Contribution amount must be at least 1.", []
-        key = "gil" if kind == "gil" else f"item:{asset_id}"
-        requirement = next((req for req in project["requirements"] if req["key"] == key), None)
-        if not requirement:
-            return False, f"{project['name']} does not currently need that resource.", []
-        remaining = max(0, int(requirement["target"]) - int(requirement["current"]))
-        if remaining <= 0:
-            return False, f"That requirement for {project['name']} is already complete.", []
-        accepted = min(amount, remaining)
-        self.ensure_member(player_id)
+
         with self.db.tx() as conn:
+            player = conn.execute(
+                "SELECT display_name,gil FROM players WHERE twitch_id=?",
+                (str(player_id),),
+            ).fetchone()
+            if not player:
+                return False, "Recruit a hero before contributing to the Fellowship.", []
+
+            project = self.project_snapshot()
+            if not project:
+                return False, "The Fellowship has no active project. The streamer can choose one with !fellowshipproject.", []
+            if expected_project_id and str(project["id"]) != str(expected_project_id):
+                return False, "The active Guild project changed before your contribution was processed. Refresh Fellowship and try again.", []
+
+            key = "gil" if kind == "gil" else f"item:{asset_id}"
+            requirement = next((req for req in project["requirements"] if req["key"] == key), None)
+            if not requirement:
+                return False, f"{project['name']} does not currently need that resource.", []
+
+            # Recompute the remaining requirement only after taking the Guild
+            # write lock. Simultaneous contributors can never overfill a goal
+            # or have resources deducted beyond what the project still needs.
+            current_row = conn.execute(
+                "SELECT current FROM fellowship_project_progress WHERE project_id=? AND requirement_key=?",
+                (project["id"], key),
+            ).fetchone()
+            current = int(current_row["current"]) if current_row else 0
+            remaining = max(0, int(requirement["target"]) - current)
+            if remaining <= 0:
+                return False, f"That requirement for {project['name']} is already complete.", []
+            accepted = min(amount, remaining)
+
+            conn.execute(
+                "INSERT OR IGNORE INTO fellowship_members(player_id) VALUES (?)",
+                (str(player_id),),
+            )
             if kind == "gil":
                 live = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (str(player_id),)).fetchone()
                 if not live or int(live["gil"]) < accepted:
                     return False, f"You need {accepted:,} Gil to make that contribution.", []
-                conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (accepted, str(player_id)))
-                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,?)", (str(player_id), -accepted, f"fellowship:{project['id']}"))
-                conn.execute("UPDATE fellowship_members SET gil_donated=gil_donated+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?", (accepted, str(player_id)))
+                conn.execute(
+                    "UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                    (accepted, str(player_id)),
+                )
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,?)",
+                    (str(player_id), -accepted, f"fellowship:{project['id']}"),
+                )
+                conn.execute(
+                    "UPDATE fellowship_members SET gil_donated=gil_donated+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                    (accepted, str(player_id)),
+                )
                 renown = max(1, min(40, accepted // 250))
                 label = f"{accepted:,} Gil"
             else:
-                row = conn.execute("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (str(player_id), asset_id)).fetchone()
+                row = conn.execute(
+                    "SELECT quantity FROM inventory WHERE player_id=? AND item_id=?",
+                    (str(player_id), asset_id),
+                ).fetchone()
                 if not row or int(row["quantity"]) < accepted:
                     return False, f"You need {accepted} {self.data.items[asset_id]['name']} to make that contribution.", []
-                conn.execute("UPDATE inventory SET quantity=quantity-? WHERE player_id=? AND item_id=?", (accepted, str(player_id), asset_id))
-                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,?)", (str(player_id), asset_id, -accepted, f"fellowship:{project['id']}"))
-                conn.execute("UPDATE fellowship_members SET materials_donated=materials_donated+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?", (accepted, str(player_id)))
+                conn.execute(
+                    "UPDATE inventory SET quantity=quantity-? WHERE player_id=? AND item_id=?",
+                    (accepted, str(player_id), asset_id),
+                )
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,?)",
+                    (str(player_id), asset_id, -accepted, f"fellowship:{project['id']}"),
+                )
+                conn.execute(
+                    "UPDATE fellowship_members SET materials_donated=materials_donated+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                    (accepted, str(player_id)),
+                )
                 renown = min(40, accepted * 2)
                 label = f"{self.data.items[asset_id]['name']} x{accepted}"
+
             conn.execute(
                 "INSERT INTO fellowship_project_progress(project_id,requirement_key,current) VALUES (?,?,?) "
                 "ON CONFLICT(project_id,requirement_key) DO UPDATE SET current=fellowship_project_progress.current+excluded.current",
@@ -799,17 +915,31 @@ class FellowshipSystem:
                 "INSERT INTO fellowship_contributions(player_id,project_id,kind,asset_id,amount) VALUES (?,?,?,?,?)",
                 (str(player_id), project["id"], kind, asset_id, accepted),
             )
-            conn.execute("INSERT OR IGNORE INTO fellowship_project_members(project_id,player_id) VALUES (?,?)", (project["id"], str(player_id)))
+            conn.execute(
+                "INSERT OR IGNORE INTO fellowship_project_members(project_id,player_id) VALUES (?,?)",
+                (project["id"], str(player_id)),
+            )
             conn.execute(
                 "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (?,'contribution',?,?)",
                 (str(player_id), f"{player['display_name']} contributed {label} to {project['name']}", accepted),
             )
-        notes = self._award_renown(str(player_id), renown, f"contribution:{time.time_ns()}:{player_id}", "contribution", 1, progress_activity=False)
-        notes.extend(self._check_project_completion(str(player_id)))
-        message = f"FELLOWSHIP CONTRIBUTION — {player['display_name']} contributed {label} to {project['name']}."
-        if accepted < amount:
-            message += f" Only {accepted:,} was needed; the excess stayed with you."
-        return True, message, notes
+
+            # Award contribution Renown and settle any newly completed project
+            # before releasing the outer transaction. Project selection cannot
+            # race between the final contribution and the completion upgrade.
+            notes = self._award_renown(
+                str(player_id),
+                renown,
+                f"contribution:{time.time_ns()}:{player_id}",
+                "contribution",
+                1,
+                progress_activity=False,
+            )
+
+            message = f"FELLOWSHIP CONTRIBUTION — {player['display_name']} contributed {label} to {project['name']}."
+            if accepted < amount:
+                message += f" Only {accepted:,} was needed; the excess stayed with you."
+            return True, message, notes
 
     def record_activity(
         self,
@@ -836,14 +966,15 @@ class FellowshipSystem:
     ) -> list[str]:
         """Record one Guild-wide activity event rather than one event per participant.
 
-        This is used for milestones such as a raid clear where the Fellowship should
-        advance once for the resolved raid, regardless of raid roster size.
+        Event insertion, shared progress, project completion, level changes and
+        rewards remain inside one serialized transaction so another Guild
+        action cannot switch projects during finalization.
         """
         amount = max(1, int(amount))
         event_key = event_key or f"shared:{activity}:{time.time_ns()}"
-        old_state = self._state()
-        old_level = int(old_state["level"] if old_state else 1)
         with self.db.tx() as conn:
+            state = conn.execute("SELECT level FROM fellowship_state WHERE singleton_id=1").fetchone()
+            old_level = int(state["level"] if state else 1)
             inserted = conn.execute(
                 "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,?,?,?)",
                 (str(event_key), str(activity), int(renown), int(amount)),
@@ -859,7 +990,7 @@ class FellowshipSystem:
             self._progress_orders(conn, None, activity, amount)
             self._progress_deeds(conn, None, activity, amount)
             self._progress_airship_mission(conn, None, activity, amount)
-        return self._finalize_progress(None, old_level, None)
+            return self._finalize_progress(None, old_level, None)
 
     def _award_renown(
         self,
@@ -871,15 +1002,20 @@ class FellowshipSystem:
         *,
         progress_activity: bool,
     ) -> list[str]:
-        notes: list[str] = []
-        old_state = self._state()
-        old_level = int(old_state["level"] if old_state else 1)
-        old_rank = None
-        if player_id:
-            self.ensure_member(player_id)
-            member = self._member(player_id)
-            old_rank = guild_rank_for_renown(int(member["renown"]))
+        # The event, Guild/member Renown, activity progress, project completion,
+        # Weekly Orders/Deeds, level/rank changes and Legacy settlement all live
+        # beneath one outer transaction. This prevents a concurrent project
+        # switch from splitting "goal reached" and "project completed" into two
+        # independently visible states.
         with self.db.tx() as conn:
+            state = conn.execute("SELECT level FROM fellowship_state WHERE singleton_id=1").fetchone()
+            old_level = int(state["level"] if state else 1)
+            old_rank = None
+            if player_id:
+                conn.execute("INSERT OR IGNORE INTO fellowship_members(player_id) VALUES (?)", (player_id,))
+                member = conn.execute("SELECT renown FROM fellowship_members WHERE player_id=?", (player_id,)).fetchone()
+                old_rank = guild_rank_for_renown(int(member["renown"] if member else 0))
+
             inserted = conn.execute(
                 "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,?,?,?,?)",
                 (str(event_key), player_id, str(activity), int(renown), int(amount)),
@@ -901,8 +1037,7 @@ class FellowshipSystem:
                 self._progress_orders(conn, player_id, activity, amount)
                 self._progress_deeds(conn, player_id, activity, amount)
                 self._progress_airship_mission(conn, player_id, activity, amount)
-        notes.extend(self._finalize_progress(player_id, old_level, old_rank))
-        return notes
+            return self._finalize_progress(player_id, old_level, old_rank)
 
     def _progress_project_activity(self, conn: Any, player_id: str | None, activity: str, amount: int) -> None:
         state = conn.execute("SELECT active_project_id FROM fellowship_state WHERE singleton_id=1").fetchone()

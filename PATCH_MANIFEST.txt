@@ -1,0 +1,27 @@
+Crystal Guild v1.3.0 Guild Expansion Beta 3 — Bot Patch
+Baseline: v1.3 Beta 1 Bot
+Changed/new files: 21
+Deleted files: 0
+
+Changed/new paths:
+- CHANGELOG.md
+- CRYSTAL_GUILD_CONTROL_PANEL.bat
+- PACKAGE_MANIFEST.txt
+- README.md
+- README_FIRST.txt
+- RELEASE_NOTES.md
+- UPGRADE_GUIDE.md
+- VALIDATION_REPORT.md
+- VERSION.txt
+- crystal_guild/__init__.py
+- crystal_guild/engine.py
+- crystal_guild/fellowship_system.py
+- crystal_guild/portal_actions.py
+- tests/test_guild_expansion_alpha3.py
+- tests/test_guild_expansion_alpha4.py
+- tests/test_guild_expansion_alpha5.py
+- tests/test_guild_expansion_beta1.py
+- tests/test_guild_expansion_beta3.py
+- tests/test_portal_actions.py
+- tests/test_release_contract.py
+- upgrade_crystal_guild.py
