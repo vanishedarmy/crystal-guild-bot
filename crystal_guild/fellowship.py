@@ -37,10 +37,20 @@ GUILD_RANKS = [
 ]
 
 FACILITIES: dict[str, dict[str, Any]] = {
+    # v1.3 Guild Expansion presents five major facilities on the public Guild Board.
+    # Legacy support facilities remain defined below so existing upgrades/effects and
+    # in-progress v1.2 projects are never discarded during an in-place upgrade.
     "guild_hall": {
         "name": "Guild Hall",
-        "description": "The heart of the Fellowship. Higher tiers unlock larger Guild projects and future systems.",
+        "description": "The heart of the Fellowship and the anchor for major Guild construction.",
         "max_tier": 5,
+        "guild_expansion": True,
+        "max_level": 3,
+        "level_benefits": [
+            "Guild operations established; the Expedition Board can be built once the Fellowship reaches LVL 6.",
+            "Advanced Guild construction projects become available.",
+            "Guild Hall expansion complete; the Fellowship is ready for future Legacy projects.",
+        ],
         "benefits": [
             "Fellowship established",
             "Tier II projects unlocked",
@@ -53,95 +63,125 @@ FACILITIES: dict[str, dict[str, Any]] = {
     },
     "infirmary": {
         "name": "Infirmary",
-        "description": "Improves free camp recovery for every adventurer.",
+        "description": "Legacy support facility retained from the original Fellowship program.",
         "max_tier": 5,
         "benefits": [
-            "Camp recovery 4% faster",
-            "Camp recovery 8% faster",
-            "Camp recovery 12% faster",
-            "Camp recovery 16% faster",
-            "Camp recovery 20% faster",
+            "Camp recovery 4% faster", "Camp recovery 8% faster", "Camp recovery 12% faster",
+            "Camp recovery 16% faster", "Camp recovery 20% faster",
         ],
-        "material": "hi_potion",
-        "activity": "venture_complete",
+        "material": "hi_potion", "activity": "venture_complete", "legacy": True,
     },
     "workshop": {
         "name": "Workshop",
-        "description": "Reduces the Gil service fee charged when forging equipment.",
+        "description": "The Guild's shared forge and construction workshop.",
         "max_tier": 5,
-        "benefits": [
-            "Forge Gil fees 2% lower",
-            "Forge Gil fees 4% lower",
-            "Forge Gil fees 6% lower",
-            "Forge Gil fees 8% lower",
-            "Forge Gil fees 10% lower",
+        "guild_expansion": True,
+        "max_level": 3,
+        "level_benefits": [
+            "Forge Gil service fees 2% lower.",
+            "Forge Gil service fees 4% lower and the Workshop is ready for advanced Guild crafting services.",
+            "Forge Gil service fees 6% lower; major Workshop construction is complete.",
         ],
-        "material": "mythril_ore",
-        "activity": "forge",
+        "benefits": [
+            "Forge Gil fees 2% lower", "Forge Gil fees 4% lower", "Forge Gil fees 6% lower",
+            "Forge Gil fees 8% lower", "Forge Gil fees 10% lower",
+        ],
+        "material": "mythril_ore", "activity": "forge",
     },
     "training_hall": {
         "name": "Training Hall",
-        "description": "Adds a modest JP training bonus to successful combat rewards.",
+        "description": "Legacy support facility retained from the original Fellowship program.",
         "max_tier": 5,
-        "benefits": [
-            "Combat JP +1%",
-            "Combat JP +2%",
-            "Combat JP +3%",
-            "Combat JP +4%",
-            "Combat JP +5%",
-        ],
-        "material": "wyvern_scale",
-        "activity": "combat_victory",
+        "benefits": ["Combat JP +1%", "Combat JP +2%", "Combat JP +3%", "Combat JP +4%", "Combat JP +5%"],
+        "material": "wyvern_scale", "activity": "combat_victory", "legacy": True,
     },
     "archives": {
-        "name": "Archives",
-        "description": "Expands Guild-wide Bestiary knowledge and collection reporting.",
+        "name": "Guild Archive",
+        "description": "A shared record of monsters, discoveries, bosses, and Guild accomplishments.",
         "max_tier": 5,
-        "benefits": [
-            "Guild Bestiary records established",
-            "Expanded monster knowledge",
-            "Weakness research highlighted",
-            "Completion reporting expanded",
-            "Master Archivist milestone enabled",
+        "guild_expansion": True,
+        "max_level": 3,
+        "level_benefits": [
+            "Guild Bestiary and discovery records established.",
+            "Expanded monster and regional research records.",
+            "Full Guild Archive prepared for long-term Fellowship accomplishments.",
         ],
-        "material": "elemental_crystal",
-        "activity": "monster_victory",
+        "benefits": [
+            "Guild Bestiary records established", "Expanded monster knowledge", "Weakness research highlighted",
+            "Completion reporting expanded", "Master Archivist milestone enabled",
+        ],
+        "material": "elemental_crystal", "activity": "monster_victory",
     },
     "chocobo_stable": {
-        "name": "Chocobo Stable",
-        "description": "Provides safe boarding, registration, and training space for Fellowship Chocobos.",
-        "max_tier": 1,
+        "name": "Chocobo Stables",
+        "description": "Shared boarding and training grounds for the Fellowship's Chocobo companions.",
+        "max_tier": 3,
+        "guild_expansion": True,
+        "max_level": 3,
+        "level_benefits": [
+            "Chocobo registration and companion training unlocked.",
+            "Expanded stalls and Expedition-specialty training grounds established.",
+            "Grand Stable expansion complete; ready for advanced Guild Chocobo services.",
+        ],
         "benefits": [
             "Chocobo registration and companion training unlocked",
+            "Expanded Chocobo training grounds established",
+            "Grand Stable expansion complete",
         ],
-        "material": "",
-        "activity": "venture_complete",
+        "material": "wyvern_scale", "activity": "venture_complete",
     },
     "quartermaster": {
         "name": "Quartermaster",
-        "description": "Improves personal shop logistics without replacing the normal Gil economy.",
+        "description": "Legacy support facility retained from the original Fellowship program.",
         "max_tier": 5,
         "benefits": [
-            "Shop refresh 3% faster",
-            "Shop refresh 6% faster",
-            "Shop refresh 9% faster",
-            "Shop refresh 12% faster",
-            "Shop refresh 15% faster",
+            "Shop refresh 3% faster", "Shop refresh 6% faster", "Shop refresh 9% faster",
+            "Shop refresh 12% faster", "Shop refresh 15% faster",
         ],
-        "material": "demon_horn",
-        "activity": "craft",
+        "material": "demon_horn", "activity": "craft", "legacy": True,
+    },
+    "airship_dock": {
+        "name": "Airship Dock",
+        "description": "The future home of the Crystal Guild Airship.",
+        "max_tier": 3,
+        "guild_expansion": True,
+        "max_level": 3,
+        "future_locked": True,
+        "level_benefits": [
+            "Dock foundation established.",
+            "Airship service gantry expanded.",
+            "Grand Airship Dock complete.",
+        ],
+        "benefits": ["Dock foundation established", "Airship service gantry expanded", "Grand Airship Dock complete"],
+        "material": "ancient_coin", "activity": "raid_clear",
     },
 }
+
+GUILD_EXPANSION_FACILITY_IDS = ("guild_hall", "workshop", "chocobo_stable", "archives", "airship_dock")
 
 
 def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
     facility = FACILITIES[facility_id]
     if facility_id == "chocobo_stable":
-        return [
-            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 5_000, "label": "Gil"},
-            {"key": "activity:venture_complete", "kind": "activity", "asset_id": "venture_complete", "target": 10, "label": "Ventures completed"},
-            {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 2, "label": "Fellowship LVL"},
+        stable_targets = {
+            1: (5_000, 0, 10, 2),
+            2: (15_000, 12, 30, 4),
+            3: (40_000, 25, 75, 6),
+        }
+        gil_target, material_target, activity_target, level_req = stable_targets[tier]
+        requirements = [
+            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": gil_target, "label": "Gil"},
         ]
+        if material_target:
+            requirements.append({
+                "key": "item:wyvern_scale", "kind": "item", "asset_id": "wyvern_scale",
+                "target": material_target, "label": "Wyvern Scale",
+            })
+        requirements.extend([
+            {"key": "activity:venture_complete", "kind": "activity", "asset_id": "venture_complete", "target": activity_target, "label": "Ventures completed"},
+            {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": level_req, "label": "Fellowship LVL"},
+        ])
+        return requirements
     if facility_id == "guild_hall":
         level_req = max(1, tier)
         activity_target = max(2, (tier - 1) * 3)
@@ -189,18 +229,25 @@ def _activity_label(activity: str) -> str:
 
 PROJECTS: dict[str, dict[str, Any]] = {}
 for _facility_id, _facility in FACILITIES.items():
+    if _facility.get("future_locked"):
+        continue
     start_tier = 2 if _facility_id == "guild_hall" else 1
     for _tier in range(start_tier, int(_facility["max_tier"]) + 1):
+        is_major = _facility_id in GUILD_EXPANSION_FACILITY_IDS
+        is_legacy_step = bool(_facility.get("legacy")) or (is_major and _tier > int(_facility.get("max_level", 3)))
         project_id = f"{_facility_id}_t{_tier}"
         PROJECTS[project_id] = {
             "id": project_id,
             "facility_id": _facility_id,
             "tier": _tier,
-            "name": f"{_facility['name']} — Tier {_tier}",
+            "level": min(_tier, int(_facility.get("max_level", _facility["max_tier"]))),
+            "name": f"{_facility['name']} — {'Lv. ' if is_major and not is_legacy_step else 'Tier '}{_tier}",
             "description": _facility["description"],
-            "required_level": 2 if _facility_id == "chocobo_stable" else max(1, _tier if _facility_id == "guild_hall" else _tier * 2 - 1),
+            "required_level": 2 if _facility_id == "chocobo_stable" and _tier == 1 else max(1, _tier if _facility_id == "guild_hall" else _tier * 2 - 1),
             "requirements": _project_requirements(_facility_id, _tier),
+            "legacy": is_legacy_step,
         }
+
 
 # v1.2 Expeditions: the shared Expedition Board becomes available at Fellowship LVL 6 once Guild Hall Tier 1 is established.
 # Completing the Board is the Fellowship-wide launch gate for distant contracts.

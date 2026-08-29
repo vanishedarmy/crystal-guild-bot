@@ -1,54 +1,48 @@
-# Validation Report — Crystal Guild v1.2.0 Expeditions
+# Validation Report — Crystal Guild v1.3.0 Guild Expansion Alpha 1
 
 ## Result
-**PASS — final release candidate promoted to v1.2.0 with no gameplay changes.**
+**PASS**
 
-## Automated regression suites
-- Bot Python suite: **443 / 443 PASS**.
+## Automated validation
+- Bot Python suite: **448 / 448 PASS**.
+- Frontend Node suite: **329 / 329 PASS**.
 - Hosted Web/API Python suite: **47 / 47 PASS**.
-- Frontend Node suite: **326 / 326 PASS**.
-- Focused persistent-Adventure / migration hardening suite: **6 / 6 PASS**.
+- Focused Guild Expansion Alpha 1 tests: **5 / 5 PASS** (included in Bot total).
+- Python source compilation: **82 / 82 PASS**.
+- JS/JSX/MJS source parsing: **175 / 175 PASS**.
+- Explicit routed artwork references: **221 checked, 0 missing**.
 
-The Bot suite includes expected simulated Twitch/API outage and recovery warnings; those resilience scenarios pass and are not release failures.
-
-## Release hardening retained
-- Active Expeditions and persistent Solo Ventures block passive Long Rest and stream-start HP/MP/AP refreshes until the run ends.
-- Persistent Solo/Expedition mutations and their replay receipts commit atomically, preventing duplicate stage/reward processing after acknowledgement retries.
-- Active Expedition stage, route, Cache, Journal, resources, and pending choices survive database/engine restart.
-- Representative schema **7 → 8** migration preserves character progression, Gil, HP/MP/AP, inventory, Fellowship/Chocobo state, and creates the verified pre-schema-8 backup.
-- Portal Action protocol remains **20** and hosted sync schema remains **1**.
-
-## Player-facing finalization
-- Public product identity is **v1.2.0 — Expeditions** with runtime/frontend identity `1.2.0-expeditions`.
-- The Player Guide Expeditions chapter contains play and usage guidance only; Alpha/Beta release-history blocks and backend/release-engineering jargon are excluded by regression coverage.
-- What's New leads with the final Expeditions launch summary.
-- The Bot control-panel title no longer carries the old Alpha label.
-- Scene-background manifest metadata is synchronized to the final release and all live routed artwork paths resolve.
-
-## Source / asset checks
-- JS / JSX / MJS parse sweep: **174 / 174 PASS**.
-- Python compile sweep: **78 / 78 PASS**.
-- Explicit routed artwork references checked: **230**, missing: **0**.
-- Player-facing guide jargon guard: **PASS**.
-- Production Vite bundle was not run locally because the shipping source intentionally excludes `node_modules` and no local Vite executable is present. Normal hosted deployment installs the pinned frontend dependencies before building.
-
-## Packaging verification
-- RC1 → v1.2.0 Web patch: **28 changed/new files, 0 deletions**, exact reconstruction.
-- RC1 → v1.2.0 Bot patch: **11 changed/new files, 0 deletions**, exact reconstruction.
-- Full Web archive versus finalized Web tree: **795 / 795 files exact**.
-- Full Bot archive versus finalized Bot tree: **136 / 136 files exact**.
-- ZIP CRC/integrity: **6 / 6 PASS**.
-- Runtime/private-artifact hygiene: **0 violations**.
-- Final SHA-256 manifest generated after archive verification.
+## Alpha 1 coverage
+- Public Fellowship snapshot exposes exactly five major facilities: Guild Hall, Workshop, Chocobo Stables, Guild Archive, Airship Dock.
+- Major facilities present a compact **Lv. 0–3** path.
+- Airship Dock is seeded at Lv. 0 and remains visibly locked for future construction.
+- Available public construction projects exclude old support facilities and future Airship construction.
+- Guild Hall/Workshop/Stable/Archive projects combine Gil/material/gameplay/Fellowship requirements as applicable.
+- A schema-8 v1.2-style database seeds the new Airship Dock row without a database migration or player reset.
+- Existing high legacy facility tiers are not downgraded; their stored values and existing shared effects remain intact.
+- Existing legacy projects remain readable/completable through the compatibility path so an upgrade cannot strand an active project.
+- Player Guide describes the facility/construction loop in player-facing language and avoids backend implementation jargon.
+- What's New leads with Guild Expansion Alpha 1.
 
 ## Compatibility
-- Bot runtime: `1.2.0-expeditions`
-- Hosted Web runtime: `1.2.0-expeditions`
-- Frontend asset revision: `1.2.0-expeditions`
-- Local DB schema: **8**
-- Hosted sync schema: **1**
-- Portal Action protocol: **20**
+- Bot runtime: `1.3.0-guild-expansion-a1`
+- Hosted Web runtime: `1.3.0-guild-expansion-a1`
+- Frontend asset revision: `1.3.0-guild-expansion-a1`
+- Local DB schema: **8** unchanged
+- Hosted sync schema: **1** unchanged
+- Portal Action protocol: **20** unchanged
 - Twitch prefix: `!`
 - Player reset: **none**
+- Database migration: **none**
 - OAuth changes: **none**
 - New environment variables: **none**
+
+## Build note
+The source package intentionally does not vendor `node_modules`; normal hosted deployment installs the pinned frontend dependencies before building. Source parsing and the complete frontend regression suite pass against the shipping tree.
+
+## Package verification
+- v1.2.0 → Alpha 1 Web patch: **35 changed/new files, 0 deletions**, exact reconstruction of **796 / 796** shipping Web files.
+- v1.2.0 → Alpha 1 Bot patch: **16 changed/new files, 0 deletions**, exact reconstruction of **137 / 137** shipping Bot files.
+- ZIP CRC/integrity: **6 / 6 PASS**.
+- Runtime/private-artifact hygiene: **0 violations**.
+- SHA-256 manifest: **PASS**.

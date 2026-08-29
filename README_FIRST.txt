@@ -1,7 +1,7 @@
-Crystal Guild v1.2.0 — Expeditions Bot
-Runtime: 1.2.0-expeditions
+Crystal Guild v1.3.0 — Guild Expansion Alpha 1 Bot
+Runtime: 1.3.0-guild-expansion-a1
 Local DB schema: 8
 Hosted sync schema: 1
 Portal Action protocol: 20
 
-Final v1.2 Bot release. Persistent-Adventure safeguards, duplicate-reward protection, restart recovery, and schema-7 → schema-8 continuity remain intact. No player reset or new environment variable is required.
+Back up the database before replacing application files. Preserve .env, database files, and token storage.

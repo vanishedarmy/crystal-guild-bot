@@ -1,6 +1,6 @@
-Crystal Guild v1.2.0 Expeditions — Bot Package Manifest
-Runtime: 1.2.0-expeditions
+Crystal Guild v1.3.0 Guild Expansion Alpha 1 — Bot Package Manifest
+Runtime: 1.3.0-guild-expansion-a1
 Local DB schema: 8
 Hosted sync schema: 1
 Portal Action protocol: 20
-Feature state: final v1.2.0
+Feature state: Guild Hall Foundation Alpha 1

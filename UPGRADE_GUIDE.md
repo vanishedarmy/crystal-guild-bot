@@ -1,16 +1,15 @@
-# Upgrade Guide — Crystal Guild v1.2.0 Expeditions
+# Upgrade Guide — Crystal Guild v1.3.0 Guild Expansion Alpha 1
 
-## From v1.2 RC1
-1. Back up the current player database and persistent Twitch/token data.
+Baseline: **v1.2.0 — Expeditions final**.
+
+1. Back up the current Crystal Guild database and persistent Twitch/token data.
 2. Stop the Bot.
-3. Apply the RC1 → v1.2.0 Bot patch, or replace Bot application files with the final Bot package while preserving `.env`, database files, and token storage.
-4. Deploy the RC1 → v1.2.0 Web patch or the full final Web package.
-5. Start the Bot and confirm `!cgversion` reports `1.2.0-expeditions`, schema 8, and Portal Action protocol 20.
-6. Confirm `/api/health` reports Web/frontend revision `1.2.0-expeditions`.
-7. Open the Player Guide → Expeditions section and verify the final player-facing guide loads normally.
-8. Resume an existing character and verify profile, Chocobo, Fellowship, inventory, and Expedition progress are unchanged.
+3. Apply the v1.2.0 → v1.3 Alpha 1 Bot patch, or replace the Bot application files with the full Alpha 1 Bot package while preserving `.env`, database files, and token storage.
+4. Apply the matching Web patch or full Alpha 1 Web package and redeploy the hosted Web service.
+5. Start the Bot.
+6. Confirm `!cgversion` reports `1.3.0-guild-expansion-a1`, local DB schema **8**, and Portal Action protocol **20**.
+7. Confirm `/api/health` reports Web/frontend revision `1.3.0-guild-expansion-a1`.
+8. Open Fellowship and confirm the five major facility cards appear, with Airship Dock shown as locked future construction.
+9. Confirm the current Guild project and existing contribution controls still work.
 
-No database migration, player reset, OAuth change, or new environment variable is required from RC1.
-
-## From v1.1.19 RC1 Hotfix 9
-Use the full v1.2.0 Bot and Web packages while preserving `.env`, the player database, and persistent Twitch token data. Run `python upgrade_crystal_guild.py` before starting the final Bot. The additive schema 7 → 8 migration creates and verifies a pre-schema-8 backup and preserves existing progression.
+No database migration or player reset is required. On startup the existing Fellowship table simply seeds the new `airship_dock` facility row at Lv. 0 if it is missing. Existing facility tiers, contributions, Orders, Deeds, Guild Rank, Chocobos, Expeditions, inventory, and character progression are preserved.

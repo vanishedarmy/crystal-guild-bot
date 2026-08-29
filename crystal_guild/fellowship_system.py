@@ -7,6 +7,7 @@ from .fellowship import (
     DEEDS,
     FACILITIES,
     GUILD_RANKS,
+    GUILD_EXPANSION_FACILITY_IDS,
     PROJECTS,
     facility_effects,
     fellowship_level_for_renown,
@@ -192,6 +193,11 @@ class FellowshipSystem:
         expedition_done = bool(state and state["expedition_board_complete"])
         result = []
         for project in PROJECTS.values():
+            # v1.3 Guild Expansion keeps legacy projects readable/completable if
+            # already active, but only the five major Guild facilities appear as
+            # new construction choices on the public Guild Board.
+            if project.get("legacy"):
+                continue
             if project.get("teaser"):
                 if expedition_done or hall < int(project.get("required_hall_tier", 5)) or level < int(project["required_level"]):
                     continue
@@ -214,6 +220,22 @@ class FellowshipSystem:
             match = next((p for p in available if p["facility_id"] == norm), None)
         if not match:
             match = next((p for p in available if str(p["name"]).lower() == str(query).strip().lower()), None)
+        if not match:
+            # Compatibility lane: a streamer may finish/select one of the old
+            # v1.2 support-facility steps by its exact facility name even though
+            # those legacy services are no longer advertised on the v1.3 Board.
+            state = self._state()
+            level = int(state["level"] if state else 1)
+            tiers = self.facility_tiers()
+            legacy = [
+                project for project in PROJECTS.values()
+                if project.get("legacy")
+                and project.get("facility_id") == norm
+                and int(project.get("tier", 0)) == int(tiers.get(norm, 0)) + 1
+                and level >= int(project.get("required_level", 1))
+            ]
+            if legacy:
+                match = self.project_snapshot(legacy[0]["id"]) or legacy[0]
         if not match:
             names = ", ".join(p["name"] for p in available[:6]) or "none currently unlocked"
             return False, f"Project unavailable. Unlocked projects: {names}.", None
@@ -576,18 +598,36 @@ class FellowshipSystem:
         level_progress = fellowship_level_progress(renown)
         tiers = self.facility_tiers()
         facilities = []
-        for facility_id, config in FACILITIES.items():
-            tier = int(tiers.get(facility_id, 0))
-            next_benefit = config["benefits"][tier] if tier < int(config["max_tier"]) else None
-            current_benefit = config["benefits"][tier - 1] if tier > 0 else "Not yet constructed"
+        for facility_id in GUILD_EXPANSION_FACILITY_IDS:
+            config = FACILITIES[facility_id]
+            raw_tier = int(tiers.get(facility_id, 0))
+            max_level = int(config.get("max_level", 3))
+            level = min(max(0, raw_tier), max_level)
+            level_benefits = list(config.get("level_benefits") or config.get("benefits") or [])
+            future_locked = bool(config.get("future_locked"))
+            current_benefit = (
+                level_benefits[level - 1]
+                if level > 0 and level <= len(level_benefits)
+                else ("Construction plans are posted, but building has not started." if not future_locked else "Airship construction is not open yet.")
+            )
+            next_benefit = None
+            if future_locked:
+                next_benefit = "The Airship Dock will become a major Fellowship construction project in a later Guild Expansion phase."
+            elif level < max_level and level < len(level_benefits):
+                next_benefit = level_benefits[level]
             facilities.append({
                 "id": facility_id,
                 "name": config["name"],
-                "tier": tier,
-                "max_tier": int(config["max_tier"]),
+                "level": level,
+                "max_level": max_level,
+                # Keep tier fields for older Web clients during rolling deploys.
+                "tier": level,
+                "max_tier": max_level,
                 "description": config["description"],
                 "current_benefit": current_benefit,
                 "next_benefit": next_benefit,
+                "locked": future_locked,
+                "status": "Future Construction" if future_locked else ("Complete" if level >= max_level else "Buildable"),
             })
         members = []
         rows = self.db.all(
@@ -628,6 +668,12 @@ class FellowshipSystem:
             "member_count": int(member_count["n"] if member_count else 0),
             "active_project": self.project_snapshot(),
             "available_projects": self.available_projects(),
+            "guild_board": {
+                "facility_count": len(facilities),
+                "built_count": sum(1 for facility in facilities if int(facility["level"]) > 0),
+                "complete_count": sum(1 for facility in facilities if not facility["locked"] and int(facility["level"]) >= int(facility["max_level"])),
+                "airship_dock_locked": True,
+            },
             "facilities": facilities,
             "orders": self.orders_snapshot(),
             "deeds": deeds,

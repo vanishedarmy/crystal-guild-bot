@@ -1,3 +1,9 @@
+# v1.3.0 — Guild Expansion Alpha 1
+- Added the five-facility Guild Hall Foundation board.
+- Major facilities present as Lv. 0–3; Airship Dock is visible but locked.
+- Preserved existing v1.2 support-facility tiers/benefits and contribution progression.
+- Schema 8 / sync 1 / protocol 20 remain unchanged.
+
 # Crystal Guild v1.2.0 — Expeditions
 
 Crystal Guild v1.2.0 ships the full Expeditions system and promotes the RC1 feature set unchanged into the final release.

@@ -8789,7 +8789,7 @@ class CrystalGuildEngine:
 
     def fellowship_facilities(self) -> GameResult:
         guild = self.fellowship_system.public_snapshot()
-        parts = [f"{f['name']} T{f['tier']}/{f['max_tier']}" for f in guild["facilities"]]
+        parts = [f"{f['name']} Lv.{f.get('level', f.get('tier', 0))}/{f.get('max_level', f.get('max_tier', 3))}{' LOCKED' if f.get('locked') else ''}" for f in guild["facilities"]]
         effects = guild["effects"]
         return GameResult.success(
             "FELLOWSHIP FACILITIES — " + " | ".join(parts),
@@ -8814,7 +8814,7 @@ class CrystalGuildEngine:
         member = self.fellowship_system.member_snapshot(twitch_id)
         rank = member["rank"]
         if rank["maxed"]:
-            progress = "Current v1.1 rank cap reached."
+            progress = "Current Guild Rank cap reached."
         else:
             remaining = int(rank["next_threshold"]) - int(member["renown"])
             progress = f"{remaining:,} Renown to {rank['next_name']}."

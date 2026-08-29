@@ -1,40 +1,43 @@
-# Crystal Guild v1.2.0 — Expeditions
+# Crystal Guild v1.3.0 — Guild Expansion Alpha 1
 
-Crystal Guild v1.2.0 ships the full Expeditions system and promotes the RC1 feature set unchanged into the final release.
+## Guild Hall Foundation
+Alpha 1 begins the v1.3 Guild Expansion with a redesigned Fellowship Guild Board and a clear five-facility progression path.
 
-## Expeditions
-- Five launch regions: Emerald Wilds, Ashen Highlands, Mistfen Marshes, Frostveil Reach, and the Astral Scar.
-- Scout, Journey, Deep Expedition, Regional Boss Contract, and Legendary Contract routes.
-- Safe / Unknown / Push Deeper route choices with distinct survival-versus-reward pressure.
-- Persistent HP, MP, AP, inventory use, Expedition Cache, Journal, route state, and return/rescue behavior.
-- Regional exploration milestones, permanent landmarks, Regional Bosses, Mastery rewards, Expedition Atlas ranks, and Master Cartographer progression.
-- Region-specific encounters, hazards, resources, travelers, rare events, and discoveries.
+### Five major Guild facilities
+- **Guild Hall** — central Fellowship construction and prerequisite hub.
+- **Workshop** — shared forge/construction facility; existing forge-fee benefits remain intact.
+- **Chocobo Stables** — expands the Fellowship's companion facilities through Lv. 1–3.
+- **Guild Archive** — shared Bestiary, discovery, and accomplishment record facility.
+- **Airship Dock** — visible from the start as a locked future construction project.
 
-## Chocobo expedition partnership
-- Guardian, Scout, Pathfinder, Forager, and Treasure Hunter specialties derive from existing Chocobo traits.
-- Specialty effects scale with Bond milestones.
-- The Stable records shared Expedition accomplishments.
-- Completed routes award restrained Hunt Seal stipends while Hunts remain the primary Hunt Seal activity.
+Major facilities use a simple **Lv. 0–3** presentation. Existing v1.2 support-facility tiers and benefits are preserved so no Guild loses previously earned progress.
 
-## Player experience
-- Adventure Board information is action-first and secondary progression can collapse.
-- Detail cards open in the current viewport without moving the background page.
-- Portrait-format scenic artwork fills long Solo Venture, Relics, Blacksmith, Chocobo Stable, and Moogle Emporium tabs.
-- Mobile layouts, touch targets, keyboard navigation, focus handling, contrast support, reduced-motion support, and device safe areas have been polished.
-- The Player Guide Expeditions chapter contains play and usage information only; development and release-engineering history is kept out of player instructions.
+### Construction projects
+Major facility projects can combine:
+- Gil contributions;
+- requested materials;
+- normal gameplay milestones such as raids, forging, Ventures, and monster victories;
+- Fellowship LVL requirements.
 
-## Release hardening
-- Persistent Solo/Expedition mutations and replay receipts commit atomically to prevent duplicate rewards after retries.
-- Active persistent Adventures block Long Rest and stream-start resource refreshes until the run ends.
-- Active Expeditions survive restart/reconnect and schema-7 → schema-8 migration preserves existing player progression.
+The existing contribution flow remains unchanged. Gameplay requirements advance automatically and resource contributions remain voluntary.
+
+### Fellowship UX
+- Current Guild project remains the primary action on the Fellowship page.
+- The five-facility Guild Board now follows immediately beneath it.
+- The Airship Dock clearly shows **Future Construction / Locked** rather than exposing unfinished Airship gameplay.
+- Available construction projects remain collapsible.
+- The Player Guide now explains the five facilities and construction loop in player-facing language.
+- What's New leads with Guild Expansion Alpha 1.
 
 ## Compatibility
-- Bot runtime: `1.2.0-expeditions`
-- Hosted Web runtime: `1.2.0-expeditions`
-- Frontend asset revision: `1.2.0-expeditions`
-- Local DB schema: **8**
-- Hosted sync schema: **1**
-- Portal Action protocol: **20**
+- Bot runtime: `1.3.0-guild-expansion-a1`
+- Hosted Web runtime: `1.3.0-guild-expansion-a1`
+- Frontend asset revision: `1.3.0-guild-expansion-a1`
+- Local DB schema: **8** unchanged
+- Hosted sync schema: **1** unchanged
+- Portal Action protocol: **20** unchanged
 - Twitch prefix: `!`
 - Player reset: **none**
+- Database migration: **none**
 - New environment variables: **none**
+- OAuth changes: **none**
