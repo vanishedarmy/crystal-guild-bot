@@ -1,67 +1,57 @@
-# Crystal Guild v1.3.0 — Guild Expansion Alpha 5 Validation Report
+# Crystal Guild v1.3.0 — Guild Expansion Beta 1 Validation Report
 
 ## Result
 **PASS**
 
-## Automated regression suites
-- Bot unittest suite: **470 / 470 PASS**.
-- Frontend Node regression suite: **343 / 343 PASS**.
+## Regression suites
+- Bot unittest suite: **475 / 475 PASS**.
+- Frontend Node regression suite: **349 / 349 PASS**.
 - Hosted Web/API unittest suite: **47 / 47 PASS**.
-- Focused Guild Legacy Alpha 5 suite: **6 / 6 PASS**.
+- Focused Beta 1 balance regressions: **5 / 5 PASS** (included in the Bot total).
 
-The Bot regression log includes intentional simulated outage/recovery and acknowledgement-loss warnings from resilience tests; those scenarios pass and are not release failures.
+The Bot log still includes intentional simulated Twitch outage, acknowledgement-loss, checkpoint recovery, and temporary availability warnings from resilience tests; those scenarios pass and are not Beta 1 failures.
 
-## Guild Legacy behavior verified
-- Ten permanent Guild Legacy accomplishments derive from existing Fellowship, facility, Expedition, raid, Airship, donation, Deed, and Weekly Order history.
-- Existing Alpha 4 Guilds are evaluated retroactively on Alpha 5 startup, so accomplishments already earned are recognized without resetting progress.
-- Every Legacy reward uses a stable `legacy_accomplishment:<id>` Fellowship event key; repeated startup/evaluation cannot award the same shared Renown twice.
-- Hall progression advances through **Founding Hall**, **Bannered Hall**, **Hall of Heroes**, and **Legendary Guild Hall** as total accomplishments rise.
-- Unlocked trophy/decorations remain represented in the public Fellowship Legacy snapshot.
-- Airship construction, completed missions, and all five Tier-III upgrade tracks feed their intended Legacy accomplishments.
+## Guild balance simulation
+- Fixed seed: **1301**.
+- **1,000** seasons each for Casual, Core, and Active Guild profiles.
+- Total: **3,000 simulated Guild seasons**.
+- Conservative Core profile medians: Fellowship LVL 8 **6.1 weeks**; Airship Dock Lv.1 **11.1 weeks**; Airship built **13.3 weeks**; all five major facilities Lv.3 **24.0 weeks**; all Airship upgrades Tier III **33.4 weeks**.
+- Contribution Renown is excluded from the model, intentionally biasing the simulation toward slower progression.
 
-## Guild Service Record verified
-The personal Fellowship record now reports existing contribution history plus:
-- Ventures completed;
-- Hunts won;
-- Raid participation;
-- Expeditions completed;
-- crafting and forge service;
-- Workshop refining batches;
-- Airship missions supported.
+The complete report is packaged at `reports/GUILD_BALANCE_SIMULATION.md` and the underlying result set at `reports/GUILD_BALANCE_SIMULATION.json`.
 
-Automatic distinctions are derived from existing history and do not require a new progression table. `!legacy` / `!guildlegacy` exposes shared Legacy progress, while `!contributions` / `!guildrecord` continues to expose the personal service record.
-
-## Player-facing Web / Guide verification
-- Public Fellowship includes the Guild Legacy Hall stage, trophy shelf, next goals, accomplishment progress, and reward summaries.
-- Personal Fellowship uses the broader **Guild Service Record** presentation and displays earned distinctions.
-- Player Guide explains Legacy and Service Records only in gameplay/usage terms; backend/release-engineering details remain outside the Guide.
-- Alpha 4 Guild Airship, Alpha 3 services, Alpha 2 projects/Order rewards, and Alpha 1 facility Board regressions remain green.
+## Balance verification
+- Airship Dock costs use the Beta 1 60k/100k/170k Gil, 25/35/55 Ancient Coin, and 4/6/9 raid-clear curve.
+- Crystal Guild Airship construction uses 140k Gil, 35 Mythril Ore, 18 Wyvern Scales, 20 Elemental Crystals, 10 Ancient Coins, and 6 Guild raid wins.
+- Airship upgrade Gil is 25k/55k/95k and raid requirements are 1/2/2 per track.
+- Artifact tracks use fewer materials than common-material tracks: Adamantite/Dark Matter 2/4/6; Magitek Capacitors 3/5/8; Mythril Ore/Elemental Crystals 4/7/10.
+- Weekly Order rewards, Supply Drives, Guild Objectives, Workshop refining, Fellowship thresholds, Airship mission formulas, and Legacy milestones are unchanged.
 
 ## Source and asset validation
-- Python compile sweep: **86 / 86 PASS**.
-- JavaScript/MJS `node --check`: **141 / 141 PASS**.
-- Explicit quoted artwork-route audit: **221 unique routes checked, 0 missing**.
-- Alpha 5 introduces no new required artwork files; the existing scenic, Airship, monster, item, job, region, and boss art routes remain intact.
+- Python compile sweep: **88 / 88 PASS** across Web + Bot source/tests/tools.
+- Web JavaScript/MJS `node --check`: **143 / 143 PASS**.
+- Frontend JS/JSX TypeScript-parser syntax sweep: **65 / 65 PASS**.
+- Explicit literal image/font route audit: **145 unique routes checked, 0 missing**.
 
 ## Compatibility
-- Bot runtime: `1.3.0-guild-expansion-a5`
-- Hosted Web runtime: `1.3.0-guild-expansion-a5`
-- Frontend asset revision: `1.3.0-guild-expansion-a5`
+- Bot runtime: `1.3.0-guild-expansion-b1`
+- Hosted Web runtime: `1.3.0-guild-expansion-b1`
+- Frontend asset revision: `1.3.0-guild-expansion-b1`
 - Local DB schema: **9** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **21** unchanged
 - Twitch prefix: `!`
-- Database migration from Alpha 4: **none**
+- Database migration: **none**
 - Player reset: **none**
 - OAuth change: **none**
 - New environment variables: **none**
 
-## Patch/release-tree verification
-- Alpha 4 → Alpha 5 Bot patch: **21 changed/new files, 0 deletions**; reconstructs the **141-file** final Bot tree exactly.
-- Alpha 4 → Alpha 5 Web patch: **39 changed/new files, 0 deletions**; reconstructs the **800-file** final Web tree exactly.
+## Packaging verification
+- Alpha 5 → Beta 1 Bot patch: **17 changed/new files, 0 deletions**; reconstructs **145 / 145** final Bot files exactly.
+- Alpha 5 Hotfix 1 → Beta 1 Web patch: **38 changed/new files, 0 deletions**; reconstructs **803 / 803** final Web files exactly.
+- Full Bot archive vs final Bot tree: **145 / 145 exact**.
+- Full Web archive vs final Web tree: **803 / 803 exact**.
+- Complete archive Bot/Web subtrees: **exact**.
 - ZIP CRC/integrity: **6 / 6 PASS**.
-- Runtime/private-artifact hygiene: **0 violations** across all six archives.
-- Full Bot archive vs finalized Bot tree: **141 / 141 files exact**.
-- Full Web archive vs finalized Web tree: **800 / 800 files exact**.
-- Complete archive Bot/Web subtrees vs finalized source trees: **exact**.
-- SHA-256 manifest verification: **PASS** for all six archives and three release documents.
+- Runtime/private-artifact hygiene: **0 violations**.
+- SHA-256 verification: **PASS**.

@@ -1,3 +1,10 @@
+# Crystal Guild Changelog
+
+## v1.3.0 — Guild Expansion Beta 1
+- Adds the fixed-seed Guild economy/progression simulator and 3,000-season balance report.
+- Tunes Airship Dock, Airship construction, and rarity-aware Airship upgrade requirements.
+- Keeps Weekly Order payouts, Supply Drives, Workshop refining, Fellowship thresholds, Legacy milestones, schema 9, and Portal protocol 21 unchanged.
+
 # v1.3.0 — Guild Expansion Alpha 5
 
 - Adds ten permanent Guild Legacy accomplishments with one-time replay-safe shared Renown rewards and named trophies.

@@ -224,10 +224,13 @@ AIRSHIP_UPGRADES = {
 def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
     facility = FACILITIES[facility_id]
     if facility_id == "airship_dock":
+        # Beta 1 balance pass: the Dock remains a major late-Guild investment,
+        # but the Alpha raid/Ancient Coin stack pushed ordinary communities into
+        # a multi-month stall before they could meaningfully improve the Airship.
         dock_targets = {
-            1: (75_000, 30, 6, 7),
-            2: (125_000, 50, 10, 8),
-            3: (225_000, 80, 15, 9),
+            1: (60_000, 25, 4, 7),
+            2: (100_000, 35, 6, 8),
+            3: (170_000, 55, 9, 9),
         }
         gil_target, coin_target, raid_target, level_req = dock_targets[tier]
         return [
@@ -423,12 +426,12 @@ PROJECTS["crystal_guild_airship"] = {
     "description": "Construct the Fellowship's shared Airship and open Guild-scale deployments.",
     "required_level": 8, "required_dock_level": 1, "reward_renown": 1500,
     "requirements": [
-        {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 150_000, "label": "Gil"},
-        {"key": "item:mythril_ore", "kind": "item", "asset_id": "mythril_ore", "target": 40, "label": "Mythril Ore"},
-        {"key": "item:wyvern_scale", "kind": "item", "asset_id": "wyvern_scale", "target": 20, "label": "Wyvern Scale"},
-        {"key": "item:elemental_crystal", "kind": "item", "asset_id": "elemental_crystal", "target": 25, "label": "Elemental Crystal"},
+        {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 140_000, "label": "Gil"},
+        {"key": "item:mythril_ore", "kind": "item", "asset_id": "mythril_ore", "target": 35, "label": "Mythril Ore"},
+        {"key": "item:wyvern_scale", "kind": "item", "asset_id": "wyvern_scale", "target": 18, "label": "Wyvern Scale"},
+        {"key": "item:elemental_crystal", "kind": "item", "asset_id": "elemental_crystal", "target": 20, "label": "Elemental Crystal"},
         {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 10, "label": "Ancient Coin"},
-        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 10, "label": "Guild raids won"},
+        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 6, "label": "Guild raids won"},
         {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 8, "label": "Fellowship LVL"},
     ],
 }
@@ -443,9 +446,19 @@ def _airship_upgrade_requirements(upgrade_id: str, tier: int) -> list[dict[str, 
         "survey": "elemental_crystal",
         "crystal_core": "dark_matter",
     }[upgrade_id]
-    gil = (30_000, 70_000, 140_000)[tier - 1]
-    qty = (5, 10, 18)[tier - 1]
-    raids = (2, 4, 7)[tier - 1]
+    # Beta 1 balance pass: upgrade tracks are long-term progression, but the
+    # original identical 5/10/18 material curve made artifact tracks (Adamantite
+    # and Dark Matter) vastly more expensive than common-material tracks. Keep
+    # those rare resources prestigious without requiring dozens of weeks of a
+    # single drop family.
+    gil = (25_000, 55_000, 95_000)[tier - 1]
+    if material in {"adamantite", "dark_matter"}:
+        qty = (2, 4, 6)[tier - 1]
+    elif material == "magitek_capacitor":
+        qty = (3, 5, 8)[tier - 1]
+    else:
+        qty = (4, 7, 10)[tier - 1]
+    raids = (1, 2, 2)[tier - 1]
     return [
         {"key": "gil", "kind": "gil", "asset_id": "gil", "target": gil, "label": "Gil"},
         {"key": f"item:{material}", "kind": "item", "asset_id": material, "target": qty, "label": material.replace("_", " ").title()},

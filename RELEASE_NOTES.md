@@ -1,58 +1,49 @@
-# Crystal Guild v1.3.0 — Guild Expansion Alpha 5
-## Guild Legacy & Accomplishments
+# Crystal Guild v1.3.0 — Guild Expansion Beta 1
 
-Alpha 5 turns the Fellowship into a long-term record of the community. It adds permanent Guild Legacy accomplishments, visible trophies and Hall progression, plus a broader personal Guild Service Record. Rewards stay recognition-focused: trophies and modest shared Fellowship Renown, with no permanent combat-stat bonuses.
+## Guild Economy & Progression Balance
 
-## Guild Legacy
-Ten long-term accomplishments now track the Guild's major history:
+Beta 1 is the balance checkpoint for the v1.3 Fellowship/Airship expansion. It does not add a new gameplay system; it tunes the late Guild progression curve so the Airship arrives over meaningful weeks while Tier III remains a long-term goal.
 
-- **Foundations Laid** — establish all five major Guild facilities.
-- **Grand Fellowship** — raise all five major facilities to Lv. 3.
-- **A Million Gil Later** — donate 1,000,000 Gil to Fellowship projects.
-- **Frontier Cartographers** — complete 100 Expeditions.
-- **Raid Vanguard** — win 100 Guild raids.
-- **Skybound Company** — complete the Crystal Guild Airship.
-- **Veteran Crew** — complete 25 successful Airship missions.
-- **Master Shipwrights** — complete all five Airship upgrade tracks through Tier III.
-- **Living Archive** — complete all eight current permanent Fellowship Deeds.
-- **Seasoned Fellowship** — clear the complete Weekly Order set 12 times.
+### Airship Dock
+- Lv. 1: 60,000 Gil · 25 Ancient Coins · 4 Guild raid wins · Fellowship LVL 7.
+- Lv. 2: 100,000 Gil · 35 Ancient Coins · 6 Guild raid wins · Fellowship LVL 8.
+- Lv. 3: 170,000 Gil · 55 Ancient Coins · 9 Guild raid wins · Fellowship LVL 9.
 
-Each accomplishment awards a named Guild trophy plus a one-time shared Renown reward. Completion receipts reuse the existing Fellowship event ledger, so a retry or restart cannot award the same accomplishment twice. Existing Alpha 4 Guilds can receive already-earned accomplishments retroactively the first time Alpha 5 loads.
+### Crystal Guild Airship construction
+- 140,000 Gil
+- 35 Mythril Ore
+- 18 Wyvern Scales
+- 20 Elemental Crystals
+- 10 Ancient Coins
+- 6 Guild raid wins
+- Fellowship LVL 8
 
-## Guild Hall Legacy stages
-The Fellowship page now presents the Guild Hall as a visual Legacy record:
+### Airship upgrade curve
+Every upgrade tier now uses 25,000 / 55,000 / 95,000 Gil and 1 / 2 / 2 Guild raid wins. Material quantities are rarity-aware instead of one flat curve:
+- Hull — Adamantite: 2 / 4 / 6
+- Engine — Magitek Capacitors: 3 / 5 / 8
+- Cargo Hold — Mythril Ore: 4 / 7 / 10
+- Survey Array — Elemental Crystals: 4 / 7 / 10
+- Crystal Core — Dark Matter: 2 / 4 / 6
 
-1. **Founding Hall** — 0–2 accomplishments.
-2. **Bannered Hall** — 3–5 accomplishments.
-3. **Hall of Heroes** — 6–8 accomplishments.
-4. **Legendary Guild Hall** — 9–10 accomplishments.
+### Intentionally unchanged
+- Weekly Fellowship Order shared and personal rewards.
+- Supply Drive and Guild Objective rewards.
+- Workshop refining recipes and service fees.
+- Fellowship LVL thresholds and personal Guild Rank thresholds.
+- Guild Legacy accomplishment targets/rewards.
+- Airship mission duration, progress, and reward formulas.
 
-Unlocked trophies appear on the Guild Legacy shelf and remain permanently visible in the Fellowship snapshot.
-
-## Guild Service Record
-The personal Fellowship tab now combines existing project/donation records with activity service:
-
-- Expeditions completed
-- Hunts won
-- Raid participations
-- Ventures completed
-- Crafting and forge service
-- Airship missions supported
-- Workshop refining batches
-
-Automatic recognition ribbons include **Founding Member, Guild Builder, Guild Benefactor, Order Veteran, Deedkeeper, Airship Crew,** and **Frontier Pathfinder** when their requirements are met.
-
-Chat adds `!legacy` / `!guildlegacy` for the current Hall stage, next Legacy goal, and recent trophies. `!contributions` / `!guildrecord` remains the personal record command.
+## Fixed-seed balance simulation
+The shipping simulator runs 1,000 seasons each for Casual, Core, and Active Guild profiles — 3,000 total. In the conservative Core profile, the median timing is roughly 6.1 weeks to Fellowship LVL 8, 11.1 weeks to Airship Dock Lv. 1, 13.3 weeks to the completed Airship, 24.0 weeks to all five major facilities at Lv. 3, and 33.4 weeks to all Airship upgrade tracks at Tier III. Contribution Renown is intentionally excluded from the model, so real progression can be somewhat faster.
 
 ## Compatibility
-- Bot runtime: `1.3.0-guild-expansion-a5`
-- Hosted Web runtime: `1.3.0-guild-expansion-a5`
-- Frontend asset revision: `1.3.0-guild-expansion-a5`
+- Bot/Web runtime: `1.3.0-guild-expansion-b1`
+- Frontend asset revision: `1.3.0-guild-expansion-b1`
 - Local DB schema: **9** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **21** unchanged
 - Twitch prefix: `!`
-- Database migration: **none from Alpha 4**
+- Database migration: **none**
 - Player reset: **none**
-- OAuth changes: **none**
-- New environment variables: **none**
+- OAuth/environment changes: **none**

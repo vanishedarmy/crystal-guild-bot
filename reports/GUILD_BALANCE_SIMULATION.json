@@ -1,0 +1,106 @@
+{
+  "seed": 1301,
+  "runs_per_profile": 1000,
+  "profiles": [
+    {
+      "id": "casual",
+      "label": "Casual Guild",
+      "players": 5,
+      "runs": 1000,
+      "level8_week": {
+        "success_rate": 1.0,
+        "median": 16.86,
+        "p90": 17.86
+      },
+      "dock1_week": {
+        "success_rate": 1.0,
+        "median": 25.0,
+        "p90": 29.0
+      },
+      "airship_week": {
+        "success_rate": 1.0,
+        "median": 30.0,
+        "p90": 35.29
+      },
+      "facilities_week": {
+        "success_rate": 1.0,
+        "median": 53.43,
+        "p90": 60.0
+      },
+      "upgrades_week": {
+        "success_rate": 0.765,
+        "median": 73.57,
+        "p90": 78.43
+      },
+      "median_airship_missions": 39.0,
+      "median_weekly_sets": 0.0
+    },
+    {
+      "id": "core",
+      "label": "Core Guild",
+      "players": 10,
+      "runs": 1000,
+      "level8_week": {
+        "success_rate": 1.0,
+        "median": 6.14,
+        "p90": 6.29
+      },
+      "dock1_week": {
+        "success_rate": 1.0,
+        "median": 11.14,
+        "p90": 12.86
+      },
+      "airship_week": {
+        "success_rate": 1.0,
+        "median": 13.29,
+        "p90": 15.43
+      },
+      "facilities_week": {
+        "success_rate": 1.0,
+        "median": 24.0,
+        "p90": 26.71
+      },
+      "upgrades_week": {
+        "success_rate": 1.0,
+        "median": 33.43,
+        "p90": 36.71
+      },
+      "median_airship_missions": 24.0,
+      "median_weekly_sets": 30.0
+    },
+    {
+      "id": "active",
+      "label": "Active Guild",
+      "players": 20,
+      "runs": 1000,
+      "level8_week": {
+        "success_rate": 1.0,
+        "median": 3.57,
+        "p90": 3.71
+      },
+      "dock1_week": {
+        "success_rate": 1.0,
+        "median": 6.43,
+        "p90": 7.57
+      },
+      "airship_week": {
+        "success_rate": 1.0,
+        "median": 7.57,
+        "p90": 9.0
+      },
+      "facilities_week": {
+        "success_rate": 1.0,
+        "median": 13.71,
+        "p90": 15.43
+      },
+      "upgrades_week": {
+        "success_rate": 1.0,
+        "median": 19.71,
+        "p90": 22.0
+      },
+      "median_airship_missions": 22.0,
+      "median_weekly_sets": 19.0
+    }
+  ],
+  "total_runs": 3000
+}
