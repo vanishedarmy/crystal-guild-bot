@@ -1,24 +1,25 @@
-# Crystal Guild v1.3.0 — Guild Expansion RC2 Finalization Audit
+# Crystal Guild v1.3.0 — Guild Expansion Finalization Audit
 
 ## Scope
-RC2 is a final pre-release package and metadata hardening pass. Gameplay and economy values are frozen from RC1.
+Final production promotion of the RC2 codebase plus public release-history cleanup. Gameplay and economy values remain frozen.
 
 ## Current-package identity
-- Bot runtime: `1.3.0-guild-expansion-rc2`
-- Hosted Web/runtime: `1.3.0-guild-expansion-rc2`
-- Frontend asset revision: `1.3.0-guild-expansion-rc2`
+- Bot runtime: `1.3.0-guild-expansion`
+- Hosted Web/runtime: `1.3.0-guild-expansion`
+- Frontend asset revision: `1.3.0-guild-expansion`
 - Local DB schema: **9**
 - Hosted sync schema: **1**
 - Portal Action protocol: **22**
 - Twitch prefix: `!`
 
 ## Audit targets
-- Current release/version/package surfaces use RC2 identity consistently.
-- Stale v1.1.19 and Expeditions Alpha-era headings are no longer presented as the current finalization audit.
-- Player-facing What's New remains concise and excludes database/transaction/release-engineering terminology.
+- All current release/version/package surfaces use the final v1.3.0 identity consistently.
+- Public What's New history contains shipped releases only and excludes Alpha/Beta/RC milestones.
+- Player-facing copy remains concise and free of backend/release-engineering jargon.
+- Hosting Guide and Portal Actions Setup reflect the current final runtime/protocol pair.
 - Fellowship/Airship persistence and shared-state protections remain regression-covered.
 - Existing artwork, scenic backgrounds, Founding Hall presentation, and collapsible inventory groups remain packaged.
-- No schema migration, reset, OAuth change, environment change, or gameplay rebalance is introduced from RC1.
+- No schema migration, reset, OAuth change, environment change, or gameplay rebalance is introduced from RC2.
 
 ## Result
 **PASS**

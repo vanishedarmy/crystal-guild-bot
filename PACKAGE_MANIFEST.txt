@@ -1,7 +1,7 @@
-Crystal Guild v1.3.0 Guild Expansion RC2 — Bot Package Manifest
-Runtime: 1.3.0-guild-expansion-rc2
+Crystal Guild v1.3.0 Guild Expansion — Bot Package Manifest
+Runtime: 1.3.0-guild-expansion
 DB schema: 9
 Hosted sync schema: 1
 Portal Action protocol: 22
-Feature state: Guild Expansion RC2 — feature freeze / final pre-release hardening
-Upgrade baseline: Guild Expansion RC1 Bot
+Feature state: Guild Expansion — final production release
+Upgrade baseline: Guild Expansion RC2 Bot

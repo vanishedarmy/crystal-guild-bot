@@ -14,19 +14,19 @@ from crystal_guild.portal_actions import ACTION_PROTOCOL_VERSION
 ROOT = Path(__file__).resolve().parents[1]
 
 
-class GuildExpansionRC2Tests(unittest.TestCase):
-    def test_rc2_identity_schema_and_protocol_are_release_candidate_values(self):
-        self.assertEqual(__version__, "1.3.0-guild-expansion-rc2")
+class GuildExpansionFinalTests(unittest.TestCase):
+    def test_final_identity_schema_and_protocol_are_release_values(self):
+        self.assertEqual(__version__, "1.3.0-guild-expansion")
         self.assertEqual(ACTION_PROTOCOL_VERSION, 22)
         with tempfile.TemporaryDirectory() as tmp:
-            db = Database(Path(tmp) / "rc2.db")
+            db = Database(Path(tmp) / "final.db")
             try:
                 self.assertEqual(db.schema_version(), 9)
                 self.assertEqual(db.quick_check(), [])
             finally:
                 db.close()
 
-    def test_rc2_restart_preserves_airship_and_fellowship_state(self):
+    def test_final_restart_preserves_airship_and_fellowship_state(self):
         with tempfile.TemporaryDirectory() as tmp:
             db_path = Path(tmp) / "guild.db"
             overlay = str(Path(tmp) / "overlay.json")
@@ -55,11 +55,11 @@ class GuildExpansionRC2Tests(unittest.TestCase):
             finally:
                 reopened.close()
 
-    def test_control_panel_and_upgrade_helper_identify_rc2(self):
+    def test_control_panel_and_upgrade_helper_identify_final_release(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
         upgrade = (ROOT / "upgrade_crystal_guild.py").read_text(encoding="utf-8")
-        self.assertIn("GUILD EXPANSION RC2", panel.upper())
-        self.assertIn("Guild Expansion RC2", upgrade)
+        self.assertIn("GUILD EXPANSION", panel.upper())
+        self.assertIn("Guild Expansion", upgrade)
         self.assertNotIn("GUILD EXPANSION BETA 1", panel.upper())
 
 

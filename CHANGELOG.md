@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.3.0 — Guild Expansion
+- Final production release of the complete v1.3 Guild Expansion feature set.
+- Public What's New history now lists shipped releases only; Alpha/Beta/RC entries remain only in engineering history.
+- Promotes RC2 unchanged for gameplay/economy with final runtime `1.3.0-guild-expansion`; schema 9 / sync 1 / Portal protocol 22 remain unchanged.
+
 ## v1.3.0 — Guild Expansion RC2
 - Final pre-release packaging and metadata hardening pass.
 - Refreshes stale bundled finalization-audit headings and strengthens release-identity checks across Bot/Web package surfaces.
