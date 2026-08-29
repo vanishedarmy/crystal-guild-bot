@@ -1,0 +1,80 @@
+[
+  {
+    "id": "forgotten_ossuary",
+    "name": "The Forgotten Ossuary",
+    "subtitle": "A sealed crypt beneath the old frontier road.",
+    "min_level": 10,
+    "recommended_level": 12,
+    "unlock": {
+      "expedition_region": "emerald_wilds",
+      "progress": 25
+    },
+    "completion_bonus": {
+      "xp": 180,
+      "jp": 35,
+      "gil": 260,
+      "items": [
+        {"item_id": "ancient_coin", "quantity": 1}
+      ]
+    },
+    "rooms": [
+      {
+        "id": "ossuary_gate",
+        "name": "Ossuary Gate",
+        "type": "entrance",
+        "description": "A stone stair descends beneath weathered memorial arches. The Guild seal on the door is centuries old."
+      },
+      {
+        "id": "bone_gallery",
+        "name": "Bone Gallery",
+        "type": "combat",
+        "monster_id": "skeleton",
+        "description": "Dry bones scrape across the flagstones as an old guardian pulls itself together."
+      },
+      {
+        "id": "grave_offerings",
+        "name": "Grave Offerings",
+        "type": "treasure",
+        "description": "A row of intact offering bowls survived the centuries.",
+        "loot": [
+          {"item_id": "potion", "quantity": 2},
+          {"item_id": "bone_chip", "quantity": 2}
+        ],
+        "gil": 90
+      },
+      {
+        "id": "falling_vault",
+        "name": "Falling Vault",
+        "type": "hazard",
+        "description": "The ceiling gives way as the passage narrows.",
+        "damage_percent": 12
+      },
+      {
+        "id": "knights_vigil",
+        "name": "The Knight's Vigil",
+        "type": "miniboss",
+        "monster_id": "ossuary_knight",
+        "hp_multiplier": 1.15,
+        "reward_multiplier": 1.25,
+        "description": "An armored keeper rises from a throne of cracked marble and draws a rust-dark blade."
+      },
+      {
+        "id": "crystal_font",
+        "name": "Crystal Font",
+        "type": "sanctuary",
+        "description": "A small crystal spring still glows beneath the crypt, offering one quiet moment before the final chamber.",
+        "hp_restore_percent": 25,
+        "resource_restore_percent": 30
+      },
+      {
+        "id": "sealed_belfry",
+        "name": "Sealed Belfry",
+        "type": "boss",
+        "monster_id": "gargoyle",
+        "hp_multiplier": 1.30,
+        "reward_multiplier": 1.50,
+        "description": "Stone wings unfold above the burial bell. The Ossuary's final sentinel has been waiting for a challenger."
+      }
+    ]
+  }
+]

@@ -51,6 +51,7 @@
 - [ ] Start or seed a Solo Venture, then run `!clearadventures`; the Solo Venture row is removed and Portal returns to no active Solo Venture after sync.
 - [ ] With a timed Hunt active, `!clearadventures` cancels the assignment without granting Hunt rewards.
 - [ ] With a field/Rally encounter active, `!clearadventures` clears that encounter.
+- [ ] With a Dungeon delve active, `!clearadventures` removes the active run without changing completed Dungeon records or rewards already banked.
 - [ ] An active raid/world boss is not cleared.
 - [ ] Player progression, inventory, persisted HP/MP/AP, and cooldowns remain unchanged.
 - [ ] `!resettimers` remains the separate command for intentionally clearing cooldowns.

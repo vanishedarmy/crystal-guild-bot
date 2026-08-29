@@ -48,7 +48,7 @@ class ExpeditionV12Tests(unittest.TestCase):
             )
 
     def test_schema_and_five_regions_are_present(self):
-        self.assertEqual(self.db.schema_version(), 9)
+        self.assertEqual(self.db.schema_version(), 10)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_expeditions'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_region_exploration'"))
         self.assertEqual(len(self.data.expedition_regions), 5)
@@ -461,7 +461,7 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertEqual([row["id"] for row in board["depths"]], ["scout", "journey", "deep"])
         self.assertIn("keen_eye", board["traits_active"])
         encoded = json.dumps({"adventure_state": state}, separators=(",", ":")).encode()
-        self.assertLess(len(encoded), 16 * 1024)
+        self.assertLess(len(encoded), 18 * 1024)
 
 
 if __name__ == "__main__":

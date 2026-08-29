@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 22
+ACTION_PROTOCOL_VERSION = 23
 
 
 class PortalActionWorker:
@@ -527,6 +527,34 @@ class PortalActionWorker:
             return self._game_result(result)
         if action_type == "EXPEDITION_RETREAT":
             result = self.game.portal_expedition_retreat(twitch_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "DUNGEON_START":
+            dungeon_id = str(payload.get("dungeon_id") or "").strip().lower()
+            if not dungeon_id:
+                return False, "Dungeon launch requires a dungeon ID.", {}
+            result = self.game.portal_dungeon_start(twitch_id, dungeon_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "DUNGEON_ACTION":
+            run_id = str(payload.get("run_id") or "").strip().lower()
+            room_id = str(payload.get("room_id") or "").strip().lower()
+            action_kind = str(payload.get("action") or "").strip().lower()
+            if not run_id or not room_id or not action_kind:
+                return False, "Dungeon action is missing its run, room, or action.", {}
+            result = self.game.portal_dungeon_action(twitch_id, run_id, room_id, action_kind, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "DUNGEON_CONTINUE":
+            run_id = str(payload.get("run_id") or "").strip().lower()
+            room_id = str(payload.get("room_id") or "").strip().lower()
+            if not run_id or not room_id:
+                return False, "Dungeon continue is missing its run or room.", {}
+            result = self.game.portal_dungeon_continue(twitch_id, run_id, room_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "DUNGEON_RETREAT":
+            run_id = str(payload.get("run_id") or "").strip().lower()
+            room_id = str(payload.get("room_id") or "").strip().lower()
+            if not run_id or not room_id:
+                return False, "Dungeon retreat is missing its run or room.", {}
+            result = self.game.portal_dungeon_retreat(twitch_id, run_id, room_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "SOLO_VENTURE":
             action_id = str(action.get("id") or "")

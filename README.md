@@ -1,9 +1,7 @@
-# Crystal Guild v1.3.1 — Asset Optimization
+# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 1
 
-Final v1.3.0 production release.
+Runtime `1.4.0-dungeons-a1` · local DB schema **10** · hosted sync schema **1** · Portal Action protocol **23** · Twitch prefix `!`.
 
-Runtime `1.3.1-asset-optimization` · local DB schema **9** · hosted sync schema **1** · Portal Action protocol **22** · Twitch prefix `!`.
+Alpha 1 adds the first persistent Dungeon: **The Forgotten Ossuary**. Dungeon runs live in the Adventure Board, preserve condition and cache across rooms/restarts, use player-paced Portal combat, and build on the existing Bestiary/reward systems.
 
-Guild Expansion includes major Guild facilities, shared Construction/Supply Drive/Guild Objective projects, Weekly Order contributor rewards, Workshop/Stable/Archive services, Crystal Guild Airship construction/missions/upgrades, Guild Legacy, Guild Service Records, and the complete reliability hardening for shared Fellowship/Airship actions.
-
-Upgrading from RC2 requires no database migration, player reset, OAuth change, or new environment variable. See `UPGRADE_GUIDE.md`, `RELEASE_NOTES.md`, and `VALIDATION_REPORT.md`.
+This is an in-place upgrade from v1.3.1 Asset Optimization. Existing player and Guild progression is preserved. See `UPGRADE_GUIDE.md` before deployment.

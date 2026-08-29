@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.4.0 — Dungeons & Delves Alpha 1
+- Added the persistent Dungeon foundation and The Forgotten Ossuary proof dungeon.
+- Added schema 10 Dungeon run/progress storage and Portal Action protocol 23.
+- Added player-paced Dungeon combat, cache banking, retreat/defeat recovery, Bestiary integration, and Adventure Board UI.
+
 ## v1.3.1 — Asset Optimization
 - Replaces 390 shipped PNG artwork assets with smaller lossless WebP equivalents after exact pixel/transparency verification.
 - Reduces raw artwork by roughly 31.9 MiB with no gameplay, schema, protocol, or balance changes.

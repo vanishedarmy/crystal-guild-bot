@@ -254,7 +254,8 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent per-player Wayfarer Solo Expedition state; version 6 adds
 -- persistent Chocobo portrait selection; version 7 adds durable Portal adventure result acknowledgements; version 8 adds
 -- persistent v1.2 Expedition runs and per-region exploration progress; version 9 adds
--- persistent Fellowship Airship state, upgrades, mission participation, and mission history.
+-- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
+-- persistent per-player Dungeon runs and Dungeon clear/failure progress.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -262,7 +263,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 9
+DATABASE_SCHEMA_VERSION = 10
 
 
 class Database:
@@ -707,6 +708,49 @@ class Database:
                     INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('survey',0);
                     INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('crystal_core',0);
                     INSERT INTO schema_migrations(version,name) VALUES (9,'guild_airship');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v10 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=10").fetchone()
+        )
+        if not already_v10:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(10)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_dungeons (
+                        player_id TEXT PRIMARY KEY,
+                        state_json TEXT NOT NULL,
+                        started_at INTEGER NOT NULL,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_player_dungeons_updated
+                    ON player_dungeons(updated_at DESC);
+                    CREATE TABLE IF NOT EXISTS player_dungeon_progress (
+                        player_id TEXT NOT NULL,
+                        dungeon_id TEXT NOT NULL,
+                        clears INTEGER NOT NULL DEFAULT 0,
+                        defeats INTEGER NOT NULL DEFAULT 0,
+                        retreats INTEGER NOT NULL DEFAULT 0,
+                        best_rooms INTEGER NOT NULL DEFAULT 0,
+                        last_outcome TEXT,
+                        last_completed_at INTEGER,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (player_id, dungeon_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_dungeon_progress_clears
+                    ON player_dungeon_progress(dungeon_id, clears DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (10,'dungeons_foundation');
                     COMMIT;
                     """
                 )

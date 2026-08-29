@@ -196,7 +196,7 @@ A Twitch delivery failure therefore cannot hold an encounter open. Missing chat 
 !resolveboss
 ```
 
-`!readyall` restores every player to READY with full HP and applicable MP/AP, but intentionally refuses to run during active combat. `!resettimers` clears persistent player cooldowns, camp timers, and personal shop refresh timers; it does not force active encounter/raid countdowns to advance. `!clearadventures` is an owner-only emergency recovery command that abandons all active field/Rally encounters, timed Hunts, and persisted Solo Ventures. It intentionally preserves raids/world bosses, progression, inventory, persisted vitals, and cooldowns.
+`!readyall` restores every player to READY with full HP and applicable MP/AP, but intentionally refuses to run during active combat. `!resettimers` clears persistent player cooldowns, camp timers, and personal shop refresh timers; it does not force active encounter/raid countdowns to advance. `!clearadventures` is an owner-only emergency recovery command that abandons all active field/Rally encounters, timed Hunts, persisted Solo Ventures, Expeditions, and Dungeon delves. It intentionally preserves raids/world bosses, completed Dungeon/Expedition records, progression, inventory, persisted vitals, and cooldowns.
 
 Emergency resolver/clear commands remain available for recovery, but normal Active Battles should need no owner intervention.
 

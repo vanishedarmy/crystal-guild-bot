@@ -7,6 +7,7 @@ import random
 import re
 import threading
 import time
+import uuid
 from dataclasses import dataclass, field
 from functools import wraps
 from pathlib import Path
@@ -79,6 +80,7 @@ from .daily_provisions import (
     subscriber_perk,
 )
 from .data import GameData
+from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, DUNGEON_MAX_COMBAT_ROUNDS, room_kind_label as dungeon_room_kind_label
 from .expeditions import (
     BONUS_STAGES as EXPEDITION_BONUS_STAGES,
     DEPTHS as EXPEDITION_DEPTHS,
@@ -792,6 +794,8 @@ class CrystalGuildEngine:
             return GameResult.fail("You cannot change Jobs while resting at camp.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Jobs after committing to an active encounter or raid.")
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before changing Jobs.")
         if self._expedition_load(twitch_id):
             return GameResult.fail("Return from your Expedition before changing Jobs.")
         if self._solo_expedition_load(twitch_id):
@@ -885,6 +889,8 @@ class CrystalGuildEngine:
             return GameResult.success(f"Mastered Jobs: {mastered_text}", f"Equipped Masteries: {equipped_text}. Equip with !mastery <job> <1|2>")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before changing Masteries.")
         if self._expedition_load(twitch_id):
             return GameResult.fail("Return from your Expedition before changing Masteries.")
         if self._solo_expedition_load(twitch_id):
@@ -911,6 +917,8 @@ class CrystalGuildEngine:
             return self._need_recruit()
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change Masteries after committing to an active encounter or raid.")
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before changing Masteries.")
         if self._expedition_load(twitch_id):
             return GameResult.fail("Return from your Expedition before changing Masteries.")
         if self._solo_expedition_load(twitch_id):
@@ -933,6 +941,8 @@ class CrystalGuildEngine:
             return GameResult.success(f"Current stance: {p['stance']}. Options: balanced, aggressive, defensive, magical, cautious.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("You cannot change stance after committing to an active encounter or raid.")
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before changing stance.")
         if self._expedition_load(twitch_id):
             return GameResult.fail("Return from your Expedition before changing stance.")
         if self._solo_expedition_load(twitch_id):
@@ -961,6 +971,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Dungeon recovery is limited to Sanctuary rooms. Finish or retreat before normal Camp recovery.")
         if self._expedition_load(twitch_id):
             return GameResult.fail("Use Expedition Camp or return from your Expedition before normal Camp recovery.")
         if self._solo_expedition_load(twitch_id):
@@ -1028,6 +1040,8 @@ class CrystalGuildEngine:
             return self.battle_item(twitch_id, item_query)
         if twitch_id in self.raid_roster and self.active_boss and self.active_boss.get("state") == "combat":
             return self.battle_item(twitch_id, item_query)
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("While inside a Dungeon, use battle items through Dungeon combat or retreat first.")
         if self._expedition_load(twitch_id):
             return GameResult.fail("While on an Expedition, use items through Expedition combat or return to the Guild first.")
         if self._solo_expedition_load(twitch_id):
@@ -1063,6 +1077,8 @@ class CrystalGuildEngine:
 
         if target_id in self.encounter_roster or target_id in self.raid_roster:
             return GameResult.fail(f"{target['display_name']} is currently in battle; use battle targeting instead.")
+        if self._dungeon_load(target_id):
+            return GameResult.fail(f"{target['display_name']} is inside a Dungeon and cannot receive field items right now.")
         if self._expedition_load(target_id):
             return GameResult.fail(f"{target['display_name']} is away on an Expedition and cannot receive field items right now.")
         if self._solo_expedition_load(target_id):
@@ -5033,6 +5049,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before changing equipment.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
         if self._expedition_load(twitch_id):
@@ -5069,6 +5087,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before changing equipment.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before changing equipment.")
         if self._expedition_load(twitch_id):
@@ -5260,6 +5280,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before shopping for new supplies.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before shopping for new supplies.")
         if quantity < 1 or quantity > 99:
@@ -7016,6 +7038,493 @@ class CrystalGuildEngine:
         }
 
 
+
+    # ---------- v1.4 Dungeons & Delves ----------
+    def _dungeon_load(self, twitch_id: str) -> dict[str, Any] | None:
+        row = self.db.one("SELECT state_json FROM player_dungeons WHERE player_id=?", (str(twitch_id),))
+        if not row:
+            return None
+        try:
+            state = json.loads(str(row["state_json"]))
+            return state if isinstance(state, dict) else None
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return None
+
+    def _dungeon_save(self, twitch_id: str, state: dict[str, Any]) -> None:
+        now = int(time.time())
+        started = int(state.get("started_at") or now)
+        state["updated_at"] = now
+        self.db.execute(
+            "INSERT INTO player_dungeons(player_id,state_json,started_at,updated_at) VALUES (?,?,?,?) "
+            "ON CONFLICT(player_id) DO UPDATE SET state_json=excluded.state_json,updated_at=excluded.updated_at",
+            (str(twitch_id), json.dumps(state, separators=(",", ":"), sort_keys=True), started, now),
+        )
+
+    def _dungeon_delete(self, twitch_id: str) -> None:
+        self.db.execute("DELETE FROM player_dungeons WHERE player_id=?", (str(twitch_id),))
+
+    def _dungeon_progress(self, twitch_id: str, dungeon_id: str) -> dict[str, Any]:
+        row = self.db.one(
+            "SELECT clears,defeats,retreats,best_rooms,last_outcome,last_completed_at FROM player_dungeon_progress WHERE player_id=? AND dungeon_id=?",
+            (str(twitch_id), str(dungeon_id)),
+        )
+        return {
+            "clears": int(row["clears"] or 0) if row else 0,
+            "defeats": int(row["defeats"] or 0) if row else 0,
+            "retreats": int(row["retreats"] or 0) if row else 0,
+            "best_rooms": int(row["best_rooms"] or 0) if row else 0,
+            "last_outcome": str(row["last_outcome"] or "") if row else "",
+            "last_completed_at": int(row["last_completed_at"] or 0) if row and row["last_completed_at"] else 0,
+        }
+
+    def _dungeon_unlock(self, twitch_id: str, dungeon: dict[str, Any]) -> tuple[bool, list[str]]:
+        p = self._player(twitch_id)
+        if not p:
+            return False, ["Join the Guild first."]
+        missing: list[str] = []
+        min_level = max(1, int(dungeon.get("min_level", 1) or 1))
+        if int(p["level"] or 1) < min_level:
+            missing.append(f"Requires Lv.{min_level}.")
+        unlock = dungeon.get("unlock") if isinstance(dungeon.get("unlock"), dict) else {}
+        region_id = str(unlock.get("expedition_region") or "").strip()
+        required_progress = max(0, int(unlock.get("progress", 0) or 0))
+        if region_id and required_progress > 0:
+            progress = self._expedition_progress(twitch_id, region_id)
+            current = int(progress.get("progress", 0) or 0)
+            if current < required_progress:
+                region = self.data.expedition_regions.get(region_id) or {}
+                missing.append(f"Chart {region.get('name', region_id)} to {required_progress}% ({current}% now).")
+        return not missing, missing
+
+    @staticmethod
+    def _dungeon_cache(state: dict[str, Any]) -> dict[str, Any]:
+        cache = state.setdefault("cache", {"xp": 0, "jp": 0, "gil": 0, "items": []})
+        cache.setdefault("xp", 0); cache.setdefault("jp", 0); cache.setdefault("gil", 0); cache.setdefault("items", [])
+        return cache
+
+    def _dungeon_cache_add_item(self, state: dict[str, Any], item_id: str, quantity: int) -> None:
+        if item_id not in self.data.items or int(quantity) <= 0:
+            return
+        cache = self._dungeon_cache(state)
+        rows = cache.setdefault("items", [])
+        existing = next((row for row in rows if str(row.get("id")) == str(item_id)), None)
+        if existing:
+            existing["quantity"] = int(existing.get("quantity", 0)) + int(quantity)
+        else:
+            rows.append({"id": str(item_id), "name": str(self.data.items[item_id]["name"]), "quantity": int(quantity)})
+
+    def _dungeon_reward_for_monster(self, twitch_id: str, monster: dict[str, Any], multiplier: float) -> dict[str, Any]:
+        p = self._player(twitch_id)
+        if not p:
+            return {"xp": 0, "jp": 0, "gil": 0, "items": []}
+        factor = encounter_reward_factor(int(p["level"]), int(monster["level"]))
+        job_level = self._job_level(twitch_id, p["current_job"])
+        jp_factor = jp_reward_factor(int(p["level"]), job_level, int(monster["level"]))
+        multiplier = max(0.25, float(multiplier or 1.0))
+        xp = max(5, int(int(monster["xp"]) * factor * multiplier))
+        jp = max(2, int(int(monster["jp"]) * jp_factor * multiplier))
+        gil = max(1, int(int(monster["gil"]) * factor * multiplier))
+        drops: list[dict[str, Any]] = []
+        for drop in list(monster.get("drops") or []):
+            chance = min(0.90, float(drop.get("chance", 0) or 0) * min(1.35, multiplier))
+            if self.rng.random() <= chance:
+                qty = self.rng.randint(int(drop.get("min", 1)), int(drop.get("max", 1)))
+                item_id = str(drop.get("item_id") or "")
+                if item_id in self.data.items:
+                    drops.append({"id": item_id, "name": str(self.data.items[item_id]["name"]), "quantity": qty})
+        return {"xp": xp, "jp": jp, "gil": gil, "items": drops}
+
+    def _dungeon_begin_combat(self, twitch_id: str, state: dict[str, Any], room: dict[str, Any]) -> GameResult:
+        p = self._player(twitch_id)
+        monster = self.data.monsters.get(str(room.get("monster_id") or ""))
+        if not p or not monster:
+            return GameResult.fail("That Dungeon room cannot begin combat right now.")
+        encounter = {
+            "id": int(time.time() * 1000), "kind": "dungeon", "state": "combat",
+            "monster_id": str(monster["id"]), "region_id": str(p["current_region"]),
+            "created_at": int(time.time()), "starter_id": str(twitch_id),
+        }
+        roster = {str(twitch_id): {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}}
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter, self.encounter_roster = encounter, roster
+            combatants, _, _ = self._initialize_active_combat(encounter)
+            if combatants == 0:
+                return GameResult.fail("Your hero is unable to fight. Recover before entering the Dungeon.")
+            hp_mult = max(0.5, float(room.get("hp_multiplier", 1.0) or 1.0))
+            scaled_hp = max(1, int(round(int(encounter.get("monster_max_hp", monster["hp"])) * hp_mult)))
+            encounter["monster_hp"] = scaled_hp
+            encounter["monster_max_hp"] = scaled_hp
+            encounter["max_rounds"] = DUNGEON_MAX_COMBAT_ROUNDS
+            encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+            state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(roster)}
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
+        state["status"] = "combat"
+        state["event"] = {"type": str(room.get("type") or "combat"), "monster_id": str(monster["id"])}
+        state.setdefault("history", []).append({"room": int(state.get("room_index", 0)) + 1, "type": str(room.get("type") or "combat"), "label": f"Encountered {monster['name']}"})
+        self._dungeon_save(twitch_id, state)
+        return GameResult.success(f"DUNGEON — {monster['name']} bars the way in {room.get('name', 'the next chamber')}.", dungeon_battle=True)
+
+    def _dungeon_begin_room(self, twitch_id: str, state: dict[str, Any]) -> GameResult:
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        rooms = list(dungeon.get("rooms") or [])
+        room_index = int(state.get("room_index", 0))
+        if room_index < 0 or room_index >= len(rooms):
+            return self._dungeon_finish(twitch_id, state, outcome="complete")
+        room = dict(rooms[room_index])
+        kind = str(room.get("type") or "room").lower()
+        state["event"] = {"type": kind, "room_id": str(room.get("id") or ""), "name": str(room.get("name") or "Room"), "description": str(room.get("description") or "")}
+        state["combat"] = None
+        if kind in {"combat", "miniboss", "boss"}:
+            return self._dungeon_begin_combat(twitch_id, state, room)
+        if kind == "treasure":
+            cache = self._dungeon_cache(state)
+            cache["gil"] = int(cache.get("gil", 0)) + max(0, int(room.get("gil", 0) or 0))
+            found: list[str] = []
+            for loot in list(room.get("loot") or []):
+                item_id = str(loot.get("item_id") or "")
+                qty = max(0, int(loot.get("quantity", 1) or 1))
+                if item_id in self.data.items and qty:
+                    self._dungeon_cache_add_item(state, item_id, qty)
+                    found.append(f"{self.data.items[item_id]['name']} x{qty}")
+            state.setdefault("history", []).append({"room": room_index + 1, "type": "treasure", "label": f"Recovered {', '.join(found) if found else 'old offerings'}"})
+        elif kind == "hazard":
+            p = self._player(twitch_id)
+            max_hp = self._max_hp(p) if p else 1
+            before = max(1, int(p["current_hp"] or 1)) if p else 1
+            damage = max(1, int(round(max_hp * max(0.0, float(room.get("damage_percent", 10) or 10)) / 100.0)))
+            after = max(1, before - damage)
+            self._save_hp(twitch_id, after)
+            state["event"]["damage"] = before - after
+            state.setdefault("history", []).append({"room": room_index + 1, "type": "hazard", "label": f"Lost {before-after} HP to {room.get('name', 'a hazard')}"})
+        elif kind == "sanctuary":
+            p = self._player(twitch_id)
+            if p:
+                max_hp = self._max_hp(p)
+                before_hp = max(0, int(p["current_hp"] or 0))
+                heal = max(0, min(max_hp, before_hp + max(1, int(max_hp * float(room.get("hp_restore_percent", 25) or 25) / 100.0))) - before_hp)
+                if heal:
+                    self._save_hp(twitch_id, before_hp + heal)
+                resources = self._resource_state_for(self._player(twitch_id))
+                pct_restore = max(0.0, float(room.get("resource_restore_percent", 30) or 30) / 100.0)
+                new_mp = min(int(resources.get("max_mp", 0)), int(resources.get("mp", 0)) + int(int(resources.get("max_mp", 0)) * pct_restore))
+                new_ap = min(int(resources.get("max_ap", 0)), int(resources.get("ap", 0)) + int(int(resources.get("max_ap", 0)) * pct_restore))
+                self._save_resources_from_meta(twitch_id, {"mp": new_mp, "max_mp": int(resources.get("max_mp", 0)), "ap": new_ap, "max_ap": int(resources.get("max_ap", 0))})
+                state["event"].update({"healed": heal, "mp_restored": max(0, new_mp - int(resources.get("mp", 0))), "ap_restored": max(0, new_ap - int(resources.get("ap", 0)))})
+                state.setdefault("history", []).append({"room": room_index + 1, "type": "sanctuary", "label": f"Restored {heal} HP at {room.get('name', 'the sanctuary')}"})
+        else:
+            state.setdefault("history", []).append({"room": room_index + 1, "type": kind, "label": f"Entered {room.get('name', 'the Dungeon')}"})
+        state["status"] = "choice"
+        self._dungeon_save(twitch_id, state)
+        return GameResult.success(f"DUNGEON · {room.get('name', 'Room')} — {room.get('description', '')}", dungeon_room_complete=True)
+
+    def _dungeon_public(self, twitch_id: str) -> dict[str, Any] | None:
+        state = self._dungeon_load(twitch_id)
+        if not state:
+            return None
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        rooms = list(dungeon.get("rooms") or [])
+        room_index = max(0, int(state.get("room_index", 0)))
+        room = dict(rooms[room_index]) if room_index < len(rooms) else {}
+        payload: dict[str, Any] = {
+            "active": True,
+            "run_id": str(state.get("run_id") or ""),
+            "dungeon_id": str(state.get("dungeon_id") or ""),
+            "name": str(dungeon.get("name") or "Dungeon"),
+            "subtitle": str(dungeon.get("subtitle") or ""),
+            "status": str(state.get("status") or "choice"),
+            "room_index": room_index,
+            "room_number": min(len(rooms), room_index + 1),
+            "room_count": len(rooms),
+            "room": {"id": str(room.get("id") or ""), "name": str(room.get("name") or "Final Chamber"), "type": str(room.get("type") or "complete"), "type_label": dungeon_room_kind_label(room), "description": str(room.get("description") or "")},
+            "cache": copy.deepcopy(self._dungeon_cache(state)),
+            "event": copy.deepcopy(state.get("event")),
+            "history": copy.deepcopy(list(state.get("history") or [])[-8:]),
+            "last_round": copy.deepcopy(state.get("last_round")),
+            "can_continue": str(state.get("status")) == "choice" and room_index < max(0, len(rooms) - 1),
+            "can_retreat": str(state.get("status")) in {"choice", "combat"},
+        }
+        combat = state.get("combat") or {}
+        encounter = combat.get("encounter") or {}
+        roster = combat.get("roster") or {}
+        meta = roster.get(str(twitch_id)) if isinstance(roster, dict) else None
+        if encounter and meta:
+            monster = self.data.monsters.get(str(encounter.get("monster_id") or "")) or {}
+            payload["combat"] = {
+                "round": int(encounter.get("round", 1)),
+                "enemy": {"id": str(monster.get("id") or ""), "name": str(monster.get("name") or "Unknown Enemy"), "level": int(monster.get("level", 1)), "hp": int(encounter.get("monster_hp", 0)), "max_hp": int(encounter.get("monster_max_hp", 0)), "statuses": status_text(encounter.get("monster_statuses", {}), limit=3), "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action")},
+                "player": {"name": str(meta.get("name") or "Hero"), "job_id": str(meta.get("job_id") or ""), "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"), "hp": int(meta.get("hp", 0)), "max_hp": int(meta.get("max_hp", 0)), "mp": int(meta.get("mp", 0)), "max_mp": int(meta.get("max_mp", 0)), "ap": int(meta.get("ap", 0)), "max_ap": int(meta.get("max_ap", 0)), "statuses": status_text(meta.get("statuses", {}), limit=4)},
+                "abilities": self._solo_ability_rows(meta),
+                "items": self._solo_owned_battle_items(twitch_id, meta),
+            }
+        return payload
+
+    def _dungeon_board_state(self, twitch_id: str) -> dict[str, Any]:
+        p = self._player(twitch_id)
+        if not p:
+            return {"dungeons": [], "active": None}
+        active = self._dungeon_public(twitch_id)
+        entries: list[dict[str, Any]] = []
+        for dungeon in sorted(self.data.dungeons.values(), key=lambda row: (int(row.get("min_level", 1)), str(row.get("name") or ""))):
+            unlocked, missing = self._dungeon_unlock(twitch_id, dungeon)
+            progress = self._dungeon_progress(twitch_id, str(dungeon["id"]))
+            entry = {
+                "id": str(dungeon["id"]), "name": str(dungeon["name"]),
+                "min_level": int(dungeon.get("min_level", 1)), "rooms": len(list(dungeon.get("rooms") or [])),
+                "unlocked": bool(unlocked), "missing": [str(value) for value in missing],
+            }
+            if int(progress.get("clears", 0)) or int(progress.get("best_rooms", 0)):
+                entry["progress"] = [int(progress.get("clears", 0)), int(progress.get("best_rooms", 0))]
+            entries.append(entry)
+        return {"dungeons": entries, "active": active}
+
+    def dungeon_start(self, twitch_id: str, dungeon_id: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.success("Your Dungeon delve is already in progress. Continue it from the Adventure Board.", dungeon_active=True)
+        dungeon = self.data.dungeons.get(str(dungeon_id))
+        if not dungeon:
+            return GameResult.fail("That Dungeon is not available.")
+        if p["current_job"] == "adventurer":
+            return GameResult.fail("Choose a Job before entering a Dungeon.")
+        blocked = self._activity_block(twitch_id)
+        if blocked:
+            return GameResult.fail(blocked)
+        unlocked, missing = self._dungeon_unlock(twitch_id, dungeon)
+        if not unlocked:
+            return GameResult.fail(" ".join(missing[:3]) or "That Dungeon is still locked.")
+        now = int(time.time())
+        state = {
+            "version": 1, "run_id": uuid.uuid4().hex, "dungeon_id": str(dungeon["id"]), "started_at": now, "updated_at": now,
+            "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "event": None, "combat": None, "last_round": None,
+        }
+        self._dungeon_save(twitch_id, state)
+        return self._dungeon_begin_room(twitch_id, state)
+
+    def dungeon_continue(self, twitch_id: str) -> GameResult:
+        state = self._dungeon_load(twitch_id)
+        if not state or str(state.get("status")) != "choice":
+            return GameResult.fail("Clear the current Dungeon room before moving deeper.")
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        rooms = list(dungeon.get("rooms") or [])
+        if int(state.get("room_index", 0)) >= len(rooms) - 1:
+            return self._dungeon_finish(twitch_id, state, outcome="complete")
+        state["room_index"] = int(state.get("room_index", 0)) + 1
+        state["last_round"] = None
+        self._dungeon_save(twitch_id, state)
+        return self._dungeon_begin_room(twitch_id, state)
+
+    def dungeon_action(self, twitch_id: str, action_kind: str) -> GameResult:
+        state = self._dungeon_load(twitch_id)
+        if not state or str(state.get("status")) != "combat":
+            return GameResult.fail("No Dungeon battle is waiting for an action.")
+        combat = state.get("combat") or {}; encounter = copy.deepcopy(combat.get("encounter") or {}); roster = copy.deepcopy(combat.get("roster") or {})
+        meta = roster.get(str(twitch_id))
+        if not encounter or not meta or int(meta.get("hp", 0)) <= 0:
+            return GameResult.fail("Your Dungeon combat state cannot accept an action.")
+        action_kind = str(action_kind or "").lower().strip()
+        if action_kind == "attack":
+            meta["action"] = {"kind": "attack"}
+        elif action_kind == "defend":
+            meta["action"] = {"kind": "defend"}
+        elif action_kind.startswith("ability:"):
+            ability_id = action_kind.split(":", 1)[1]
+            ability = next((row for row in self.data.active_abilities.get(str(meta.get("job_id")), []) if str(row.get("id")) == ability_id), None)
+            job = self.data.jobs.get(str(meta.get("job_id"))) or {}
+            if not ability or int(ability.get("level", 1)) > int(meta.get("job_level", 0)):
+                return GameResult.fail("That ability is not available to your current Job level.")
+            resource = ability_resource(ability, job); cost = ability_cost(ability)
+            if int(meta.get(resource, 0)) < cost:
+                return GameResult.fail(f"{ability['name']} needs {cost} {resource.upper()}.")
+            if resource == "mp" and has_status(meta.get("statuses", {}), "silence"):
+                return GameResult.fail("Silence prevents that MP ability.")
+            if any(effect.get("type") == "revive" for effect in ability.get("effects", [])):
+                return GameResult.fail("Revive abilities need another KO'd ally and cannot be used in a solo Dungeon delve.")
+            target_mode = str(ability.get("target") or "enemy")
+            target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+            meta["action"] = {"kind": "ability", "ability_id": str(ability["id"]), "target_id": target_id, "resource": resource, "cost": cost}
+        elif action_kind.startswith("item:"):
+            item_id = action_kind.split(":", 1)[1]
+            item = self.data.items.get(item_id); use = item.get("use") if item and isinstance(item.get("use"), dict) else None
+            if not item or not use or self._inventory_qty(twitch_id, item_id) <= 0:
+                return GameResult.fail("That battle item is not available.")
+            if any(effect.get("type") == "revive" for effect in use.get("effects", [])):
+                return GameResult.fail("Revive items cannot target the acting hero while they are conscious.")
+            target_mode = str(use.get("target", "ally")); target_id = "monster" if target_mode == "enemy" else "party" if target_mode == "party" else str(twitch_id)
+            meta["action"] = {"kind": "item", "item_id": item_id, "target_id": target_id}
+        else:
+            return GameResult.fail("Choose Attack, Ability, Use Item, or Defend.")
+        old_encounter, old_roster = self.active_encounter, self.encounter_roster
+        try:
+            self.active_encounter, self.encounter_roster = encounter, roster
+            result = self._advance_dungeon_round(twitch_id, state)
+            if self._dungeon_load(twitch_id) is not None:
+                state["combat"] = {"encounter": copy.deepcopy(self.active_encounter), "roster": copy.deepcopy(self.encounter_roster)} if state.get("status") == "combat" else None
+                self._dungeon_save(twitch_id, state)
+            return result
+        finally:
+            self.active_encounter, self.encounter_roster = old_encounter, old_roster
+
+    def _advance_dungeon_round(self, twitch_id: str, state: dict[str, Any]) -> GameResult:
+        encounter = self.active_encounter or {}
+        meta = self.encounter_roster.get(str(twitch_id))
+        if not meta or not encounter:
+            return GameResult.fail("That Dungeon battle state is unavailable. Refresh the Adventure Board.")
+        monster = self.data.monsters[encounter["monster_id"]]
+        round_no = int(encounter.get("round", 1))
+        action = meta.get("action")
+        if not action:
+            return GameResult.fail("Choose Attack, Ability, Use Item, or Defend for this round.")
+        log: list[str] = []
+        meta["actions"] = int(meta.get("actions", 0)) + 1
+        if has_status(meta.get("statuses", {}), "stun"):
+            log.append(f"{meta['name']} is stunned and loses their action.")
+        elif action["kind"] == "defend":
+            meta["defending"] = True; meta["defends"] = int(meta.get("defends", 0)) + 1
+            recovered: list[str] = []
+            if int(meta.get("max_ap", 0)) > 0:
+                before = int(meta.get("ap", 0)); meta["ap"] = min(int(meta["max_ap"]), before + defend_ap_restore(int(meta["max_ap"])))
+                if int(meta["ap"]) > before: recovered.append(f"{int(meta['ap'])-before} AP")
+            if int(meta.get("max_mp", 0)) > 0:
+                before = int(meta.get("mp", 0)); meta["mp"] = min(int(meta["max_mp"]), before + defend_mp_restore(int(meta["max_mp"])))
+                if int(meta["mp"]) > before: recovered.append(f"{int(meta['mp'])-before} MP")
+            log.append(f"{meta['name']} Defends" + (f" and recovers {' and '.join(recovered)}." if recovered else "."))
+        elif action["kind"] == "item":
+            self._resolve_active_item(str(twitch_id), meta, action, log)
+        elif action["kind"] == "ability":
+            self._resolve_active_ability(meta, action, monster, log)
+        else:
+            self._resolve_active_attack(meta, monster, log)
+        if int(encounter.get("monster_hp", 0)) <= 0:
+            return self._dungeon_finish_room_victory(twitch_id, state, monster, meta, round_no, log)
+        self._solo_resolve_enemy_intent(monster, encounter, log)
+        if int(encounter.get("monster_hp", 0)) <= 0:
+            return self._dungeon_finish_room_victory(twitch_id, state, monster, meta, round_no, log)
+        if has_status(meta.get("statuses", {}), "poison") and int(meta.get("hp", 0)) > 0:
+            poison = max(1, int(int(meta.get("max_hp", 1)) * max(0.03, status_magnitude(meta.get("statuses", {}), "poison"))))
+            meta["hp"] = max(0, int(meta["hp"]) - poison); meta["damage_taken"] = int(meta.get("damage_taken", 0)) + poison
+            log.append(f"{meta['name']} suffers {poison} Poison damage.")
+        if has_status(meta.get("statuses", {}), "regen") and int(meta.get("hp", 0)) > 0:
+            healed = self._apply_battle_heal(meta, meta, status_magnitude(meta.get("statuses", {}), "regen"))
+            if healed: log.append(f"{meta['name']} regenerates {healed} HP.")
+        tick_statuses(meta.setdefault("statuses", {}))
+        meta["action"] = None; meta["defending"] = False
+        self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
+        monster_statuses = encounter.setdefault("monster_statuses", {})
+        if has_status(monster_statuses, "regen") and int(encounter.get("monster_hp", 0)) > 0:
+            before = int(encounter["monster_hp"]); heal = max(1, int(int(encounter["monster_max_hp"]) * status_magnitude(monster_statuses, "regen")))
+            encounter["monster_hp"] = min(int(encounter["monster_max_hp"]), before + heal)
+            if int(encounter["monster_hp"]) > before: log.append(f"{monster['name']} regenerates {int(encounter['monster_hp'])-before} HP.")
+        tick_statuses(monster_statuses)
+        state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+        if int(meta.get("hp", 0)) <= 0 or round_no >= int(encounter.get("max_rounds", DUNGEON_MAX_COMBAT_ROUNDS)):
+            return self._dungeon_finish(twitch_id, state, outcome="defeat")
+        encounter["round"] = round_no + 1
+        encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+        state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
+        return GameResult.success(f"DUNGEON ROUND {round_no} — {round_summary(log)}", dungeon_round=True, round_log=list(log))
+
+    def _dungeon_finish_room_victory(self, twitch_id: str, state: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
+        self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        rooms = list(dungeon.get("rooms") or [])
+        room_index = int(state.get("room_index", 0))
+        room = dict(rooms[room_index]) if room_index < len(rooms) else {}
+        rewards = self._dungeon_reward_for_monster(twitch_id, monster, float(room.get("reward_multiplier", 1.0) or 1.0))
+        cache = self._dungeon_cache(state)
+        cache["xp"] = int(cache.get("xp", 0)) + int(rewards["xp"]); cache["jp"] = int(cache.get("jp", 0)) + int(rewards["jp"]); cache["gil"] = int(cache.get("gil", 0)) + int(rewards["gil"])
+        for row in rewards["items"]:
+            self._dungeon_cache_add_item(state, str(row["id"]), int(row["quantity"]))
+        with self.db.tx() as conn:
+            conn.execute("UPDATE players SET monsters_defeated=monsters_defeated+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (str(twitch_id),))
+            conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (str(twitch_id), str(monster["id"])))
+        self._record_combat_metrics(twitch_id, meta.get("job_id"), monster["id"], battle_type="venture", won=True, knocked_out=False, damage_dealt=int(meta.get("damage", 0)), damage_taken=int(meta.get("damage_taken", 0)), healing_done=int(meta.get("healing", 0)), best_hit=int(meta.get("best_hit", 0)))
+        state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
+        state.setdefault("history", []).append({"room": room_index + 1, "type": "victory", "label": f"Defeated {monster['name']}"})
+        state["combat"] = None; state["status"] = "choice"; state["event"] = {"type": "victory", "monster_id": str(monster["id"]), "rewards": copy.deepcopy(rewards)}
+        if str(room.get("type") or "") == "boss" or room_index >= len(rooms) - 1:
+            return self._dungeon_finish(twitch_id, state, outcome="complete")
+        self._dungeon_save(twitch_id, state)
+        return GameResult.success(f"DUNGEON VICTORY — {monster['name']} defeated. Spoils secured in the delve cache.", dungeon_room_complete=True)
+
+    def _dungeon_bank(self, twitch_id: str, state: dict[str, Any], ratio: float, *, include_completion_bonus: bool) -> dict[str, Any]:
+        ratio = max(0.0, min(1.0, float(ratio)))
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        cache = copy.deepcopy(self._dungeon_cache(state))
+        if include_completion_bonus:
+            bonus = dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {}
+            cache["xp"] = int(cache.get("xp", 0)) + int(bonus.get("xp", 0) or 0)
+            cache["jp"] = int(cache.get("jp", 0)) + int(bonus.get("jp", 0) or 0)
+            cache["gil"] = int(cache.get("gil", 0)) + int(bonus.get("gil", 0) or 0)
+            for loot in list(bonus.get("items") or []):
+                item_id = str(loot.get("item_id") or "")
+                qty = max(0, int(loot.get("quantity", 1) or 1))
+                if item_id in self.data.items and qty:
+                    rows = cache.setdefault("items", [])
+                    existing = next((row for row in rows if str(row.get("id")) == item_id), None)
+                    if existing: existing["quantity"] = int(existing.get("quantity", 0)) + qty
+                    else: rows.append({"id": item_id, "name": str(self.data.items[item_id]["name"]), "quantity": qty})
+        kept = {"xp": int(int(cache.get("xp", 0)) * ratio), "jp": int(int(cache.get("jp", 0)) * ratio), "gil": int(int(cache.get("gil", 0)) * ratio), "items": []}
+        for row in list(cache.get("items") or []):
+            qty = int(int(row.get("quantity", 0)) * ratio) if ratio < 0.999 else int(row.get("quantity", 0))
+            if qty > 0: kept["items"].append({**row, "quantity": qty})
+        p = self._player(twitch_id)
+        if p:
+            with self.db.tx() as conn:
+                conn.execute("UPDATE players SET xp=xp+?,gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (int(kept["xp"]), int(kept["gil"]), str(twitch_id)))
+                conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (int(kept["jp"]), str(twitch_id), str(p["current_job"])))
+                if int(kept["gil"]):
+                    conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'dungeon')", (str(twitch_id), int(kept["gil"])))
+            for row in kept["items"]:
+                self._change_item(str(twitch_id), str(row["id"]), int(row["quantity"]), "dungeon")
+            kept["levelups"] = self._process_levels(str(twitch_id), str(p["current_job"]))
+            kept["achievements"] = self._check_achievements(str(twitch_id))
+        return kept
+
+    def _dungeon_finish(self, twitch_id: str, state: dict[str, Any], *, outcome: str) -> GameResult:
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        room_count = len(list(dungeon.get("rooms") or []))
+        reached = min(room_count, int(state.get("room_index", 0)) + 1)
+        if outcome == "complete":
+            ratio = 1.0
+        elif outcome == "retreat":
+            ratio = DUNGEON_CACHE_RETREAT_RATIO
+        else:
+            ratio = DUNGEON_CACHE_DEFEAT_RATIO
+        rewards = self._dungeon_bank(twitch_id, state, ratio, include_completion_bonus=outcome == "complete")
+        now = int(time.time())
+        with self.db.tx() as conn:
+            conn.execute(
+                "INSERT INTO player_dungeon_progress(player_id,dungeon_id,clears,defeats,retreats,best_rooms,last_outcome,last_completed_at) VALUES (?,?,?,?,?,?,?,?) "
+                "ON CONFLICT(player_id,dungeon_id) DO UPDATE SET clears=player_dungeon_progress.clears+excluded.clears,defeats=player_dungeon_progress.defeats+excluded.defeats,retreats=player_dungeon_progress.retreats+excluded.retreats,best_rooms=MAX(player_dungeon_progress.best_rooms,excluded.best_rooms),last_outcome=excluded.last_outcome,last_completed_at=excluded.last_completed_at,updated_at=CURRENT_TIMESTAMP",
+                (str(twitch_id), str(state.get("dungeon_id") or ""), 1 if outcome == "complete" else 0, 1 if outcome == "defeat" else 0, 1 if outcome == "retreat" else 0, int(reached), str(outcome), now),
+            )
+            if outcome == "defeat":
+                conn.execute("UPDATE players SET deaths=deaths+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (str(twitch_id),))
+        summary = {
+            "type": "dungeon", "outcome": str(outcome),
+            "title": f"{dungeon.get('name', 'Dungeon')} Cleared" if outcome == "complete" else f"{dungeon.get('name', 'Dungeon')} Retreat" if outcome == "retreat" else f"{dungeon.get('name', 'Dungeon')} Defeat",
+            "dungeon_name": str(dungeon.get("name") or "Dungeon"), "rooms": int(reached), "room_count": int(room_count),
+            "rewards": {"xp": int(rewards.get("xp", 0)), "jp": int(rewards.get("jp", 0)), "gil": int(rewards.get("gil", 0)), "loot": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in rewards.get("items", [])], "achievements": list(rewards.get("achievements") or [])[:4], "levelups": list(rewards.get("levelups") or [])[:4]},
+            "history": copy.deepcopy(list(state.get("history") or [])[-10:]), "player": self._solo_result_vitals(twitch_id), "interactive": True,
+        }
+        self._persist_portal_adventure_result(str(twitch_id), "dungeon", {"title": summary["title"], "won": outcome == "complete", "finished_at": now, "kind": "dungeon", "monster_name": "", "hunt_name": None, "messages": [], "summary": summary})
+        self._dungeon_delete(twitch_id)
+        return GameResult.success(f"DUNGEON — {summary['title']}. Banked {rewards.get('xp',0)} XP / {rewards.get('jp',0)} JP / {rewards.get('gil',0)} Gil.", dungeon_result=summary, dungeon_finished=True, won=outcome == "complete")
+
+    def dungeon_retreat(self, twitch_id: str) -> GameResult:
+        state = self._dungeon_load(twitch_id)
+        if not state:
+            return GameResult.fail("You are not currently inside a Dungeon.")
+        combat = state.get("combat") or {}; roster = combat.get("roster") or {}; meta = roster.get(str(twitch_id)) if isinstance(roster, dict) else None
+        if meta:
+            self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
+        return self._dungeon_finish(twitch_id, state, outcome="retreat")
+
+
     # ---------- Portal Actions Phase 9: Adventure Board ----------
     def _portal_adventure_state_data(self, twitch_id: str, *, stream_live: bool | None = None) -> dict[str, Any]:
         """Return live, player-safe Adventure Board state.
@@ -7040,6 +7549,8 @@ class CrystalGuildEngine:
         solo_expedition_active = bool(solo_expedition)
         field_expedition = self._expedition_public(twitch_id)
         field_expedition_active = bool(field_expedition)
+        dungeon = self._dungeon_public(twitch_id)
+        dungeon_active = bool(dungeon)
         active_hunt = self._active_hunt_public(twitch_id)
         active_hunt_running = bool(active_hunt)
         ko = bool(p["current_job"] != "adventurer" and int(p["current_hp"] or 0) <= 0)
@@ -7050,7 +7561,9 @@ class CrystalGuildEngine:
         needs_mp = int(camp_resources.get("max_mp", 0)) > 0 and int(camp_resources.get("mp", 0)) < int(camp_resources.get("max_mp", 0))
         needs_ap = int(camp_resources.get("max_ap", 0)) > 0 and int(camp_resources.get("ap", 0)) < int(camp_resources.get("max_ap", 0))
         camp_reason = ""
-        if field_expedition_active:
+        if dungeon_active:
+            camp_reason = "Finish or retreat from your Dungeon before using normal Camp."
+        elif field_expedition_active:
             camp_reason = "Return from your Expedition before using normal Camp."
         elif solo_expedition_active:
             camp_reason = "Return or retreat from your Solo Venture before setting up camp."
@@ -7092,6 +7605,8 @@ class CrystalGuildEngine:
                 reason = activity_reason
             elif joined_encounter or joined_raid:
                 reason = "Finish your active encounter or raid before traveling."
+            elif dungeon_active:
+                reason = "Finish or retreat from your Dungeon before traveling."
             elif field_expedition_active:
                 reason = "Return from your Expedition before normal regional travel."
             elif solo_expedition_active:
@@ -7105,7 +7620,7 @@ class CrystalGuildEngine:
                 "min_level": int(region.get("min_level", 1)),
                 "current": str(region["id"]) == str(p["current_region"]),
                 "unlocked": unlocked,
-                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not field_expedition_active and not solo_expedition_active and not active_hunt_running),
+                "can_travel": bool(unlocked and not resting and not ko and not joined_encounter and not joined_raid and not dungeon_active and not field_expedition_active and not solo_expedition_active and not active_hunt_running),
                 "reason": reason,
             })
 
@@ -7187,7 +7702,9 @@ class CrystalGuildEngine:
                 global_battle_reason = "An encounter is already active."
 
         venture_reason = ""
-        if field_expedition_active:
+        if dungeon_active:
+            venture_reason = "Dungeon delve in progress."
+        elif field_expedition_active:
             venture_reason = "Expedition in progress."
         elif p["current_job"] == "adventurer":
             venture_reason = "Choose a Job before venturing."
@@ -7202,7 +7719,9 @@ class CrystalGuildEngine:
         venture_ready = not venture_reason
 
         solo_venture_reason = ""
-        if field_expedition_active:
+        if dungeon_active:
+            solo_venture_reason = "Dungeon delve in progress."
+        elif field_expedition_active:
             solo_venture_reason = "Expedition in progress."
         elif solo_expedition_active:
             solo_venture_reason = "Solo Venture in progress."
@@ -7230,6 +7749,8 @@ class CrystalGuildEngine:
             available_at = int(cooldowns.get(f"hunt:{hunt_id}", 0))
             remaining = max(0, available_at - now)
             reason_parts: list[str] = []
+            if dungeon_active:
+                reason_parts.append("Finish or retreat from your Dungeon before accepting a Hunt.")
             if field_expedition_active:
                 reason_parts.append("Return from your Expedition before accepting a Hunt.")
             if p["current_job"] == "adventurer":
@@ -7325,6 +7846,7 @@ class CrystalGuildEngine:
                 "in_raid": joined_raid,
                 "on_hunt": active_hunt_running,
                 "on_expedition": field_expedition_active,
+                "on_dungeon": dungeon_active,
             },
             "camp": {
                 "resting": resting,
@@ -7364,6 +7886,7 @@ class CrystalGuildEngine:
                 "portal_join_enabled": False,
             },
             "expeditions": self._expedition_board_state(twitch_id),
+            "dungeons": self._dungeon_board_state(twitch_id),
             "solo_venture": {
                 "ready": bool(solo_venture_ready),
                 "reason": solo_venture_reason,
@@ -7932,6 +8455,43 @@ class CrystalGuildEngine:
         return self._portal_adventure_mutation(twitch_id, action_id, lambda: self.expedition_retreat(twitch_id))
 
     @_state_guard
+    def portal_dungeon_start(self, twitch_id: str, dungeon_id: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.dungeon_start(twitch_id, dungeon_id)
+        )
+
+    def _portal_dungeon_state_matches(self, twitch_id: str, run_id: str, room_id: str) -> bool:
+        state = self._dungeon_load(twitch_id)
+        if not state or str(state.get("run_id") or "") != str(run_id or ""):
+            return False
+        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        rooms = list(dungeon.get("rooms") or [])
+        room_index = int(state.get("room_index", 0) or 0)
+        current_room_id = str((rooms[room_index] if 0 <= room_index < len(rooms) else {}).get("id") or "")
+        return bool(current_room_id) and current_room_id == str(room_id or "")
+
+    def _portal_dungeon_stale(self) -> GameResult:
+        return GameResult.fail("That Dungeon tab is out of date. Refresh the Adventure Board before acting.", stale_dungeon=True)
+
+    @_state_guard
+    def portal_dungeon_action(self, twitch_id: str, run_id: str, room_id: str, action_kind: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.dungeon_action(twitch_id, action_kind) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+        )
+
+    @_state_guard
+    def portal_dungeon_continue(self, twitch_id: str, run_id: str, room_id: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.dungeon_continue(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+        )
+
+    @_state_guard
+    def portal_dungeon_retreat(self, twitch_id: str, run_id: str, room_id: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.dungeon_retreat(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+        )
+
+    @_state_guard
     def portal_challenge_hunt(self, twitch_id: str, hunt_id: str, action_id: str) -> GameResult:
         replay = self._portal_action_replay(action_id)
         if replay is not None:
@@ -8121,7 +8681,7 @@ class CrystalGuildEngine:
     def workshop_refine(self, twitch_id: str, exchange_id: str, batches: int = 1) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
-        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster or self._expedition_load(twitch_id) or self._solo_expedition_load(twitch_id):
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster or self._dungeon_load(twitch_id) or self._expedition_load(twitch_id) or self._solo_expedition_load(twitch_id):
             return GameResult.fail("Guild Workshop refining is unavailable while you are committed to an active Adventure or battle.")
         ok, message = self.fellowship_system.workshop_exchange(twitch_id, exchange_id, batches)
         return GameResult.success(message) if ok else GameResult.fail(message)
@@ -8419,14 +8979,15 @@ class CrystalGuildEngine:
         row = self.db.one("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,))
         available_at = int(row["available_at"] or 0) if row else 0
         remaining = max(0, available_at - now)
+        dungeon_blocked = bool(self._dungeon_load(twitch_id))
         solo_blocked = bool(self._solo_expedition_load(twitch_id))
         base_low, base_high = daily_gil_range(int(p["level"] or 1))
         low, high = daily_gil_with_perk(base_low, base_high, subscriber_tier)
         preview = provision_preview(int(p["level"] or 1), subscriber_tier)
         return {
-            "available": remaining <= 0 and not solo_blocked,
+            "available": remaining <= 0 and not dungeon_blocked and not solo_blocked,
             "available_at": available_at if remaining > 0 else 0,
-            "blocked_reason": "Return or retreat from your Solo Venture before collecting new provisions." if solo_blocked else "",
+            "blocked_reason": "Finish or retreat from your Dungeon before collecting new provisions." if dungeon_blocked else "Return or retreat from your Solo Venture before collecting new provisions." if solo_blocked else "",
             "remaining_seconds": remaining,
             "gil_min": int(low),
             "gil_max": int(high),
@@ -9051,6 +9612,8 @@ class CrystalGuildEngine:
         solo_count = int(solo_rows["n"] or 0) if solo_rows else 0
         expedition_rows = self.db.one("SELECT COUNT(*) AS n FROM player_expeditions")
         expedition_count = int(expedition_rows["n"] or 0) if expedition_rows else 0
+        dungeon_rows = self.db.one("SELECT COUNT(*) AS n FROM player_dungeons")
+        dungeon_count = int(dungeon_rows["n"] or 0) if dungeon_rows else 0
         hunt_count = len(self.active_hunts)
 
         encounter_count = 1 if self.active_encounter else 0
@@ -9067,6 +9630,7 @@ class CrystalGuildEngine:
         # clearing abandons unbanked cache but keeps already-secured region
         # exploration and persistent result history untouched.
         self.db.execute("DELETE FROM player_expeditions")
+        self.db.execute("DELETE FROM player_dungeons")
 
         # Timed Hunts live in the runtime checkpoint. Clearing the in-memory
         # map inside @_state_guard atomically persists the empty assignment set.
@@ -9084,15 +9648,16 @@ class CrystalGuildEngine:
         if encounter_count:
             self._last_battle_history = None
 
-        total = solo_count + expedition_count + hunt_count + encounter_count
+        total = solo_count + expedition_count + dungeon_count + hunt_count + encounter_count
         if total == 0:
             return GameResult.success(
-                "ADVENTURES CLEAR — No active field encounter, timed Hunt, Solo Venture, or Expedition was found.",
+                "ADVENTURES CLEAR — No active field encounter, timed Hunt, Solo Venture, Expedition, or Dungeon was found.",
                 adventures_cleared=0,
                 encounters_cleared=0,
                 hunts_cleared=0,
                 solo_ventures_cleared=0,
                 expeditions_cleared=0,
+                dungeons_cleared=0,
                 cooldowns_unchanged=True,
                 raid_unchanged=bool(self.active_boss),
             )
@@ -9106,6 +9671,8 @@ class CrystalGuildEngine:
             pieces.append(f"{solo_count} Solo Venture{'s' if solo_count != 1 else ''}")
         if expedition_count:
             pieces.append(f"{expedition_count} Expedition{'s' if expedition_count != 1 else ''}")
+        if dungeon_count:
+            pieces.append(f"{dungeon_count} Dungeon delve{'s' if dungeon_count != 1 else ''}")
         summary = ", ".join(pieces)
         return GameResult.success(
             f"ADVENTURES CLEARED — abandoned {summary}.",
@@ -9116,6 +9683,7 @@ class CrystalGuildEngine:
             hunts_cleared=hunt_count,
             solo_ventures_cleared=solo_count,
             expeditions_cleared=expedition_count,
+            dungeons_cleared=dungeon_count,
             cooldowns_unchanged=True,
             raid_unchanged=bool(self.active_boss),
         )
@@ -9173,6 +9741,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before selling inventory.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before selling inventory.")
         if quantity < 1 or quantity > 99:
@@ -9244,6 +9814,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before crafting supplies.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before crafting supplies.")
         if quantity < 1 or quantity > 20:
@@ -9289,6 +9861,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before forging equipment.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before forging equipment.")
         item = self._find_by_name_or_id(self.data.items, item_query)
@@ -9347,6 +9921,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before visiting the Quartermaster.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before visiting the Quartermaster.")
         if quantity < 1 or quantity > 20:
@@ -9411,6 +9987,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before advancing a Relic.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before advancing a Relic.")
         relic = self._find_by_name_or_id(self.data.relics, relic_query)
@@ -9624,6 +10202,8 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        if self._dungeon_load(twitch_id):
+            return GameResult.fail("Finish or retreat from your Dungeon before collecting new Daily Guild Provisions.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before collecting new Daily Guild Provisions.")
         remaining = self._cooldown_remaining(twitch_id, "daily")
@@ -11195,6 +11775,8 @@ class CrystalGuildEngine:
             return f"Your hero is resting at camp for another {self._format_seconds(remaining)}. Full HP/MP/AP recovery awaits; patience is apparently a stat now."
         if p["current_hp"] <= 0 and p["current_job"] != "adventurer":
             return "Your hero is KO'd. Use !rest for Camp recovery (15m LIVE / 1h OFFLINE base), !use phoenix down, or !use tent."
+        if self._dungeon_load(player_id):
+            return "Your hero is currently inside a Dungeon. Finish or retreat from the Adventure Board first."
         if self._expedition_load(player_id):
             return "Your hero is currently on an Expedition. Return from the Adventure Board first."
         if self._solo_expedition_load(player_id):

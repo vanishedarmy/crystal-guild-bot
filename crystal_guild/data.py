@@ -12,6 +12,7 @@ class GameData:
         self.monsters = self._load_map("monsters.json")
         self.regions = self._load_map("regions.json")
         self.expedition_regions = self._load_map("expedition_regions.json")
+        self.dungeons = self._load_map("dungeons.json")
         self.items = self._load_map("items.json")
         self.achievements = self._load_map("achievements.json")
         self.bosses = self._load_map("bosses.json")
@@ -590,6 +591,35 @@ class GameData:
                 require(self.bosses, cond.get("boss_id"), f"achievement {achievement['id']}")
             if cond.get("type") == "job_battles" and cond.get("job_id"):
                 require(self.jobs, cond.get("job_id"), f"achievement {achievement['id']}")
+
+
+        for dungeon in self.dungeons.values():
+            if int(dungeon.get("min_level", 0) or 0) < 1:
+                errors.append(f"dungeon {dungeon['id']}: min_level must be >= 1")
+            unlock = dungeon.get("unlock") if isinstance(dungeon.get("unlock"), dict) else {}
+            region_id = str(unlock.get("expedition_region") or "").strip()
+            if region_id:
+                require(self.expedition_regions, region_id, f"dungeon {dungeon['id']} unlock region")
+            rooms = list(dungeon.get("rooms") or [])
+            if len(rooms) < 3:
+                errors.append(f"dungeon {dungeon['id']}: expected at least 3 rooms")
+            seen_rooms: set[str] = set()
+            for room in rooms:
+                room_id = str(room.get("id") or "").strip()
+                if not room_id or room_id in seen_rooms:
+                    errors.append(f"dungeon {dungeon['id']}: missing/duplicate room id {room_id!r}")
+                seen_rooms.add(room_id)
+                room_type = str(room.get("type") or "").strip().lower()
+                if room_type not in {"entrance", "combat", "treasure", "hazard", "miniboss", "sanctuary", "boss"}:
+                    errors.append(f"dungeon {dungeon['id']} room {room_id}: invalid type {room_type!r}")
+                monster_id = str(room.get("monster_id") or "").strip()
+                if room_type in {"combat", "miniboss", "boss"}:
+                    require(self.monsters, monster_id, f"dungeon {dungeon['id']} room {room_id}")
+                for loot in list(room.get("loot") or []):
+                    require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} loot")
+            bonus = dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {}
+            for loot in list(bonus.get("items") or []):
+                require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} completion loot")
 
         return errors
 
