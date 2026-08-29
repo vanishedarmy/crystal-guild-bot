@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.3.0 — Guild Expansion RC2
+- Final pre-release packaging and metadata hardening pass.
+- Refreshes stale bundled finalization-audit headings and strengthens release-identity checks across Bot/Web package surfaces.
+- Preserves RC1 gameplay, Beta 1 balance, Beta 2 UX, Beta 3 shared-state hardening, schema 9, sync schema 1, and Portal protocol 22 unchanged.
+
 ## v1.3.0 — Guild Expansion RC1
 - Freezes the complete v1.3 Guild Expansion feature set for final release-candidate testing.
 - Normalizes release identity, release-readiness assertions, and Player Guide major-facility terminology.

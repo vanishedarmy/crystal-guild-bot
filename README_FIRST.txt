@@ -1,5 +1,5 @@
-Crystal Guild v1.3.0 — Guild Expansion RC1 Bot
-Runtime: 1.3.0-guild-expansion-rc1
+Crystal Guild v1.3.0 — Guild Expansion RC2 Bot
+Runtime: 1.3.0-guild-expansion-rc2
 DB schema: 9
 Hosted sync schema: 1
 Portal Action protocol: 22

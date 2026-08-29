@@ -1,32 +1,33 @@
-# Crystal Guild v1.3.0 — Guild Expansion RC1
+# Crystal Guild v1.3.0 — Guild Expansion RC2
 
-## Release Candidate 1
+## Release Candidate 2 — Final Package Hardening
 
-RC1 freezes the complete v1.3 Guild Expansion feature set and prepares it for final release. No Guild economy, Airship, Workshop, Weekly Order, Legacy, character, Expedition, combat, or reward balance is changed from Beta 3.
+RC2 keeps the complete v1.3 Guild Expansion feature set frozen and performs the final package/metadata hardening pass before production release. No Guild economy, Airship, Workshop, Weekly Order, Legacy, character, Expedition, combat, item, or reward balance changes are included.
 
-### Final release-candidate cleanup
-- Normalizes the Bot, hosted Web, frontend, Windows control panel, Guide metadata, scene manifest, README/package identity, and deployment documentation to `1.3.0-guild-expansion-rc1`.
-- Removes a stale Beta-era control-panel banner/assertion so the packaged Bot reports one release identity everywhere.
-- Corrects the player Guide's Expedition unlock wording from the retired `Guild Hall Tier 1` label to the current **Guild Hall Lv. 1** terminology. The requirement itself is unchanged.
-- Replaces the current What's New entry with a concise player-facing RC1 summary. Release engineering details remain in release/validation documentation rather than the Player Guide.
+### RC2 cleanup
+- Advances Bot, hosted Web, frontend, Windows control panel, Guide metadata, scene manifest, package manifests, README surfaces, and deployment documentation to `1.3.0-guild-expansion-rc2`.
+- Refreshes the bundled `FINALIZATION_AUDIT.md` files so the current package no longer presents old v1.1.19 / Expeditions Alpha-era headings as the active finalization audit.
+- Strengthens release-contract coverage so current package metadata, control-panel identity, and finalization audits must agree on RC2.
+- Updates What's New with a concise player-facing RC2 summary while keeping release-engineering detail out of gameplay instructions.
 
-### Release-readiness verification
-- Keeps the Beta 3 shared-state protections for simultaneous Fellowship contributions, stale project tabs, project completion/switching, Portal retries, and Airship launch/return settlement.
-- Re-verifies restart persistence for Fellowship/Airship state and the existing additive schema-8 → schema-9 Airship migration path.
-- Re-runs recovery-drill and synthetic-stress release checks, full Bot/Web suites, source parsing/compilation, and routed artwork checks.
+### Preserved reliability
+- Beta 3 simultaneous-contribution serialization and live remaining-requirement recomputation remain intact.
+- Stale project tabs continue to fail closed using the project ID that was actually displayed to the player.
+- Portal replay protection, project completion/switching serialization, concurrent Airship launch protection, restart/reconnect recovery, and exact-once Airship return settlement remain intact.
+- RC1 Fellowship/Airship persistence, migration recovery, database integrity, and synthetic stress guardrails remain covered.
 
 ### Preserved v1.3 systems
-RC1 includes the complete Guild Expansion feature set: five major Guild facilities, Construction/Supply Drives/Guild Objectives, Weekly Order contributor rewards, Workshop services, Chocobo Stable and Archive benefits, the Crystal Guild Airship and upgrades, Guild Legacy/Hall progression, Guild Service Records, the Founding Hall portrait, collapsible inventory groups, Beta 1 economy tuning, Beta 2 Fellowship/mobile consolidation, and Beta 3 shared-state hardening.
+RC2 includes the complete Guild Expansion: five major Guild facilities, Construction/Supply Drives/Guild Objectives, Weekly Order contributor rewards, Workshop services, Chocobo Stable and Archive benefits, Crystal Guild Airship construction/missions/upgrades, Guild Legacy/Hall progression, Guild Service Records, the Founding Hall portrait, collapsible inventory groups, Beta 1 economy tuning, Beta 2 Fellowship/mobile consolidation, and Beta 3 shared-state hardening.
 
 ## Compatibility
-- Bot runtime: `1.3.0-guild-expansion-rc1`
-- Hosted Web runtime: `1.3.0-guild-expansion-rc1`
-- Frontend asset revision: `1.3.0-guild-expansion-rc1`
+- Bot runtime: `1.3.0-guild-expansion-rc2`
+- Hosted Web runtime: `1.3.0-guild-expansion-rc2`
+- Frontend asset revision: `1.3.0-guild-expansion-rc2`
 - Local DB schema: **9** unchanged
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **22** unchanged from Beta 3
+- Portal Action protocol: **22** unchanged
 - Twitch prefix: `!`
-- Database migration from Beta 3: **none**
+- Database migration from RC1: **none**
 - Player reset: **none**
 - OAuth changes: **none**
 - New environment variables: **none**

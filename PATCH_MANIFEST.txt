@@ -1,11 +1,12 @@
-Crystal Guild v1.3.0 Guild Expansion RC1 — Bot Patch
-Baseline: Guild Expansion Beta 3 Bot
-Changed/new files: 13
+Crystal Guild v1.3.0 Guild Expansion RC2 — Bot Patch
+Baseline: Guild Expansion RC1 Bot
+Changed/new files: 14
 Deletions: 0
 
 CHANGED/NEW:
 CHANGELOG.md
 CRYSTAL_GUILD_CONTROL_PANEL.bat
+FINALIZATION_AUDIT.md
 PACKAGE_MANIFEST.txt
 README.md
 README_FIRST.txt
