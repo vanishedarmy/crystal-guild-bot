@@ -1,47 +1,49 @@
-# Crystal Guild v1.3.0 — Guild Expansion Beta 3 Validation Report
+# Crystal Guild v1.3.0 — Guild Expansion RC1 Validation Report
 
 ## Result
 **PASS**
 
 ## Automated suites
-- Bot Python unittest suite: **482 / 482 PASS**.
-- Frontend Node regression suite: **354 / 354 PASS**.
+- Bot Python unittest suite: **485 / 485 PASS**.
+- Frontend Node regression suite: **357 / 357 PASS**.
 - Hosted Web/API Python unittest suite: **47 / 47 PASS**.
-- Focused Beta 3 shared-state hardening suite: **7 / 7 PASS** (included in Bot total).
+- Focused RC1 finalization/migration suite: **4 / 4 PASS**.
 
-The Bot log includes intentional simulated acknowledgement loss, temporary Twitch/live-status failures, and runtime-checkpoint recovery cases. Those scenarios pass and are not Beta 3 failures.
+The Bot suite includes intentional simulated acknowledgement loss, Twitch/live-status outages, corrupt checkpoint recovery, restart recovery, database recovery drills, and synthetic stress scenarios. Those warning/error log lines are expected test fixtures and are not RC1 failures.
 
-## Beta 3 hardening coverage
-- Simultaneous Guild contributions recompute the live remaining requirement under the serialized Guild mutation lock, preventing overfill and excess resource deduction.
-- Near-simultaneous executions of the same Portal action ID re-check replay state after obtaining the write lock and mutate Fellowship state once.
-- Fellowship contribution actions carry the project ID the player actually had open. If the streamer has changed projects, the stale action fails closed instead of donating to the replacement project.
-- Project selection and project-completion finalization are serialized so facility/reward settlement cannot split from the completed requirement.
-- Concurrent Airship mission launch requests create only one active run.
-- Due Airship missions survive restart/reconnect, settle exactly once, and cannot duplicate contributor rewards.
-- Airship settlement cleanup is scoped to the exact active run ID so stale work cannot clear a newer mission.
+## RC1 finalization coverage
+- Runtime/public identity is consistently `1.3.0-guild-expansion-rc1` across Bot, hosted Web, frontend, Guide metadata, scene manifest, Windows control panel, and release docs.
+- The stale Windows control-panel Beta banner/release assertion is removed.
+- Player Guide Fellowship content remains player-facing and excludes release-engineering/database jargon.
+- Expedition unlock terminology now matches the v1.3 major-facility Board: **Fellowship LVL 6 + Guild Hall Lv. 1**.
+- Fellowship/Airship state survives database/engine restart.
+- The additive schema-8 → schema-9 Airship migration preserves existing player/Guild progress, creates the verified pre-schema-9 backup, and passes database quick-check.
+- Beta 3 simultaneous-contribution, stale-tab, replay, project-switch, concurrent Airship launch, and exact-once return settlement protections remain covered.
+- Release recovery drill and synthetic stress/integrity guardrails remain covered by the full Bot suite.
 
 ## Source validation
-- Python source compilation: **89 / 89 PASS** across Beta 3 Web + Bot source trees.
-- Frontend JS/JSX TypeScript-parser sweep: **67 / 67 PASS**.
-- Plain JS/MJS `node --check`: **145 / 145 PASS**.
-- Explicit literal image/font route audit: **145 routes checked / 0 missing**. Dynamic template routes are covered by the existing frontend artwork regression suites.
+- Python source compilation: **90 / 90 PASS** across RC1 Bot + Web source trees.
+- Frontend JS/JSX/MJS TypeScript-parser sweep: **182 / 182 PASS**.
+- Plain JS/MJS `node --check`: **146 / 146 PASS**.
+- Explicit literal image/font route audit: **145 routes checked / 0 missing**. Dynamic template routes remain covered by the existing artwork regression suites.
 
 ## Continuity
 - Beta 1 Guild economy tuning remains unchanged.
 - Beta 2 Fellowship UX/mobile consolidation remains unchanged.
-- Alpha 5 Hotfix 1 Founding Hall portrait and collapsible Equipment inventory groups remain intact.
-- Local DB schema: **9** unchanged.
+- Beta 3 shared-state hardening remains unchanged.
+- Founding Hall portrait and collapsible Equipment/Inventory categories remain intact.
+- Local DB schema: **9** unchanged from Beta 3.
 - Hosted sync schema: **1** unchanged.
-- Portal Action protocol: **22** (advanced from 21 only for project-bound Fellowship contribution safety).
+- Portal Action protocol: **22** unchanged from Beta 3.
 - Twitch prefix: `!`.
-- Database migration: **none**.
+- Database migration from Beta 3: **none**.
 - Player reset: **none**.
 - OAuth change: **none**.
 - New environment variables: **none**.
 
 ## Final package verification
-- Beta 1 Bot → Beta 3 Bot patch: **21 changed/new files, 0 deletions**; reconstructs **146 / 146** final Bot files exactly.
-- Beta 2 Web → Beta 3 Web patch: **38 changed/new files, 0 deletions**; reconstructs **805 / 805** final Web files exactly.
+- Beta 3 Bot → RC1 Bot patch: **13 changed/new files, 0 deletions**; reconstructs **147 / 147** final Bot files exactly.
+- Beta 3 Web → RC1 Web patch: **37 changed/new files, 0 deletions**; reconstructs **806 / 806** final Web files exactly.
 - ZIP CRC/integrity: **6 / 6 PASS**.
 - Runtime/private-artifact hygiene: **0 violations** across all release archives.
 - SHA-256 checksum verification: **PASS**.

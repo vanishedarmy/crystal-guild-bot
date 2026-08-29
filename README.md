@@ -1,7 +1,9 @@
-# Crystal Guild v1.3.0 — Guild Expansion Beta 3
+# Crystal Guild v1.3.0 — Guild Expansion RC1
 
-Guild Expansion Beta 3 is the shared-state hardening and stability checkpoint for the v1.3 Fellowship/Airship release.
+RC1 is the feature-frozen release candidate for the v1.3 Guild Expansion line.
 
-Runtime `1.3.0-guild-expansion-b3` · local DB schema **9** · hosted sync schema **1** · Portal Action protocol **22** · Twitch prefix `!`.
+Runtime `1.3.0-guild-expansion-rc1` · local DB schema **9** · hosted sync schema **1** · Portal Action protocol **22** · Twitch prefix `!`.
 
-Beta 3 preserves the Beta 1 Guild economy and Beta 2 Fellowship UX while hardening simultaneous contributions, project switching, Portal retries/multi-tab actions, and Airship launch/return settlement. Deploy the matching Beta 3 Web because protocol 22 binds contribution requests to the project the player actually had open.
+The complete Guild Expansion feature set is present: major facilities, Guild Projects II, Weekly Order contributor rewards, Workshop/Stable/Archive services, Crystal Guild Airship missions/upgrades, Guild Legacy and Service Records, Beta 1 balance tuning, Beta 2 UX/mobile consolidation, and Beta 3 shared-state hardening.
+
+No database migration, reset, OAuth change, or new environment variable is required from Beta 3. See `UPGRADE_GUIDE.md`, `RELEASE_NOTES.md`, and `VALIDATION_REPORT.md`.

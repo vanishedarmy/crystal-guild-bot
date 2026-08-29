@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.3.0 — Guild Expansion RC1
+- Freezes the complete v1.3 Guild Expansion feature set for final release-candidate testing.
+- Normalizes release identity, release-readiness assertions, and Player Guide major-facility terminology.
+- Preserves Beta 1 balance, Beta 2 UX, Beta 3 shared-state hardening, schema 9, and Portal protocol 22 unchanged.
+
 ## v1.3.0 — Guild Expansion Beta 3
 - Hardens simultaneous Fellowship contributions, project switching, Portal replay handling, and Airship launch/settlement.
 - Binds Portal contributions to the project shown in the submitting tab; stale tabs fail closed after a project change.

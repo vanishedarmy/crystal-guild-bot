@@ -21,8 +21,8 @@ REPO = ROOT.parent
 
 
 class ReleaseReadinessTests(unittest.TestCase):
-    def test_release_identity_is_guild_expansion_beta1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.3.0-guild-expansion-b3")
+    def test_release_identity_is_guild_expansion_rc1_without_hosted_sync_schema_break(self):
+        self.assertEqual(__version__, "1.3.0-guild-expansion-rc1")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -90,7 +90,7 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.3.0 - GUILD EXPANSION BETA 1", panel)
+        self.assertIn("v1.3.0 - GUILD EXPANSION RC1", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
