@@ -1,5 +1,5 @@
-Crystal Guild v1.3.0 — Guild Expansion Bot
-Runtime: 1.3.0-guild-expansion
+Crystal Guild v1.3.1 — Asset Optimization Bot
+Runtime: 1.3.1-asset-optimization
 Local DB schema: 9
 Hosted sync schema: 1
 Portal Action protocol: 22

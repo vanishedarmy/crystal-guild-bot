@@ -1,12 +1,12 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title Crystal Guild v1.3.0 - Guild Expansion
+title Crystal Guild v1.3.1 - Asset Optimization
 
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.3.0 - GUILD EXPANSION
+echo              CRYSTAL GUILD v1.3.1 - ASSET OPTIMIZATION
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

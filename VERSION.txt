@@ -1,2 +1,2 @@
-v1.3.0 — Guild Expansion
-Runtime: 1.3.0-guild-expansion
+v1.3.1 — Asset Optimization
+Runtime: 1.3.1-asset-optimization

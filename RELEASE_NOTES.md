@@ -1,39 +1,34 @@
-# Crystal Guild v1.3.0 — Guild Expansion
+# Crystal Guild v1.3.1 — Asset Optimization
 
-## Final Release
+## Maintenance Release
 
-Guild Expansion is the complete v1.3.0 release. It promotes the RC2 codebase without changing Guild economy, Airship, Workshop, Weekly Order, Legacy, character, Expedition, combat, item, or reward balance.
+v1.3.1 reduces the shipped Crystal Guild footprint without changing gameplay, balance, progression, schemas, or Portal behavior.
 
-### Final release cleanup
-- Promotes Bot, hosted Web, frontend, Windows control panel, Guide metadata, scene manifest, package manifests, README surfaces, and deployment documentation to `1.3.0-guild-expansion`.
-- Cleans the player-facing **Previous major updates** history so only shipped releases are listed; Alpha, Beta, and release-candidate milestones are no longer shown to players.
-- Refreshes stale Hosting Guide and Portal Actions Setup headings/details so operational documentation matches schema **9**, hosted sync schema **1**, and Portal Action protocol **22**.
-- Keeps engineering Alpha/Beta/RC history in internal changelogs for traceability while removing it from the public update feed.
+### Artwork optimization
+- Audited all **390** remaining PNG files in the shipped Web public asset tree.
+- Converted an asset only when **lossless WebP** was smaller than its PNG source. All 390 qualified.
+- PNG artwork total: **144.21 MiB**.
+- Replacement WebP total: **112.27 MiB**.
+- Raw artwork savings: **31.93 MiB (22.1%)** for the converted set.
+- Every conversion preserves dimensions, transparency, and decoded RGBA pixels exactly.
+- Existing WebP assets were also audited; they were left unchanged when repacking did not provide a meaningful reduction.
 
-### Guild Expansion systems
-- Five major Guild facilities: Guild Hall, Workshop, Chocobo Stables, Guild Archive, and Airship Dock.
-- Permanent Construction projects plus shorter Supply Drives and gameplay-driven Guild Objectives.
-- Weekly Order contributor payouts and full-week participation rewards.
-- Workshop refining, Chocobo Stable training benefits, and Guild Archive Expedition research bonuses.
-- Crystal Guild Airship construction, missions, contribution progress, history, and five upgrade tracks.
-- Guild Legacy accomplishments, trophy shelf, Guild Hall stage progression, and personal Guild Service Records.
-- Founding Hall presentation and remembered/collapsible Fellowship and inventory sections.
+### Runtime/reference cleanup
+- All active artwork mappings, manifests, CSS/HTML references, and frontend regression expectations now point to the optimized WebP assets.
+- The hosted static server already supports `image/webp`; PNG MIME support remains available for future/third-party assets.
+- Corrects two stale current-package version surfaces discovered during the audit: the Web package `__version__` and raid-overlay cache-busting revision.
+- Adds release regression coverage that fails if shipped public PNG artwork or stale current runtime identities return.
 
-### Preserved reliability
-- Simultaneous Guild contributions recompute live remaining requirements before resources are deducted.
-- Stale project tabs fail closed instead of contributing to a replacement project.
-- Portal retries remain idempotent; project completion/switching and Airship launch/return mutations remain serialized.
-- Airship mission settlement is restart/reconnect safe and contributor rewards settle exactly once.
-
-## Compatibility
-- Bot runtime: `1.3.0-guild-expansion`
-- Hosted Web runtime: `1.3.0-guild-expansion`
-- Frontend asset revision: `1.3.0-guild-expansion`
+### Compatibility
+- Bot runtime: `1.3.1-asset-optimization`
+- Hosted Web runtime: `1.3.1-asset-optimization`
+- Frontend asset revision: `1.3.1-asset-optimization`
 - Local DB schema: **9** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **22** unchanged
 - Twitch prefix: `!`
-- Database migration from RC2: **none**
+- Database migration: **none**
 - Player reset: **none**
 - OAuth changes: **none**
 - New environment variables: **none**
+- Gameplay/economy changes: **none**

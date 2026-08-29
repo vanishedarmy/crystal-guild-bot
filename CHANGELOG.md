@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.3.1 — Asset Optimization
+- Replaces 390 shipped PNG artwork assets with smaller lossless WebP equivalents after exact pixel/transparency verification.
+- Reduces raw artwork by roughly 31.9 MiB with no gameplay, schema, protocol, or balance changes.
+- Corrects stale current Web package/overlay version surfaces and adds asset-format regression coverage.
+
 ## v1.3.0 — Guild Expansion
 - Final production release of the complete v1.3 Guild Expansion feature set.
 - Public What's New history now lists shipped releases only; Alpha/Beta/RC entries remain only in engineering history.
