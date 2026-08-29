@@ -79,8 +79,8 @@ FACILITIES: dict[str, dict[str, Any]] = {
         "max_level": 3,
         "level_benefits": [
             "Forge Gil service fees 2% lower.",
-            "Forge Gil service fees 4% lower and the Workshop is ready for advanced Guild crafting services.",
-            "Forge Gil service fees 6% lower; major Workshop construction is complete.",
+            "Forge Gil service fees 4% lower; basic material refining is available.",
+            "Forge Gil service fees 6% lower; advanced material refining is available.",
         ],
         "benefits": [
             "Forge Gil fees 2% lower", "Forge Gil fees 4% lower", "Forge Gil fees 6% lower",
@@ -103,8 +103,8 @@ FACILITIES: dict[str, dict[str, Any]] = {
         "max_level": 3,
         "level_benefits": [
             "Guild Bestiary and discovery records established.",
-            "Expanded monster and regional research records.",
-            "Full Guild Archive prepared for long-term Fellowship accomplishments.",
+            "Research grants +0.5% rare Expedition event chance.",
+            "Research grants +1.0% rare Expedition event chance.",
         ],
         "benefits": [
             "Guild Bestiary records established", "Expanded monster knowledge", "Weakness research highlighted",
@@ -119,9 +119,9 @@ FACILITIES: dict[str, dict[str, Any]] = {
         "guild_expansion": True,
         "max_level": 3,
         "level_benefits": [
-            "Chocobo registration and companion training unlocked.",
-            "Expanded stalls and Expedition-specialty training grounds established.",
-            "Grand Stable expansion complete; ready for advanced Guild Chocobo services.",
+            "Stable training grants +5% Chocobo Bond XP.",
+            "Expanded training grants +10% Chocobo Bond XP.",
+            "Grand Stable training grants +15% Chocobo Bond XP.",
         ],
         "benefits": [
             "Chocobo registration and companion training unlocked",
@@ -158,6 +158,16 @@ FACILITIES: dict[str, dict[str, Any]] = {
 }
 
 GUILD_EXPANSION_FACILITY_IDS = ("guild_hall", "workshop", "chocobo_stable", "archives", "airship_dock")
+
+# Alpha 3 — Guild Services & Workshop. Material exchanges are intentionally
+# lossy and carry a modest Gil service fee so they recycle surplus common
+# materials without replacing monster drops, crafting, or the normal economy.
+WORKSHOP_EXCHANGES = [
+    {"id": "refine_mythril", "name": "Refine Mythril", "min_level": 2, "input_id": "iron_ore", "input_qty": 5, "output_id": "mythril_ore", "output_qty": 1, "gil": 250, "description": "Refine five Iron Ore into one Mythril Ore."},
+    {"id": "temper_dragon_scale", "name": "Temper Dragon Scale", "min_level": 2, "input_id": "wyvern_scale", "input_qty": 4, "output_id": "dragon_scale", "output_qty": 1, "gil": 300, "description": "Temper four Wyvern Scales into one Dragon Scale."},
+    {"id": "press_adamantite", "name": "Press Adamantite", "min_level": 3, "input_id": "mythril_ore", "input_qty": 6, "output_id": "adamantite", "output_qty": 1, "gil": 750, "description": "Press six Mythril Ore into one Adamantite."},
+    {"id": "condense_dark_matter", "name": "Condense Dark Matter", "min_level": 3, "input_id": "elemental_crystal", "input_qty": 10, "output_id": "dark_matter", "output_qty": 1, "gil": 1000, "description": "Condense ten Elemental Crystals into one Dark Matter."},
+]
 
 
 def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
@@ -427,9 +437,13 @@ def facility_effects(facility_tiers: dict[str, int]) -> dict[str, float]:
     workshop = max(0, min(5, int(facility_tiers.get("workshop", 0))))
     training = max(0, min(5, int(facility_tiers.get("training_hall", 0))))
     quartermaster = max(0, min(5, int(facility_tiers.get("quartermaster", 0))))
+    stable = max(0, min(3, int(facility_tiers.get("chocobo_stable", 0))))
+    archives = max(0, min(3, int(facility_tiers.get("archives", 0))))
     return {
         "camp_reduction": infirmary * 0.04,
         "forge_discount": workshop * 0.02,
         "jp_bonus": training * 0.01,
         "shop_refresh_reduction": quartermaster * 0.03,
+        "chocobo_xp_bonus": stable * 0.05,
+        "archive_rare_event_bonus": max(0, archives - 1) * 0.005,
     }

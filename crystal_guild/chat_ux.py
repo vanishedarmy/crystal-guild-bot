@@ -39,6 +39,7 @@ COMMAND_USAGE: dict[str, str] = {
     "project": "!project",
     "contribute": "!contribute gil <amount> | !contribute <amount> <item>",
     "orders": "!orders",
+    "workshop": "!workshop | !refine <service> [batches]",
     "deeds": "!deeds",
     "facilities": "!facilities",
     "contributions": "!contributions",

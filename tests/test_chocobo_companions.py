@@ -199,7 +199,7 @@ class ChocoboCompanionTests(unittest.TestCase):
         self.prepare_registered_chocobo()
         notes = self.game._award_chocobo_xp("100", 50)
         state = self.game._chocobo_state_data("100")["companion"]
-        self.assertEqual(state["total_xp"], 50)
+        self.assertEqual(state["total_xp"], 52)
         self.assertEqual(state["level"], 2)
         self.assertIn("CHOCOBO LEVEL UP", " ".join(notes))
         self.assertLessEqual(state["level"], CHOC_MAX_LEVEL)

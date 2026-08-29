@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 20
+ACTION_PROTOCOL_VERSION = 21
 
 
 class PortalActionWorker:
@@ -415,6 +415,16 @@ class PortalActionWorker:
             if not item_id:
                 return False, "Fellowship contribution is missing an item.", {}
             result = self.game.portal_contribute_item(twitch_id, item_id, quantity, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "WORKSHOP_EXCHANGE":
+            exchange_id = str(payload.get("exchange_id") or "").strip().lower()
+            try:
+                batches = int(payload.get("batches"))
+            except (TypeError, ValueError):
+                return False, "Workshop request has an invalid batch quantity.", {}
+            if not exchange_id:
+                return False, "Workshop request is missing a refining service.", {}
+            result = self.game.portal_workshop_exchange(twitch_id, exchange_id, batches, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "CRAFTING_STATE":
             result = self.game.portal_crafting_state(twitch_id)

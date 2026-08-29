@@ -1,6 +1,17 @@
+# v1.3.0 — Guild Expansion Alpha 3
+
+- Adds Workshop material refining at major Workshop Lv. 2/3, with lossy conversion recipes and Gil service fees.
+- Adds automatic Chocobo XP bonuses from major Chocobo Stable Lv. 1–3 (+5% / +10% / +15%).
+- Adds small Guild Archive rare-Expedition-event bonuses at Lv. 2–3 (+0.5 / +1.0 percentage point).
+- Adds Portal Fellowship Workshop controls plus `!workshop` / `!refine`.
+- Advances Portal Action protocol **20 → 21** for typed `WORKSHOP_EXCHANGE`; schema 8 and sync schema 1 remain unchanged.
+
 # v1.3.0 — Guild Expansion Alpha 2
 
-Adds Guild Projects II: Supply Drives, gameplay-driven Guild Objectives, direct weekly Order contributor rewards, and completed-Expedition Fellowship activity tracking. Schema 8 / protocol 20 remain unchanged.
+- Adds Guild Projects II: Supply Drives and gameplay-driven Guild Objectives.
+- Adds direct Weekly Fellowship Order contributor rewards and the full-week personal participation bonus.
+- Adds completed-Expedition Fellowship activity tracking.
+- Schema 8 / sync 1 / protocol 20 remain unchanged.
 
 # v1.3.0 — Guild Expansion Alpha 1
 - Added the five-facility Guild Hall Foundation board.

@@ -318,6 +318,16 @@ class RPGCommands(commands.Component):
     async def facilities(self, ctx: commands.Context) -> None:
         await send_result(ctx, self.game.fellowship_facilities(), limit=3)
 
+    @commands.command(aliases=["guildworkshop"])
+    async def workshop(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.fellowship_workshop(uid), limit=3)
+
+    @commands.command()
+    async def refine(self, ctx: commands.Context, *, request: str) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.fellowship_refine(uid, request), limit=3)
+
     @commands.command(aliases=["guildrecord"])
     async def contributions(self, ctx: commands.Context) -> None:
         uid, _, _ = self._identity(ctx)

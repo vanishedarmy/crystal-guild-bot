@@ -10,6 +10,7 @@ from .fellowship import (
     GUILD_EXPANSION_FACILITY_IDS,
     PROJECTS,
     WEEKLY_ORDER_SET_REWARD,
+    WORKSHOP_EXCHANGES,
     facility_effects,
     fellowship_level_for_renown,
     fellowship_level_progress,
@@ -90,6 +91,93 @@ class FellowshipSystem:
     def effective_forge_gil(self, base_gil: int) -> int:
         discount = self.effects()["forge_discount"]
         return max(0, int(round(int(base_gil) * (1.0 - discount))))
+
+    def major_facility_level(self, facility_id: str) -> int:
+        config = FACILITIES.get(str(facility_id), {})
+        maximum = int(config.get("max_level", config.get("max_tier", 0)) or 0)
+        return max(0, min(maximum, int(self.facility_tiers().get(str(facility_id), 0))))
+
+    def effective_chocobo_xp(self, base_xp: int) -> int:
+        bonus = float(self.effects().get("chocobo_xp_bonus", 0.0))
+        return max(0, int(round(max(0, int(base_xp)) * (1.0 + bonus))))
+
+    def archive_rare_event_bonus(self) -> float:
+        return max(0.0, float(self.effects().get("archive_rare_event_bonus", 0.0)))
+
+    def workshop_services_snapshot(self, player_id: str | None = None) -> dict[str, Any]:
+        workshop_level = self.major_facility_level("workshop")
+        stable_level = self.major_facility_level("chocobo_stable")
+        archive_level = self.major_facility_level("archives")
+        player = self.db.one("SELECT gil FROM players WHERE twitch_id=?", (str(player_id),)) if player_id else None
+        gil = max(0, int(player["gil"] or 0)) if player else 0
+        exchanges: list[dict[str, Any]] = []
+        for config in WORKSHOP_EXCHANGES:
+            input_id = str(config["input_id"])
+            output_id = str(config["output_id"])
+            input_item = self.data.items.get(input_id, {})
+            output_item = self.data.items.get(output_id, {})
+            owned = 0
+            if player_id:
+                row = self.db.one("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (str(player_id), input_id))
+                owned = max(0, int(row["quantity"] or 0)) if row else 0
+            unlocked = workshop_level >= int(config["min_level"])
+            max_batches = 0
+            if player_id and unlocked:
+                max_batches = owned // max(1, int(config["input_qty"]))
+                fee = max(0, int(config.get("gil", 0)))
+                if fee:
+                    max_batches = min(max_batches, gil // fee)
+                max_batches = max(0, min(20, max_batches))
+            exchanges.append({
+                **config,
+                "input_name": str(input_item.get("name") or input_id.replace("_", " ").title()),
+                "output_name": str(output_item.get("name") or output_id.replace("_", " ").title()),
+                "unlocked": unlocked,
+                "owned": owned,
+                "max_batches": max_batches,
+            })
+        return {
+            "guild_hall": {"level": self.major_facility_level("guild_hall"), "message": "Guild Hall coordinates construction, Supply Drives, Objectives, and shared services."},
+            "workshop": {"level": workshop_level, "forge_discount": float(self.effects().get("forge_discount", 0.0)), "exchanges": exchanges},
+            "chocobo_stable": {"level": stable_level, "xp_bonus": float(self.effects().get("chocobo_xp_bonus", 0.0))},
+            "archive": {"level": archive_level, "rare_event_bonus": self.archive_rare_event_bonus()},
+        }
+
+    def workshop_exchange(self, player_id: str, exchange_id: str, batches: int = 1) -> tuple[bool, str]:
+        exchange = next((item for item in WORKSHOP_EXCHANGES if item["id"] == str(exchange_id)), None)
+        if not exchange:
+            return False, "That Workshop refining service is not recognized."
+        batches = int(batches)
+        if batches < 1 or batches > 20:
+            return False, "Workshop refining quantity must be between 1 and 20 batches."
+        workshop_level = self.major_facility_level("workshop")
+        if workshop_level < int(exchange["min_level"]):
+            return False, f"{exchange['name']} requires Workshop Lv.{int(exchange['min_level'])}."
+        input_id = str(exchange["input_id"]); output_id = str(exchange["output_id"])
+        input_qty = int(exchange["input_qty"]) * batches
+        output_qty = int(exchange["output_qty"]) * batches
+        gil_fee = max(0, int(exchange.get("gil", 0))) * batches
+        input_name = str(self.data.items.get(input_id, {}).get("name") or input_id.replace("_", " ").title())
+        output_name = str(self.data.items.get(output_id, {}).get("name") or output_id.replace("_", " ").title())
+        with self.db.tx() as conn:
+            player = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (str(player_id),)).fetchone()
+            if not player:
+                return False, "Recruit a Crystal Guild adventurer first."
+            row = conn.execute("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (str(player_id), input_id)).fetchone()
+            owned = max(0, int(row["quantity"] or 0)) if row else 0
+            if owned < input_qty:
+                return False, f"{exchange['name']} needs {input_name} x{input_qty}; you have {owned}."
+            if int(player["gil"] or 0) < gil_fee:
+                return False, f"{exchange['name']} needs {gil_fee:,} Gil in service fees."
+            conn.execute("UPDATE inventory SET quantity=quantity-? WHERE player_id=? AND item_id=?", (input_qty, str(player_id), input_id))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'guild_workshop')", (str(player_id), input_id, -input_qty))
+            if gil_fee:
+                conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil_fee, str(player_id)))
+                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'guild_workshop')", (str(player_id), -gil_fee))
+            conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity", (str(player_id), output_id, output_qty))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'guild_workshop')", (str(player_id), output_id, output_qty))
+            conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (?,'workshop_service',?,?)", (str(player_id), f"{exchange['name']}: {input_name} -> {output_name}", batches))
+        return True, f"WORKSHOP — {input_name} x{input_qty} refined into {output_name} x{output_qty} for {gil_fee:,} Gil."
 
     def apply_jp_bonus(self, jp: int) -> int:
         bonus = self.effects()["jp_bonus"]
@@ -794,4 +882,5 @@ class FellowshipSystem:
             "expedition_board_complete": bool(state and state["expedition_board_complete"]),
             "rank_ladder": GUILD_RANKS,
             "effects": self.effects(),
+            "services": self.workshop_services_snapshot(),
         }

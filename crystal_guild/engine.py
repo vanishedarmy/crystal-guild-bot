@@ -6397,6 +6397,7 @@ class CrystalGuildEngine:
         route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
         rare_chance = float(route_config.get("rare_event_chance", 0.05) or 0.05)
         rare_chance += expedition_rare_event_bonus(traits, chocobo_level)
+        rare_chance += self.fellowship_system.archive_rare_event_bonus()
         if progress.get("mastered"):
             rare_chance += 0.010
         if rare_events and self.rng.random() < min(0.15, rare_chance):
@@ -7755,16 +7756,20 @@ class CrystalGuildEngine:
         if not row or not row["registered_at"]:
             return []
         before_level, _, _ = chocobo_level_from_total_xp(int(row["xp"] or 0))
+        base_amount = max(0, int(amount))
+        awarded_amount = self.fellowship_system.effective_chocobo_xp(base_amount)
         total = min(
             chocobo_total_xp_floor_for_level(CHOC_MAX_LEVEL),
-            max(0, int(row["xp"] or 0)) + max(0, int(amount)),
+            max(0, int(row["xp"] or 0)) + awarded_amount,
         )
         after_level, _, _ = chocobo_level_from_total_xp(total)
         self.db.execute(
             "UPDATE player_chocobos SET xp=?,level=?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
             (total, after_level, twitch_id),
         )
-        notes = [f"{row['name']} gains {max(0, int(amount))} Chocobo XP."]
+        notes = [f"{row['name']} gains {awarded_amount} Chocobo XP."]
+        if awarded_amount > base_amount:
+            notes.append(f"Guild Stable training bonus — +{awarded_amount - base_amount} XP.")
         if after_level > before_level:
             notes.append(f"CHOCOBO LEVEL UP — {row['name']} reached Lv.{after_level}!")
         return notes
@@ -8045,6 +8050,7 @@ class CrystalGuildEngine:
                 "description": str(project.get("description") or ""),
                 "facility_id": str(project.get("facility_id") or ""),
                 "tier": int(project.get("tier", 0) or 0),
+                "project_type": str(project.get("project_type") or "construction"),
                 "complete": bool(project.get("complete")),
                 "requirements": requirements,
             }
@@ -8052,6 +8058,7 @@ class CrystalGuildEngine:
             "gil": max(0, int(p["gil"] or 0)),
             "member": member,
             "project": project_payload,
+            "services": self.fellowship_system.workshop_services_snapshot(twitch_id),
         }
 
     def portal_fellowship_state(self, twitch_id: str) -> GameResult:
@@ -8095,6 +8102,44 @@ class CrystalGuildEngine:
         return self._portal_fellowship_mutation(
             twitch_id, action_id, lambda: self.contribute_fellowship(twitch_id, f"{quantity} {item_id}")
         )
+
+    def workshop_refine(self, twitch_id: str, exchange_id: str, batches: int = 1) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster or self._expedition_load(twitch_id) or self._solo_expedition_load(twitch_id):
+            return GameResult.fail("Guild Workshop refining is unavailable while you are committed to an active Adventure or battle.")
+        ok, message = self.fellowship_system.workshop_exchange(twitch_id, exchange_id, batches)
+        return GameResult.success(message) if ok else GameResult.fail(message)
+
+    def portal_workshop_exchange(self, twitch_id: str, exchange_id: str, batches: int, action_id: str) -> GameResult:
+        if batches < 1 or batches > 20:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Workshop refining quantity must be between 1 and 20 batches."))
+        return self._portal_fellowship_mutation(
+            twitch_id, action_id, lambda: self.workshop_refine(twitch_id, exchange_id, batches)
+        )
+
+    def fellowship_workshop(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        services = self.fellowship_system.workshop_services_snapshot(twitch_id)
+        workshop = services["workshop"]
+        level = int(workshop["level"])
+        if level < 2:
+            return GameResult.success(f"GUILD WORKSHOP — Lv.{level}. Material refining unlocks at Workshop Lv.2.")
+        available = [item for item in workshop["exchanges"] if item["unlocked"]]
+        parts = [f"{item['id']}: {item['input_qty']} {item['input_name']} + {int(item['gil']):,}g -> {item['output_qty']} {item['output_name']}" for item in available]
+        return GameResult.success(f"GUILD WORKSHOP Lv.{level} — " + " | ".join(parts[:4]), "Use !refine <service> [batches].")
+
+    def fellowship_refine(self, twitch_id: str, query: str) -> GameResult:
+        parts = str(query or "").strip().split()
+        if not parts:
+            return GameResult.fail("Use !refine <service> [batches]. See !workshop for services.")
+        exchange_id = parts[0].strip().lower().replace("-", "_")
+        try:
+            batches = int(parts[1]) if len(parts) > 1 else 1
+        except (TypeError, ValueError):
+            return GameResult.fail("Refining batches must be a whole number from 1 to 20.")
+        return self.workshop_refine(twitch_id, exchange_id, batches)
 
     def _portal_crafting_state_data(self, twitch_id: str) -> dict[str, Any]:
         """Return live Blacksmith recipe, material, and forge readiness state."""
@@ -8814,7 +8859,7 @@ class CrystalGuildEngine:
         effects = guild["effects"]
         return GameResult.success(
             "FELLOWSHIP FACILITIES — " + " | ".join(parts),
-            f"Current benefits: Camp -{int(effects['camp_reduction']*100)}% time | Forge -{int(effects['forge_discount']*100)}% Gil | Combat JP +{int(effects['jp_bonus']*100)}% | Shop refresh -{int(effects['shop_refresh_reduction']*100)}% time.",
+            f"Current benefits: Forge -{int(effects['forge_discount']*100)}% Gil | Chocobo XP +{int(effects.get('chocobo_xp_bonus',0)*100)}% | Archive rare events +{effects.get('archive_rare_event_bonus',0)*100:.1f}% | Camp -{int(effects['camp_reduction']*100)}% | Shop refresh -{int(effects['shop_refresh_reduction']*100)}%.",
         )
 
     def fellowship_contributions(self, twitch_id: str) -> GameResult:
