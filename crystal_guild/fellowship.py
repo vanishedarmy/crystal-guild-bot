@@ -223,6 +223,7 @@ def _activity_label(activity: str) -> str:
         "job_mastery": "Jobs mastered",
         "treasure": "Treasure chests found",
         "project_complete": "Projects completed",
+        "expedition_complete": "Expeditions completed",
     }
     return labels.get(activity, activity.replace("_", " ").title())
 
@@ -246,6 +247,7 @@ for _facility_id, _facility in FACILITIES.items():
             "required_level": 2 if _facility_id == "chocobo_stable" and _tier == 1 else max(1, _tier if _facility_id == "guild_hall" else _tier * 2 - 1),
             "requirements": _project_requirements(_facility_id, _tier),
             "legacy": is_legacy_step,
+            "project_type": "construction",
         }
 
 
@@ -260,6 +262,7 @@ PROJECTS["expedition_board"] = {
     "required_level": 6,
     "required_hall_tier": 1,
     "teaser": True,
+    "project_type": "construction",
     "requirements": [
         {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 200_000, "label": "Gil"},
         {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 100, "label": "Ancient Coin"},
@@ -268,14 +271,77 @@ PROJECTS["expedition_board"] = {
     ],
 }
 
+# Guild Projects II adds shorter one-time initiatives alongside permanent facility construction.
+# They intentionally reuse the existing project ledger so Alpha 2 remains schema-compatible.
+COMMUNITY_PROJECTS: dict[str, dict[str, Any]] = {
+    "moogle_relief_shipment": {
+        "id": "moogle_relief_shipment", "facility_id": "community", "tier": 0, "level": 0, "name": "Moogle Relief Shipment", "project_type": "supply_drive",
+        "description": "Pack a compact relief shipment for wandering merchants and field crews.",
+        "required_level": 2, "reward_renown": 300,
+        "requirements": [
+            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 15000, "label": "Gil"},
+            {"key": "item:potion", "kind": "item", "asset_id": "potion", "target": 25, "label": "Potion"},
+            {"key": "item:hi_potion", "kind": "item", "asset_id": "hi_potion", "target": 10, "label": "Hi-Potion"},
+        ],
+    },
+    "forge_stockpile": {
+        "id": "forge_stockpile", "facility_id": "community", "tier": 0, "level": 0, "name": "Forge Stockpile", "project_type": "supply_drive",
+        "description": "Build a reserve of construction-grade materials for the Guild Workshop.",
+        "required_level": 4, "reward_renown": 400,
+        "requirements": [
+            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 20000, "label": "Gil"},
+            {"key": "item:mythril_ore", "kind": "item", "asset_id": "mythril_ore", "target": 20, "label": "Mythril Ore"},
+            {"key": "item:elemental_crystal", "kind": "item", "asset_id": "elemental_crystal", "target": 10, "label": "Elemental Crystal"},
+        ],
+    },
+    "frontier_stores": {
+        "id": "frontier_stores", "facility_id": "community", "tier": 0, "level": 0, "name": "Frontier Stores", "project_type": "supply_drive",
+        "description": "Stock the Guild for distant travel with field supplies and salvage currency.",
+        "required_level": 5, "reward_renown": 450,
+        "requirements": [
+            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 30000, "label": "Gil"},
+            {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 20, "label": "Ancient Coin"},
+            {"key": "item:tent", "kind": "item", "asset_id": "tent", "target": 8, "label": "Tent"},
+        ],
+    },
+    "clear_the_roads": {
+        "id": "clear_the_roads", "facility_id": "community", "tier": 0, "level": 0, "name": "Clear the Roads", "project_type": "guild_objective",
+        "description": "Thin out dangerous marks so merchants and adventurers can travel safely.",
+        "required_level": 3, "reward_renown": 450,
+        "requirements": [
+            {"key": "activity:hunt_win", "kind": "activity", "asset_id": "hunt_win", "target": 30, "label": "Hunts won"},
+        ],
+    },
+    "chart_the_frontier": {
+        "id": "chart_the_frontier", "facility_id": "community", "tier": 0, "level": 0, "name": "Chart the Frontier", "project_type": "guild_objective",
+        "description": "Complete distant Expeditions and return fresh route data to the Guild Archive.",
+        "required_level": 4, "reward_renown": 500,
+        "requirements": [
+            {"key": "activity:expedition_complete", "kind": "activity", "asset_id": "expedition_complete", "target": 20, "label": "Expeditions completed"},
+        ],
+    },
+    "raid_preparedness": {
+        "id": "raid_preparedness", "facility_id": "community", "tier": 0, "level": 0, "name": "Raid Preparedness", "project_type": "guild_objective",
+        "description": "Prove the Fellowship can repeatedly field a raid-ready force.",
+        "required_level": 5, "reward_renown": 600,
+        "requirements": [
+            {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 8, "label": "Guild raids won"},
+        ],
+    },
+}
+PROJECTS.update(COMMUNITY_PROJECTS)
+
+
 ORDER_DEFINITIONS = [
-    {"id": "into_the_wilds", "name": "Into the Wilds", "activity": "venture_complete", "target": 75, "renown": 300, "description": "Complete Ventures together."},
-    {"id": "monster_hunters", "name": "Monster Hunters", "activity": "combat_victory", "target": 40, "renown": 350, "description": "Win normal encounters or Hunts."},
-    {"id": "bounty_board", "name": "Bounty Board", "activity": "hunt_win", "target": 15, "renown": 400, "description": "Defeat Hunt marks."},
-    {"id": "hammer_and_tongs", "name": "Hammer & Tongs", "activity": "craft_forge", "target": 35, "renown": 300, "description": "Craft items or complete forge upgrades."},
-    {"id": "treasure_seekers", "name": "Treasure Seekers", "activity": "treasure", "target": 25, "renown": 300, "description": "Discover Venture treasure chests."},
-    {"id": "stand_together", "name": "Stand Together", "activity": "raid_participation", "target": 20, "renown": 450, "description": "Participate in resolved Guild raids."},
+    {"id": "into_the_wilds", "name": "Into the Wilds", "activity": "venture_complete", "target": 75, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Complete Ventures together."},
+    {"id": "monster_hunters", "name": "Monster Hunters", "activity": "combat_victory", "target": 40, "renown": 350, "personal_gil": 500, "personal_renown": 25, "description": "Win normal encounters or Hunts."},
+    {"id": "bounty_board", "name": "Bounty Board", "activity": "hunt_win", "target": 15, "renown": 400, "personal_gil": 600, "personal_renown": 25, "description": "Defeat Hunt marks."},
+    {"id": "hammer_and_tongs", "name": "Hammer & Tongs", "activity": "craft_forge", "target": 35, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Craft items or complete forge upgrades."},
+    {"id": "treasure_seekers", "name": "Treasure Seekers", "activity": "treasure", "target": 25, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Discover Venture treasure chests."},
+    {"id": "stand_together", "name": "Stand Together", "activity": "raid_participation", "target": 20, "renown": 450, "personal_gil": 750, "personal_renown": 30, "description": "Participate in resolved Guild raids."},
 ]
+
+WEEKLY_ORDER_SET_REWARD = {"guild_renown": 500, "personal_gil": 1000, "personal_renown": 50}
 
 DEEDS = [
     {"id": "adventure_begins", "name": "The Adventure Begins", "activity": "venture_complete", "target": 100, "renown": 250, "description": "Complete 100 Ventures."},

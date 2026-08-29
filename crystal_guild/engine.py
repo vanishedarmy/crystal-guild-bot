@@ -6073,6 +6073,7 @@ class CrystalGuildEngine:
                 completed_run=True,
             )
         stipend_seals = self._award_expedition_stipend(twitch_id, state, outcome)
+        fellowship_notes: list[str] = []
         if outcome == "complete":
             metrics = {"expeditions_completed": 1}
             if bool(state.get("legendary_contract")):
@@ -6080,6 +6081,12 @@ class CrystalGuildEngine:
             elif bool(state.get("boss_contract")):
                 metrics["regional_boss_contracts_completed"] = 1
             self.db.update_record_stats(twitch_id, metrics)
+            fellowship_notes = self.fellowship_system.record_activity(
+                twitch_id,
+                "expedition_complete",
+                renown=0,
+                event_key=f"expedition_complete:{twitch_id}:{int(state.get('started_at', 0))}",
+            )
         elif outcome == "defeat":
             self.db.update_record_stats(twitch_id, {"expedition_rescues": 1})
         chocobo_xp = max(0, int(state.get("chocobo_xp", 0))) + max(4, int(state.get("stage", 1)) * 3)
@@ -6087,6 +6094,7 @@ class CrystalGuildEngine:
         summary = self._expedition_result_summary(twitch_id, state, outcome=outcome, kept=kept, lost=lost)
         summary["chocobo_notes"] = chocobo_notes[:2]
         summary["stipend_seals"] = stipend_seals
+        summary["fellowship_notes"] = fellowship_notes[:2]
         summary["exploration"] = self._expedition_progress(twitch_id, str(state.get("region_id")))
         self._remember_expedition_result(twitch_id, summary)
         self._expedition_delete(twitch_id)
@@ -6111,6 +6119,7 @@ class CrystalGuildEngine:
         stipend_text = f" / +{int(summary.get('stipend_seals', 0))} Hunt Seals" if int(summary.get("stipend_seals", 0)) else ""
         return GameResult.success(
             f"EXPEDITION RETURN — {summary['region_name']} cache secured: +{kept['xp']} XP / +{kept['jp']} JP / {kept['gil']} Gil{stipend_text}.",
+            *fellowship_notes[:2],
             expedition_finished=True,
             expedition_result=summary,
             expedition_milestones=milestones,
@@ -8764,17 +8773,29 @@ class CrystalGuildEngine:
         parts = []
         for req in project["requirements"]:
             parts.append(f"{req['label']} {int(req['current']):,}/{int(req['target']):,}{' ✓' if req['complete'] else ''}")
+        project_type = str(project.get("project_type") or "construction")
+        if project_type == "guild_objective":
+            help_line = "Guild Objectives advance automatically from normal play; no donations are required."
+        elif project_type == "supply_drive":
+            help_line = "Supply Drives are short resource goals. Contribute with !contribute gil <amount> or !contribute <amount> <item>."
+        else:
+            help_line = "Contribute with !contribute gil <amount> or !contribute <amount> <item>. Gameplay requirements advance automatically."
         return GameResult.success(
             f"FELLOWSHIP PROJECT — {project['name']} | " + " | ".join(parts[:4]),
-            "Contribute with !contribute gil <amount> or !contribute <amount> <item>. Gameplay requirements advance automatically.",
+            help_line,
         )
 
     def fellowship_orders(self) -> GameResult:
         orders = self.fellowship_system.orders_snapshot()
-        parts = [f"{o['name']} {o['progress']}/{o['target']}{' ✓' if o['complete'] else ''}" for o in orders["orders"]]
+        parts = [
+            f"{o['name']} {o['progress']}/{o['target']}{' ✓' if o['complete'] else ''} "
+            f"(+{int(o.get('renown', 0))} Guild Renown; contributors {int(o.get('personal_gil', 0))}g/+{int(o.get('personal_renown', 0))} Renown)"
+            for o in orders["orders"]
+        ]
+        weekly = orders.get("weekly_bonus") or {}
         return GameResult.success(
             f"FELLOWSHIP ORDERS [{orders['period']}] — " + " | ".join(parts),
-            "Orders advance automatically from normal Guild activity and reset with the weekly rotation.",
+            f"Clear all three: +{int(weekly.get('guild_renown', 0))} Guild Renown; anyone who helped with at least one gets {int(weekly.get('personal_gil', 0))}g +{int(weekly.get('personal_renown', 0))} personal Renown.",
         )
 
     def fellowship_deeds(self) -> GameResult:

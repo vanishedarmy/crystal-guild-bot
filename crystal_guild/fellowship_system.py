@@ -9,6 +9,7 @@ from .fellowship import (
     GUILD_RANKS,
     GUILD_EXPANSION_FACILITY_IDS,
     PROJECTS,
+    WEEKLY_ORDER_SET_REWARD,
     facility_effects,
     fellowship_level_for_renown,
     fellowship_level_progress,
@@ -142,7 +143,13 @@ class FellowshipSystem:
                 "complete": bool(row["completed_at"]),
                 "completed_at": row["completed_at"],
             })
-        return {"period": period, "orders": result, "completed": sum(1 for item in result if item["complete"]), "total": len(result)}
+        return {
+            "period": period,
+            "orders": result,
+            "completed": sum(1 for item in result if item["complete"]),
+            "total": len(result),
+            "weekly_bonus": dict(WEEKLY_ORDER_SET_REWARD),
+        }
 
     def deeds_snapshot(self) -> list[dict[str, Any]]:
         rows = {str(row["deed_id"]): row for row in self.db.all("SELECT * FROM fellowship_deeds")}
@@ -198,6 +205,17 @@ class FellowshipSystem:
             # new construction choices on the public Guild Board.
             if project.get("legacy"):
                 continue
+            if project.get("project_type") in {"supply_drive", "guild_objective"}:
+                if level < int(project.get("required_level", 1)):
+                    continue
+                completed = self.db.one(
+                    "SELECT 1 AS done FROM fellowship_events WHERE event_key=?",
+                    (f"community_project_complete:{project['id']}",),
+                )
+                if completed:
+                    continue
+                result.append(self.project_snapshot(project["id"]) or dict(project))
+                continue
             if project.get("teaser"):
                 if expedition_done or hall < int(project.get("required_hall_tier", 5)) or level < int(project["required_level"]):
                     continue
@@ -217,7 +235,7 @@ class FellowshipSystem:
         available = self.available_projects()
         match = next((p for p in available if p["id"] == norm), None)
         if not match:
-            match = next((p for p in available if p["facility_id"] == norm), None)
+            match = next((p for p in available if p.get("facility_id") == norm), None)
         if not match:
             match = next((p for p in available if str(p["name"]).lower() == str(query).strip().lower()), None)
         if not match:
@@ -506,6 +524,54 @@ class FellowshipSystem:
                 if player_id:
                     conn.execute("INSERT OR IGNORE INTO fellowship_deed_members(deed_id,player_id) VALUES (?,?)", (deed["id"], player_id))
 
+    def _award_order_participant(
+        self, conn: Any, *, period: str, order: dict[str, Any], participant_id: str
+    ) -> bool:
+        event_key = f"order_participant_reward:{period}:{order['id']}:{participant_id}"
+        inserted = conn.execute(
+            "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,?,'order_participant_reward',0,1)",
+            (event_key, str(participant_id)),
+        ).rowcount
+        if not inserted:
+            return False
+        gil = max(0, int(order.get("personal_gil", 0)))
+        renown = max(0, int(order.get("personal_renown", 0)))
+        if gil:
+            conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil, str(participant_id)))
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'fellowship_order_reward')",
+                (str(participant_id), gil),
+            )
+        if renown:
+            conn.execute(
+                "UPDATE fellowship_members SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                (renown, str(participant_id)),
+            )
+        return True
+
+    def _award_weekly_order_participant(self, conn: Any, *, period: str, participant_id: str) -> bool:
+        event_key = f"weekly_order_participant_reward:{period}:{participant_id}"
+        inserted = conn.execute(
+            "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,?,'weekly_order_participant_reward',0,1)",
+            (event_key, str(participant_id)),
+        ).rowcount
+        if not inserted:
+            return False
+        gil = max(0, int(WEEKLY_ORDER_SET_REWARD.get("personal_gil", 0)))
+        renown = max(0, int(WEEKLY_ORDER_SET_REWARD.get("personal_renown", 0)))
+        if gil:
+            conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil, str(participant_id)))
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'fellowship_orders_week_reward')",
+                (str(participant_id), gil),
+            )
+        if renown:
+            conn.execute(
+                "UPDATE fellowship_members SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                (renown, str(participant_id)),
+            )
+        return True
+
     def _finalize_progress(self, player_id: str | None, old_level: int, old_rank: dict[str, Any] | None) -> list[str]:
         notes: list[str] = []
         # Order/deed completion bonuses are shared Guild Renown; they do not
@@ -521,16 +587,42 @@ class FellowshipSystem:
                     notes.append(f"ORDER COMPLETE — {order['name']} (+{order['renown']} Fellowship Renown)")
                     conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'order_complete',?,?)", (order["name"], int(order["renown"])))
                     participants = conn.execute("SELECT player_id FROM fellowship_order_members WHERE period_key=? AND order_id=?", (period, order["id"])).fetchall()
+                    rewarded = 0
                     for rowp in participants:
-                        conn.execute("UPDATE fellowship_members SET orders_participated=orders_participated+1 WHERE player_id=?", (rowp["player_id"],))
+                        participant_id = str(rowp["player_id"])
+                        conn.execute("UPDATE fellowship_members SET orders_participated=orders_participated+1 WHERE player_id=?", (participant_id,))
+                        if self._award_order_participant(conn, period=period, order=order, participant_id=participant_id):
+                            rewarded += 1
+                    if rewarded:
+                        notes.append(
+                            f"ORDER PARTICIPATION — {rewarded} contributor{'s' if rewarded != 1 else ''} received "
+                            f"{int(order.get('personal_gil', 0)):,}g +{int(order.get('personal_renown', 0))} personal Renown."
+                        )
             completed_orders = conn.execute("SELECT COUNT(*) AS n FROM fellowship_orders WHERE period_key=? AND completed_at IS NOT NULL", (period,)).fetchone()
             if int(completed_orders["n"] if completed_orders else 0) >= len(selected):
                 event_key = f"weekly_orders_complete:{period}"
-                inserted = conn.execute("INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'weekly_orders_complete',500,1)", (event_key,)).rowcount
+                guild_bonus = int(WEEKLY_ORDER_SET_REWARD.get("guild_renown", 500))
+                inserted = conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'weekly_orders_complete',?,1)",
+                    (event_key, guild_bonus),
+                ).rowcount
                 if inserted:
-                    bonus += 500
-                    notes.append("WEEKLY ORDERS COMPLETE — all Fellowship Orders finished (+500 Renown)")
-                    conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'orders_week_complete','Weekly Orders complete',500)")
+                    bonus += guild_bonus
+                    notes.append(f"WEEKLY ORDERS COMPLETE — all Fellowship Orders finished (+{guild_bonus} Renown)")
+                    conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'orders_week_complete','Weekly Orders complete',?)", (guild_bonus,))
+                    weekly_participants = conn.execute(
+                        "SELECT DISTINCT player_id FROM fellowship_order_members WHERE period_key=?",
+                        (period,),
+                    ).fetchall()
+                    rewarded = sum(
+                        1 for rowp in weekly_participants
+                        if self._award_weekly_order_participant(conn, period=period, participant_id=str(rowp["player_id"]))
+                    )
+                    if rewarded:
+                        notes.append(
+                            f"WEEKLY PARTICIPATION BONUS — {rewarded} contributor{'s' if rewarded != 1 else ''} received "
+                            f"{int(WEEKLY_ORDER_SET_REWARD.get('personal_gil', 0)):,}g +{int(WEEKLY_ORDER_SET_REWARD.get('personal_renown', 0))} personal Renown."
+                        )
             for deed in DEEDS:
                 row = conn.execute("SELECT progress,target,completed_at FROM fellowship_deeds WHERE deed_id=?", (deed["id"],)).fetchone()
                 if row and not row["completed_at"] and int(row["progress"]) >= int(row["target"]):
@@ -574,9 +666,24 @@ class FellowshipSystem:
         notes = [f"PROJECT COMPLETE — {project['name']}"]
         bonus = 250 * max(1, int(project.get("tier", 1)))
         with self.db.tx() as conn:
-            if project.get("teaser"):
+            if project.get("project_type") in {"supply_drive", "guild_objective"}:
+                bonus = int(project.get("reward_renown", 300))
+                inserted = conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'community_project_complete',0,1)",
+                    (f"community_project_complete:{project_id}",),
+                ).rowcount
+                if not inserted:
+                    conn.execute("UPDATE fellowship_state SET active_project_id=NULL,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1")
+                    return []
+                conn.execute(
+                    "UPDATE fellowship_state SET active_project_id=NULL,renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+                    (bonus,),
+                )
+                label = "SUPPLY DRIVE COMPLETE" if project.get("project_type") == "supply_drive" else "GUILD OBJECTIVE COMPLETE"
+                notes[0] = f"{label} — {project['name']} (+{bonus} Fellowship Renown)"
+            elif project.get("teaser"):
                 conn.execute("UPDATE fellowship_state SET active_project_id=NULL,expedition_board_complete=1,renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1", (bonus,))
-                notes.append("The Expedition Board is ready. Distant contracts arrive with v1.2 — Expedition.")
+                notes.append("The Expedition Board is ready. Distant contracts are now open Guild-wide.")
             else:
                 conn.execute("UPDATE fellowship_facilities SET tier=?,updated_at=CURRENT_TIMESTAMP WHERE facility_id=?", (int(project["tier"]), project["facility_id"]))
                 conn.execute("UPDATE fellowship_state SET active_project_id=NULL,renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1", (bonus,))

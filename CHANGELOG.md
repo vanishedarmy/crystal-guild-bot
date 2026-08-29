@@ -1,3 +1,7 @@
+# v1.3.0 — Guild Expansion Alpha 2
+
+Adds Guild Projects II: Supply Drives, gameplay-driven Guild Objectives, direct weekly Order contributor rewards, and completed-Expedition Fellowship activity tracking. Schema 8 / protocol 20 remain unchanged.
+
 # v1.3.0 — Guild Expansion Alpha 1
 - Added the five-facility Guild Hall Foundation board.
 - Major facilities present as Lv. 0–3; Airship Dock is visible but locked.
