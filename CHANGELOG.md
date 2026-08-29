@@ -1,3 +1,11 @@
+# v1.3.0 — Guild Expansion Alpha 5
+
+- Adds ten permanent Guild Legacy accomplishments with one-time replay-safe shared Renown rewards and named trophies.
+- Adds Founding Hall → Bannered Hall → Hall of Heroes → Legendary Guild Hall progression.
+- Expands personal Fellowship records with Expedition, Hunt, raid, Workshop and Airship service plus automatic distinctions.
+- Adds `!legacy` / `!guildlegacy`.
+- Keeps schema 9, hosted sync 1 and Portal Action protocol 21 unchanged.
+
 # v1.3.0 — Guild Expansion Alpha 4
 
 - Makes Airship Dock Lv. 1–3 part of the live Guild facility path and adds one-time Crystal Guild Airship construction.

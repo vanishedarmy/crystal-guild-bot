@@ -487,6 +487,80 @@ DEEDS = [
 ]
 
 
+# Alpha 5 — Guild Legacy & Accomplishments. These are long-term Fellowship
+# achievements derived from existing persistent state. Completion receipts use
+# fellowship_events, so no additional schema is required and retroactive
+# accomplishments can be granted safely once when an older Guild upgrades.
+LEGACY_ACCOMPLISHMENTS = [
+    {"id": "foundations_laid", "name": "Foundations Laid", "metric": "major_facilities_built", "target": 5, "renown": 300, "trophy": "Founders' Standard", "description": "Establish all five major Guild facilities."},
+    {"id": "grand_fellowship", "name": "Grand Fellowship", "metric": "major_facilities_complete", "target": 5, "renown": 1000, "trophy": "Crystal Guild Banner", "description": "Raise every major Guild facility to Lv. 3."},
+    {"id": "million_gil_guild", "name": "A Million Gil Later", "metric": "gil_donated", "target": 1_000_000, "renown": 750, "trophy": "Golden Ledger", "description": "Contribute 1,000,000 Gil to Fellowship projects."},
+    {"id": "frontier_cartographers", "name": "Frontier Cartographers", "metric": "expeditions_completed", "target": 100, "renown": 750, "trophy": "Frontier Map Wall", "description": "Complete 100 Expeditions across the Fellowship."},
+    {"id": "raid_vanguard", "name": "Raid Vanguard", "metric": "raids_won", "target": 100, "renown": 900, "trophy": "Vanguard Crest", "description": "Win 100 Guild raids."},
+    {"id": "skybound_company", "name": "Skybound Company", "metric": "airship_built", "target": 1, "renown": 300, "trophy": "Airship Commission Plaque", "description": "Complete the Crystal Guild Airship."},
+    {"id": "veteran_crew", "name": "Veteran Crew", "metric": "airship_missions_completed", "target": 25, "renown": 750, "trophy": "Veteran Crew Pennant", "description": "Complete 25 successful Airship missions."},
+    {"id": "master_shipwrights", "name": "Master Shipwrights", "metric": "airship_upgrade_tiers", "target": 15, "renown": 1000, "trophy": "Master Shipwright Model", "description": "Complete every Airship upgrade track through Tier III."},
+    {"id": "living_archive", "name": "Living Archive", "metric": "deeds_complete", "target": 8, "renown": 800, "trophy": "Chronicle of Deeds", "description": "Complete every current permanent Fellowship Deed."},
+    {"id": "seasoned_fellowship", "name": "Seasoned Fellowship", "metric": "weekly_sets_completed", "target": 12, "renown": 750, "trophy": "Twelve-Week Service Ribbon", "description": "Complete the full set of Weekly Fellowship Orders twelve times."},
+]
+
+
+
+
+def legacy_metric_values(conn: Any) -> dict[str, int]:
+    tiers = {str(row["facility_id"]): int(row["tier"] or 0) for row in conn.execute("SELECT facility_id,tier FROM fellowship_facilities").fetchall()}
+    event_totals = {str(row["activity"]): int(row["amount"] or 0) for row in conn.execute("SELECT activity,COALESCE(SUM(amount),0) AS amount FROM fellowship_events GROUP BY activity").fetchall()}
+    totals = conn.execute("SELECT COALESCE(SUM(gil_donated),0) AS gil FROM fellowship_members").fetchone()
+    deeds = conn.execute("SELECT COUNT(*) AS n FROM fellowship_deeds WHERE completed_at IS NOT NULL").fetchone()
+    airship = conn.execute("SELECT built,missions_completed FROM fellowship_airship_state WHERE singleton_id=1").fetchone()
+    upgrade_total = conn.execute("SELECT COALESCE(SUM(tier),0) AS n FROM fellowship_airship_upgrades").fetchone()
+    return {
+        "major_facilities_built": sum(1 for facility_id in GUILD_EXPANSION_FACILITY_IDS if int(tiers.get(facility_id, 0)) >= 1),
+        "major_facilities_complete": sum(1 for facility_id in GUILD_EXPANSION_FACILITY_IDS if int(tiers.get(facility_id, 0)) >= 3),
+        "gil_donated": int(totals["gil"] if totals else 0),
+        "expeditions_completed": int(event_totals.get("expedition_complete", 0)),
+        "raids_won": int(event_totals.get("raid_clear", 0)),
+        "airship_built": 1 if airship and int(airship["built"] or 0) else 0,
+        "airship_missions_completed": int(airship["missions_completed"] or 0) if airship else 0,
+        "airship_upgrade_tiers": int(upgrade_total["n"] if upgrade_total else 0),
+        "deeds_complete": int(deeds["n"] if deeds else 0),
+        "weekly_sets_completed": int(event_totals.get("weekly_orders_complete", 0)),
+    }
+
+
+def legacy_snapshot_from_connection(conn: Any) -> dict[str, Any]:
+    metrics = legacy_metric_values(conn)
+    receipt_rows = conn.execute("SELECT event_key,created_at FROM fellowship_events WHERE activity='legacy_accomplishment'").fetchall()
+    receipts = {str(row["event_key"]): row["created_at"] for row in receipt_rows}
+    accomplishments = []
+    for item in LEGACY_ACCOMPLISHMENTS:
+        progress = max(0, int(metrics.get(str(item["metric"]), 0)))
+        target = max(1, int(item["target"]))
+        key = f"legacy_accomplishment:{item['id']}"
+        complete = progress >= target
+        accomplishments.append({**item, "progress": min(progress, target), "raw_progress": progress, "complete": complete, "completed_at": receipts.get(key)})
+    completed = [item for item in accomplishments if item["complete"]]
+    count = len(completed)
+    if count >= 9:
+        stage, stage_name = 4, "Legendary Guild Hall"
+    elif count >= 6:
+        stage, stage_name = 3, "Hall of Heroes"
+    elif count >= 3:
+        stage, stage_name = 2, "Bannered Hall"
+    else:
+        stage, stage_name = 1, "Founding Hall"
+    incomplete = [item for item in accomplishments if not item["complete"]]
+    incomplete.sort(key=lambda item: (-(float(item["raw_progress"]) / max(1, int(item["target"]))), int(item["target"])))
+    return {
+        "stage": stage,
+        "stage_name": stage_name,
+        "completed": count,
+        "total": len(accomplishments),
+        "accomplishments": accomplishments,
+        "decorations": [item["trophy"] for item in completed],
+        "next_accomplishment": incomplete[0] if incomplete else None,
+    }
+
 def fellowship_level_for_renown(renown: int) -> int:
     renown = max(0, int(renown))
     level = 1

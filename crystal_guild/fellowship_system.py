@@ -10,6 +10,7 @@ from .fellowship import (
     DEEDS,
     FACILITIES,
     GUILD_RANKS,
+    LEGACY_ACCOMPLISHMENTS,
     GUILD_EXPANSION_FACILITY_IDS,
     PROJECTS,
     WEEKLY_ORDER_SET_REWARD,
@@ -18,6 +19,8 @@ from .fellowship import (
     fellowship_level_for_renown,
     fellowship_level_progress,
     guild_rank_for_renown,
+    legacy_metric_values,
+    legacy_snapshot_from_connection,
     weekly_orders,
     weekly_period_key,
 )
@@ -50,6 +53,7 @@ class FellowshipSystem:
         self.db = db
         self.data = data
         self._seed_static_rows()
+        self._settle_legacy_accomplishments()
 
     def _seed_static_rows(self) -> None:
         with self.db.tx() as conn:
@@ -446,9 +450,86 @@ class FellowshipSystem:
         self.ensure_member(player_id)
         return self.db.one("SELECT * FROM fellowship_members WHERE player_id=?", (str(player_id),))
 
+    def _settle_legacy_accomplishments(self) -> list[str]:
+        notes: list[str] = []
+        old_state = self._state()
+        old_level = int(old_state["level"] if old_state else 1)
+        bonus = 0
+        with self.db.tx() as conn:
+            metrics = legacy_metric_values(conn)
+            for item in LEGACY_ACCOMPLISHMENTS:
+                progress = int(metrics.get(str(item["metric"]), 0))
+                if progress < int(item["target"]):
+                    continue
+                event_key = f"legacy_accomplishment:{item['id']}"
+                inserted = conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'legacy_accomplishment',?,1)",
+                    (event_key, int(item["renown"])),
+                ).rowcount
+                if not inserted:
+                    continue
+                reward = max(0, int(item["renown"]))
+                bonus += reward
+                notes.append(f"GUILD LEGACY — {item['name']} (+{reward} Fellowship Renown) · {item['trophy']} unlocked.")
+                conn.execute(
+                    "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'legacy_accomplishment',?,?)",
+                    (f"{item['name']} — {item['trophy']}", reward),
+                )
+            if bonus:
+                conn.execute(
+                    "UPDATE fellowship_state SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+                    (bonus,),
+                )
+        if bonus:
+            state = self._state()
+            new_level = fellowship_level_for_renown(int(state["renown"] if state else 0))
+            if state and new_level != int(state["level"]):
+                self.db.execute("UPDATE fellowship_state SET level=?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1", (new_level,))
+            if new_level > old_level:
+                notes.append(f"FELLOWSHIP LEVEL UP — LVL {new_level} reached!")
+        return notes
+
+    def legacy_snapshot(self) -> dict[str, Any]:
+        with self.db.tx() as conn:
+            return legacy_snapshot_from_connection(conn)
+
+    def _personal_service_record(self, player_id: str) -> dict[str, Any]:
+        rows = self.db.all(
+            "SELECT activity,COALESCE(SUM(amount),0) AS amount FROM fellowship_events WHERE player_id=? GROUP BY activity",
+            (str(player_id),),
+        )
+        totals = {str(row["activity"]): int(row["amount"] or 0) for row in rows}
+        crew = self.db.one(
+            "SELECT COUNT(DISTINCT run_id) AS n FROM fellowship_airship_mission_members WHERE player_id=?",
+            (str(player_id),),
+        )
+        workshop = self.db.one(
+            "SELECT COALESCE(SUM(amount),0) AS n FROM fellowship_activity WHERE player_id=? AND kind='workshop_service'",
+            (str(player_id),),
+        )
+        return {
+            "ventures_completed": int(totals.get("venture_complete", 0)),
+            "hunts_won": int(totals.get("hunt_win", 0)),
+            "raid_participations": int(totals.get("raid_participation", 0)),
+            "expeditions_completed": int(totals.get("expedition_complete", 0)),
+            "crafts_completed": int(totals.get("craft", 0)),
+            "forge_upgrades": int(totals.get("forge", 0)),
+            "airship_missions_supported": int(crew["n"] if crew else 0),
+            "workshop_batches": int(workshop["n"] if workshop else 0),
+        }
+
     def member_snapshot(self, player_id: str) -> dict[str, Any]:
         member = self._member(player_id)
         rank = guild_rank_for_renown(int(member["renown"]))
+        service = self._personal_service_record(str(player_id))
+        distinctions: list[str] = []
+        if bool(member["founding_member"]): distinctions.append("Founding Member")
+        if int(member["projects_contributed"]) >= 5: distinctions.append("Guild Builder")
+        if int(member["gil_donated"]) >= 100_000: distinctions.append("Guild Benefactor")
+        if int(member["orders_participated"]) >= 10: distinctions.append("Order Veteran")
+        if int(member["deeds_assisted"]) >= 5: distinctions.append("Deedkeeper")
+        if int(service["airship_missions_supported"]) >= 5: distinctions.append("Airship Crew")
+        if int(service["expeditions_completed"]) >= 25: distinctions.append("Frontier Pathfinder")
         return {
             "renown": int(member["renown"]),
             "rank": rank,
@@ -458,6 +539,8 @@ class FellowshipSystem:
             "materials_donated": int(member["materials_donated"]),
             "orders_participated": int(member["orders_participated"]),
             "deeds_assisted": int(member["deeds_assisted"]),
+            "service_record": service,
+            "distinctions": distinctions,
         }
 
     def _ensure_orders(self) -> tuple[str, list[dict[str, Any]]]:
@@ -1028,6 +1111,7 @@ class FellowshipSystem:
                 notes.append(f"GUILD RANK UP — {new_rank['name']}")
                 display = self.db.one("SELECT display_name FROM players WHERE twitch_id=?", (player_id,))
                 self.db.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (?,'rank_up',?,?)", (player_id, f"{display['display_name'] if display else player_id} reached {new_rank['name']}", int(new_rank["index"])))
+        notes.extend(self._settle_legacy_accomplishments())
         return notes
 
     def _check_project_completion(self, triggering_player_id: str | None) -> list[str]:
@@ -1198,4 +1282,5 @@ class FellowshipSystem:
             "effects": self.effects(),
             "services": self.workshop_services_snapshot(),
             "airship": self.airship_snapshot(),
+            "legacy": self.legacy_snapshot(),
         }

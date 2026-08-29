@@ -8887,6 +8887,17 @@ class CrystalGuildEngine:
             "Permanent community milestones; unlike Orders, Deeds never reset.",
         )
 
+    def fellowship_legacy(self) -> GameResult:
+        legacy = self.fellowship_system.legacy_snapshot()
+        next_item = legacy.get("next_accomplishment")
+        next_text = "All current Legacy accomplishments complete." if not next_item else f"Next: {next_item['name']} {next_item['progress']}/{next_item['target']} — {next_item['trophy']}"
+        trophies = ", ".join(legacy.get("decorations", [])[-3:]) or "No Legacy trophies yet."
+        return GameResult.success(
+            f"GUILD LEGACY — {legacy['stage_name']} | {legacy['completed']}/{legacy['total']} accomplishments",
+            next_text,
+            f"Recent trophies: {trophies}",
+        )
+
     def fellowship_facilities(self) -> GameResult:
         guild = self.fellowship_system.public_snapshot()
         parts = [f"{f['name']} Lv.{f.get('level', f.get('tier', 0))}/{f.get('max_level', f.get('max_tier', 3))}{' LOCKED' if f.get('locked') else ''}" for f in guild["facilities"]]
@@ -8902,9 +8913,12 @@ class CrystalGuildEngine:
             return self._need_recruit()
         member = self.fellowship_system.member_snapshot(twitch_id)
         rank = member["rank"]
+        service = member.get("service_record") or {}
+        ribbons = ", ".join(member.get("distinctions") or []) or "No service distinctions yet"
         return GameResult.success(
-            f"FELLOWSHIP RECORD — {p['display_name']} | Guild Rank: {rank['name']} | {member['renown']:,} Renown",
-            f"Projects {member['projects_contributed']} | Gil donated {member['gil_donated']:,} | Materials donated {member['materials_donated']:,} | Orders {member['orders_participated']} | Deeds {member['deeds_assisted']}",
+            f"GUILD SERVICE RECORD — {p['display_name']} | Guild Rank: {rank['name']} | {member['renown']:,} Renown",
+            f"Projects {member['projects_contributed']} | Gil {member['gil_donated']:,} | Materials {member['materials_donated']:,} | Orders {member['orders_participated']} | Deeds {member['deeds_assisted']}",
+            f"Expeditions {int(service.get('expeditions_completed',0))} | Hunts {int(service.get('hunts_won',0))} | Raid service {int(service.get('raid_participations',0))} | Airship missions {int(service.get('airship_missions_supported',0))} | {ribbons}",
         )
 
     def fellowship_rank(self, twitch_id: str) -> GameResult:

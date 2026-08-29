@@ -90,6 +90,7 @@ def main() -> None:
             elif cmd == "contribute": show(game.contribute_fellowship(uid, " ".join(rest)))
             elif cmd == "orders": show(game.fellowship_orders())
             elif cmd == "deeds": show(game.fellowship_deeds())
+            elif cmd in {"legacy", "guildlegacy"}: show(game.fellowship_legacy())
             elif cmd == "facilities": show(game.fellowship_facilities())
             elif cmd in {"airship", "guildairship"}: show(game.fellowship_airship())
             elif cmd in {"contributions", "guildrecord"}: show(game.fellowship_contributions(uid))

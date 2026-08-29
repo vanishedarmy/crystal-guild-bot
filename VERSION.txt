@@ -1,5 +1,5 @@
-v1.3.0 — Guild Expansion Alpha 4
-Runtime: 1.3.0-guild-expansion-a4
+v1.3.0 — Guild Expansion Alpha 5
+Runtime: 1.3.0-guild-expansion-a5
 DB schema: 9
 Hosted sync schema: 1
 Portal Action protocol: 21

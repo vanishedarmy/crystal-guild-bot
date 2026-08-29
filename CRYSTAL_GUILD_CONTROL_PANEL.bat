@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title Crystal Guild v1.3.0 - Guild Expansion Alpha 4
+title Crystal Guild v1.3.0 - Guild Expansion Alpha 5
 
 :menu
 cls

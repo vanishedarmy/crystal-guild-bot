@@ -14,7 +14,7 @@ from .active_battle import battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
-from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, weekly_orders, weekly_period_key)
+from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
 SNAPSHOT_VERSION = "1.1.15-wayfarer"
@@ -246,6 +246,28 @@ class PortalRepository:
         except sqlite3.Error:
             row = None
         renown = int(row["renown"]) if row else 0
+        event_rows = conn.execute("SELECT activity,COALESCE(SUM(amount),0) AS amount FROM fellowship_events WHERE player_id=? GROUP BY activity", (str(player_id),)).fetchall()
+        totals = {str(item["activity"]): int(item["amount"] or 0) for item in event_rows}
+        crew = conn.execute("SELECT COUNT(DISTINCT run_id) AS n FROM fellowship_airship_mission_members WHERE player_id=?", (str(player_id),)).fetchone()
+        workshop = conn.execute("SELECT COALESCE(SUM(amount),0) AS n FROM fellowship_activity WHERE player_id=? AND kind='workshop_service'", (str(player_id),)).fetchone()
+        service = {
+            "ventures_completed": int(totals.get("venture_complete", 0)),
+            "hunts_won": int(totals.get("hunt_win", 0)),
+            "raid_participations": int(totals.get("raid_participation", 0)),
+            "expeditions_completed": int(totals.get("expedition_complete", 0)),
+            "crafts_completed": int(totals.get("craft", 0)),
+            "forge_upgrades": int(totals.get("forge", 0)),
+            "airship_missions_supported": int(crew["n"] if crew else 0),
+            "workshop_batches": int(workshop["n"] if workshop else 0),
+        }
+        distinctions = []
+        if row and bool(row["founding_member"]): distinctions.append("Founding Member")
+        if row and int(row["projects_contributed"]) >= 5: distinctions.append("Guild Builder")
+        if row and int(row["gil_donated"]) >= 100_000: distinctions.append("Guild Benefactor")
+        if row and int(row["orders_participated"]) >= 10: distinctions.append("Order Veteran")
+        if row and int(row["deeds_assisted"]) >= 5: distinctions.append("Deedkeeper")
+        if int(service["airship_missions_supported"]) >= 5: distinctions.append("Airship Crew")
+        if int(service["expeditions_completed"]) >= 25: distinctions.append("Frontier Pathfinder")
         return {
             "renown": renown,
             "rank": guild_rank_for_renown(renown),
@@ -255,6 +277,8 @@ class PortalRepository:
             "materials_donated": int(row["materials_donated"]) if row else 0,
             "orders_participated": int(row["orders_participated"]) if row else 0,
             "deeds_assisted": int(row["deeds_assisted"]) if row else 0,
+            "service_record": service,
+            "distinctions": distinctions,
         }
 
     def fellowship(self) -> dict[str, Any]:
@@ -277,6 +301,7 @@ class PortalRepository:
                     "effects": facility_effects({}),
                     "services": {"workshop": {"level": 0, "forge_discount": 0.0}, "chocobo_stable": {"level": 0, "xp_bonus": 0.0}, "archive": {"level": 0, "rare_event_bonus": 0.0}},
                     "airship": {"built": False, "dock_level": 0, "active_mission": None, "missions": [], "upgrades": [], "history": [], "missions_completed": 0, "missions_failed": 0},
+                    "legacy": {"stage": 1, "stage_name": "Founding Hall", "completed": 0, "total": 10, "accomplishments": [], "decorations": [], "next_accomplishment": None},
                 }
             level = int(state["level"] or 1)
             renown = int(state["renown"] or 0)
@@ -433,6 +458,7 @@ class PortalRepository:
                 "totals": {"gil_donated": int(totals["gil"] if totals else 0), "materials_donated": int(totals["materials"] if totals else 0)},
                 "expedition_board_complete": expedition_done, "rank_ladder": GUILD_RANKS,
                 "effects": effects, "services": services, "airship": airship,
+                "legacy": legacy_snapshot_from_connection(conn),
             }
 
     def overview(self, key: str) -> dict[str, Any] | None:

@@ -99,7 +99,7 @@ COMMAND_USAGE: dict[str, str] = {
 ALIASES: dict[str, str] = {
     "rpghelp": "guild", "cghelp": "guild", "cgcommands": "guild", "rpg": "guild",
     "me": "hero", "profile": "hero", "status": "hero",
-    "guildinfo": "fellowship", "guildrecord": "contributions", "guildrank": "rank",
+    "guildinfo": "fellowship", "guildlegacy": "legacy", "guildrecord": "contributions", "guildrank": "rank",
     "class": "job", "jobs": "job", "skills": "abilities",
     "adv": "venture", "adventure": "venture", "fight": "join", "rally": "join",
     "battle": "encounter", "enc": "encounter", "roundlog": "battlelog", "combatlog": "battlelog",

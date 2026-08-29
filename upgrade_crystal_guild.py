@@ -37,10 +37,10 @@ def _upgrade_command_prefix(env_path: Path = Path(".env")) -> None:
 
 
 def _upgrade_combat_timing_defaults(env_path: Path = Path(".env")) -> None:
-    """Preserve the H9 combat timing defaults while upgrading into v1.2.
+    """Preserve established combat timing defaults during in-place upgrades.
 
     Explicit non-default operator overrides are preserved. Only the exact
-    values shipped by the previous release are rewritten.
+    legacy stock values are rewritten.
     """
     if not env_path.exists():
         return
@@ -72,7 +72,7 @@ def main() -> int:
     _upgrade_combat_timing_defaults()
     load_dotenv()
     db_path = Path(os.getenv("DATABASE_PATH", "crystal_guild.db"))
-    print("Crystal Guild v1.3.0 Guild Expansion Alpha 4 — In-place Upgrade Check")
+    print("Crystal Guild v1.3.0 Guild Expansion Alpha 5 — In-place Upgrade Check")
     print(f"Database: {db_path}")
     if not db_path.exists():
         print("INFO — no existing Guild database found; nothing to migrate.")

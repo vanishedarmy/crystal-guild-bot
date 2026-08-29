@@ -64,7 +64,7 @@ HELP_TOPICS = {
     ),
     "fellowship": (
         "FELLOWSHIP — !fellowship shows the shared Guild LVL, your personal Guild Rank, active project, and weekly progress. !rank shows your personal standing and next promotion.",
-        "Use !project for the current project, !contribute gil <amount> or !contribute <amount> <item> to donate, !orders for weekly objectives, !facilities for Guild upgrades, !workshop for refining services, !airship for shared Airship status, and !contributions for your Fellowship record.",
+        "Use !project for the current project, !contribute gil <amount> or !contribute <amount> <item> to donate, !orders for weekly objectives, !facilities for Guild upgrades, !workshop for refining services, !airship for shared Airship status, !legacy for Guild accomplishments, and !contributions for your Fellowship record.",
     ),
     "chocobos": (
         "CHOCOBOS — the Fellowship first builds the Chocobo Stable. Then complete !chocoboquest, purchase a 500 Gil Registration Writ with !chocobowrit, and wait one hour for it to activate.",
@@ -92,7 +92,7 @@ ALIASES = {
     "monster": "bestiary", "monsters": "bestiary",
     "achievement": "achievements", "achievements": "achievements", "ach": "achievements", "titles": "achievements", "title": "achievements",
     "records": "records", "career": "records", "stats": "records",
-    "fellowship": "fellowship", "guildinfo": "fellowship", "project": "fellowship", "contribute": "fellowship", "orders": "fellowship", "deeds": "fellowship", "facilities": "fellowship", "workshop": "fellowship", "guildworkshop": "fellowship", "refine": "fellowship", "airship": "fellowship", "guildairship": "fellowship", "contributions": "fellowship", "guildrecord": "fellowship", "rank": "fellowship", "guildrank": "fellowship",
+    "fellowship": "fellowship", "guildinfo": "fellowship", "project": "fellowship", "contribute": "fellowship", "orders": "fellowship", "deeds": "fellowship", "facilities": "fellowship", "workshop": "fellowship", "guildworkshop": "fellowship", "refine": "fellowship", "airship": "fellowship", "guildairship": "fellowship", "legacy": "fellowship", "guildlegacy": "fellowship", "contributions": "fellowship", "guildrecord": "fellowship", "rank": "fellowship", "guildrank": "fellowship",
     "chocobo": "chocobos", "stable": "chocobos", "chocoboquest": "chocobos", "chocobowrit": "chocobos", "writ": "chocobos", "registerchocobo": "chocobos", "chocoboname": "chocobos",
     "web": "portal", "website": "portal", "guide": "portal",
 }

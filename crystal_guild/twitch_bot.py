@@ -318,6 +318,10 @@ class RPGCommands(commands.Component):
     async def deeds(self, ctx: commands.Context) -> None:
         await send_result(ctx, self.game.fellowship_deeds(), limit=3)
 
+    @commands.command(aliases=["guildlegacy"])
+    async def legacy(self, ctx: commands.Context) -> None:
+        await send_result(ctx, self.game.fellowship_legacy(), limit=3)
+
     @commands.command()
     async def facilities(self, ctx: commands.Context) -> None:
         await send_result(ctx, self.game.fellowship_facilities(), limit=3)
