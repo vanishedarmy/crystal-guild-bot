@@ -91,9 +91,11 @@ def main() -> None:
             elif cmd == "orders": show(game.fellowship_orders())
             elif cmd == "deeds": show(game.fellowship_deeds())
             elif cmd == "facilities": show(game.fellowship_facilities())
+            elif cmd in {"airship", "guildairship"}: show(game.fellowship_airship())
             elif cmd in {"contributions", "guildrecord"}: show(game.fellowship_contributions(uid))
             elif cmd in {"rank", "guildrank"}: show(game.fellowship_rank(uid))
             elif cmd == "fellowshipproject": show(game.set_fellowship_project(" ".join(rest)))
+            elif cmd == "airshipmission": show(game.set_airship_mission(" ".join(rest)))
             elif cmd == "buy":
                 qty = int(rest[-1]) if rest and rest[-1].isdigit() else 1
                 query = " ".join(rest[:-1] if rest and rest[-1].isdigit() else rest)

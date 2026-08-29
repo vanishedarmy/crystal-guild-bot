@@ -1,55 +1,60 @@
-# Crystal Guild v1.3.0 — Guild Expansion Alpha 3
-## Guild Services & Workshop
+# Crystal Guild v1.3.0 — Guild Expansion Alpha 4
+## Guild Airship
 
-Alpha 3 turns the major Guild facilities into practical day-to-day services while deliberately avoiding large combat-stat bonuses.
+Alpha 4 adds the Crystal Guild Airship as a shared Fellowship-scale system. The Airship is built and upgraded through normal Guild construction, then dispatched on timed missions whose progress comes from the activities players already perform across Crystal Guild.
 
-## Workshop refining
-The Workshop now provides lossy material conversion so surplus common materials can be turned into harder-to-find crafting stock without replacing monster drops, Hunts, Expeditions, or the normal economy.
+## Airship Dock and construction
+The Airship Dock is now part of the live major-facility path instead of a future placeholder.
 
-| Workshop | Service | Cost | Result |
-|---|---|---|---|
-| Lv. 2+ | Refine Mythril | 5 Iron Ore + 250 Gil | 1 Mythril Ore |
-| Lv. 2+ | Temper Dragon Scale | 4 Wyvern Scales + 300 Gil | 1 Dragon Scale |
-| Lv. 3 | Press Adamantite | 6 Mythril Ore + 750 Gil | 1 Adamantite |
-| Lv. 3 | Condense Dark Matter | 10 Elemental Crystals + 1,000 Gil | 1 Dark Matter |
+- **Dock Lv. 1** establishes the construction berth and opens the Crystal Guild Airship project.
+- **Dock Lv. 2** enables Tier II Airship upgrades.
+- **Dock Lv. 3** enables Tier III Airship upgrades.
 
-The existing Workshop forge-fee benefit remains in place: **-2% / -4% / -6%** at major Workshop Lv. 1 / 2 / 3. Refining supports batches while respecting owned materials and Gil. Portal exchanges are replay-safe, and all refining is blocked while the adventurer is committed to active combat or a persistent Adventure.
+Once Dock Lv. 1 and Fellowship LVL 8 are reached, the Guild can complete the one-time **Crystal Guild Airship** construction project. It requires shared Gil, Mythril Ore, Wyvern Scales, Elemental Crystals, Ancient Coins, and Guild raid victories, and awards **1,500 shared Fellowship Renown** when completed.
 
-Players can use Workshop services from their own Portal Fellowship tab or through chat with `!workshop` and `!refine <service> [batches]`.
+## Shared Airship Missions
+One Airship mission can be active at a time. The streamer launches a mission with `!airshipmission <mission>`; everyone can inspect the current deployment with `!airship` / `!guildairship` or from the Fellowship page.
 
-## Chocobo Stable training
-The major Chocobo Stable now increases registered Chocobo XP whenever the companion earns XP:
-- **Lv. 1:** +5%
-- **Lv. 2:** +10%
-- **Lv. 3:** +15%
+| Mission | Base time | Base target | Progress comes from | Success reward |
+|---|---:|---:|---|---|
+| Merchant Escort | 24h | 50 | Ventures | 600 Guild Renown + 750 Gil / 25 personal Renown per contributor |
+| Monster Suppression | 30h | 30 | Hunts and combat victories | 700 + 850 Gil / 30 Renown |
+| Aether Survey | 36h | 15 | Expeditions | 800 + 900 Gil / 35 Renown |
+| Salvage Run | 30h | 35 | Treasure, crafting, forging | 900 + 1,100 Gil / 40 Renown |
+| Crystal Resonance Survey | 42h | 20 | Expeditions and raid victories | 1,000 + 1,200 Gil / 45 Renown |
+| Relic Recovery | 48h | 24 | Raid participation and Expeditions | 1,250 + 1,500 Gil / 55 Renown |
 
-This improves Bond progression without changing combat stats or replacing normal Chocobo activity.
+Advanced missions require Crystal Core upgrades. Meeting the target early does not immediately resolve the deployment: rewards are issued when the Airship returns. Only players who actually added mission progress receive the personal payout. Mission settlement and contributor rewards are replay-safe.
 
-## Guild Archive research
-The Guild Archive now provides a small Expedition research benefit:
-- **Lv. 1:** Guild records/Archive foundation
-- **Lv. 2:** +0.5 percentage point rare Expedition event chance
-- **Lv. 3:** +1.0 percentage point rare Expedition event chance
+## Airship upgrades
+Five upgrade tracks use the normal Fellowship construction/project system and each advance through Tier I–III, gated by Airship Dock level.
 
-The bonus feeds the existing Expedition rare-event roll and remains subject to the normal rare-event ceiling.
+- **Hull** — reduces mission progress targets by **4% per tier**.
+- **Engine** — reduces mission duration by **6% per tier**.
+- **Cargo Hold** — increases contributor Gil rewards by **10% per tier**.
+- **Survey Array** — increases shared Fellowship Renown mission rewards by **5% per tier**.
+- **Crystal Core** — unlocks advanced mission tiers.
 
 ## Fellowship presentation
-- The public Fellowship page now includes a compact **Facility Services** summary.
-- A signed-in player's Fellowship tab exposes unlocked Workshop refining services, owned material counts, batch controls, and service fees.
-- The Player Guide explains the services in player-facing language.
-- Alpha 1 facilities and Alpha 2 Construction, Supply Drives, Guild Objectives, and Weekly Order rewards remain intact.
+- The public Fellowship page now has a dedicated Guild Airship surface with construction state, current mission, mission catalog, upgrade tiers, and recent mission history.
+- A signed-in player's Fellowship tab shows Airship status and upgrade tiers without exposing streamer-only launch controls.
+- The Player Guide explains Airship construction, missions, and upgrades in player-facing language.
+- The Streamer Dashboard includes the allow-listed **Launch Airship Mission** control.
+- What's New leads with the Alpha 4 Airship rollout.
 
-## Portal compatibility
-Alpha 3 adds the typed `WORKSHOP_EXCHANGE` Portal action, so Web and Bot advance together to Portal Action protocol **21**. No new environment variable, OAuth change, or database migration is required.
+## Persistence and compatibility
+Alpha 4 advances the local database **schema 8 → 9** through an additive verified-backup migration. The new schema stores Airship build state, upgrade tiers, active mission state, mission contributors, and mission history. Existing characters, inventories, Fellowship projects, facilities, Weekly Orders, Chocobos, and Expeditions remain intact.
+
+Portal Action protocol remains **21**; no new Portal action type is required for Airship missions.
 
 ## Technical identity
-- Bot runtime: `1.3.0-guild-expansion-a3`
-- Hosted Web runtime: `1.3.0-guild-expansion-a3`
-- Frontend asset revision: `1.3.0-guild-expansion-a3`
-- Local DB schema: **8** unchanged
-- Hosted sync schema: **1** unchanged
+- Bot runtime: `1.3.0-guild-expansion-a4`
+- Hosted Web runtime: `1.3.0-guild-expansion-a4`
+- Frontend asset revision: `1.3.0-guild-expansion-a4`
+- Local DB schema: **9**
+- Hosted sync schema: **1**
 - Portal Action protocol: **21**
-- Twitch prefix: `!` unchanged
-- Database migration: **none**
+- Twitch prefix: `!`
 - Player reset: **none**
+- OAuth change: **none**
 - New environment variables: **none**

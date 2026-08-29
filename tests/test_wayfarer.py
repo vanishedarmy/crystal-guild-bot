@@ -54,7 +54,7 @@ class WayfarerSoloVentureTests(unittest.TestCase):
         return state
 
     def test_schema_five_persists_solo_runs_and_migrates_schema_four_with_backup(self):
-        self.assertEqual(self.db.schema_version(), 8)
+        self.assertEqual(self.db.schema_version(), 9)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='solo_expeditions'"))
         self.db.close()
 
@@ -66,7 +66,7 @@ class WayfarerSoloVentureTests(unittest.TestCase):
 
         migrated = Database(self.path)
         try:
-            self.assertEqual(migrated.schema_version(), 8)
+            self.assertEqual(migrated.schema_version(), 9)
             self.assertIsNotNone(migrated.one("SELECT name FROM sqlite_master WHERE type='table' AND name='solo_expeditions'"))
             self.assertIsNotNone(migrated.pre_migration_backup_path)
             self.assertIn("pre_schema_5", Path(migrated.pre_migration_backup_path).name)

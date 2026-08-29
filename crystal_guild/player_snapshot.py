@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 import threading
 import time
@@ -13,7 +14,7 @@ from .active_battle import battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
-from .fellowship import (DEEDS, FACILITIES, GUILD_RANKS, PROJECTS, facility_effects, fellowship_level_progress, guild_rank_for_renown, weekly_orders, weekly_period_key)
+from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, weekly_orders, weekly_period_key)
 
 
 SNAPSHOT_VERSION = "1.1.15-wayfarer"
@@ -268,24 +269,33 @@ class PortalRepository:
                     "level": 1, "level_label": "LVL 1", "renown": 0,
                     "level_progress": fellowship_level_progress(0), "member_count": 0,
                     "active_project": None, "available_projects": [], "facilities": [],
-                    "orders": {"period": weekly_period_key(), "orders": [], "completed": 0, "total": 0},
+                    "guild_board": {"facility_count": 5, "built_count": 0, "complete_count": 0, "airship_dock_locked": False},
+                    "orders": {"period": weekly_period_key(), "orders": [], "completed": 0, "total": 0, "weekly_bonus": dict(WEEKLY_ORDER_SET_REWARD)},
                     "deeds": [], "deeds_complete": 0, "leaders": [], "recent_activity": [],
                     "totals": {"gil_donated": 0, "materials_donated": 0},
                     "expedition_board_complete": False, "rank_ladder": GUILD_RANKS,
                     "effects": facility_effects({}),
+                    "services": {"workshop": {"level": 0, "forge_discount": 0.0}, "chocobo_stable": {"level": 0, "xp_bonus": 0.0}, "archive": {"level": 0, "rare_event_bonus": 0.0}},
+                    "airship": {"built": False, "dock_level": 0, "active_mission": None, "missions": [], "upgrades": [], "history": [], "missions_completed": 0, "missions_failed": 0},
                 }
             level = int(state["level"] or 1)
             renown = int(state["renown"] or 0)
             tier_rows = conn.execute("SELECT facility_id,tier FROM fellowship_facilities").fetchall()
             tiers = {str(row["facility_id"]): int(row["tier"]) for row in tier_rows}
             facilities = []
-            for facility_id, config in FACILITIES.items():
-                tier = int(tiers.get(facility_id, 0))
+            for facility_id in GUILD_EXPANSION_FACILITY_IDS:
+                config = FACILITIES[facility_id]
+                raw_tier = int(tiers.get(facility_id, 0))
+                max_level = int(config.get("max_level", 3))
+                facility_level = min(max(0, raw_tier), max_level)
+                benefits = list(config.get("level_benefits") or config.get("benefits") or [])
+                current_benefit = benefits[facility_level - 1] if facility_level > 0 and facility_level <= len(benefits) else "Construction plans are posted, but building has not started."
+                next_benefit = benefits[facility_level] if facility_level < max_level and facility_level < len(benefits) else None
                 facilities.append({
-                    "id": facility_id, "name": config["name"], "tier": tier,
-                    "max_tier": int(config["max_tier"]), "description": config["description"],
-                    "current_benefit": config["benefits"][tier - 1] if tier > 0 else "Not yet constructed",
-                    "next_benefit": config["benefits"][tier] if tier < int(config["max_tier"]) else None,
+                    "id": facility_id, "name": config["name"], "level": facility_level, "max_level": max_level,
+                    "tier": facility_level, "max_tier": max_level, "description": config["description"],
+                    "current_benefit": current_benefit, "next_benefit": next_benefit, "locked": False,
+                    "status": "Complete" if facility_level >= max_level else "Buildable",
                 })
 
             def project_snapshot(project_id: str | None) -> dict[str, Any] | None:
@@ -310,21 +320,48 @@ class PortalRepository:
             active_project = project_snapshot(active_id)
             hall = int(tiers.get("guild_hall", 1))
             expedition_done = bool(state["expedition_board_complete"])
+            airship_state = conn.execute("SELECT * FROM fellowship_airship_state WHERE singleton_id=1").fetchone()
+            airship_built = bool(airship_state and int(airship_state["built"] or 0))
+            upgrade_rows = conn.execute("SELECT upgrade_id,tier FROM fellowship_airship_upgrades").fetchall()
+            airship_upgrades = {str(row["upgrade_id"]): int(row["tier"] or 0) for row in upgrade_rows}
             available = []
             for project in PROJECTS.values():
-                if project.get("teaser"):
+                if project.get("legacy"):
+                    continue
+                ptype = str(project.get("project_type") or "construction")
+                if ptype == "airship_construction":
+                    if airship_built or level < int(project.get("required_level", 1)) or int(tiers.get("airship_dock", 0)) < int(project.get("required_dock_level", 1)):
+                        continue
+                elif ptype == "airship_upgrade":
+                    upgrade_id = str(project.get("upgrade_id") or "")
+                    if not airship_built or level < int(project.get("required_level", 1)):
+                        continue
+                    if int(project.get("tier", 0)) != int(airship_upgrades.get(upgrade_id, 0)) + 1:
+                        continue
+                    if int(tiers.get("airship_dock", 0)) < int(project.get("required_dock_level", project.get("tier", 1))):
+                        continue
+                elif ptype in {"supply_drive", "guild_objective"}:
+                    if level < int(project.get("required_level", 1)):
+                        continue
+                    done = conn.execute("SELECT 1 FROM fellowship_events WHERE event_key=?", (f"community_project_complete:{project['id']}",)).fetchone()
+                    if done:
+                        continue
+                elif project.get("teaser"):
                     if expedition_done or hall < int(project.get("required_hall_tier", 5)) or level < int(project["required_level"]):
                         continue
                 else:
                     current = int(tiers.get(project["facility_id"], 0))
                     if int(project["tier"]) != current + 1:
                         continue
-                    if project["facility_id"] != "guild_hall" and int(project["tier"]) > hall:
+                    if project["facility_id"] == "airship_dock" and hall < int(project.get("required_hall_tier", 1)):
+                        continue
+                    if project["facility_id"] not in {"guild_hall", "airship_dock"} and int(project["tier"]) > hall:
                         continue
                     if level < int(project["required_level"]):
                         continue
                 available.append(project_snapshot(project["id"]) or dict(project))
-            available.sort(key=lambda item: (int(item.get("tier", 0)), str(item.get("name", ""))))
+            available.sort(key=lambda item: (str(item.get("project_type", "construction")), int(item.get("tier", 0)), str(item.get("name", ""))))
+
 
             period = weekly_period_key()
             selected = weekly_orders(period)
@@ -357,17 +394,45 @@ class PortalRepository:
                 })
             member_count = conn.execute("SELECT COUNT(*) AS n FROM fellowship_members").fetchone()
             totals = conn.execute("SELECT COALESCE(SUM(gil_donated),0) AS gil,COALESCE(SUM(materials_donated),0) AS materials FROM fellowship_members").fetchone()
+            effects = facility_effects(tiers)
+            services = {
+                "guild_hall": {"level": min(3, int(tiers.get("guild_hall", 0)))},
+                "workshop": {"level": min(3, int(tiers.get("workshop", 0))), "forge_discount": float(effects.get("forge_discount", 0.0))},
+                "chocobo_stable": {"level": min(3, int(tiers.get("chocobo_stable", 0))), "xp_bonus": float(effects.get("chocobo_xp_bonus", 0.0))},
+                "archive": {"level": min(3, int(tiers.get("archives", 0))), "rare_event_bonus": float(effects.get("archive_rare_event_bonus", 0.0))},
+            }
+            upgrades = {key: max(0, min(3, int(airship_upgrades.get(key, 0)))) for key in AIRSHIP_UPGRADES}
+            now = int(time.time())
+            active_mission = None
+            if airship_state and airship_state["active_mission_id"]:
+                mission = next((m for m in AIRSHIP_MISSIONS if m["id"] == str(airship_state["active_mission_id"])), None)
+                if mission:
+                    remaining = max(0, int(airship_state["ends_at"] or now) - now)
+                    hours, rem = divmod(remaining, 3600)
+                    minutes = rem // 60
+                    participant = conn.execute("SELECT COUNT(*) AS n FROM fellowship_airship_mission_members WHERE run_id=?", (str(airship_state["active_run_id"]),)).fetchone()
+                    active_mission = {**mission, "run_id": str(airship_state["active_run_id"]), "started_at": int(airship_state["started_at"] or now), "ends_at": int(airship_state["ends_at"] or now), "progress": int(airship_state["progress"] or 0), "target": int(airship_state["target"] or mission["target"]), "ready": int(airship_state["progress"] or 0) >= int(airship_state["target"] or mission["target"]), "remaining_seconds": remaining, "duration_label": f"{hours}h {minutes:02d}m" if hours else f"{minutes}m", "participant_count": int(participant["n"] if participant else 0)}
+            mission_list = []
+            hull = upgrades.get("hull", 0); engine = upgrades.get("engine", 0); core = upgrades.get("crystal_core", 0)
+            for mission in AIRSHIP_MISSIONS:
+                mission_list.append({**mission, "unlocked": airship_built and int(mission.get("required_core", 0)) <= core, "target_effective": max(1, int(math.ceil(int(mission["target"]) * (1.0 - 0.04 * hull)))), "duration_seconds": max(21600, int(round(float(mission["duration_hours"]) * (1.0 - 0.06 * engine) * 3600)))})
+            history = []
+            for row in conn.execute("SELECT * FROM fellowship_airship_mission_history ORDER BY ended_at DESC LIMIT 5").fetchall():
+                mission = next((m for m in AIRSHIP_MISSIONS if m["id"] == str(row["mission_id"])), {"name": str(row["mission_id"])})
+                history.append({"run_id": row["run_id"], "mission_id": row["mission_id"], "name": mission["name"], "outcome": row["outcome"], "progress": int(row["progress"]), "target": int(row["target"]), "guild_renown": int(row["guild_renown"]), "participant_count": int(row["participant_count"]), "ended_at": int(row["ended_at"])})
+            airship = {"built": airship_built, "dock_level": min(3, int(tiers.get("airship_dock", 0))), "missions_completed": int(airship_state["missions_completed"] or 0) if airship_state else 0, "missions_failed": int(airship_state["missions_failed"] or 0) if airship_state else 0, "active_mission": active_mission, "missions": mission_list, "upgrades": [{"id": key, "name": AIRSHIP_UPGRADES[key]["name"], "description": AIRSHIP_UPGRADES[key]["description"], "tier": upgrades[key], "max_tier": 3} for key in AIRSHIP_UPGRADES], "history": history}
             return {
                 "level": level, "level_label": f"LVL {level}", "renown": renown,
                 "level_progress": fellowship_level_progress(renown),
                 "member_count": int(member_count["n"] if member_count else 0),
                 "active_project": active_project, "available_projects": available, "facilities": facilities,
-                "orders": {"period": period, "orders": order_items, "completed": sum(1 for item in order_items if item["complete"]), "total": len(order_items)},
+                "guild_board": {"facility_count": len(facilities), "built_count": sum(1 for item in facilities if int(item["level"]) > 0), "complete_count": sum(1 for item in facilities if int(item["level"]) >= int(item["max_level"])), "airship_dock_locked": False},
+                "orders": {"period": period, "orders": order_items, "completed": sum(1 for item in order_items if item["complete"]), "total": len(order_items), "weekly_bonus": dict(WEEKLY_ORDER_SET_REWARD)},
                 "deeds": deed_items, "deeds_complete": sum(1 for item in deed_items if item["complete"]),
                 "leaders": leaders, "recent_activity": activity,
                 "totals": {"gil_donated": int(totals["gil"] if totals else 0), "materials_donated": int(totals["materials"] if totals else 0)},
                 "expedition_board_complete": expedition_done, "rank_ladder": GUILD_RANKS,
-                "effects": facility_effects(tiers),
+                "effects": effects, "services": services, "airship": airship,
             }
 
     def overview(self, key: str) -> dict[str, Any] | None:

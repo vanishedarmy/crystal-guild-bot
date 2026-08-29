@@ -1,6 +1,6 @@
-Crystal Guild v1.3.0 Guild Expansion Alpha 3 — Bot Package Manifest
-Runtime: 1.3.0-guild-expansion-a3
-Local DB schema: 8
+Crystal Guild v1.3.0 Guild Expansion Alpha 4 — Bot Package Manifest
+Runtime: 1.3.0-guild-expansion-a4
+Local DB schema: 9
 Hosted sync schema: 1
 Portal Action protocol: 21
-Feature state: Guild Services & Workshop Alpha 3
+Feature state: Guild Airship Alpha 4

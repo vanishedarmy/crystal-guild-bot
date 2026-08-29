@@ -142,17 +142,17 @@ FACILITIES: dict[str, dict[str, Any]] = {
     },
     "airship_dock": {
         "name": "Airship Dock",
-        "description": "The future home of the Crystal Guild Airship.",
+        "description": "The construction and service dock for the Crystal Guild Airship.",
         "max_tier": 3,
         "guild_expansion": True,
         "max_level": 3,
-        "future_locked": True,
+        "future_locked": False,
         "level_benefits": [
-            "Dock foundation established.",
-            "Airship service gantry expanded.",
-            "Grand Airship Dock complete.",
+            "Airship construction berth established; the Crystal Guild Airship can be built.",
+            "Expanded service gantry enables Tier II Airship upgrades.",
+            "Grand Airship Dock enables Tier III Airship upgrades.",
         ],
-        "benefits": ["Dock foundation established", "Airship service gantry expanded", "Grand Airship Dock complete"],
+        "benefits": ["Airship construction berth established", "Tier II Airship upgrades enabled", "Tier III Airship upgrades enabled"],
         "material": "ancient_coin", "activity": "raid_clear",
     },
 }
@@ -170,8 +170,72 @@ WORKSHOP_EXCHANGES = [
 ]
 
 
+# Alpha 4 — Guild Airship. Missions are shared deployments whose progress is
+# supplied by ordinary Guild play while the Airship is away. The active run is
+# persistent in schema 9; rewards resolve once the return timer expires.
+AIRSHIP_MISSIONS = [
+    {
+        "id": "merchant_escort", "name": "Merchant Escort", "required_core": 0,
+        "duration_hours": 24, "target": 50, "activities": {"venture_complete": 1},
+        "guild_renown": 600, "personal_gil": 750, "personal_renown": 25,
+        "description": "Keep trade lanes moving. Normal Ventures supply escort progress while the Airship carries a merchant convoy.",
+    },
+    {
+        "id": "monster_suppression", "name": "Monster Suppression", "required_core": 0,
+        "duration_hours": 30, "target": 30, "activities": {"hunt_win": 2, "combat_victory": 1, "encounter_win": 1},
+        "guild_renown": 700, "personal_gil": 850, "personal_renown": 30,
+        "description": "Support the Airship patrol by defeating dangerous monsters and Hunt marks across the Guild's routes.",
+    },
+    {
+        "id": "aether_survey", "name": "Aether Survey", "required_core": 0,
+        "duration_hours": 36, "target": 15, "activities": {"expedition_complete": 1},
+        "guild_renown": 800, "personal_gil": 900, "personal_renown": 35,
+        "description": "Feed Expedition route data to an airborne aether survey of the frontier.",
+    },
+    {
+        "id": "salvage_run", "name": "Salvage Run", "required_core": 1,
+        "duration_hours": 30, "target": 35, "activities": {"treasure": 1, "forge": 1, "craft": 1},
+        "guild_renown": 900, "personal_gil": 1100, "personal_renown": 40,
+        "description": "Search old ruins and wreckage. Treasure finds and artisan work keep the salvage crew supplied.",
+    },
+    {
+        "id": "crystal_resonance", "name": "Crystal Resonance Survey", "required_core": 1,
+        "duration_hours": 42, "target": 20, "activities": {"expedition_complete": 1, "raid_win": 1},
+        "guild_renown": 1000, "personal_gil": 1200, "personal_renown": 45,
+        "description": "Map unstable crystal currents using Expedition discoveries and raid-combat telemetry.",
+    },
+    {
+        "id": "relic_recovery", "name": "Relic Recovery", "required_core": 2,
+        "duration_hours": 48, "target": 24, "activities": {"raid_participation": 1, "expedition_complete": 2},
+        "guild_renown": 1250, "personal_gil": 1500, "personal_renown": 55,
+        "description": "Back a difficult recovery operation with raid deployments and deep Expedition fieldwork.",
+    },
+]
+
+AIRSHIP_UPGRADES = {
+    "hull": {"name": "Hull", "description": "Reinforced plating gives dangerous missions a larger success margin."},
+    "engine": {"name": "Engine", "description": "Improved engines shorten Airship mission travel time."},
+    "cargo": {"name": "Cargo Hold", "description": "Expanded cargo capacity increases participant Gil rewards."},
+    "survey": {"name": "Survey Array", "description": "Better instruments increase Fellowship Renown earned from Airship missions."},
+    "crystal_core": {"name": "Crystal Core", "description": "A stronger core unlocks advanced Airship missions."},
+}
+
+
 def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
     facility = FACILITIES[facility_id]
+    if facility_id == "airship_dock":
+        dock_targets = {
+            1: (75_000, 30, 6, 7),
+            2: (125_000, 50, 10, 8),
+            3: (225_000, 80, 15, 9),
+        }
+        gil_target, coin_target, raid_target, level_req = dock_targets[tier]
+        return [
+            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": gil_target, "label": "Gil"},
+            {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": coin_target, "label": "Ancient Coin"},
+            {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": raid_target, "label": "Guild raids won"},
+            {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": level_req, "label": "Fellowship LVL"},
+        ]
     if facility_id == "chocobo_stable":
         stable_targets = {
             1: (5_000, 0, 10, 2),
@@ -261,6 +325,14 @@ for _facility_id, _facility in FACILITIES.items():
         }
 
 
+for _tier, _level_req, _hall_req in ((1, 7, 2), (2, 8, 3), (3, 9, 3)):
+    _dock_project = PROJECTS.get(f"airship_dock_t{_tier}")
+    if _dock_project:
+        _dock_project["required_level"] = _level_req
+        _dock_project["required_hall_tier"] = _hall_req
+
+
+
 # v1.2 Expeditions: the shared Expedition Board becomes available at Fellowship LVL 6 once Guild Hall Tier 1 is established.
 # Completing the Board is the Fellowship-wide launch gate for distant contracts.
 PROJECTS["expedition_board"] = {
@@ -340,6 +412,56 @@ COMMUNITY_PROJECTS: dict[str, dict[str, Any]] = {
     },
 }
 PROJECTS.update(COMMUNITY_PROJECTS)
+
+
+# The Airship itself is a one-time Fellowship construction project after the
+# first Dock level. Upgrade tracks then use the same contribution ledger as
+# ordinary construction, with their final tier capped by Airship Dock level.
+PROJECTS["crystal_guild_airship"] = {
+    "id": "crystal_guild_airship", "facility_id": "airship", "tier": 0, "level": 0,
+    "name": "Crystal Guild Airship", "project_type": "airship_construction",
+    "description": "Construct the Fellowship's shared Airship and open Guild-scale deployments.",
+    "required_level": 8, "required_dock_level": 1, "reward_renown": 1500,
+    "requirements": [
+        {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 150_000, "label": "Gil"},
+        {"key": "item:mythril_ore", "kind": "item", "asset_id": "mythril_ore", "target": 40, "label": "Mythril Ore"},
+        {"key": "item:wyvern_scale", "kind": "item", "asset_id": "wyvern_scale", "target": 20, "label": "Wyvern Scale"},
+        {"key": "item:elemental_crystal", "kind": "item", "asset_id": "elemental_crystal", "target": 25, "label": "Elemental Crystal"},
+        {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 10, "label": "Ancient Coin"},
+        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 10, "label": "Guild raids won"},
+        {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 8, "label": "Fellowship LVL"},
+    ],
+}
+
+def _airship_upgrade_requirements(upgrade_id: str, tier: int) -> list[dict[str, Any]]:
+    # Track-specific materials keep each improvement thematic while the common
+    # Gil/raid requirements preserve the communal construction loop.
+    material = {
+        "hull": "adamantite",
+        "engine": "magitek_capacitor",
+        "cargo": "mythril_ore",
+        "survey": "elemental_crystal",
+        "crystal_core": "dark_matter",
+    }[upgrade_id]
+    gil = (30_000, 70_000, 140_000)[tier - 1]
+    qty = (5, 10, 18)[tier - 1]
+    raids = (2, 4, 7)[tier - 1]
+    return [
+        {"key": "gil", "kind": "gil", "asset_id": "gil", "target": gil, "label": "Gil"},
+        {"key": f"item:{material}", "kind": "item", "asset_id": material, "target": qty, "label": material.replace("_", " ").title()},
+        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": raids, "label": "Guild raids won"},
+    ]
+
+for _upgrade_id, _upgrade in AIRSHIP_UPGRADES.items():
+    for _tier in range(1, 4):
+        _project_id = f"airship_{_upgrade_id}_t{_tier}"
+        PROJECTS[_project_id] = {
+            "id": _project_id, "facility_id": "airship", "tier": _tier, "level": _tier,
+            "upgrade_id": _upgrade_id, "name": f"Airship {_upgrade['name']} — Tier {_tier}",
+            "project_type": "airship_upgrade", "description": _upgrade["description"],
+            "required_level": 8, "required_dock_level": _tier, "reward_renown": 300 * _tier,
+            "requirements": _airship_upgrade_requirements(_upgrade_id, _tier),
+        }
 
 
 ORDER_DEFINITIONS = [

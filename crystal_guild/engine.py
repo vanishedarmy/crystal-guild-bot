@@ -8059,6 +8059,7 @@ class CrystalGuildEngine:
             "member": member,
             "project": project_payload,
             "services": self.fellowship_system.workshop_services_snapshot(twitch_id),
+            "airship": self.fellowship_system.airship_snapshot(),
         }
 
     def portal_fellowship_state(self, twitch_id: str) -> GameResult:
@@ -8803,7 +8804,7 @@ class CrystalGuildEngine:
         return GameResult.success(
             f"FELLOWSHIP — {level_text} | Members {guild['member_count']} | Weekly Orders {guild['orders']['completed']}/{guild['orders']['total']}",
             f"Your Guild Rank: {rank_text}{founding}",
-            f"Active Project: {project_text} | !project · !orders · !facilities · !contributions",
+            f"Active Project: {project_text} | !project · !orders · !airship · !facilities · !contributions",
         )
 
     def fellowship_project(self) -> GameResult:
@@ -8842,6 +8843,39 @@ class CrystalGuildEngine:
             f"FELLOWSHIP ORDERS [{orders['period']}] — " + " | ".join(parts),
             f"Clear all three: +{int(weekly.get('guild_renown', 0))} Guild Renown; anyone who helped with at least one gets {int(weekly.get('personal_gil', 0))}g +{int(weekly.get('personal_renown', 0))} personal Renown.",
         )
+
+    def fellowship_airship(self) -> GameResult:
+        airship = self.fellowship_system.airship_snapshot()
+        if not airship.get("built"):
+            dock = int(airship.get("dock_level", 0))
+            return GameResult.success(
+                f"GUILD AIRSHIP — Not yet constructed | Airship Dock Lv.{dock}/3",
+                "Build Airship Dock Lv.1, then complete the Crystal Guild Airship Fellowship project.",
+            )
+        active = airship.get("active_mission")
+        upgrade_text = ", ".join(f"{u['name']} T{u['tier']}" for u in airship.get("upgrades", []))
+        if active:
+            status = "GOAL READY" if active.get("ready") else f"{active.get('progress', 0)}/{active.get('target', 0)} progress"
+            return GameResult.success(
+                f"GUILD AIRSHIP — {active['name']} | {status} | returns in {active.get('duration_label', 'scheduled time')}",
+                f"Contributors {active.get('participant_count', 0)} | {upgrade_text}",
+            )
+        unlocked = ", ".join(m["name"] for m in airship.get("missions", []) if m.get("unlocked")) or "none"
+        return GameResult.success(
+            f"GUILD AIRSHIP — READY | Missions complete {airship.get('missions_completed', 0)}",
+            f"Unlocked missions: {unlocked}",
+            upgrade_text,
+        )
+
+    def set_airship_mission(self, mission_query: str) -> GameResult:
+        ok, message, mission = self.fellowship_system.start_airship_mission(mission_query)
+        if not ok:
+            return GameResult.fail(message)
+        detail = ""
+        if mission:
+            activities = ", ".join(str(key).replace("_", " ").title() for key in (mission.get("activities") or {}))
+            detail = f"Progress from: {activities}."
+        return GameResult.success(message, detail if detail else "The Airship is underway.")
 
     def fellowship_deeds(self) -> GameResult:
         deeds = self.fellowship_system.deeds_snapshot()

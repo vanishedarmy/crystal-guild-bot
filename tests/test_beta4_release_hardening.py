@@ -191,15 +191,19 @@ class Beta4ReleaseHardeningTests(unittest.TestCase):
                 "ON CONFLICT(player_id) DO UPDATE SET name='Legacy Bird',xp=900,portrait_id='cobalt_blue',registered_at=CURRENT_TIMESTAMP"
             )
             with legacy.tx() as conn:
-                conn.execute("DELETE FROM schema_migrations WHERE version=8")
+                conn.execute("DELETE FROM schema_migrations WHERE version>=8")
                 conn.execute("DROP TABLE IF EXISTS player_region_exploration")
                 conn.execute("DROP TABLE IF EXISTS player_expeditions")
+                conn.execute("DROP TABLE IF EXISTS fellowship_airship_mission_history")
+                conn.execute("DROP TABLE IF EXISTS fellowship_airship_mission_members")
+                conn.execute("DROP TABLE IF EXISTS fellowship_airship_upgrades")
+                conn.execute("DROP TABLE IF EXISTS fellowship_airship_state")
         finally:
             legacy.close()
 
         upgraded = Database(path)
         try:
-            self.assertEqual(upgraded.schema_version(), 8)
+            self.assertEqual(upgraded.schema_version(), 9)
             row = upgraded.one(
                 "SELECT level,xp,gil,current_hp,current_mp,current_ap FROM players WHERE twitch_id='999'"
             )
@@ -208,7 +212,7 @@ class Beta4ReleaseHardeningTests(unittest.TestCase):
             self.assertEqual(upgraded.one("SELECT name FROM player_chocobos WHERE player_id='999'")["name"], "Legacy Bird")
             self.assertIsNotNone(upgraded.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_expeditions'"))
             self.assertIsNotNone(upgraded.pre_migration_backup_path)
-            self.assertIn("pre_schema_8", Path(upgraded.pre_migration_backup_path).name)
+            self.assertIn("pre_schema_9", Path(upgraded.pre_migration_backup_path).name)
             self.assertEqual(upgraded.quick_check(), [])
         finally:
             upgraded.close()

@@ -310,6 +310,10 @@ class RPGCommands(commands.Component):
     async def orders(self, ctx: commands.Context) -> None:
         await send_result(ctx, self.game.fellowship_orders(), limit=3)
 
+    @commands.command(aliases=["guildairship"])
+    async def airship(self, ctx: commands.Context) -> None:
+        await send_result(ctx, self.game.fellowship_airship(), limit=3)
+
     @commands.command()
     async def deeds(self, ctx: commands.Context) -> None:
         await send_result(ctx, self.game.fellowship_deeds(), limit=3)
@@ -698,6 +702,12 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.set_fellowship_project(project_name), limit=3)
 
     @commands.command()
+    async def airshipmission(self, ctx: commands.Context, *, mission_name: str) -> None:
+        if not await self._owner_only(ctx):
+            return
+        await send_result(ctx, self.game.set_airship_mission(mission_name), limit=3)
+
+    @commands.command()
     async def readyall(self, ctx: commands.Context) -> None:
         if not await self._owner_only(ctx):
             return
@@ -1009,6 +1019,7 @@ def main() -> None:
             heartbeat_seconds=settings.portal_sync_heartbeat_seconds,
             overlay_state_path=settings.overlay_state_path,
             owner_twitch_id=settings.owner_id,
+            fellowship_prepare=lambda: game.fellowship_system.airship_snapshot(),
         )
         portal_sync = PortalSyncWorker(sync_client)
     elif settings.cloud_runtime:

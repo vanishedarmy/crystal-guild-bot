@@ -1,3 +1,12 @@
+# v1.3.0 — Guild Expansion Alpha 4
+
+- Makes Airship Dock Lv. 1–3 part of the live Guild facility path and adds one-time Crystal Guild Airship construction.
+- Adds six timed shared Airship Missions whose progress comes from Ventures, Hunts/combat, Expeditions, crafting/forging/treasure, and raids.
+- Adds five Tier I–III Airship upgrade tracks: Hull, Engine, Cargo Hold, Survey Array, and Crystal Core.
+- Adds `!airship` / `!guildairship` for shared status plus owner-only `!airshipmission <mission>`.
+- Adds persistent Airship mission state, contributor tracking, mission history, return-time settlement, and replay-safe contributor rewards.
+- Advances local DB schema **8 → 9** through an additive verified-backup migration; hosted sync schema 1 and Portal protocol 21 remain unchanged.
+
 # v1.3.0 — Guild Expansion Alpha 3
 
 - Adds Workshop material refining at major Workshop Lv. 2/3, with lossy conversion recipes and Gil service fees.

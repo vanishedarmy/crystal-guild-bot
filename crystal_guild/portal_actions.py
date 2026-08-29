@@ -624,6 +624,11 @@ class PortalActionWorker:
             if not text:
                 return False, "Choose a Fellowship project first.", {}
             return self._game_result(self.game.set_fellowship_project(text))
+        if command == "airshipmission":
+            text = " ".join(str(argument or "").strip().split())
+            if not text:
+                return False, "Choose an Airship mission first.", {}
+            return self._game_result(self.game.set_airship_mission(text))
         if command == "readyall":
             return self._game_result(self.game.ready_all_players())
         if command == "resettimers":

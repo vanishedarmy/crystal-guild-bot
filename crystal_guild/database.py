@@ -253,7 +253,8 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Chocobo companion and registration-writ state; version 5 adds
 -- persistent per-player Wayfarer Solo Expedition state; version 6 adds
 -- persistent Chocobo portrait selection; version 7 adds durable Portal adventure result acknowledgements; version 8 adds
--- persistent v1.2 Expedition runs and per-region exploration progress.
+-- persistent v1.2 Expedition runs and per-region exploration progress; version 9 adds
+-- persistent Fellowship Airship state, upgrades, mission participation, and mission history.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -261,7 +262,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 8
+DATABASE_SCHEMA_VERSION = 9
 
 
 class Database:
@@ -643,6 +644,69 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_region_exploration_progress
                     ON player_region_exploration(region_id, progress DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (8,'expeditions_foundation');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v9 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=9").fetchone()
+        )
+        if not already_v9:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(9)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS fellowship_airship_state (
+                        singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1),
+                        built INTEGER NOT NULL DEFAULT 0,
+                        active_mission_id TEXT,
+                        active_run_id TEXT,
+                        started_at INTEGER,
+                        ends_at INTEGER,
+                        progress INTEGER NOT NULL DEFAULT 0,
+                        target INTEGER NOT NULL DEFAULT 0,
+                        missions_completed INTEGER NOT NULL DEFAULT 0,
+                        missions_failed INTEGER NOT NULL DEFAULT 0,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_airship_upgrades (
+                        upgrade_id TEXT PRIMARY KEY,
+                        tier INTEGER NOT NULL DEFAULT 0,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_airship_mission_members (
+                        run_id TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        contribution INTEGER NOT NULL DEFAULT 0,
+                        PRIMARY KEY (run_id, player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS fellowship_airship_mission_history (
+                        run_id TEXT PRIMARY KEY,
+                        mission_id TEXT NOT NULL,
+                        started_at INTEGER NOT NULL,
+                        ended_at INTEGER NOT NULL,
+                        outcome TEXT NOT NULL,
+                        progress INTEGER NOT NULL DEFAULT 0,
+                        target INTEGER NOT NULL DEFAULT 0,
+                        guild_renown INTEGER NOT NULL DEFAULT 0,
+                        participant_count INTEGER NOT NULL DEFAULT 0
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_airship_mission_history_ended
+                    ON fellowship_airship_mission_history(ended_at DESC);
+                    INSERT OR IGNORE INTO fellowship_airship_state(singleton_id,built) VALUES (1,0);
+                    INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('hull',0);
+                    INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('engine',0);
+                    INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('cargo',0);
+                    INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('survey',0);
+                    INSERT OR IGNORE INTO fellowship_airship_upgrades(upgrade_id,tier) VALUES ('crystal_core',0);
+                    INSERT INTO schema_migrations(version,name) VALUES (9,'guild_airship');
                     COMMIT;
                     """
                 )

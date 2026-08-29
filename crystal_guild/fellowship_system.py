@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import math
 import time
 from typing import Any
 
 from .fellowship import (
+    AIRSHIP_MISSIONS,
+    AIRSHIP_UPGRADES,
     DEEDS,
     FACILITIES,
     GUILD_RANKS,
@@ -103,6 +106,262 @@ class FellowshipSystem:
 
     def archive_rare_event_bonus(self) -> float:
         return max(0.0, float(self.effects().get("archive_rare_event_bonus", 0.0)))
+
+    def _airship_state(self) -> Any:
+        return self.db.one("SELECT * FROM fellowship_airship_state WHERE singleton_id=1")
+
+    def airship_upgrades(self) -> dict[str, int]:
+        rows = self.db.all("SELECT upgrade_id,tier FROM fellowship_airship_upgrades")
+        values = {str(row["upgrade_id"]): max(0, min(3, int(row["tier"] or 0))) for row in rows}
+        for upgrade_id in AIRSHIP_UPGRADES:
+            values.setdefault(upgrade_id, 0)
+        return values
+
+    @staticmethod
+    def _airship_mission_definition(mission_id: str) -> dict[str, Any] | None:
+        return next((mission for mission in AIRSHIP_MISSIONS if mission["id"] == str(mission_id)), None)
+
+    def _airship_mission_target(self, mission: dict[str, Any], upgrades: dict[str, int]) -> int:
+        # Hull reinforcement gives dangerous deployments a small progress buffer
+        # without making normal play irrelevant. At Tier III the requirement is
+        # only 12% lower than the base mission target.
+        hull = max(0, min(3, int(upgrades.get("hull", 0))))
+        return max(1, int(math.ceil(int(mission["target"]) * (1.0 - (0.04 * hull)))))
+
+    def _airship_mission_duration(self, mission: dict[str, Any], upgrades: dict[str, int]) -> int:
+        engine = max(0, min(3, int(upgrades.get("engine", 0))))
+        hours = float(mission["duration_hours"]) * (1.0 - (0.06 * engine))
+        return max(6 * 3600, int(round(hours * 3600)))
+
+    def _progress_airship_mission(self, conn: Any, player_id: str | None, activity: str, amount: int) -> None:
+        state = conn.execute("SELECT * FROM fellowship_airship_state WHERE singleton_id=1").fetchone()
+        if not state or not int(state["built"] or 0) or not state["active_mission_id"]:
+            return
+        now = int(time.time())
+        if state["ends_at"] is not None and now >= int(state["ends_at"]):
+            return
+        mission = self._airship_mission_definition(str(state["active_mission_id"]))
+        if not mission:
+            return
+        weight = int((mission.get("activities") or {}).get(str(activity), 0))
+        if weight <= 0:
+            return
+        before = max(0, int(state["progress"] or 0))
+        target = max(1, int(state["target"] or mission["target"]))
+        add = max(0, min(target - before, max(1, int(amount)) * weight))
+        if not add:
+            return
+        conn.execute(
+            "UPDATE fellowship_airship_state SET progress=progress+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+            (add,),
+        )
+        if player_id and state["active_run_id"]:
+            conn.execute(
+                "INSERT INTO fellowship_airship_mission_members(run_id,player_id,contribution) VALUES (?,?,?) "
+                "ON CONFLICT(run_id,player_id) DO UPDATE SET contribution=fellowship_airship_mission_members.contribution+excluded.contribution",
+                (str(state["active_run_id"]), str(player_id), add),
+            )
+
+    def _settle_airship_mission_if_due(self, now: int | None = None) -> list[str]:
+        now = int(time.time()) if now is None else int(now)
+        state = self._airship_state()
+        if not state or not state["active_mission_id"] or not state["active_run_id"]:
+            return []
+        if state["ends_at"] is None or now < int(state["ends_at"]):
+            return []
+        mission = self._airship_mission_definition(str(state["active_mission_id"]))
+        if not mission:
+            with self.db.tx() as conn:
+                conn.execute(
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_failed=missions_failed+1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                )
+            return ["AIRSHIP — The returning mission record was invalid and has been cleared."]
+        run_id = str(state["active_run_id"])
+        progress = max(0, int(state["progress"] or 0))
+        target = max(1, int(state["target"] or mission["target"]))
+        success = progress >= target
+        old_state = self._state()
+        old_level = int(old_state["level"] if old_state else 1)
+        upgrades = self.airship_upgrades()
+        survey = max(0, min(3, int(upgrades.get("survey", 0))))
+        cargo = max(0, min(3, int(upgrades.get("cargo", 0))))
+        guild_reward = int(round(int(mission["guild_renown"]) * (1.0 + 0.05 * survey))) if success else 0
+        personal_gil = int(round(int(mission["personal_gil"]) * (1.0 + 0.10 * cargo))) if success else 0
+        personal_renown = int(mission["personal_renown"]) if success else 0
+        participants = self.db.all(
+            "SELECT player_id,contribution FROM fellowship_airship_mission_members WHERE run_id=? ORDER BY contribution DESC,player_id",
+            (run_id,),
+        )
+        with self.db.tx() as conn:
+            event_key = f"airship_mission_settle:{run_id}"
+            inserted = conn.execute(
+                "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'airship_mission_settle',?,1)",
+                (event_key, guild_reward),
+            ).rowcount
+            if not inserted:
+                conn.execute(
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                )
+                return []
+            if success and guild_reward:
+                conn.execute(
+                    "UPDATE fellowship_state SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+                    (guild_reward,),
+                )
+            rewarded = 0
+            if success:
+                for row in participants:
+                    participant_id = str(row["player_id"])
+                    self.ensure_member(participant_id)
+                    reward_key = f"airship_mission_reward:{run_id}:{participant_id}"
+                    reward_inserted = conn.execute(
+                        "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,?,'airship_mission_reward',0,1)",
+                        (reward_key, participant_id),
+                    ).rowcount
+                    if not reward_inserted:
+                        continue
+                    if personal_gil:
+                        conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (personal_gil, participant_id))
+                        conn.execute(
+                            "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'guild_airship')",
+                            (participant_id, personal_gil),
+                        )
+                    if personal_renown:
+                        conn.execute(
+                            "UPDATE fellowship_members SET renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                            (personal_renown, participant_id),
+                        )
+                    rewarded += 1
+            outcome = "success" if success else "failed"
+            conn.execute(
+                "INSERT OR REPLACE INTO fellowship_airship_mission_history(run_id,mission_id,started_at,ended_at,outcome,progress,target,guild_renown,participant_count) VALUES (?,?,?,?,?,?,?,?,?)",
+                (run_id, mission["id"], int(state["started_at"] or now), now, outcome, progress, target, guild_reward, len(participants)),
+            )
+            if success:
+                conn.execute(
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_completed=missions_completed+1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                )
+                conn.execute(
+                    "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_complete',?,?)",
+                    (mission["name"], guild_reward),
+                )
+            else:
+                conn.execute(
+                    "UPDATE fellowship_airship_state SET active_mission_id=NULL,active_run_id=NULL,started_at=NULL,ends_at=NULL,progress=0,target=0,missions_failed=missions_failed+1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1"
+                )
+                conn.execute(
+                    "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_failed',?,0)",
+                    (mission["name"],),
+                )
+        notes = self._finalize_progress(None, old_level, None)
+        if success:
+            return [
+                f"AIRSHIP MISSION COMPLETE — {mission['name']} (+{guild_reward} Fellowship Renown).",
+                f"Airship crew support — {rewarded} contributor{'s' if rewarded != 1 else ''} received {personal_gil:,}g +{personal_renown} personal Renown.",
+                *notes[:2],
+            ]
+        return [f"AIRSHIP MISSION FAILED — {mission['name']} returned at {progress}/{target} mission progress."]
+
+    def start_airship_mission(self, query: str) -> tuple[bool, str, dict[str, Any] | None]:
+        self._settle_airship_mission_if_due()
+        state = self._airship_state()
+        if not state or not int(state["built"] or 0):
+            return False, "The Crystal Guild Airship has not been completed yet.", None
+        if state["active_mission_id"]:
+            active = self.airship_snapshot().get("active_mission")
+            return False, f"The Airship is already away on {active['name'] if active else 'a mission'}.", active
+        norm = str(query or "").strip().lower().replace("-", "_").replace(" ", "_")
+        upgrades = self.airship_upgrades()
+        core = int(upgrades.get("crystal_core", 0))
+        unlocked = [mission for mission in AIRSHIP_MISSIONS if int(mission.get("required_core", 0)) <= core]
+        mission = next((item for item in unlocked if item["id"] == norm), None)
+        if mission is None:
+            mission = next((item for item in unlocked if str(item["name"]).lower() == str(query or "").strip().lower()), None)
+        if mission is None:
+            names = ", ".join(item["name"] for item in unlocked) or "none"
+            return False, f"Airship mission unavailable. Unlocked missions: {names}.", None
+        now = int(time.time())
+        duration = self._airship_mission_duration(mission, upgrades)
+        target = self._airship_mission_target(mission, upgrades)
+        run_id = f"{mission['id']}:{time.time_ns()}"
+        with self.db.tx() as conn:
+            conn.execute(
+                "UPDATE fellowship_airship_state SET active_mission_id=?,active_run_id=?,started_at=?,ends_at=?,progress=0,target=?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1",
+                (mission["id"], run_id, now, now + duration, target),
+            )
+            conn.execute(
+                "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_started',?,?)",
+                (mission["name"], target),
+            )
+        snapshot = self.airship_snapshot()
+        active = snapshot.get("active_mission")
+        return True, f"AIRSHIP MISSION — {mission['name']} launched. Return in {active['duration_label'] if active else 'scheduled time'}; goal {target} progress.", active
+
+    def airship_snapshot(self, now: int | None = None) -> dict[str, Any]:
+        now = int(time.time()) if now is None else int(now)
+        settlement_notes = self._settle_airship_mission_if_due(now)
+        state = self._airship_state()
+        upgrades = self.airship_upgrades()
+        built = bool(state and int(state["built"] or 0))
+        core = int(upgrades.get("crystal_core", 0))
+        mission_list = []
+        for mission in AIRSHIP_MISSIONS:
+            unlocked = built and int(mission.get("required_core", 0)) <= core
+            mission_list.append({
+                **mission,
+                "unlocked": unlocked,
+                "target_effective": self._airship_mission_target(mission, upgrades),
+                "duration_seconds": self._airship_mission_duration(mission, upgrades),
+            })
+        active = None
+        if state and state["active_mission_id"]:
+            mission = self._airship_mission_definition(str(state["active_mission_id"]))
+            if mission:
+                remaining = max(0, int(state["ends_at"] or now) - now)
+                hours, rem = divmod(remaining, 3600)
+                minutes = rem // 60
+                participants = self.db.one(
+                    "SELECT COUNT(*) AS n FROM fellowship_airship_mission_members WHERE run_id=?",
+                    (str(state["active_run_id"]),),
+                )
+                active = {
+                    **mission,
+                    "run_id": str(state["active_run_id"]),
+                    "started_at": int(state["started_at"] or now),
+                    "ends_at": int(state["ends_at"] or now),
+                    "progress": int(state["progress"] or 0),
+                    "target": int(state["target"] or mission["target"]),
+                    "ready": int(state["progress"] or 0) >= int(state["target"] or mission["target"]),
+                    "remaining_seconds": remaining,
+                    "duration_label": f"{hours}h {minutes:02d}m" if hours else f"{minutes}m",
+                    "participant_count": int(participants["n"] if participants else 0),
+                }
+        history_rows = self.db.all(
+            "SELECT * FROM fellowship_airship_mission_history ORDER BY ended_at DESC LIMIT 5"
+        )
+        history = []
+        for row in history_rows:
+            mission = self._airship_mission_definition(str(row["mission_id"])) or {"name": str(row["mission_id"])}
+            history.append({
+                "run_id": row["run_id"], "mission_id": row["mission_id"], "name": mission["name"],
+                "outcome": row["outcome"], "progress": int(row["progress"]), "target": int(row["target"]),
+                "guild_renown": int(row["guild_renown"]), "participant_count": int(row["participant_count"]),
+                "ended_at": int(row["ended_at"]),
+            })
+        return {
+            "built": built,
+            "dock_level": self.major_facility_level("airship_dock"),
+            "missions_completed": int(state["missions_completed"] or 0) if state else 0,
+            "missions_failed": int(state["missions_failed"] or 0) if state else 0,
+            "active_mission": active,
+            "missions": mission_list,
+            "upgrades": [
+                {"id": upgrade_id, "name": AIRSHIP_UPGRADES[upgrade_id]["name"], "description": AIRSHIP_UPGRADES[upgrade_id]["description"], "tier": int(upgrades.get(upgrade_id, 0)), "max_tier": 3}
+                for upgrade_id in AIRSHIP_UPGRADES
+            ],
+            "history": history,
+            "settlement_notes": settlement_notes[:3],
+        }
 
     def workshop_services_snapshot(self, player_id: str | None = None) -> dict[str, Any]:
         workshop_level = self.major_facility_level("workshop")
@@ -287,11 +546,32 @@ class FellowshipSystem:
         hall = int(tiers.get("guild_hall", 1))
         expedition_done = bool(state and state["expedition_board_complete"])
         result = []
+        airship_state = self._airship_state()
+        airship_built = bool(airship_state and int(airship_state["built"] or 0))
+        airship_upgrades = self.airship_upgrades()
         for project in PROJECTS.values():
             # v1.3 Guild Expansion keeps legacy projects readable/completable if
             # already active, but only the five major Guild facilities appear as
             # new construction choices on the public Guild Board.
             if project.get("legacy"):
+                continue
+            if project.get("project_type") == "airship_construction":
+                if airship_built or level < int(project.get("required_level", 1)):
+                    continue
+                if int(tiers.get("airship_dock", 0)) < int(project.get("required_dock_level", 1)):
+                    continue
+                result.append(self.project_snapshot(project["id"]) or dict(project))
+                continue
+            if project.get("project_type") == "airship_upgrade":
+                if not airship_built or level < int(project.get("required_level", 1)):
+                    continue
+                upgrade_id = str(project.get("upgrade_id"))
+                current_upgrade = int(airship_upgrades.get(upgrade_id, 0))
+                if int(project.get("tier", 0)) != current_upgrade + 1:
+                    continue
+                if int(tiers.get("airship_dock", 0)) < int(project.get("required_dock_level", project.get("tier", 1))):
+                    continue
+                result.append(self.project_snapshot(project["id"]) or dict(project))
                 continue
             if project.get("project_type") in {"supply_drive", "guild_objective"}:
                 if level < int(project.get("required_level", 1)):
@@ -311,7 +591,9 @@ class FellowshipSystem:
                 current = int(tiers.get(project["facility_id"], 0))
                 if int(project["tier"]) != current + 1:
                     continue
-                if project["facility_id"] != "guild_hall" and int(project["tier"]) > hall:
+                if project["facility_id"] == "airship_dock" and hall < int(project.get("required_hall_tier", 1)):
+                    continue
+                if project["facility_id"] != "guild_hall" and project["facility_id"] != "airship_dock" and int(project["tier"]) > hall:
                     continue
                 if level < int(project["required_level"]):
                     continue
@@ -493,6 +775,7 @@ class FellowshipSystem:
             self._progress_project_activity(conn, None, activity, amount)
             self._progress_orders(conn, None, activity, amount)
             self._progress_deeds(conn, None, activity, amount)
+            self._progress_airship_mission(conn, None, activity, amount)
         return self._finalize_progress(None, old_level, None)
 
     def _award_renown(
@@ -534,6 +817,7 @@ class FellowshipSystem:
                 self._progress_project_activity(conn, player_id, activity, amount)
                 self._progress_orders(conn, player_id, activity, amount)
                 self._progress_deeds(conn, player_id, activity, amount)
+                self._progress_airship_mission(conn, player_id, activity, amount)
         notes.extend(self._finalize_progress(player_id, old_level, old_rank))
         return notes
 
@@ -754,7 +1038,37 @@ class FellowshipSystem:
         notes = [f"PROJECT COMPLETE — {project['name']}"]
         bonus = 250 * max(1, int(project.get("tier", 1)))
         with self.db.tx() as conn:
-            if project.get("project_type") in {"supply_drive", "guild_objective"}:
+            if project.get("project_type") == "airship_construction":
+                bonus = int(project.get("reward_renown", 1500))
+                inserted = conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'airship_built',0,1)",
+                    ("airship_built:crystal_guild_airship",),
+                ).rowcount
+                if not inserted:
+                    conn.execute("UPDATE fellowship_state SET active_project_id=NULL,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1")
+                    return []
+                conn.execute("UPDATE fellowship_airship_state SET built=1,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1")
+                conn.execute("UPDATE fellowship_state SET active_project_id=NULL,renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1", (bonus,))
+                notes[0] = f"AIRSHIP COMPLETE — Crystal Guild Airship (+{bonus} Fellowship Renown)"
+                notes.append("Guild-scale Airship Missions are now available.")
+            elif project.get("project_type") == "airship_upgrade":
+                upgrade_id = str(project.get("upgrade_id"))
+                tier = int(project.get("tier", 1))
+                bonus = int(project.get("reward_renown", 300 * tier))
+                inserted = conn.execute(
+                    "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'airship_upgrade',0,1)",
+                    (f"airship_upgrade:{upgrade_id}:{tier}",),
+                ).rowcount
+                if not inserted:
+                    conn.execute("UPDATE fellowship_state SET active_project_id=NULL,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1")
+                    return []
+                conn.execute(
+                    "UPDATE fellowship_airship_upgrades SET tier=?,updated_at=CURRENT_TIMESTAMP WHERE upgrade_id=?",
+                    (tier, upgrade_id),
+                )
+                conn.execute("UPDATE fellowship_state SET active_project_id=NULL,renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1", (bonus,))
+                notes[0] = f"AIRSHIP UPGRADE COMPLETE — {AIRSHIP_UPGRADES[upgrade_id]['name']} Tier {tier} (+{bonus} Fellowship Renown)"
+            elif project.get("project_type") in {"supply_drive", "guild_objective"}:
                 bonus = int(project.get("reward_renown", 300))
                 inserted = conn.execute(
                     "INSERT OR IGNORE INTO fellowship_events(event_key,player_id,activity,renown,amount) VALUES (?,NULL,'community_project_complete',0,1)",
@@ -867,7 +1181,7 @@ class FellowshipSystem:
                 "facility_count": len(facilities),
                 "built_count": sum(1 for facility in facilities if int(facility["level"]) > 0),
                 "complete_count": sum(1 for facility in facilities if not facility["locked"] and int(facility["level"]) >= int(facility["max_level"])),
-                "airship_dock_locked": True,
+                "airship_dock_locked": False,
             },
             "facilities": facilities,
             "orders": self.orders_snapshot(),
@@ -883,4 +1197,5 @@ class FellowshipSystem:
             "rank_ladder": GUILD_RANKS,
             "effects": self.effects(),
             "services": self.workshop_services_snapshot(),
+            "airship": self.airship_snapshot(),
         }

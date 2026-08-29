@@ -44,6 +44,7 @@ class PortalSyncClient:
         heartbeat_seconds: float = 30.0,
         overlay_state_path: str | Path | None = None,
         owner_twitch_id: str | None = None,
+        fellowship_prepare: Callable[[], Any] | None = None,
     ):
         self.repository = repository
         self.public_url = public_url.rstrip("/")
@@ -54,6 +55,7 @@ class PortalSyncClient:
         self.heartbeat_seconds = max(5.0, float(heartbeat_seconds))
         self.overlay_state_path = Path(overlay_state_path).resolve() if overlay_state_path else None
         self.owner_twitch_id = str(owner_twitch_id or os.getenv("TWITCH_OWNER_ID", "")).strip()
+        self.fellowship_prepare = fellowship_prepare
         self._hashes: dict[str, str] = {}
         self._fellowship_hash: str | None = None
         self._overlay_hash: str | None = None
@@ -113,6 +115,8 @@ class PortalSyncClient:
         }
 
     def build_fellowship_snapshot(self) -> dict[str, Any] | None:
+        if callable(self.fellowship_prepare):
+            self.fellowship_prepare()
         getter = getattr(self.repository, "fellowship", None)
         if not callable(getter):
             return None
