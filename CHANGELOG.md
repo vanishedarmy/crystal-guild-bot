@@ -1,31 +1,24 @@
-# Crystal Guild v1.2.0 — Expeditions Beta 4
-## Release Hardening
+# Crystal Guild v1.2.0 — Expeditions RC1
+## Release Candidate 1
 
-Beta 4 keeps the v1.2 feature set frozen and hardens the persistent Adventure/release path before RC1.
+RC1 freezes the v1.2 Expeditions feature set and prepares the branch for final release. No new gameplay systems are added in this checkpoint.
 
-### Persistent resource-pressure protection
-- Long Rest no longer restores HP/MP/AP through an active distant Expedition or player-paced Wayfarer run.
-- Stream-start roster refreshes skip players with those persistent runs active while still refreshing idle heroes once per Twitch stream session.
-- The rule survives Portal reconnects and Bot/database restarts because active-run ownership is checked from SQLite.
+### Player Guide cleanup
+- Removes Beta 1–4 release-engineering/history blocks from the Expeditions chapter.
+- Removes implementation language such as schema, SQLite/replay receipts, authoritative timers, Bot restarts, simulation details, and feature-freeze notes from player instructions.
+- Keeps the information players actually need: unlock requirements, regions, route lengths, risk signals, Cache/return rules, landmarks, regional bosses, Mastery, Atlas/Legendary Contracts, Chocobo specialties, Hunt Seal stipends, and active-run restrictions.
+- Rewords saved-run behavior in player language: journeys and pending decisions remain available when the player leaves and returns.
 
-### Crash-atomic persistent Adventure actions
-- Persistent Solo/Expedition Portal mutations now execute inside the same outer SQLite transaction as their Portal replay receipt.
-- If the receipt cannot commit, nested stage/cache/progress/reward/result writes roll back with it.
-- A lost hosted acknowledgement can therefore be retried without duplicating Expedition stages, banked cache, Hunt Seals, result cards, or other persistent rewards.
-- Timed Hunts retain their established live in-memory coordination/replay path.
-
-### Restart, migration, and integrity drills
-- Active Expedition stage, route, cache, Journal, and saved state are verified across a database/engine restart.
-- A representative pre-v1.2 schema-7 Guild migrates to schema 8 with level, XP, Gil, HP/MP/AP, inventory, Chocobo data, and the verified pre-schema-8 backup preserved.
-- Existing recovery-drill, database-integrity, synthetic stress, queue/replay, LIVE/OFFLINE, and outage-recovery suites remain enabled.
-
-### Published timing cleanup
-The Player Guide metadata is synchronized to the authoritative current defaults: 60-second Venture rally / 30-second rounds and 90-second Raid rally / 60-second rounds.
+### RC verification
+- Beta 4 persistence, duplicate-reward protection, Long Rest/stream-refresh safeguards, restart recovery, and schema-7 → schema-8 migration coverage remain intact.
+- Beta 3 mobile/accessibility behavior and Beta 2 viewport-preserving detail cards remain intact.
+- Explicit routed artwork and portrait scenic backgrounds are audited before packaging.
+- Release packages exclude live databases, tokens, `.env`, logs, bytecode, caches, and other runtime-private files.
 
 ### Compatibility
-- Bot runtime: `1.2.0-expeditions-b4`
-- Hosted Web runtime: `1.2.0-expeditions-beta4`
-- Frontend asset revision: `1.2.0-expeditions-b4`
+- Bot runtime: `1.2.0-expeditions-rc1`
+- Hosted Web runtime: `1.2.0-expeditions-rc1`
+- Frontend asset revision: `1.2.0-expeditions-rc1`
 - Local DB schema: **8**
 - Hosted sync schema: **1**
 - Portal Action protocol: **20**

@@ -1,38 +1,60 @@
-# Validation Report — Crystal Guild v1.2.0 Expeditions Beta 4
+# Validation Report — Crystal Guild v1.2.0 Expeditions RC1
+
+## Result
+**PASS — release-candidate validation clean.**
 
 ## Automated suites
-- Bot Python unittest suite: **443 / 443 PASS**
-- Hosted Web/API Python suite: **47 / 47 PASS**
-- Frontend Node regression suite: **324 / 324 PASS**
-- Python compile sweep: **PASS**
-- JS/JSX source parse sweep: **PASS**
+- Bot Python regression suite: **443 / 443 PASS**.
+- Hosted Web/API Python suite: **47 / 47 PASS**.
+- Frontend Node regression suite: **326 / 326 PASS**.
+- Focused Beta 4 hardening / migration suite: **6 / 6 PASS**.
+- Python source compilation: **PASS**.
+- JavaScript / JSX TypeScript-parser sweep: **172 files PASS**.
 
-## Beta 4 hardening coverage
-- Active persistent Expedition blocks direct Long Rest refresh.
-- Long Rest daemon sweep skips active persistent runs.
-- Twitch stream-start roster refresh skips active persistent runs and remains once-per-stream idempotent.
-- Expedition state/cache/Journal survive full Database + Engine restart.
-- Forced Portal replay-receipt failure rolls back an Expedition stage mutation.
-- Forced replay-receipt failure during Expedition completion rolls back cache banking, rewards, Hunt Seals, result persistence, and run deletion.
-- Retrying the same completed Portal action returns the stored result without duplicating progression/rewards.
-- Representative schema-7 player progression migrates to schema 8 with verified pre-schema-8 backup.
-- Player Guide metadata matches authoritative 60/30 Venture and 90/60 Raid timing defaults.
-- Existing simulated Twitch outage, acknowledgement-loss, token failure, reconnect/runtime checkpoint, database-integrity, and synthetic stress regressions remain passing.
+## Player Guide RC cleanup
+- Expeditions Player Guide now uses the release-neutral **Expeditions — v1.2** label.
+- Beta 1–4 release-history panels are removed from the Guide.
+- Alpha 2–5 implementation labels are removed from functional Expedition headings.
+- Player-facing Expeditions content retains unlock requirements, regions, routes, saved travel, Cache/return/rescue rules, exploration milestones, Regional Bosses, Mastery, Atlas/Legendary Contracts, landmarks, Journal, Chocobo specialties, Hunt Seal stipends, active-run restrictions, and the quick-use flow.
+- Focused guide audit finds **0** matches for release-engineering terms including schema, protocol, SQLite, replay receipt, authoritative, simulation, feature freeze, migration, backend, or frontend in the Expeditions chapter.
 
-## Compatibility
-- Bot runtime `1.2.0-expeditions-b4`
-- Hosted Web runtime `1.2.0-expeditions-beta4`
-- Frontend revision `1.2.0-expeditions-b4`
-- Local DB schema **8**
-- Hosted sync schema **1**
-- Portal Action protocol **20**
-- No player reset or new environment variable
+## Persistence / migration continuity
+The Beta 4 hardening suite remains green in RC1:
+- Active Expedition state survives a database/engine restart.
+- Long Rest does not heal through an active persistent Expedition.
+- Stream-live roster refresh skips active persistent runs while still refreshing idle players once.
+- Expedition finish/reward state commits once with its replay receipt.
+- A forced replay-receipt failure rolls stage/reward state back rather than partially committing.
+- Representative schema-7 progression migrates to schema 8 without reset and produces the verified pre-schema-8 backup.
+
+## Artwork / source audit
+- Explicit routed image references checked: **144**.
+- Missing explicit routed image references: **0**.
+- Beta 2 H2 portrait scenic backgrounds, Expedition artwork, item/gear art, monster art, boss art, Chocobo portraits, Job portraits, and Relic artwork remain packaged.
+- Guild Heroes / Player Guide duplicate-airship fix remains covered by frontend regression tests.
+- Viewport-positioned detail cards and Beta 3 mobile/accessibility behavior remain covered by frontend regression tests.
+
+## Patch / package verification
+- Beta 4 → RC1 Bot patch: **11 changed/new files, 0 deletions**.
+- Beta 4 → RC1 Web patch: **31 changed/new files, 0 deletions**.
+- Web patch reconstruction against a clean Beta 4 Web tree: **PASS — 795 files exact**.
+- Bot patch reconstruction against a clean Beta 4 Bot tree: **PASS — 136 files exact**.
+- Full RC1 Web archive versus finalized Web tree: **PASS — 795 files exact**.
+- Full RC1 Bot archive versus finalized Bot tree: **PASS — 136 files exact**.
+- ZIP CRC/integrity: **6 / 6 PASS**.
+- Runtime/private-artifact hygiene: **PASS — 0 violations**.
 
 ## Production bundle note
-The clean shipping Web source intentionally does not vendor `node_modules`; a local Vite production bundle is therefore not part of this release-environment validation. Hosted deployment installs the pinned dependencies normally. Source-level Node regressions, JS/JSX parsing, hosted Python tests, and package reproduction provide the release checks here.
+The source release intentionally does not vendor `node_modules`, so a local Vite production bundle is not executed in this clean release tree. Frontend source regression tests and JS/JSX parsing are clean; hosted deployment installs the pinned frontend dependencies before building.
 
-## Patch/package scope
-- Beta 1 Bot → Beta 4 Bot: **13 changed/new files, 0 deleted**; final Bot tree **136 files**.
-- Beta 3 Web → Beta 4 Web: **27 changed/new files, 0 deleted**; final Web tree **794 files**.
-- Direct patch reproduction is verified against clean Beta 1 Bot / Beta 3 Web baselines before release.
-- Runtime/private-artifact hygiene excludes live `.env`, token stores, SQLite runtime files, logs, Python bytecode/cache directories, and `node_modules`; documented `.env.example` templates remain included.
+## Compatibility
+- Bot runtime: `1.2.0-expeditions-rc1`
+- Hosted Web runtime: `1.2.0-expeditions-rc1`
+- Frontend asset revision: `1.2.0-expeditions-rc1`
+- Local DB schema: **8**
+- Hosted sync schema: **1**
+- Portal Action protocol: **20**
+- Twitch prefix: `!`
+- Player reset: **none**
+- OAuth change: **none**
+- New environment variables: **none**
