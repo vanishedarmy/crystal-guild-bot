@@ -980,12 +980,15 @@ class Database:
             )
 
     @contextmanager
-    def tx(self) -> Iterator[sqlite3.Connection]:
+    def tx(self, *, immediate: bool = False) -> Iterator[sqlite3.Connection]:
         """Open a composable SQLite transaction.
 
         Nested write helpers are atomic. The outermost scope
         owns COMMIT/ROLLBACK; inner scopes use SAVEPOINTs so a helper can fail
         without accidentally committing the caller's larger game operation.
+        ``immediate=True`` acquires SQLite write intent before the first read,
+        which lets cross-connection authoritative state guards serialize stale
+        state checks before any gameplay mutation is evaluated.
         """
         with self._lock:
             if self._closed:
@@ -994,7 +997,7 @@ class Database:
             outermost = depth == 0
             savepoint = f"cg_sp_{threading.get_ident()}_{depth}"
             if outermost:
-                self.conn.execute("BEGIN")
+                self.conn.execute("BEGIN IMMEDIATE" if immediate else "BEGIN")
             else:
                 self.conn.execute(f"SAVEPOINT {savepoint}")
             self._tx_local.depth = depth + 1

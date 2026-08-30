@@ -1,3 +1,10 @@
+# v1.4.0 — Dungeons & Delves Beta 3
+
+- Final Beta shared-state/restart/replay hardening before RC.
+- Serializes state-guarded authoritative mutations with SQLite write intent before live-state reads, including across separate engine/database connections.
+- Preserves exact run/chamber/revision stale-state binding and action-ID replay idempotency.
+- Keeps the four-Dungeon catalog, schema 10, sync 1, and Portal Action protocol 25 unchanged.
+
 # v1.4.0 — Dungeons & Delves Beta 1
 
 - Feature-freezes Dungeons & Delves at four persistent delves.

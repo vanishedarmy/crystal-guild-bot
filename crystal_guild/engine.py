@@ -148,8 +148,10 @@ CAMP_REST_OFFLINE_SECONDS = 60 * 60
 def _state_guard(method):
     """Serialize and atomically persist authoritative live-combat state.
 
-    The state lock is coupled to one composable database transaction. Any
-    nested reward/inventory/record writes therefore commit together with the
+    The state lock is coupled to one composable database transaction. Beta 3
+    starts the outer transaction with SQLite write intent so a second engine
+    connection cannot validate the same stale authoritative state concurrently.
+    Nested reward/inventory/record writes therefore commit together with the
     encounter/raid checkpoint. If a command or daemon tick raises, both SQLite
     and the in-memory combat state return to the pre-call snapshot.
     """
@@ -158,7 +160,11 @@ def _state_guard(method):
         with self._state_lock:
             before = self._capture_runtime_state()
             try:
-                with self.db.tx():
+                # Beta 3 obtains SQLite write intent before reading any
+                # authoritative state. The in-process RLock still orders local
+                # callers, while BEGIN IMMEDIATE also serializes a second Bot
+                # connection/process against the same Guild database.
+                with self.db.tx(immediate=True):
                     result = method(self, *args, **kwargs)
                     after = self._capture_runtime_state()
                     if after != before:
