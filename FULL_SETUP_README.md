@@ -1,9 +1,9 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves RC1 Full Setup
+# Crystal Guild v1.4.0 — Dungeons & Delves Full Setup
 
-This guide covers the supported local Windows runtime and Render cloud runtime. RC1 uses local DB schema **10**, hosted sync schema **1**, Portal Action protocol **25**, Twitch prefix **`!`**, and runtime `1.4.0-dungeons-rc1`.
+This guide covers the supported local Windows runtime and Render cloud runtime. RC1 uses local DB schema **10**, hosted sync schema **1**, Portal Action protocol **25**, Twitch prefix **`!`**, and runtime `1.4.0-dungeons-delves`.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, and persistent-disk data. RC1 requires no database migration from Beta 3 and introduces no new environment variables. Deploy the matching RC1 Web + Bot together.
+Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, and persistent-disk data. RC1 requires no database migration from Beta 3 and introduces no new environment variables. Deploy the matching v1.4.0 Web + Bot together.
 
 ## Requirements
 - Python 3.11+
@@ -39,8 +39,8 @@ The Render worker uses the persistent `/var/data` location for the live Guild da
 Expected persistent paths are configured by `render.yaml`, including `/var/data/crystal_guild.db`, `/var/data/twitch_tokens.db`, and `/var/data/overlay/state.json`.
 
 ## Release verification
-- `!cgversion` → `1.4.0-dungeons-rc1`
-- `/api/health` → Web/frontend `1.4.0-dungeons-rc1`
+- `!cgversion` → `1.4.0-dungeons-delves`
+- `/api/health` → Web/frontend `1.4.0-dungeons-delves`
 - Local DB schema → **10**
 - Hosted sync schema → **1**
 - Portal Action protocol → **25**

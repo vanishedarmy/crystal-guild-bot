@@ -1,3 +1,10 @@
+# v1.4.0 — Dungeons & Delves
+
+- Promotes the RC1 feature set unchanged into the final v1.4.0 production release.
+- Ships four persistent Dungeons with Crossroads, Events, route consequences, first-clear rewards, pressure encounters, and player-paced combat.
+- Preserves exact run/chamber/revision stale-state binding, cross-connection SQLite serialization, action-ID replay idempotency, restart/reconnect persistence, and mobile Dungeon Board disclosure placement.
+- Keeps local DB schema 10, hosted sync schema 1, Portal Action protocol 25, and Twitch prefix `!` unchanged from RC1.
+
 # v1.4.0 — Dungeons & Delves RC1
 
 - Freezes the four-Dungeon release candidate with no gameplay, reward, economy, schema, or protocol changes.

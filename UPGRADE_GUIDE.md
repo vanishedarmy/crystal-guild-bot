@@ -1,16 +1,14 @@
-# Upgrade Guide — Crystal Guild v1.4.0 Dungeons & Delves RC1
+# Upgrade Guide — Crystal Guild v1.4.0 Dungeons & Delves
 
-Baseline: **Dungeons & Delves Beta 3 Web + Bot**.
+Baseline: **Dungeons & Delves RC1 Web + Bot**.
 
-1. Make the normal verified backup of the live player database and preserve `.env` plus Twitch token storage.
-2. Stop the Bot cleanly before replacing source.
-3. Apply the **Beta 3 → RC1 Bot patch** or replace the Bot source while preserving persistent/private state.
-4. Apply the **Beta 3 → RC1 Web patch** or deploy the full RC1 Web package.
-5. Restart/redeploy Web and Bot together.
-6. Verify `!cgversion` reports `1.4.0-dungeons-rc1` with local schema **10**.
-7. Verify `/api/health` reports Web/frontend `1.4.0-dungeons-rc1`, hosted sync schema **1**, and Portal Action protocol **25**.
-8. Open Dungeon Board on desktop and mobile; confirm the disclosure pointer stays on the right, uses right-hand closed / down-hand open, and all four Dungeons are present.
-9. Resume or start a Dungeon, confirm current run/chamber/revision state refreshes correctly, and verify normal retreat/result records remain intact.
-10. Run `python run_maintenance.py --recovery-drill` if you want the non-destructive local recovery check before going live.
+1. Preserve the existing database, `.env`, Twitch token storage, hosted secrets, and persistent-disk data.
+2. Apply the RC1 → v1.4.0 Bot patch or deploy the full production Bot package.
+3. Apply the RC1 → v1.4.0 Web patch or deploy the full production Web package.
+4. Redeploy/restart Web and Bot together.
+5. Verify `/api/health` reports Web/frontend `1.4.0-dungeons-delves`, hosted sync schema **1**, and protocol **25**.
+6. Verify `!cgversion` reports Bot `1.4.0-dungeons-delves` and local schema **10**.
+7. Resume an existing Dungeon if one was active and confirm chamber, HP/MP/AP, Cache, route effects, and controls remain intact.
+8. Spot-check the Dungeon Board on desktop/mobile, including right-aligned disclosure placement on narrow screens.
 
-No database migration, player reset, OAuth change, protocol change, new environment variable, or gameplay/economy rebalance is required from Beta 3.
+No DB migration, player reset, OAuth/environment change, new environment variable, protocol change, or gameplay/economy rebalance is required from RC1.

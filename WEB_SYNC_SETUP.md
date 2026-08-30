@@ -1,4 +1,4 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves RC1 Portal Sync + Hosted Overlay
+# Crystal Guild v1.4.0 — Dungeons & Delves Portal Sync + Hosted Overlay
 
 Cloud mode uses in-process Portal synchronization. The Bot publishes sanitized player/Fellowship/adventure state and hosted overlay state using the existing `PORTAL_SYNC_KEY`.
 

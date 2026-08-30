@@ -1,21 +1,22 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves RC1
+# Crystal Guild v1.4.0 — Dungeons & Delves
 
-Crystal Guild is a persistent Final Fantasy-inspired Twitch RPG with a companion Adventurer Portal. RC1 is the release-candidate cleanup and deployment-readiness pass for Dungeons & Delves.
+Crystal Guild is a persistent Final Fantasy-inspired Twitch RPG with a companion Adventurer Portal. **Dungeons & Delves** is the final v1.4.0 production release.
 
-## RC1 focus
+## Dungeons & Delves
 
-- Keeps the feature-frozen four-Dungeon catalog unchanged.
-- Carries forward Beta 3 database-level serialization, exact run/chamber/revision stale-state validation, and action-ID replay safety.
-- Performs final upgrade/restart/recovery/package drills without changing Dungeon rewards, combat tuning, or progression.
-- Removes a shipped runtime overlay-state artifact and aligns package/project version surfaces for release.
-- Refreshes setup/deployment documentation that still described older v1.1-era builds.
+- Four persistent delves: Forgotten Ossuary, Emberglass Foundry, Whiteglass Bastion, and Riftglass Observatory.
+- Player-paced Dungeon combat with persistent HP, MP/AP, items, chamber state, discoveries, route effects, and Dungeon Cache.
+- Crossroads, weighted Events, hazards, treasure, sanctuaries, minibosses, and bosses with room-specific pressure mechanics.
+- One-time first-clear rewards, personal Dungeon records, and Expedition-exploration unlocks.
+- Exact run/chamber/revision state binding, cross-connection write serialization, replay-safe action receipts, and restart/reconnect persistence.
+- Desktop/mobile Dungeon Board UX with the disclosure pointer fixed to the right on narrow screens.
 
 ## Runtime identity
 
-- Bot runtime: `1.4.0-dungeons-rc1`
+- Bot runtime: `1.4.0-dungeons-delves`
 - Local DB schema: **10**
 - Hosted sync schema: **1**
 - Portal Action protocol: **25**
 - Twitch command prefix: `!`
 
-Deploy the matching RC1 Web + Bot together. No database migration, player reset, OAuth change, new environment variable, or gameplay/economy rebalance is required from Beta 3.
+Deploy the matching v1.4.0 Web + Bot together. RC1 promotes directly with no database migration, player reset, OAuth change, new environment variable, or gameplay/economy rebalance.

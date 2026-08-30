@@ -1,5 +1,5 @@
-v1.4.0 — Dungeons & Delves RC1
-Runtime: 1.4.0-dungeons-rc1
+v1.4.0 — Dungeons & Delves
+Runtime: 1.4.0-dungeons-delves
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25
