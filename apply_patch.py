@@ -15,4 +15,4 @@ for src in PATCH_ROOT.rglob("*"):
     dst=target/rel
     dst.parent.mkdir(parents=True,exist_ok=True)
     shutil.copy2(src,dst)
-print("Crystal Guild v1.5.0 Trails & Raids Alpha 2 Bot patch applied.")
+print("Crystal Guild v1.5.0 Trails & Raids Alpha 3 Bot patch applied.")

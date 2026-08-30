@@ -1,5 +1,12 @@
 # Crystal Guild Changelog
 
+## v1.5.0 — Trails & Raids Alpha 3
+- Ramuh — Judgment Spire adds Rolling Thunder chain pressure, Levinshare stack-sharing, and a two-round Judgment Charge Grounding Gauge driven by existing Defend actions.
+- Successful grounding weakens Judgment Bolt; missed grounding empowers the raidwide discharge.
+- Adventure Board Trial & Raid Board is now collapsible with the canonical right-hand closed / down-hand open pointer and remembered state.
+- Ifrit, Shiva, unscripted raids, rewards/economy, and the four production Dungeons remain unchanged.
+- Runtime advances to `1.5.0-trails-raids-a3`; schema 10 / sync 1 / Portal protocol 25 remain unchanged.
+
 ## v1.5.0 — Trails & Raids Alpha 2
 - Shiva — Diamond Throne adds encounter adds, Break/Stagger, cleave telegraphs, and role-aware contribution display.
 - Schema 10 / sync 1 / protocol 25 unchanged; no reset or migration.

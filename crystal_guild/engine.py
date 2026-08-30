@@ -11172,6 +11172,121 @@ class CrystalGuildEngine:
         self._shiva_prepare_next_mechanic(boss)
         return total, messages
 
+    def _ramuh_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
+        """Advance Judgment Spire through chain, stack, and coordinated Guard checks."""
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        step = int(boss.get("_ramuh_step", 0)) % 3
+        if step == 0:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Rolling Thunder", "kind": "chain",
+                "warning": "Lightning locks onto one raider and will chain through the standing party.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        elif step == 1:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Levinshare", "kind": "shared_hit",
+                "warning": "A heavy bolt targets one raider. Defending allies join the stack and split the pressure.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        else:
+            required = max(2, len(alive))
+            mechanic = {
+                "name": "Judgment Charge", "kind": "guard_check",
+                "warning": "Build the grounding gauge with Defend actions across two rounds to weaken Judgment Bolt.",
+                "rounds_remaining": 2, "required": required, "progress": 0,
+            }
+        boss["mechanic"] = mechanic
+        boss["_ramuh_step"] = (step + 1) % 3
+        return mechanic
+
+    def _resolve_ramuh_response(
+        self, boss: dict[str, Any], *, round_damage: int, phase_mult: float,
+        enrage_mult: float, boss_pressure: float, ko_names: list[str],
+    ) -> tuple[int, list[str]]:
+        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
+        if not mechanic:
+            mechanic = self._ramuh_prepare_next_mechanic(boss)
+        messages: list[str] = []
+        total = 0
+        retaliation_enabled = int(boss.get("attacks_per_round", 2)) > 0
+        kind = str(mechanic.get("kind") or "")
+        level = int(boss.get("recommended_level", 28))
+        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+
+        if kind == "guard_check":
+            defenders = [pid for pid in alive if bool(self.raid_roster[pid].get("defending"))]
+            mechanic["progress"] = max(0, int(mechanic.get("progress", 0))) + len(defenders)
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            required = max(1, int(mechanic.get("required", 1)))
+            progress = max(0, int(mechanic.get("progress", 0)))
+            if int(mechanic["rounds_remaining"]) > 0:
+                messages.append(f"GROUNDING GAUGE — Judgment Charge {progress:,}/{required:,} · {mechanic['rounds_remaining']} round remaining.")
+                return 0, messages
+            success = progress >= required
+            result = "grounded" if success else "overcharged"
+            blast_mult = 0.38 if success else 0.88
+            if retaliation_enabled:
+                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
+                for pid in alive:
+                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=38.0)
+            boss["last_mechanic"] = {
+                "name": "Judgment Bolt", "kind": "resolution", "result": result,
+                "warning": "The charge is grounded." if success else "The charge overloads the raid.",
+            }
+            messages.append(
+                f"JUDGMENT BOLT — Grounding {progress:,}/{required:,}; the discharge is {result}"
+                + (f" for {total:,} raid damage." if retaliation_enabled else " (boss retaliation suppressed).")
+            )
+            self._ramuh_prepare_next_mechanic(boss)
+            return total, messages
+
+        target_id = str(mechanic.get("target_id") or "")
+        if target_id not in alive:
+            target_id = self.rng.choice(alive) if alive else ""
+        target_name = str(self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider")
+
+        if kind == "shared_hit":
+            stack = [target_id] if target_id else []
+            for pid in alive:
+                if pid != target_id and bool(self.raid_roster[pid].get("defending")):
+                    stack.append(pid)
+            if retaliation_enabled and stack:
+                total_raw = max(1, int(base * 1.45 * self.rng.uniform(0.94, 1.06)))
+                per_target = max(1, int(total_raw / len(stack)))
+                for pid in stack:
+                    total += self._raid_apply_scripted_hit(pid, raw=per_target, ko_names=ko_names, limit_gain=42.0)
+            names = [str(self.raid_roster.get(pid, {}).get("name") or "raider") for pid in stack]
+            boss["last_mechanic"] = {"name": "Levinshare", "kind": "shared_hit", "target": target_name, "result": f"shared_{len(stack)}"}
+            messages.append(
+                f"LEVINSHARE — {', '.join(names) or target_name} split the bolt for {total:,} total damage."
+                if retaliation_enabled else "LEVINSHARE — boss retaliation suppressed."
+            )
+            self._ramuh_prepare_next_mechanic(boss)
+            return total, messages
+
+        # Rolling Thunder: start on the marked raider, then chain through up to two others.
+        chain = [target_id] if target_id else []
+        remaining = [pid for pid in alive if pid != target_id]
+        self.rng.shuffle(remaining)
+        chain.extend(remaining[:2])
+        if retaliation_enabled:
+            for index, pid in enumerate(chain):
+                raw = max(1, int(base * (0.92 - 0.18 * index) * self.rng.uniform(0.94, 1.06)))
+                total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=36.0)
+        names = [str(self.raid_roster.get(pid, {}).get("name") or "raider") for pid in chain]
+        boss["last_mechanic"] = {"name": "Rolling Thunder", "kind": "chain", "target": ", ".join(names)}
+        messages.append(
+            f"ROLLING THUNDER — lightning chains through {', '.join(names) or target_name} for {total:,} total damage."
+            if retaliation_enabled else "ROLLING THUNDER — boss retaliation suppressed."
+        )
+        self._ramuh_prepare_next_mechanic(boss)
+        return total, messages
+
     def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
         mechanic = self._raid_public_mechanic(boss.get("mechanic"))
         if not mechanic:
@@ -11190,6 +11305,12 @@ class CrystalGuildEngine:
             return f"ADDS — {name}: {len(adds)} active · boss-targeted damage is intercepted."
         if kind == "cleave":
             return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is marked; a second raider may also be struck."
+        if kind == "chain":
+            return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is marked; lightning will chain through the party."
+        if kind == "shared_hit":
+            return f"STACK — {name}: {mechanic.get('target') or 'a raider'} is marked; Defending allies split the hit."
+        if kind == "guard_check":
+            return f"GROUNDING GAUGE — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} Defends · {int(mechanic.get('rounds_remaining', 0))} rounds."
         if kind == "stagger":
             return f"STAGGER — {name}: boss is vulnerable and cannot answer the next round."
         return f"MECHANIC — {name}."
@@ -11221,6 +11342,9 @@ class CrystalGuildEngine:
             self.active_boss["_stagger_rounds"] = 0
             self.active_boss["adds"] = []
             self._shiva_prepare_next_mechanic(self.active_boss)
+        elif script_id == "ramuh_judgment_spire":
+            self.active_boss["_ramuh_step"] = 0
+            self._ramuh_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -11352,6 +11476,11 @@ class CrystalGuildEngine:
                 boss, round_damage=round_damage, phase_mult=phase_mult,
                 enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
             )
+        elif self._raid_script_id(boss) == "ramuh_judgment_spire":
+            total_boss_damage, scripted_messages = self._resolve_ramuh_response(
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
+            )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
             for pid in targets:
@@ -11427,7 +11556,7 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne"} and not boss_stunned:
+        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire"} and not boss_stunned:
             telegraph = self._raid_telegraph_text(boss)
             if telegraph:
                 messages.append(telegraph)

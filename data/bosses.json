@@ -90,7 +90,7 @@
     "tier": "World Boss",
     "recommended_level": 14,
     "signature": "Grave March",
-    "description": "An ancient commander who has interpreted \u201crest in peace\u201d as optional guidance.",
+    "description": "An ancient commander who has interpreted “rest in peace” as optional guidance.",
     "drops": [
       {
         "item_id": "bone_chip",
@@ -380,7 +380,32 @@
     ],
     "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "encounter_type": "Trial",
+    "encounter_name": "Judgment Spire",
+    "raid_script": "ramuh_judgment_spire",
+    "mechanics": [
+      {
+        "name": "Rolling Thunder",
+        "kind": "chain",
+        "description": "A marked lightning strike chains through up to three standing raiders with diminishing damage."
+      },
+      {
+        "name": "Levinshare",
+        "kind": "shared_hit",
+        "description": "A marked raider faces a heavy bolt; raiders who Defend join the stack and split the pressure."
+      },
+      {
+        "name": "Judgment Charge",
+        "kind": "guard_check",
+        "description": "Two rounds to build a shared grounding gauge with Defend actions."
+      },
+      {
+        "name": "Judgment Bolt",
+        "kind": "resolution",
+        "description": "Meeting the Guard target weakens Judgment Bolt; failing it empowers the raidwide discharge."
+      }
+    ]
   },
   {
     "id": "ultros",
@@ -1293,7 +1318,7 @@
     "xp": 59000,
     "gil": 180000,
     "signature": "Armageddon",
-    "description": "A monster-arena nightmare assembled from the Guild\u2019s worst collection habits.",
+    "description": "A monster-arena nightmare assembled from the Guild’s worst collection habits.",
     "drops": [
       {
         "item_id": "nemesis_mark",
