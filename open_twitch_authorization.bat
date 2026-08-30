@@ -8,7 +8,7 @@ set OWNER_AUTH=http://localhost:4343/oauth?scopes=channel:bot%%20channel:read:su
 :menu
 cls
 echo ============================================================
-echo       CRYSTAL GUILD v1.1.14 - CLOUD CONTINUITY H2 TWITCH AUTH HELPER
+echo       CRYSTAL GUILD v1.4.0 - DUNGEONS & DELVES RC1 TWITCH AUTH HELPER
 echo ============================================================
 echo.
 echo IMPORTANT: run_cloud_token_authorization.bat MUST already be running for cloud-token setup.

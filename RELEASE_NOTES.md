@@ -1,37 +1,31 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Beta 3
+# Crystal Guild v1.4.0 — Dungeons & Delves RC1
 
-## Final Beta shared-state hardening
+## Release Candidate 1
 
-Beta 3 keeps the four-Dungeon feature freeze and focuses on simultaneous-action safety, replay/restart continuity, and release-candidate readiness. No fifth Dungeon, new currency, reward tuning, or non-Dungeon balance pass is included.
+RC1 is a release-cleanup and deployment-readiness build on the feature-frozen Beta 3 Dungeon system. It introduces no new Dungeon, reward layer, currency, combat tuning, or progression change.
 
-### Cross-connection serialization
-- Authoritative state-guarded mutations now acquire SQLite write intent before their first live-state read.
-- Two separate Bot/engine connections sharing the same Guild database cannot both validate and spend the same Dungeon revision.
-- The existing in-process lock still orders local calls; the database transaction now extends that guarantee across independent connections/processes using the same database.
-- Run ID + chamber ID + persisted revision remain the exact Dungeon state contract.
+### Release hardening carried forward
+- Four Dungeons remain authoritative and unchanged.
+- Every Dungeon mutation remains bound to exact run ID + chamber ID + persisted revision.
+- Authoritative state reads remain serialized behind SQLite write intent, preventing separate connections from spending one rendered state twice.
+- Duplicate delivery of the same action ID remains idempotent and returns the committed receipt.
+- Dungeon runs, route effects, Cache state, records, and revisions remain restart/reconnect safe.
 
-### Replay and restart safety
-- Repeated delivery of the **same Portal action ID** still returns the committed receipt and does not advance combat, route choice, retreat, or settlement twice.
-- Replay resolution remains compatible with stale-state rejection: a legitimate retry of an already committed action is safe even after state has advanced.
-- Dungeon revision and run state continue to survive restart/reconnect.
-- Two-connection concurrency regressions cover different action IDs, duplicate action-ID delivery, and competing continue/retreat decisions.
-
-### Feature freeze
-- Dungeon catalog remains Forgotten Ossuary, Emberglass Foundry, Whiteglass Bastion, and Riftglass Observatory.
-- Existing Crossroads effects, weighted Events, encounter pressure, first-clear rewards, Cache settlement, records, and Bestiary integration are unchanged.
-- Adventure state remains **15,368 bytes**, leaving **1,016 bytes** below the 16 KiB guardrail with all four Dungeons unlocked.
+### RC1 cleanup
+- Runtime/Web/frontend identities advance to `1.4.0-dungeons-rc1` for release-candidate cache/version clarity.
+- Python project metadata now reports v1.4.0 rather than the stale v1.1.19 package version.
+- The generated `overlay/state.json` runtime artifact is no longer shipped and is explicitly ignored.
+- Cloud/full setup documentation is refreshed to the current schema/protocol/runtime baseline.
+- Release packages are reconstructed from Beta 3 using the actual patch helpers and checked for private/runtime artifacts.
 
 ### Compatibility
-- Bot runtime: `1.4.0-dungeons-b3`
-- Hosted Web/frontend: `1.4.0-dungeons-b3`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **25** unchanged from Beta 1
+- Portal Action protocol: **25** unchanged
 - Twitch prefix: `!`
 - Database migration: **none**
 - Player reset: **none**
 - OAuth/environment changes: **none**
-- New environment variables: **none**
-- Gameplay/economy rebalance: **none**
+- Gameplay/economy/balance changes: **none**
 
-Beta 3 should deploy as a paired Web + Bot update so the hosted UI and authoritative concurrency hardening advance together.
+Deploy RC1 Web and Bot together so runtime and frontend identities remain aligned.

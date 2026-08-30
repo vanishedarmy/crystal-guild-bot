@@ -13,3 +13,5 @@ logs/
 render_migration/
 twitch_tokens.db
 twitch_tokens.db-*
+
+overlay/state.json

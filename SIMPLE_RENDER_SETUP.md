@@ -1,14 +1,13 @@
-# Crystal Guild v1.1.17 — Arsenal II Simplified Render Bot Setup
+# Crystal Guild v1.4.0 — Dungeons & Delves RC1 Simplified Render Setup
 
-**Already on v1.1.13 cloud?** Push this Bot source to the existing private repository. Do not touch `/var/data`. After Render restarts, verify `!cgversion` and `!health`, then update the matching Web service.
+**Existing cloud install:** push/deploy the RC1 Bot source without touching `/var/data`, then deploy the matching RC1 Web source. Verify `!cgversion` = `1.4.0-dungeons-rc1`, `!health`, and `/api/health`.
 
-**Fresh setup?**
-1. Preserve `.env` + live `crystal_guild.db` locally and make a verified backup.
-2. Create/import `twitch_tokens.db` with the included authorization/migration helpers.
-3. Put source only in a private GitHub repository.
-4. Create the Render worker from `render.yaml` and set the six required secrets.
-5. Transfer `crystal_guild.db` and `twitch_tokens.db` to `/var/data`.
-6. Run `python run_cloud_preflight.py`.
-7. Keep the old local Bot OFF and restart the worker.
-8. Verify `!cgversion` = `1.1.19-retro-phase-iii-rc1` and `!health` is healthy.
-9. Deploy matching v1.1.16 Web and point OBS to `https://YOUR-SITE/overlay`.
+**Fresh setup:**
+1. Prepare the Bot source in a private repository.
+2. Configure the secrets required by `render.yaml`.
+3. Put live databases/token storage only on the persistent disk.
+4. Run `python run_cloud_preflight.py`.
+5. Ensure no older Bot instance is connected.
+6. Start the worker and deploy the matching RC1 Web service.
+
+Schema **10**, hosted sync **1**, protocol **25**. RC1 adds no environment variables.

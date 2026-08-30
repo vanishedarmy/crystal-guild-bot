@@ -1,37 +1,22 @@
-# Crystal Guild v1.1.17 — Arsenal II Render Cloud Setup
+# Crystal Guild v1.4.0 — Dungeons & Delves RC1 Render Cloud Setup
 
-## Existing v1.1.15 Wayfarer Hotfix 3 cloud deployment
+## Existing cloud deployment
+RC1 is an in-place source update from Beta 3. Preserve the worker's persistent state and existing Render secrets. Do not upload packaged databases or token files with source.
 
-This is an in-place source upgrade. Keep the worker's persistent state exactly where it is:
-
+Typical persistent paths:
 ```text
 /var/data/crystal_guild.db
 /var/data/twitch_tokens.db
+/var/data/overlay/state.json
 ```
 
-Update the private Bot GitHub repository, let Render redeploy, verify `!cgversion` / `!health`, then deploy the **matching v1.1.16 Web** source. No player reset, private-state transfer, or database migration is required: Wayfarer Hotfix 3 is already schema 5 and Arsenal remains schema 5. The existing Render secrets remain valid.
-
-After the Web deploy, the Bot heartbeat republishes Fellowship and hosted overlay state automatically. OBS should use `https://YOUR-SITE/overlay`.
+Deploy the matching RC1 Web + Bot together, then verify `!cgversion`, `!health`, and `/api/health`. Local DB schema remains **10**, hosted sync schema **1**, and Portal Action protocol **25**. No player reset or database migration is required from Beta 3.
 
 ## Fresh Render deployment
-
-The worker is created from `render.yaml` as `crystal-guild-bot`, Python 3.11, Starter plan, with a 1 GB persistent disk mounted at `/var/data`. Required Render secrets are `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `TWITCH_BOT_ID`, `TWITCH_OWNER_ID`, `PORTAL_PUBLIC_URL`, and `PORTAL_SYNC_KEY`.
-
-Prepare private state locally using the included migration/token tools. Transfer the resulting databases to:
-
-```text
-/var/data/crystal_guild.db
-/var/data/twitch_tokens.db
-```
-
-Then run in the Render Shell:
-
+Create the worker from `render.yaml`, configure the required Twitch/Portal secrets, place private persistent state only on the persistent disk, and run:
 ```bash
 python run_cloud_preflight.py
 ```
+Continue only after the preflight passes. Keep any old local/cloud Bot instance stopped before the RC1 worker connects.
 
-Continue only after `ALL CLOUD PREFLIGHT CHECKS PASSED.` Keep the old local Bot and standalone Portal sync stopped before the cloud worker connects.
-
-The worker safely waits with `CLOUD BOOTSTRAP REQUIRED` rather than creating a blank Guild if either required database is absent.
-
-The matching v1.1.16 Web deployment is required to use the hosted `/overlay` route and the Cloud Continuity website pass.
+The hosted raid overlay remains available from the matching Web service at `/overlay`.

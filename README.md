@@ -1,22 +1,21 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Beta 3
+# Crystal Guild v1.4.0 — Dungeons & Delves RC1
 
-Crystal Guild is a persistent Final Fantasy-inspired Twitch RPG with a companion Adventurer Portal. Beta 3 is the final shared-state, restart, replay, and concurrency hardening pass for Dungeons & Delves before release-candidate work.
+Crystal Guild is a persistent Final Fantasy-inspired Twitch RPG with a companion Adventurer Portal. RC1 is the release-candidate cleanup and deployment-readiness pass for Dungeons & Delves.
 
-## Beta 3 focus
+## RC1 focus
 
 - Keeps the feature-frozen four-Dungeon catalog unchanged.
-- Serializes authoritative state-guarded mutations at the SQLite write boundary before reading live Dungeon state.
-- Prevents two separate Bot/database connections from spending the same run/chamber/revision concurrently.
-- Preserves exact action-ID replay: duplicate delivery returns the committed receipt rather than resolving again.
-- Retains Beta 1 run/chamber/revision stale-tab protection, restart persistence, route effects, Events, first clears, settlement, and records.
-- Keeps the Adventure-state payload below the 16 KiB guardrail.
+- Carries forward Beta 3 database-level serialization, exact run/chamber/revision stale-state validation, and action-ID replay safety.
+- Performs final upgrade/restart/recovery/package drills without changing Dungeon rewards, combat tuning, or progression.
+- Removes a shipped runtime overlay-state artifact and aligns package/project version surfaces for release.
+- Refreshes setup/deployment documentation that still described older v1.1-era builds.
 
 ## Runtime identity
 
-- Runtime: `1.4.0-dungeons-b3`
+- Bot runtime: `1.4.0-dungeons-rc1`
 - Local DB schema: **10**
 - Hosted sync schema: **1**
 - Portal Action protocol: **25**
 - Twitch command prefix: `!`
 
-Deploy the matching Beta 3 Web and Bot together to receive the complete hardening pass. See `UPGRADE_GUIDE.md` for the Beta 2 Web + Beta 1 Bot upgrade path.
+Deploy the matching RC1 Web + Bot together. No database migration, player reset, OAuth change, new environment variable, or gameplay/economy rebalance is required from Beta 3.
