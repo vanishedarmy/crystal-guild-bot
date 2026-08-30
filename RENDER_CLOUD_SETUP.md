@@ -1,7 +1,7 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 1 Render Cloud Setup
+# Crystal Guild v1.4.0 — Dungeons & Delves Render Cloud Setup
 
 ## Existing cloud deployment
-Alpha 1 is an in-place source update from v1.4.0 production. Preserve the worker's persistent state and existing Render secrets. Do not upload packaged databases or token files with source.
+RC1 is an in-place source update from Beta 3. Preserve the worker's persistent state and existing Render secrets. Do not upload packaged databases or token files with source.
 
 Typical persistent paths:
 ```text
@@ -10,13 +10,13 @@ Typical persistent paths:
 /var/data/overlay/state.json
 ```
 
-Deploy the matching v1.5.0 Alpha 1 Web + Bot together, then verify `!cgversion`, `!health`, and `/api/health`. Local DB schema remains **10**, hosted sync schema **1**, and Portal Action protocol **25**. No player reset or database migration is required from Beta 3.
+Deploy the matching v1.4.0 Web + Bot together, then verify `!cgversion`, `!health`, and `/api/health`. Local DB schema remains **10**, hosted sync schema **1**, and Portal Action protocol **25**. No player reset or database migration is required from Beta 3.
 
 ## Fresh Render deployment
 Create the worker from `render.yaml`, configure the required Twitch/Portal secrets, place private persistent state only on the persistent disk, and run:
 ```bash
 python run_cloud_preflight.py
 ```
-Continue only after the preflight passes. Keep any old local/cloud Bot instance stopped before the Alpha 1 worker connects.
+Continue only after the preflight passes. Keep any old local/cloud Bot instance stopped before the RC1 worker connects.
 
 The hosted raid overlay remains available from the matching Web service at `/overlay`.

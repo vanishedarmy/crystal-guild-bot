@@ -1,10 +1,10 @@
-Crystal Guild v1.5.0 — Trails & Raids Alpha 1
+Crystal Guild v1.4.0 — Dungeons & Delves
 
-Deploy matching Alpha 1 Web + Bot together.
-Runtime: 1.5.0-trails-raids-a1
+Deploy matching v1.4.0 Web + Bot together.
+Runtime: 1.4.0-dungeons-delves
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25
 Twitch prefix: !
 
-Upgrade directly from v1.4.0 Dungeons & Delves production. No migration or player reset is required. Preserve the live database, .env, token storage, hosted secrets, and persistent-disk state.
+RC1 promotes directly to production. No migration, reset, OAuth/environment, gameplay, economy, or balance change is required. Preserve the live database, .env, token storage, and persistent-disk data during upgrade.

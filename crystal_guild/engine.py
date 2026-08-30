@@ -10850,181 +10850,6 @@ class CrystalGuildEngine:
             log.append(f"{meta['name']} cannot use {item['name']} effectively; it is not consumed.")
         return damage_total, healing_total
 
-    def _raid_script_id(self, boss: dict[str, Any] | None = None) -> str:
-        target = boss or self.active_boss or {}
-        return str(target.get("raid_script") or "").strip().lower()
-
-    def _ifrit_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
-        """Advance Inferno Crucible's telegraph cycle without exposing internal target ids."""
-        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
-        step = int(boss.get("_ifrit_step", 0)) % 3
-        if step == 0:
-            target_id = self.rng.choice(alive) if alive else None
-            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
-            mechanic = {
-                "name": "Incinerate",
-                "kind": "targeted",
-                "warning": "A heavy fire strike is locked onto one raider.",
-                "target_id": target_id,
-                "target": target_name or "a raider",
-                "rounds_remaining": 1,
-            }
-        elif step == 1:
-            mechanic = {
-                "name": "Radiant Plume",
-                "kind": "raidwide",
-                "warning": "Flames gather beneath the entire raid.",
-                "rounds_remaining": 1,
-            }
-        else:
-            required = max(450, min(12000, 525 * max(1, len(alive))))
-            mechanic = {
-                "name": "Infernal Nails",
-                "kind": "damage_check",
-                "warning": "Meet the damage target within two rounds to weaken Hellfire.",
-                "rounds_remaining": 2,
-                "required": required,
-                "progress": 0,
-            }
-        boss["mechanic"] = mechanic
-        boss["_ifrit_step"] = (step + 1) % 3
-        return mechanic
-
-    @staticmethod
-    def _raid_public_mechanic(mechanic: dict[str, Any] | None) -> dict[str, Any] | None:
-        if not isinstance(mechanic, dict) or not mechanic:
-            return None
-        public: dict[str, Any] = {}
-        for key in ("name", "kind", "warning", "target", "rounds_remaining", "required", "progress", "result"):
-            if key in mechanic:
-                public[key] = mechanic[key]
-        return public or None
-
-    def _raid_apply_scripted_hit(
-        self,
-        pid: str,
-        *,
-        raw: int,
-        ko_names: list[str],
-        limit_gain: float = 35.0,
-    ) -> int:
-        meta = self.raid_roster.get(pid)
-        if not meta or int(meta.get("hp", 0)) <= 0:
-            return 0
-        p = self._player(pid)
-        if not p:
-            return 0
-        job = self.data.jobs[meta["job_id"]]
-        effects = self._effects(pid, job["id"])
-        stats = self._stats(p, job, effects)
-        unmitigated = max(1, int(raw))
-        pressured = unmitigated
-        if meta.get("defending"):
-            pressured = max(1, int(pressured * 0.55))
-        pressured = max(1, int(pressured * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
-        reduction = 1 + stats["vit"] * 0.006 + effects.get("defense_mult", 0)
-        dmg = max(1, int(pressured / reduction))
-        before = int(meta.get("hp", 0))
-        meta["hp"] = max(0, before - dmg)
-        actual = before - int(meta["hp"])
-        meta["damage_taken"] = int(meta.get("damage_taken", 0)) + actual
-        meta["mitigation"] = int(meta.get("mitigation", 0)) + max(0, unmitigated - actual)
-        meta["limit"] = min(100, int(meta.get("limit", 0)) + max(5, int(actual / max(1, int(meta.get("max_hp", 1))) * limit_gain)))
-        if int(meta["hp"]) <= 0 and not meta.get("ko_counted"):
-            meta["ko_counted"] = True
-            ko_names.append(str(meta.get("name") or "Adventurer"))
-            self.db.execute("UPDATE players SET deaths=deaths+1 WHERE twitch_id=?", (pid,))
-        return actual
-
-    def _resolve_ifrit_response(
-        self,
-        boss: dict[str, Any],
-        *,
-        round_damage: int,
-        phase_mult: float,
-        enrage_mult: float,
-        boss_pressure: float,
-        ko_names: list[str],
-    ) -> tuple[int, list[str]]:
-        """Resolve the telegraphed Inferno Crucible mechanic for this round."""
-        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
-        if not mechanic:
-            mechanic = self._ifrit_prepare_next_mechanic(boss)
-        messages: list[str] = []
-        total = 0
-        retaliation_enabled = int(boss.get("attacks_per_round", 2)) > 0
-        kind = str(mechanic.get("kind") or "")
-        level = int(boss.get("recommended_level", 25))
-        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
-
-        if kind == "damage_check":
-            mechanic["progress"] = max(0, int(mechanic.get("progress", 0))) + max(0, int(round_damage))
-            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
-            required = max(1, int(mechanic.get("required", 1)))
-            progress = max(0, int(mechanic.get("progress", 0)))
-            if int(mechanic["rounds_remaining"]) > 0:
-                messages.append(f"INFERNAL NAILS — {progress:,}/{required:,} damage · {mechanic['rounds_remaining']} round remaining.")
-                return 0, messages
-            success = progress >= required
-            result = "weakened" if success else "empowered"
-            blast_mult = 0.42 if success else 0.92
-            if retaliation_enabled:
-                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
-                for pid, meta in self.raid_roster.items():
-                    if int(meta.get("hp", 0)) > 0:
-                        total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=38.0)
-            boss["last_mechanic"] = {
-                "name": "Hellfire",
-                "kind": "resolution",
-                "result": result,
-                "warning": "Infernal Nails cleared." if success else "Infernal Nails survived.",
-            }
-            messages.append(
-                f"HELLFIRE — Infernal Nails {progress:,}/{required:,}; Hellfire is {result}"
-                + (f" for {total:,} raid damage." if retaliation_enabled else " (boss retaliation suppressed).")
-            )
-            self._ifrit_prepare_next_mechanic(boss)
-            return total, messages
-
-        if kind == "targeted":
-            target_id = str(mechanic.get("target_id") or "")
-            if target_id not in self.raid_roster or int(self.raid_roster[target_id].get("hp", 0)) <= 0:
-                alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
-                target_id = self.rng.choice(alive) if alive else ""
-            target_name = self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider"
-            if retaliation_enabled and target_id:
-                raw = max(1, int(base * 1.12 * self.rng.uniform(0.92, 1.08)))
-                total = self._raid_apply_scripted_hit(target_id, raw=raw, ko_names=ko_names, limit_gain=42.0)
-            boss["last_mechanic"] = {"name": "Incinerate", "kind": "targeted", "target": target_name}
-            messages.append(f"INCINERATE — {target_name} takes {total:,} damage." if retaliation_enabled else "INCINERATE — boss retaliation suppressed.")
-            self._ifrit_prepare_next_mechanic(boss)
-            return total, messages
-
-        # Radiant Plume is the default scripted raidwide response.
-        if retaliation_enabled:
-            raw = max(1, int(base * 0.54 * self.rng.uniform(0.94, 1.06)))
-            for pid, meta in self.raid_roster.items():
-                if int(meta.get("hp", 0)) > 0:
-                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=32.0)
-        boss["last_mechanic"] = {"name": "Radiant Plume", "kind": "raidwide"}
-        messages.append(f"RADIANT PLUME — the raid takes {total:,} damage." if retaliation_enabled else "RADIANT PLUME — boss retaliation suppressed.")
-        self._ifrit_prepare_next_mechanic(boss)
-        return total, messages
-
-    def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
-        mechanic = self._raid_public_mechanic(boss.get("mechanic"))
-        if not mechanic:
-            return ""
-        name = str(mechanic.get("name") or "Mechanic")
-        kind = str(mechanic.get("kind") or "")
-        if kind == "targeted":
-            return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is targeted. Defend or prepare support."
-        if kind == "raidwide":
-            return f"TELEGRAPH — {name}: raidwide damage incoming."
-        if kind == "damage_check":
-            return f"DAMAGE CHECK — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} damage · {int(mechanic.get('rounds_remaining', 0))} rounds."
-        return f"MECHANIC — {name}."
-
     @_state_guard
     def start_raid(self, boss_id: str | None = None) -> GameResult:
         if not self.active_boss:
@@ -11043,17 +10868,10 @@ class CrystalGuildEngine:
         combatants = self._initialize_raid_combat()
         if combatants <= 0:
             return self._finish_raid(False, reason="No raid participants are able to fight.")
-        if self._raid_script_id(self.active_boss) == "ifrit_inferno_crucible":
-            self.active_boss["_ifrit_step"] = 0
-            self._ifrit_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
-        messages = [f"RAID BEGIN — {self.active_boss['name']} | {len(self.raid_roster)} heroes | Phase: {phase['name']}. Limit gauges start at 0%; survive long enough to regret that."]
-        telegraph = self._raid_telegraph_text(self.active_boss)
-        if telegraph:
-            messages.append(telegraph)
-        return GameResult.success(*messages, raid_started=True, boss_id=self.active_boss["id"])
+        return GameResult.success(f"RAID BEGIN — {self.active_boss['name']} | {len(self.raid_roster)} heroes | Phase: {phase['name']}. Limit gauges start at 0%; survive long enough to regret that.", raid_started=True, boss_id=self.active_boss["id"])
 
     @_state_guard
     def raid_round(self, boss_id: str | None = None) -> GameResult:
@@ -11164,18 +10982,8 @@ class CrystalGuildEngine:
         boss_stunned = has_status(boss_statuses, "stun")
         boss_pressure = max(0.35, 1.0 - status_magnitude(boss_statuses, "weaken"))
         boss_pressure *= max(0.55, 1.0 - 0.5 * status_magnitude(boss_statuses, "slow"))
-        scripted_messages: list[str] = []
         if boss_stunned:
             pass
-        elif self._raid_script_id(boss) == "ifrit_inferno_crucible":
-            total_boss_damage, scripted_messages = self._resolve_ifrit_response(
-                boss,
-                round_damage=round_damage,
-                phase_mult=phase_mult,
-                enrage_mult=enrage_mult,
-                boss_pressure=boss_pressure,
-                ko_names=ko_names,
-            )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
             for pid in targets:
@@ -11233,10 +11041,6 @@ class CrystalGuildEngine:
             messages.append("Raid actions — " + " | ".join(shown) + suffix + ".")
         if boss_stunned:
             messages.append(f"{boss['name']} is Stunned and loses the boss response this round.")
-        elif scripted_messages:
-            messages.extend(scripted_messages)
-            if ko_names:
-                messages.append("KO — " + ", ".join(ko_names[:5]) + ". Another hero can use !revive <name> with a Phoenix Down.")
         elif signature_round:
             messages.append(f"{boss['name']} unleashes {boss.get('signature','Cataclysm')} across the raid!" + (f" KO: {', '.join(ko_names[:5])}." if ko_names else ""))
         elif ko_names:
@@ -11251,10 +11055,6 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) == "ifrit_inferno_crucible" and not boss_stunned:
-            telegraph = self._raid_telegraph_text(boss)
-            if telegraph:
-                messages.append(telegraph)
         if alive <= 0:
             finished=self._finish_raid(False, reason="The entire raid is KO'd.")
             return GameResult.success(*messages,*finished.messages,raid_finished=True,won=False)
@@ -11488,26 +11288,13 @@ class CrystalGuildEngine:
         if not boss:
             return {"active":False,"status":status or "IDLE"}
         phase=self._boss_phase(boss)
-        top=sorted(
-            self.raid_roster.values(),
-            key=lambda m: raid_contribution_score(damage=m.get("damage",0), healing=m.get("healing",0), mitigation=m.get("mitigation",0)),
-            reverse=True,
-        )[:5]
-        top_rows=[]
-        for m in top:
-            score=raid_contribution_score(damage=m.get("damage",0), healing=m.get("healing",0), mitigation=m.get("mitigation",0))
-            top_rows.append({
-                "name":m["name"], "damage":m.get("damage",0), "healing":m.get("healing",0),
-                "mitigation":m.get("mitigation",0), "score":int(round(score)),
-            })
+        top=sorted(self.raid_roster.values(),key=lambda m:m.get("damage",0),reverse=True)[:5]
         return {
             "active":active, "status":status or boss.get("state","rally").upper(), "boss":boss["name"], "tier":boss.get("tier","World Boss"),
-            "encounter_type":boss.get("encounter_type","Raid"), "encounter_name":boss.get("encounter_name") or boss.get("name"),
             "hp":boss.get("current_hp",boss["hp"]), "max_hp":boss.get("max_hp",boss["hp"]), "round":boss.get("round",0), "phase":phase.get("name","Battle"),
             "signature":boss.get("signature","Cataclysm"), "raiders":len(self.raid_roster), "alive":sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0),
-            "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":top_rows,
-            "mechanic":self._raid_public_mechanic(boss.get("mechanic")), "last_mechanic":self._raid_public_mechanic(boss.get("last_mechanic")),
-            "next_round_at":boss.get("next_round_at"), "updated_at":int(time.time()),
+            "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":[{"name":m["name"],"damage":m.get("damage",0),"healing":m.get("healing",0)} for m in top],
+            "updated_at":int(time.time()),
         }
 
     def _write_overlay(self, payload: dict[str, Any]) -> None:

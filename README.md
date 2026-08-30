@@ -1,4 +1,4 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 1
+# Crystal Guild v1.4.0 — Dungeons & Delves
 
 Crystal Guild is a persistent Final Fantasy-inspired Twitch RPG with a companion Adventurer Portal. **Dungeons & Delves** is the final v1.4.0 production release.
 
@@ -13,10 +13,10 @@ Crystal Guild is a persistent Final Fantasy-inspired Twitch RPG with a companion
 
 ## Runtime identity
 
-- Bot runtime: `1.5.0-trails-raids-a1`
+- Bot runtime: `1.4.0-dungeons-delves`
 - Local DB schema: **10**
 - Hosted sync schema: **1**
 - Portal Action protocol: **25**
 - Twitch command prefix: `!`
 
-Deploy the matching v1.5.0 Alpha 1 Web + Bot together. Upgrade directly from v1.4.0 production with no database migration, player reset, OAuth change, or new environment variable.
+Deploy the matching v1.4.0 Web + Bot together. RC1 promotes directly with no database migration, player reset, OAuth change, new environment variable, or gameplay/economy rebalance.
