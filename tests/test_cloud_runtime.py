@@ -176,7 +176,7 @@ class CloudRuntimeTests(unittest.TestCase):
 
     def test_cloud_setup_docs_preserve_existing_database_and_explain_matching_web(self):
         source = (ROOT / "RENDER_CLOUD_SETUP.md").read_text(encoding="utf-8")
-        self.assertIn("matching v1.5.0 Alpha 4 Web + Bot", source)
+        self.assertIn("matching v1.5.0 Alpha 5 Web + Bot", source)
         self.assertIn("No player reset", source)
         self.assertIn("/var/data/crystal_guild.db", source)
         self.assertIn("/var/data/twitch_tokens.db", source)

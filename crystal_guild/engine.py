@@ -11432,6 +11432,125 @@ class CrystalGuildEngine:
         self._titan_prepare_next_mechanic(boss)
         return total, messages
 
+    def _garuda_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
+        """Advance Eye of the Storm through brace, containment, and Plume pressure."""
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        step = int(boss.get("_garuda_step", 0)) % 3
+        if step == 0:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Slipstream", "kind": "wind_pressure",
+                "warning": "A focused wind burst locks onto one raider. Defend to brace and avoid lingering Slow.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        elif step == 1:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Friction", "kind": "wind_mark",
+                "warning": "Wind pressure marks one raider. Defend to contain the burst or it splashes the party.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        else:
+            plume_hp = max(360, min(7200, 380 * max(1, len(alive))))
+            boss["adds"] = [
+                {"id": "satin_plume", "name": "Satin Plume", "max_hp": plume_hp, "current_hp": plume_hp},
+                {"id": "razor_plume", "name": "Razor Plume", "max_hp": plume_hp, "current_hp": plume_hp},
+            ]
+            mechanic = {
+                "name": "Plume Squadron", "kind": "adds",
+                "warning": "Destroy Satin and Razor Plumes within two rounds to weaken Aerial Blast.",
+                "rounds_remaining": 2, "required": plume_hp * 2, "progress": 0,
+            }
+        boss["mechanic"] = mechanic
+        boss["_garuda_step"] = (step + 1) % 3
+        return mechanic
+
+    def _resolve_garuda_response(
+        self, boss: dict[str, Any], *, round_damage: int, phase_mult: float,
+        enrage_mult: float, boss_pressure: float, ko_names: list[str],
+    ) -> tuple[int, list[str]]:
+        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
+        if not mechanic:
+            mechanic = self._garuda_prepare_next_mechanic(boss)
+        messages: list[str] = []
+        total = 0
+        retaliation_enabled = int(boss.get("attacks_per_round", 2)) > 0
+        kind = str(mechanic.get("kind") or "")
+        level = int(boss.get("recommended_level", 30))
+        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+
+        if kind == "adds":
+            required = max(1, int(mechanic.get("required", 1)))
+            remaining = self._raid_live_adds(boss)
+            remaining_hp = sum(max(0, int(add.get("current_hp", 0))) for add in remaining)
+            mechanic["progress"] = max(0, required - remaining_hp)
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            if remaining and int(mechanic["rounds_remaining"]) > 0:
+                messages.append(
+                    f"MISTRAL SHRIEK — {len(remaining)} Plume(s) remain · {int(mechanic['progress']):,}/{required:,} damage · {mechanic['rounds_remaining']} round remaining."
+                )
+                return 0, messages
+            survivors = len(remaining)
+            result = "weakened" if survivors == 0 else "pressurized" if survivors == 1 else "empowered"
+            blast_mult = 0.34 if survivors == 0 else 0.64 if survivors == 1 else 0.98
+            if retaliation_enabled:
+                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
+                for pid in alive:
+                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=40.0)
+            boss["adds"] = []
+            boss["last_mechanic"] = {
+                "name": "Aerial Blast", "kind": "resolution", "result": result,
+                "warning": "Both Plumes shattered." if survivors == 0 else f"{survivors} Plume(s) survived.",
+            }
+            messages.append(
+                f"AERIAL BLAST — {survivors} Plume(s) survive; the storm is {result}"
+                + (f" for {total:,} raid damage." if retaliation_enabled else " (boss retaliation suppressed).")
+            )
+            self._garuda_prepare_next_mechanic(boss)
+            return total, messages
+
+        target_id = str(mechanic.get("target_id") or "")
+        if target_id not in alive:
+            target_id = self.rng.choice(alive) if alive else ""
+        target_name = str(self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider")
+        braced = bool(target_id and self.raid_roster.get(target_id, {}).get("defending"))
+
+        if kind == "wind_mark":
+            if retaliation_enabled and target_id:
+                raw = max(1, int(base * 0.54 * self.rng.uniform(0.94, 1.06)))
+                total += self._raid_apply_scripted_hit(target_id, raw=raw, ko_names=ko_names, limit_gain=32.0)
+                if not braced:
+                    splash_raw = max(1, int(base * 0.34 * self.rng.uniform(0.94, 1.06)))
+                    for pid in alive:
+                        if pid != target_id:
+                            total += self._raid_apply_scripted_hit(pid, raw=splash_raw, ko_names=ko_names, limit_gain=28.0)
+            result = "contained" if braced else "released"
+            boss["last_mechanic"] = {"name": "Friction", "kind": "wind_mark", "target": target_name, "result": result}
+            messages.append(
+                f"FRICTION — {target_name} {'contains' if braced else 'fails to contain'} the wind mark; {total:,} total damage."
+                if retaliation_enabled else "FRICTION — boss retaliation suppressed."
+            )
+            self._garuda_prepare_next_mechanic(boss)
+            return total, messages
+
+        # Slipstream: Defend braces the focused hit; missing it leaves a brief Slow.
+        if retaliation_enabled and target_id:
+            raw = max(1, int(base * 1.00 * self.rng.uniform(0.92, 1.08)))
+            total = self._raid_apply_scripted_hit(target_id, raw=raw, ko_names=ko_names, limit_gain=40.0)
+            if not braced and int(self.raid_roster.get(target_id, {}).get("hp", 0)) > 0:
+                apply_status(self.raid_roster[target_id].setdefault("statuses", {}), "slow", 2, 0.18)
+        result = "braced" if braced else "buffeted"
+        boss["last_mechanic"] = {"name": "Slipstream", "kind": "wind_pressure", "target": target_name, "result": result}
+        messages.append(
+            f"SLIPSTREAM — {target_name} {'braces through' if braced else 'is buffeted by'} the gust for {total:,} damage."
+            if retaliation_enabled else "SLIPSTREAM — boss retaliation suppressed."
+        )
+        self._garuda_prepare_next_mechanic(boss)
+        return total, messages
+
     def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
         mechanic = self._raid_public_mechanic(boss.get("mechanic"))
         if not mechanic:
@@ -11462,6 +11581,10 @@ class CrystalGuildEngine:
             return f"RESCUE — {name}: {mechanic.get('target') or 'a raider'} is trapped; boss-targeted damage breaks the Gaol."
         if kind == "heart_check":
             return f"HEART CHECK — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} damage · {int(mechanic.get('rounds_remaining', 0))} rounds."
+        if kind == "wind_pressure":
+            return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is marked; Defend to brace against the focused gale."
+        if kind == "wind_mark":
+            return f"WIND MARK — {name}: {mechanic.get('target') or 'a raider'} must Defend to contain the pressure and protect the raid."
         if kind == "stagger":
             return f"STAGGER — {name}: boss is vulnerable and cannot answer the next round."
         return f"MECHANIC — {name}."
@@ -11502,6 +11625,10 @@ class CrystalGuildEngine:
             for meta in self.raid_roster.values():
                 meta["restrained"] = None
             self._titan_prepare_next_mechanic(self.active_boss)
+        elif script_id == "garuda_eye_of_storm":
+            self.active_boss["_garuda_step"] = 0
+            self.active_boss["adds"] = []
+            self._garuda_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -11646,6 +11773,11 @@ class CrystalGuildEngine:
                 boss, round_damage=round_damage, phase_mult=phase_mult,
                 enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
             )
+        elif self._raid_script_id(boss) == "garuda_eye_of_storm":
+            total_boss_damage, scripted_messages = self._resolve_garuda_response(
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
+            )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
             for pid in targets:
@@ -11721,7 +11853,7 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag"} and not boss_stunned:
+        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag", "garuda_eye_of_storm"} and not boss_stunned:
             telegraph = self._raid_telegraph_text(boss)
             if telegraph:
                 messages.append(telegraph)

@@ -42,7 +42,7 @@ async function refresh(){
     document.getElementById('hp').textContent=(s.hp||0).toLocaleString()+' / '+(s.max_hp||0).toLocaleString()+' HP';
     document.getElementById('phase').textContent='R'+(s.round||0)+' • '+(s.phase||'Battle');
     const status=document.getElementById('status'); status.textContent=(s.enraged?'ENRAGED • ':'')+'SUMMON '+(s.summon_gauge||0)+'%'; status.className=s.enraged?'enraged':'';
-    const m=s.mechanic||{}; document.getElementById('mechanic').textContent=m.name?(['damage_check','break_check','guard_check','heart_check'].includes(m.kind)?m.name+' • '+Number(m.progress||0).toLocaleString()+'/'+Number(m.required||0).toLocaleString()+' • '+Number(m.rounds_remaining||0)+'R':m.name+(m.target?' → '+m.target:'')):'Standard boss pressure';
+    const m=s.mechanic||{}; const cue=m.kind==='wind_pressure'?' • DEFEND':m.kind==='wind_mark'?' • CONTAIN':''; document.getElementById('mechanic').textContent=m.name?(['damage_check','break_check','guard_check','heart_check'].includes(m.kind)?m.name+' • '+Number(m.progress||0).toLocaleString()+'/'+Number(m.required||0).toLocaleString()+' • '+Number(m.rounds_remaining||0)+'R':m.name+(m.target?' → '+m.target:'')+cue):'Standard boss pressure';
     const top=(s.top||[]).map((x,i)=>'#'+(i+1)+' '+x.name+' '+Number(x.score||0).toLocaleString()+' pts').join('   •   ');
     document.getElementById('top').textContent=top;
   }catch(e){}

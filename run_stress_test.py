@@ -167,14 +167,14 @@ def run_stress(players: int, operations: int, readers: int, seed: int) -> dict[s
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Crystal Guild v1.5.0 Trails & Raids Alpha 4 synthetic release stress test")
+    parser = argparse.ArgumentParser(description="Crystal Guild v1.5.0 Trails & Raids Alpha 5 synthetic release stress test")
     parser.add_argument("--players", type=int, default=500, help="Synthetic heroes (10-2000; default 500)")
     parser.add_argument("--operations", type=int, default=5000, help="Gameplay/read operations (default 5000)")
     parser.add_argument("--readers", type=int, default=4, help="Concurrent portal readers (0-16; default 4)")
     parser.add_argument("--seed", type=int, default=99, help="Deterministic random seed")
     args = parser.parse_args()
 
-    print("Crystal Guild v1.5.0 — Trails & Raids Alpha 4 Synthetic Stress Test")
+    print("Crystal Guild v1.5.0 — Trails & Raids Alpha 5 Synthetic Stress Test")
     result = run_stress(args.players, args.operations, args.readers, args.seed)
     print(
         f"players={result['players']:,} operations={result['operations']:,} "

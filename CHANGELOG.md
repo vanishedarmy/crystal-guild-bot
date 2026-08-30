@@ -1,3 +1,13 @@
+# Changelog
+
+## v1.5.0 — Trails & Raids Alpha 5
+- Garuda — Eye of the Storm becomes the fifth flagship Trial.
+- Slipstream uses Defend to brace against focused wind pressure and avoid lingering Slow.
+- Friction asks the marked raider to Defend and contain a burst that otherwise splashes the party.
+- Satin and Razor Plumes intercept boss-directed damage for two rounds and determine Aerial Blast strength.
+- The Trial & Raid Board is rebuilt into a roomier two-column desktop layout with responsive one-column fallbacks.
+- Schema 10, hosted sync 1, Portal Action protocol 25, existing rewards/progression, and the four frozen Dungeons remain unchanged.
+
 # Crystal Guild Changelog
 
 ## v1.5.0 — Trails & Raids Alpha 4

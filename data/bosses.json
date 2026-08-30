@@ -90,7 +90,7 @@
     "tier": "World Boss",
     "recommended_level": 14,
     "signature": "Grave March",
-    "description": "An ancient commander who has interpreted \u201crest in peace\u201d as optional guidance.",
+    "description": "An ancient commander who has interpreted “rest in peace” as optional guidance.",
     "drops": [
       {
         "item_id": "bone_chip",
@@ -487,7 +487,32 @@
     ],
     "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "encounter_type": "Trial",
+    "encounter_name": "Eye of the Storm",
+    "raid_script": "garuda_eye_of_storm",
+    "mechanics": [
+      {
+        "name": "Slipstream",
+        "kind": "wind_pressure",
+        "description": "A marked raider must Defend to brace against a focused wind burst and avoid lingering Slow."
+      },
+      {
+        "name": "Friction",
+        "kind": "wind_mark",
+        "description": "One marked raider contains the pressure by Defending; failing to contain it splashes the entire raid."
+      },
+      {
+        "name": "Plume Squadron",
+        "kind": "adds",
+        "description": "Satin and Razor Plumes intercept boss-directed damage for two rounds."
+      },
+      {
+        "name": "Aerial Blast",
+        "kind": "resolution",
+        "description": "Destroy both Plumes to weaken Aerial Blast; surviving Plumes increase the storm pressure."
+      }
+    ]
   },
   {
     "id": "titan",
@@ -546,7 +571,7 @@
       {
         "name": "Heart of the Crag",
         "kind": "heart_check",
-        "description": "A two-round party damage check against Titan\u2019s exposed Heart."
+        "description": "A two-round party damage check against Titan’s exposed Heart."
       },
       {
         "name": "Earthen Fury",
@@ -1343,7 +1368,7 @@
     "xp": 59000,
     "gil": 180000,
     "signature": "Armageddon",
-    "description": "A monster-arena nightmare assembled from the Guild\u2019s worst collection habits.",
+    "description": "A monster-arena nightmare assembled from the Guild’s worst collection habits.",
     "drops": [
       {
         "item_id": "nemesis_mark",
