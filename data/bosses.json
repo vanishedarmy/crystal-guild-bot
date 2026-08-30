@@ -243,7 +243,32 @@
     ],
     "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "encounter_type": "Trial",
+    "encounter_name": "Inferno Crucible",
+    "raid_script": "ifrit_inferno_crucible",
+    "mechanics": [
+      {
+        "name": "Incinerate",
+        "kind": "targeted",
+        "description": "A telegraphed heavy fire strike aimed at one raider."
+      },
+      {
+        "name": "Radiant Plume",
+        "kind": "raidwide",
+        "description": "A telegraphed flame burst that strikes every standing raider."
+      },
+      {
+        "name": "Infernal Nails",
+        "kind": "damage_check",
+        "description": "Two rounds to meet the damage target before Hellfire resolves."
+      },
+      {
+        "name": "Hellfire",
+        "kind": "resolution",
+        "description": "Meeting the Nails check weakens Hellfire; failing it empowers the raidwide blast."
+      }
+    ]
   },
   {
     "id": "shiva",

@@ -15,6 +15,7 @@ html,body{margin:0;background:transparent;color:#fff;font-family:Segoe UI,Arial,
 .row{display:flex;justify-content:space-between;gap:14px;margin-top:10px;font-size:18px}
 #phase{font-weight:700}
 #status.enraged{font-weight:800}
+#mechanic{margin-top:10px;padding:8px 10px;border-left:3px solid #f0c15d;background:rgba(255,255,255,.06);font-size:14px;font-weight:700}
 #top{margin-top:10px;font-size:14px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
@@ -23,6 +24,7 @@ html,body{margin:0;background:transparent;color:#fff;font-family:Segoe UI,Arial,
   <div class="top"><div id="boss">Crystal Guild</div><div id="meta"></div></div>
   <div class="bar"><div id="hpbar"></div></div>
   <div class="row"><div id="hp"></div><div id="phase"></div><div id="status"></div></div>
+  <div id="mechanic"></div>
   <div id="top"></div>
 </div>
 <script>
@@ -34,13 +36,14 @@ async function refresh(){
     if(!s.active && !['VICTORY','WIPE'].includes(s.status)){wrap.style.display='none';return;}
     wrap.style.display='block';
     document.getElementById('boss').textContent=s.boss||'Crystal Guild';
-    document.getElementById('meta').textContent=(s.tier||'')+' • Raiders '+(s.alive??0)+'/'+(s.raiders??0);
+    document.getElementById('meta').textContent=(s.encounter_type?String(s.encounter_type)+' • ':'')+(s.tier||'')+' • Raiders '+(s.alive??0)+'/'+(s.raiders??0);
     const pct=Math.max(0,Math.min(100,((s.hp||0)/Math.max(1,s.max_hp||1))*100));
     document.getElementById('hpbar').style.width=pct+'%';
     document.getElementById('hp').textContent=(s.hp||0).toLocaleString()+' / '+(s.max_hp||0).toLocaleString()+' HP';
     document.getElementById('phase').textContent='R'+(s.round||0)+' • '+(s.phase||'Battle');
     const status=document.getElementById('status'); status.textContent=(s.enraged?'ENRAGED • ':'')+'SUMMON '+(s.summon_gauge||0)+'%'; status.className=s.enraged?'enraged':'';
-    const top=(s.top||[]).map((x,i)=>'#'+(i+1)+' '+x.name+' '+Number(x.damage||0).toLocaleString()+' dmg').join('   •   ');
+    const m=s.mechanic||{}; document.getElementById('mechanic').textContent=m.name?(m.kind==='damage_check'?m.name+' • '+Number(m.progress||0).toLocaleString()+'/'+Number(m.required||0).toLocaleString()+' • '+Number(m.rounds_remaining||0)+'R':m.name+(m.target?' → '+m.target:'')):'Standard boss pressure';
+    const top=(s.top||[]).map((x,i)=>'#'+(i+1)+' '+x.name+' '+Number(x.score||0).toLocaleString()+' pts').join('   •   ');
     document.getElementById('top').textContent=top;
   }catch(e){}
 }
