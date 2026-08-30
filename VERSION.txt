@@ -1,5 +1,5 @@
-v1.4.0 — Dungeons & Delves
-Runtime: 1.4.0-dungeons-delves
+v1.5.0 — Trails & Raids Alpha 1
+Runtime: 1.5.0-trails-raids-a1
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25

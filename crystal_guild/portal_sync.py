@@ -149,8 +149,8 @@ class PortalSyncClient:
         if not isinstance(raw, dict):
             return None
         allowed = {
-            "active", "status", "boss", "tier", "hp", "max_hp", "round", "phase",
-            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "updated_at",
+            "active", "status", "boss", "tier", "encounter_type", "encounter_name", "hp", "max_hp", "round", "phase",
+            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "mechanic", "last_mechanic", "next_round_at", "updated_at",
         }
         overlay = {key: raw[key] for key in allowed if key in raw}
         top = overlay.get("top")
@@ -160,11 +160,26 @@ class PortalSyncClient:
                     "name": str(item.get("name") or "Adventurer")[:80],
                     "damage": max(0, int(item.get("damage") or 0)),
                     "healing": max(0, int(item.get("healing") or 0)),
+                    "mitigation": max(0, int(item.get("mitigation") or 0)),
+                    "score": max(0, int(item.get("score") or 0)),
                 }
                 for item in top[:5] if isinstance(item, dict)
             ]
         else:
             overlay["top"] = []
+        for field in ("mechanic", "last_mechanic"):
+            mechanic = overlay.get(field)
+            if not isinstance(mechanic, dict):
+                overlay[field] = None
+                continue
+            clean = {}
+            for key in ("name", "kind", "warning", "target", "result"):
+                if key in mechanic and mechanic[key] is not None:
+                    clean[key] = str(mechanic[key])[:160]
+            for key in ("rounds_remaining", "required", "progress"):
+                if key in mechanic and mechanic[key] is not None:
+                    clean[key] = max(0, int(mechanic[key]))
+            overlay[field] = clean or None
         return {
             "schema_version": SCHEMA_VERSION,
             "sync_version": SYNC_VERSION,
