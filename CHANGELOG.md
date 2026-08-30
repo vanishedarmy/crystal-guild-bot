@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.5.0 — Trails & Raids Alpha 4
+- Titan — Heart of the Crag becomes the fourth flagship Trial.
+- Landslide uses the existing Defend action as a personal brace check; ignoring it causes knockdown pressure.
+- Granite Gaol temporarily restrains one raider until normal boss-directed damage breaks the prison.
+- Heart of the Crag creates a two-round damage check that weakens or empowers Earthen Fury.
+- Existing Ifrit, Shiva, Ramuh, unscripted raids, and all four Dungeons remain unchanged.
+- Runtime `1.5.0-trails-raids-a4`; schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
+
 ## v1.5.0 — Trails & Raids Alpha 3
 - Ramuh — Judgment Spire adds Rolling Thunder chain pressure, Levinshare stack-sharing, and a two-round Judgment Charge Grounding Gauge driven by existing Defend actions.
 - Successful grounding weakens Judgment Bolt; missed grounding empowers the raidwide discharge.

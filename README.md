@@ -1,5 +1,5 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 3
+# Crystal Guild v1.5.0 — Trails & Raids Alpha 4
 
-Alpha 3 expands Trails & Raids with **Ramuh — Judgment Spire**, chain pressure, Defend-driven stack sharing, a coordinated Grounding Gauge, and the new collapsible Trial & Raid Board. Ifrit — Inferno Crucible and Shiva — Diamond Throne remain supported.
+Alpha 4 expands Trails & Raids with **Titan — Heart of the Crag**: Landslide response, Granite Gaol restraint/rescue, a two-round Heart damage check, and weakened/empowered Earthen Fury. Ifrit — Inferno Crucible, Shiva — Diamond Throne, Ramuh — Judgment Spire, and the collapsible Trial & Raid Board remain supported.
 
-Runtime `1.5.0-trails-raids-a3` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching Alpha 3 Bot + Web together. See `UPGRADE_GUIDE.md`.
+Runtime `1.5.0-trails-raids-a4` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching Alpha 4 Bot + Web together. See `UPGRADE_GUIDE.md`.

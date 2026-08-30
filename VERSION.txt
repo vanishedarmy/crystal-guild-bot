@@ -1,5 +1,5 @@
-v1.5.0 — Trails & Raids Alpha 3
-Runtime: 1.5.0-trails-raids-a3
+v1.5.0 — Trails & Raids Alpha 4
+Runtime: 1.5.0-trails-raids-a4
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25

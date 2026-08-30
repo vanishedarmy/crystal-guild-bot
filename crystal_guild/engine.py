@@ -2595,12 +2595,14 @@ class CrystalGuildEngine:
                 return None, GameResult.fail("You are not part of the active raid.")
         if int(meta.get("hp", 0)) <= 0:
             return None, GameResult.fail("You are KO'd and cannot act. An ally can use Raise, a Phoenix Down, or !revive on you.")
+        if meta.get("restrained"):
+            return None, GameResult.fail(f"{meta.get('name', 'Adventurer')} is trapped in {meta['restrained']} and cannot act until the party breaks it.")
         return meta, None
 
     def _all_raid_actions_queued(self) -> bool:
         if not self.active_boss or self.active_boss.get("state") != "combat":
             return False
-        living = [m for m in self.raid_roster.values() if int(m.get("hp", 0)) > 0]
+        living = [m for m in self.raid_roster.values() if int(m.get("hp", 0)) > 0 and not m.get("restrained")]
         return bool(living and all(m.get("action") for m in living))
 
     def _raid_target_id(self, query: str, *, default_id: str | None = None) -> str | None:
@@ -10755,7 +10757,14 @@ class CrystalGuildEngine:
             add = live_adds[0]
             before = int(add.get("current_hp", 0))
             add["current_hp"] = max(0, before - damage)
-            return before - int(add["current_hp"]), str(add.get("name") or "Raid add")
+            dealt = before - int(add["current_hp"])
+            release_target_id = str(add.get("release_target_id") or "")
+            if int(add["current_hp"]) <= 0 and release_target_id:
+                target = self.raid_roster.get(release_target_id)
+                if target:
+                    target["restrained"] = None
+                add["release_target_id"] = None
+            return dealt, str(add.get("name") or "Raid add")
         before = int(target_boss.get("current_hp", 0))
         target_boss["current_hp"] = max(0, before - damage)
         return before - int(target_boss["current_hp"]), str(target_boss.get("name") or "boss")
@@ -11287,6 +11296,142 @@ class CrystalGuildEngine:
         self._ramuh_prepare_next_mechanic(boss)
         return total, messages
 
+    def _titan_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
+        """Advance Heart of the Crag through Landslide, Gaol rescue, and Heart damage check."""
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        step = int(boss.get("_titan_step", 0)) % 3
+        if step == 0:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Landslide", "kind": "knockback",
+                "warning": "A marked line strike is coming. The target should Defend to brace against knockdown.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        elif step == 1:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            gaol_hp = max(700, min(8500, 760 * max(1, len(alive))))
+            boss["adds"] = [{
+                "id": "granite_gaol", "name": f"Granite Gaol — {target_name or 'Raider'}",
+                "max_hp": gaol_hp, "current_hp": gaol_hp, "release_target_id": target_id,
+            }]
+            if target_id and target_id in self.raid_roster:
+                self.raid_roster[target_id]["restrained"] = "Granite Gaol"
+            mechanic = {
+                "name": "Granite Gaol", "kind": "restraint",
+                "warning": "One raider is imprisoned and cannot act. Boss-directed damage strikes the Gaol until it breaks.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 2,
+            }
+        else:
+            heart_hp = max(900, min(12000, 900 * max(1, len(alive))))
+            boss["adds"] = [{
+                "id": "heart_of_the_crag", "name": "Heart of the Crag",
+                "max_hp": heart_hp, "current_hp": heart_hp,
+            }]
+            mechanic = {
+                "name": "Heart of the Crag", "kind": "heart_check",
+                "warning": "Destroy Titan's exposed Heart within two rounds to weaken Earthen Fury.",
+                "rounds_remaining": 2, "required": heart_hp, "progress": 0,
+            }
+        boss["mechanic"] = mechanic
+        boss["_titan_step"] = (step + 1) % 3
+        return mechanic
+
+    def _resolve_titan_response(
+        self, boss: dict[str, Any], *, round_damage: int, phase_mult: float,
+        enrage_mult: float, boss_pressure: float, ko_names: list[str],
+    ) -> tuple[int, list[str]]:
+        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
+        if not mechanic:
+            mechanic = self._titan_prepare_next_mechanic(boss)
+        messages: list[str] = []
+        total = 0
+        retaliation_enabled = int(boss.get("attacks_per_round", 2)) > 0
+        kind = str(mechanic.get("kind") or "")
+        level = int(boss.get("recommended_level", 32))
+        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+
+        if kind == "restraint":
+            target_id = str(mechanic.get("target_id") or "")
+            target_name = str(self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider")
+            remaining = self._raid_live_adds(boss)
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            if not remaining:
+                if target_id in self.raid_roster:
+                    self.raid_roster[target_id]["restrained"] = None
+                boss["adds"] = []
+                boss["last_mechanic"] = {"name": "Granite Gaol", "kind": "restraint", "target": target_name, "result": "broken"}
+                messages.append(f"GRANITE GAOL — {target_name} is freed before Geocrush resolves.")
+                self._titan_prepare_next_mechanic(boss)
+                return 0, messages
+            if int(mechanic["rounds_remaining"]) > 0:
+                hp = int(remaining[0].get("current_hp", 0)); mx = int(remaining[0].get("max_hp", 1))
+                messages.append(f"GRANITE GAOL — {target_name} remains trapped · {hp:,}/{mx:,} HP · {mechanic['rounds_remaining']} round remaining.")
+                return 0, messages
+            if retaliation_enabled and target_id in self.raid_roster and int(self.raid_roster[target_id].get("hp", 0)) > 0:
+                raw = max(1, int(base * 1.18 * self.rng.uniform(0.94, 1.06)))
+                total = self._raid_apply_scripted_hit(target_id, raw=raw, ko_names=ko_names, limit_gain=45.0)
+            if target_id in self.raid_roster:
+                self.raid_roster[target_id]["restrained"] = None
+            boss["adds"] = []
+            boss["last_mechanic"] = {"name": "Geocrush", "kind": "resolution", "target": target_name, "result": "gaol_survived"}
+            messages.append(
+                f"GEOCRUSH — the Gaol survives and crushes {target_name} for {total:,} damage."
+                if retaliation_enabled else "GEOCRUSH — boss retaliation suppressed; the Gaol releases its target."
+            )
+            self._titan_prepare_next_mechanic(boss)
+            return total, messages
+
+        if kind == "heart_check":
+            mechanic["progress"] = min(max(1, int(mechanic.get("required", 1))), max(0, int(mechanic.get("progress", 0))) + max(0, int(round_damage)))
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            required = max(1, int(mechanic.get("required", 1)))
+            progress = max(0, int(mechanic.get("progress", 0)))
+            heart_alive = bool(self._raid_live_adds(boss))
+            if heart_alive and int(mechanic["rounds_remaining"]) > 0:
+                messages.append(f"HEART CHECK — {progress:,}/{required:,} damage · {mechanic['rounds_remaining']} round remaining.")
+                return 0, messages
+            success = not heart_alive or progress >= required
+            result = "weakened" if success else "empowered"
+            blast_mult = 0.40 if success else 0.95
+            if retaliation_enabled:
+                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
+                for pid in alive:
+                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=40.0)
+            boss["adds"] = []
+            boss["last_mechanic"] = {
+                "name": "Earthen Fury", "kind": "resolution", "result": result,
+                "warning": "The Heart is destroyed." if success else "The Heart survives.",
+            }
+            messages.append(
+                f"EARTHEN FURY — Heart {progress:,}/{required:,}; the blast is {result}"
+                + (f" for {total:,} raid damage." if retaliation_enabled else " (boss retaliation suppressed).")
+            )
+            self._titan_prepare_next_mechanic(boss)
+            return total, messages
+
+        # Landslide: the marked raider can use the existing Defend action to brace.
+        target_id = str(mechanic.get("target_id") or "")
+        if target_id not in alive:
+            target_id = self.rng.choice(alive) if alive else ""
+        target_name = str(self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider")
+        braced = bool(target_id and self.raid_roster.get(target_id, {}).get("defending"))
+        if retaliation_enabled and target_id:
+            raw = max(1, int(base * 1.08 * self.rng.uniform(0.92, 1.08)))
+            total = self._raid_apply_scripted_hit(target_id, raw=raw, ko_names=ko_names, limit_gain=42.0)
+            if not braced and int(self.raid_roster.get(target_id, {}).get("hp", 0)) > 0:
+                apply_status(self.raid_roster[target_id].setdefault("statuses", {}), "stun", 2, 0.0)
+        result = "braced" if braced else "knocked_down"
+        boss["last_mechanic"] = {"name": "Landslide", "kind": "knockback", "target": target_name, "result": result}
+        messages.append(
+            f"LANDSLIDE — {target_name} {'braces through' if braced else 'is knocked down by'} the strike for {total:,} damage."
+            if retaliation_enabled else "LANDSLIDE — boss retaliation suppressed."
+        )
+        self._titan_prepare_next_mechanic(boss)
+        return total, messages
+
     def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
         mechanic = self._raid_public_mechanic(boss.get("mechanic"))
         if not mechanic:
@@ -11311,6 +11456,12 @@ class CrystalGuildEngine:
             return f"STACK — {name}: {mechanic.get('target') or 'a raider'} is marked; Defending allies split the hit."
         if kind == "guard_check":
             return f"GROUNDING GAUGE — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} Defends · {int(mechanic.get('rounds_remaining', 0))} rounds."
+        if kind == "knockback":
+            return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is marked; Defend to brace against knockdown."
+        if kind == "restraint":
+            return f"RESCUE — {name}: {mechanic.get('target') or 'a raider'} is trapped; boss-targeted damage breaks the Gaol."
+        if kind == "heart_check":
+            return f"HEART CHECK — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} damage · {int(mechanic.get('rounds_remaining', 0))} rounds."
         if kind == "stagger":
             return f"STAGGER — {name}: boss is vulnerable and cannot answer the next round."
         return f"MECHANIC — {name}."
@@ -11345,6 +11496,12 @@ class CrystalGuildEngine:
         elif script_id == "ramuh_judgment_spire":
             self.active_boss["_ramuh_step"] = 0
             self._ramuh_prepare_next_mechanic(self.active_boss)
+        elif script_id == "titan_heart_of_crag":
+            self.active_boss["_titan_step"] = 0
+            self.active_boss["adds"] = []
+            for meta in self.raid_roster.values():
+                meta["restrained"] = None
+            self._titan_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -11407,6 +11564,9 @@ class CrystalGuildEngine:
         )
         for pid, meta in ordered:
             if int(meta.get("hp", 0)) <= 0:
+                continue
+            if meta.get("restrained"):
+                action_log.append(f"{meta['name']} is trapped in {meta['restrained']} and loses the action")
                 continue
             action = meta.get("action") or {"kind": "attack", "auto": True}
             meta["actions"] = int(meta.get("actions", 0)) + 1
@@ -11478,6 +11638,11 @@ class CrystalGuildEngine:
             )
         elif self._raid_script_id(boss) == "ramuh_judgment_spire":
             total_boss_damage, scripted_messages = self._resolve_ramuh_response(
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
+            )
+        elif self._raid_script_id(boss) == "titan_heart_of_crag":
+            total_boss_damage, scripted_messages = self._resolve_titan_response(
                 boss, round_damage=round_damage, phase_mult=phase_mult,
                 enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
             )
@@ -11556,7 +11721,7 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire"} and not boss_stunned:
+        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag"} and not boss_stunned:
             telegraph = self._raid_telegraph_text(boss)
             if telegraph:
                 messages.append(telegraph)

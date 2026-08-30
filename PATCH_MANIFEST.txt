@@ -1,6 +1,6 @@
-Crystal Guild v1.5.0 — Trails & Raids Alpha 3 — Bot Alpha 2 → Alpha 3 Patch
-Runtime: 1.5.0-trails-raids-a3
-Changed/new files: 31
+Crystal Guild v1.5.0 — Trails & Raids Alpha 4 — Bot Alpha 3 → Alpha 4 Patch
+Runtime: 1.5.0-trails-raids-a4
+Changed/new files: 32
 Deleted files: 0
 Local DB schema: 10
 Hosted sync schema: 1
@@ -24,6 +24,7 @@ WEB_SYNC_SETUP.md
 crystal_guild/__init__.py
 crystal_guild/engine.py
 data/bosses.json
+overlay/raid_overlay.html
 prepare_render_migration.py
 run_maintenance.py
 run_selftest.bat
@@ -36,5 +37,5 @@ tests/test_dungeons_rc1.py
 tests/test_dungeons_release.py
 tests/test_guild_expansion_rc1.py
 tests/test_release_contract.py
-tests/test_trails_raids_alpha3.py
+tests/test_trails_raids_alpha4.py
 upgrade_crystal_guild.py
