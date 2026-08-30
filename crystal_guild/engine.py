@@ -7053,6 +7053,11 @@ class CrystalGuildEngine:
     def _dungeon_save(self, twitch_id: str, state: dict[str, Any]) -> None:
         now = int(time.time())
         started = int(state.get("started_at") or now)
+        # Beta 1 binds every Portal mutation to an exact persisted Dungeon
+        # revision, not only the run/chamber. Two tabs parked on the same combat
+        # room therefore cannot both spend different action IDs to advance
+        # consecutive rounds from one stale render.
+        state["revision"] = max(0, int(state.get("revision", 0) or 0)) + 1
         state["updated_at"] = now
         self.db.execute(
             "INSERT INTO player_dungeons(player_id,state_json,started_at,updated_at) VALUES (?,?,?,?) "
@@ -7439,6 +7444,7 @@ class CrystalGuildEngine:
         payload: dict[str, Any] = {
             "active": True,
             "run_id": str(state.get("run_id") or ""),
+            "revision": max(1, int(state.get("revision", 1) or 1)),
             "dungeon_id": str(state.get("dungeon_id") or ""),
             "name": str(dungeon.get("name") or "Dungeon"),
             "subtitle": str(dungeon.get("subtitle") or ""),
@@ -7531,7 +7537,7 @@ class CrystalGuildEngine:
             return GameResult.fail(" ".join(missing[:3]) or "That Dungeon is still locked.")
         now = int(time.time())
         state = {
-            "version": 1, "run_id": uuid.uuid4().hex, "dungeon_id": str(dungeon["id"]), "started_at": now, "updated_at": now,
+            "version": 1, "revision": 0, "run_id": uuid.uuid4().hex, "dungeon_id": str(dungeon["id"]), "started_at": now, "updated_at": now,
             "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "discoveries": [], "modifiers": {}, "event": None, "combat": None, "last_round": None,
         }
         self._dungeon_save(twitch_id, state)
@@ -8145,8 +8151,6 @@ class CrystalGuildEngine:
             "current_region": {
                 "id": str(current_region.get("id") or p["current_region"]),
                 "name": str(current_region.get("name") or p["current_region"]),
-                "description": str(current_region.get("description") or ""),
-                "min_level": int(current_region.get("min_level", 1) or 1),
             },
             "regions": regions,
             "venture": {
@@ -8738,9 +8742,11 @@ class CrystalGuildEngine:
             twitch_id, action_id, lambda: self.dungeon_start(twitch_id, dungeon_id)
         )
 
-    def _portal_dungeon_state_matches(self, twitch_id: str, run_id: str, room_id: str) -> bool:
+    def _portal_dungeon_state_matches(self, twitch_id: str, run_id: str, room_id: str, revision: int) -> bool:
         state = self._dungeon_load(twitch_id)
         if not state or str(state.get("run_id") or "") != str(run_id or ""):
+            return False
+        if max(0, int(state.get("revision", 0) or 0)) != max(0, int(revision or 0)):
             return False
         dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
@@ -8752,27 +8758,27 @@ class CrystalGuildEngine:
         return GameResult.fail("That Dungeon tab is out of date. Refresh the Adventure Board before acting.", stale_dungeon=True)
 
     @_state_guard
-    def portal_dungeon_action(self, twitch_id: str, run_id: str, room_id: str, action_kind: str, action_id: str) -> GameResult:
+    def portal_dungeon_action(self, twitch_id: str, run_id: str, room_id: str, revision: int, action_kind: str, action_id: str) -> GameResult:
         return self._portal_adventure_mutation(
-            twitch_id, action_id, lambda: self.dungeon_action(twitch_id, action_kind) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+            twitch_id, action_id, lambda: self.dungeon_action(twitch_id, action_kind) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id, revision) else self._portal_dungeon_stale()
         )
 
     @_state_guard
-    def portal_dungeon_continue(self, twitch_id: str, run_id: str, room_id: str, action_id: str) -> GameResult:
+    def portal_dungeon_continue(self, twitch_id: str, run_id: str, room_id: str, revision: int, action_id: str) -> GameResult:
         return self._portal_adventure_mutation(
-            twitch_id, action_id, lambda: self.dungeon_continue(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+            twitch_id, action_id, lambda: self.dungeon_continue(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id, revision) else self._portal_dungeon_stale()
         )
 
     @_state_guard
-    def portal_dungeon_choice(self, twitch_id: str, run_id: str, room_id: str, choice_id: str, action_id: str) -> GameResult:
+    def portal_dungeon_choice(self, twitch_id: str, run_id: str, room_id: str, revision: int, choice_id: str, action_id: str) -> GameResult:
         return self._portal_adventure_mutation(
-            twitch_id, action_id, lambda: self.dungeon_choose(twitch_id, choice_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+            twitch_id, action_id, lambda: self.dungeon_choose(twitch_id, choice_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id, revision) else self._portal_dungeon_stale()
         )
 
     @_state_guard
-    def portal_dungeon_retreat(self, twitch_id: str, run_id: str, room_id: str, action_id: str) -> GameResult:
+    def portal_dungeon_retreat(self, twitch_id: str, run_id: str, room_id: str, revision: int, action_id: str) -> GameResult:
         return self._portal_adventure_mutation(
-            twitch_id, action_id, lambda: self.dungeon_retreat(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id) else self._portal_dungeon_stale()
+            twitch_id, action_id, lambda: self.dungeon_retreat(twitch_id) if self._portal_dungeon_state_matches(twitch_id, run_id, room_id, revision) else self._portal_dungeon_stale()
         )
 
     @_state_guard

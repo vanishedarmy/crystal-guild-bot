@@ -29,7 +29,7 @@ class DungeonsAlpha3Tests(unittest.TestCase):
 
     def test_alpha3_keeps_schema10_protocol24_and_adds_third_dungeon(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 24)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
         board = self.game._dungeon_board_state("143")
         self.assertEqual([row["id"] for row in board["dungeons"][:3]], ["forgotten_ossuary", "emberglass_foundry", "whiteglass_bastion"])
         whiteglass = board["dungeons"][2]
@@ -56,7 +56,7 @@ class DungeonsAlpha3Tests(unittest.TestCase):
         choice = next(row for row in public["choices"] if row["id"] == "exposed_battlement")
         self.assertTrue(any("Next foe HP +8%" in row for row in choice["effects"]))
         run_id, room_id = public["run_id"], public["room"]["id"]
-        self.assertTrue(self.game.portal_dungeon_choice("143", run_id, room_id, "exposed_battlement", "a3_battlement").ok)
+        self.assertTrue(self.game.portal_dungeon_choice("143", run_id, room_id, public["revision"], "exposed_battlement", "a3_battlement").ok)
         after = self.game._dungeon_public("143")
         self.assertTrue(any("Next foe HP +8%" in row for row in after["modifiers"]))
         self.assertTrue(any("Next combat rewards +20%" in row for row in after["modifiers"]))
@@ -76,7 +76,7 @@ class DungeonsAlpha3Tests(unittest.TestCase):
         self.game._dungeon_save("143", state)
         self.game._dungeon_begin_room("143", state)
         public = self.game._dungeon_public("143")
-        self.game.portal_dungeon_choice("143", public["run_id"], public["room"]["id"], "sheltered_gallery", "a3_sheltered")
+        self.game.portal_dungeon_choice("143", public["run_id"], public["room"]["id"], public["revision"], "sheltered_gallery", "a3_sheltered")
         hp_before = int(self.db.one("SELECT current_hp FROM players WHERE twitch_id='143'")["current_hp"])
         state = self.game._dungeon_load("143")
         state["room_index"] = 4

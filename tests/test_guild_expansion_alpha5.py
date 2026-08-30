@@ -35,7 +35,7 @@ class GuildExpansionAlpha5Tests(unittest.TestCase):
 
     def test_alpha5_keeps_schema9_and_protocol21(self):
         self.assertEqual(self.db.schema_version(), 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 24)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
         self.assertEqual(len(LEGACY_ACCOMPLISHMENTS), 10)
 
     def test_retroactive_legacy_reward_is_granted_once(self):

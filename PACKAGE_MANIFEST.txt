@@ -1,14 +1,14 @@
-Crystal Guild v1.4.0 Dungeons & Delves Alpha 4 — Bot Package Manifest
-Runtime: 1.4.0-dungeons-a4
+Crystal Guild v1.4.0 — Dungeons & Delves Beta 1 — Bot Package Manifest
+Runtime: 1.4.0-dungeons-b1
 Local DB schema: 10
 Hosted sync schema: 1
-Portal Action protocol: 24
+Portal Action protocol: 25
 Twitch prefix: !
-Upgrade baseline: v1.4.0 Dungeons & Delves Alpha 3 Bot
+Upgrade baseline: v1.4.0 Dungeons & Delves Alpha 4 Bot
 
 Highlights:
-- Riftglass Observatory
-- Weighted Dungeon Event chambers
-- Miniboss/boss encounter rules and opening pressure
-- Richer treasure/hazard resource outcomes
-- Adventure payload headroom hardening
+- Four-Dungeon feature freeze; no fifth Dungeon or new economy layer
+- Exact Dungeon state revision binding for every Portal mutation
+- Same-room stale-tab protection for combat, continue, choice, and retreat
+- Replay-safe idempotency preserved before stale-state rejection
+- Restart/reconnect persistence and 16 KiB Adventure-state headroom hardening

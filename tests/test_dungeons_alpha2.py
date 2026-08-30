@@ -42,7 +42,7 @@ class DungeonsAlpha2Tests(unittest.TestCase):
     def test_alpha2_keeps_schema10_and_advances_protocol24(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
         self.assertEqual(self.db.schema_version(), 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 24)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
 
     def test_board_exposes_two_dungeons_with_route_choices(self):
         board = self.game._dungeon_board_state("142")
@@ -75,7 +75,7 @@ class DungeonsAlpha2Tests(unittest.TestCase):
         hp_before = int(self.db.one("SELECT current_hp FROM players WHERE twitch_id='142'")["current_hp"])
         run_id = public["run_id"]
         room_id = public["room"]["id"]
-        result = self.game.portal_dungeon_choice("142", run_id, room_id, "sealed_reliquary", "pa_a2_reliquary")
+        result = self.game.portal_dungeon_choice("142", run_id, room_id, public["revision"], "sealed_reliquary", "pa_a2_reliquary")
         self.assertTrue(result.ok, result.messages)
         after = self.game._dungeon_public("142")
         hp_after = int(self.db.one("SELECT current_hp FROM players WHERE twitch_id='142'")["current_hp"])
@@ -84,7 +84,7 @@ class DungeonsAlpha2Tests(unittest.TestCase):
         self.assertIn("Sealed Reliquary", after["discoveries"])
         self.assertTrue(any(row.get("id") == "ancient_coin" for row in after["cache"]["items"]))
 
-        replay = self.game.portal_dungeon_choice("142", run_id, room_id, "sealed_reliquary", "pa_a2_reliquary")
+        replay = self.game.portal_dungeon_choice("142", run_id, room_id, public["revision"], "sealed_reliquary", "pa_a2_reliquary")
         self.assertTrue(replay.ok, replay.messages)
         replay_state = self.game._dungeon_public("142")
         self.assertEqual(int(replay_state["cache"]["gil"]), int(after["cache"]["gil"]))
@@ -112,7 +112,7 @@ class DungeonsAlpha2Tests(unittest.TestCase):
             "twitch_id": "142",
             "username": "pathfinder",
             "type": "DUNGEON_CHOICE",
-            "payload": {"run_id": public["run_id"], "room_id": public["room"]["id"], "choice_id": "warded_stair"},
+            "payload": {"run_id": public["run_id"], "room_id": public["room"]["id"], "revision": public["revision"], "choice_id": "warded_stair"},
             "lease_token": "lease",
         }
         ok, message, data = worker._execute(action)

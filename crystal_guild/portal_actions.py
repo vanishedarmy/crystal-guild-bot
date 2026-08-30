@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 24
+ACTION_PROTOCOL_VERSION = 25
 
 
 class PortalActionWorker:
@@ -537,32 +537,36 @@ class PortalActionWorker:
         if action_type == "DUNGEON_ACTION":
             run_id = str(payload.get("run_id") or "").strip().lower()
             room_id = str(payload.get("room_id") or "").strip().lower()
+            revision = max(0, int(payload.get("revision", 0) or 0))
             action_kind = str(payload.get("action") or "").strip().lower()
-            if not run_id or not room_id or not action_kind:
-                return False, "Dungeon action is missing its run, room, or action.", {}
-            result = self.game.portal_dungeon_action(twitch_id, run_id, room_id, action_kind, str(action.get("id") or ""))
+            if not run_id or not room_id or revision <= 0 or not action_kind:
+                return False, "Dungeon action is missing its run, room, revision, or action.", {}
+            result = self.game.portal_dungeon_action(twitch_id, run_id, room_id, revision, action_kind, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "DUNGEON_CONTINUE":
             run_id = str(payload.get("run_id") or "").strip().lower()
             room_id = str(payload.get("room_id") or "").strip().lower()
-            if not run_id or not room_id:
-                return False, "Dungeon continue is missing its run or room.", {}
-            result = self.game.portal_dungeon_continue(twitch_id, run_id, room_id, str(action.get("id") or ""))
+            revision = max(0, int(payload.get("revision", 0) or 0))
+            if not run_id or not room_id or revision <= 0:
+                return False, "Dungeon continue is missing its run, room, or revision.", {}
+            result = self.game.portal_dungeon_continue(twitch_id, run_id, room_id, revision, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "DUNGEON_CHOICE":
             run_id = str(payload.get("run_id") or "").strip().lower()
             room_id = str(payload.get("room_id") or "").strip().lower()
+            revision = max(0, int(payload.get("revision", 0) or 0))
             choice_id = str(payload.get("choice_id") or "").strip().lower()
-            if not run_id or not room_id or not choice_id:
-                return False, "Dungeon choice is missing its run, room, or route.", {}
-            result = self.game.portal_dungeon_choice(twitch_id, run_id, room_id, choice_id, str(action.get("id") or ""))
+            if not run_id or not room_id or revision <= 0 or not choice_id:
+                return False, "Dungeon choice is missing its run, room, revision, or route.", {}
+            result = self.game.portal_dungeon_choice(twitch_id, run_id, room_id, revision, choice_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "DUNGEON_RETREAT":
             run_id = str(payload.get("run_id") or "").strip().lower()
             room_id = str(payload.get("room_id") or "").strip().lower()
-            if not run_id or not room_id:
-                return False, "Dungeon retreat is missing its run or room.", {}
-            result = self.game.portal_dungeon_retreat(twitch_id, run_id, room_id, str(action.get("id") or ""))
+            revision = max(0, int(payload.get("revision", 0) or 0))
+            if not run_id or not room_id or revision <= 0:
+                return False, "Dungeon retreat is missing its run, room, or revision.", {}
+            result = self.game.portal_dungeon_retreat(twitch_id, run_id, room_id, revision, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "SOLO_VENTURE":
             action_id = str(action.get("id") or "")

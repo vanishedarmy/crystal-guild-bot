@@ -1,45 +1,33 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 4
+# Crystal Guild v1.4.0 — Dungeons & Delves Beta 1
 
-## Dungeon Encounter & Event Expansion
+## Beta stabilization / feature freeze
 
-Alpha 4 builds on Alpha 3 with a fourth high-level delve, weighted Dungeon Event chambers, richer room outcomes, and encounter-specific miniboss/boss pressure. Existing Dungeon persistence, run/chamber stale-tab binding, replay protection, retreat/defeat settlement, Crossroads route effects, and first-clear records remain intact.
+Beta 1 freezes the v1.4 Dungeon feature set at four delves and focuses on reliability, continuity, and player-facing clarity. No fifth Dungeon, new currency, or non-Dungeon balance pass is included.
 
-### The Riftglass Observatory
-- Adds the fourth persistent Dungeon: **The Riftglass Observatory**.
-- Unlock: character **Lv. 34** plus **55% The Astral Scar** Expedition exploration.
-- Recommended level: **38**.
-- Ten chambers with two Crossroads, one weighted Event chamber, a Death Machine miniboss, sanctuary, and Crystal Wolf finale.
-- Dungeon identity: **Anomalies & Pressure**.
+### Exact Dungeon state binding
+- Every Portal Dungeon mutation now carries the persisted Dungeon **state revision** in addition to the run ID and chamber ID.
+- Actions are accepted only when run, chamber, and revision all match the authoritative current run.
+- This closes the remaining same-room stale-tab case: an older browser tab cannot spend a second combat turn after another tab has already advanced that chamber.
+- Continue, Crossroads choice, retreat, normal attack, Defend, Job Ability, and Item actions all use the same exact-state contract.
+- Repeated delivery of the **same action ID** remains replay-safe and returns the original receipt rather than advancing again.
+- Dungeon revision is persisted with the run and survives Bot restart/reconnect.
 
-### Dungeon Events
-- Adds the new **Event** room type without adding a new Portal action or database table.
-- Event rooms select from validated weighted outcomes and can restore or drain resources, damage/heal the hero, add Dungeon Cache XP/JP/Gil/items, record discoveries, or shape a later hazard/combat.
-- Event outcomes are resolved authoritatively and persisted with the active Dungeon run.
-
-### Encounter rules and opening pressure
-- Dungeon combat rooms can define their own round limit, opening HP/resource pressure, temporary enemy statuses, and player-facing mechanic notes.
-- The Riftglass Observatory miniboss begins protected and must be defeated within 10 rounds.
-- The final Crystal Wolf begins with Haste/brief Regen, drains 12% max MP/AP on entry, and has a 9-round collapse window.
-- Existing player-paced Dungeon combat, items, abilities, Defend, Bestiary credit, and cache settlement remain unchanged.
-
-### Richer room outcomes
-- Treasure, hazard, sanctuary, Crossroads, and Event rooms now share a validated effect engine.
-- Forward modifiers remain restart-safe and are consumed only by the relevant later room.
-- Existing first-clear bonuses and Dungeon reward identities remain intact.
-
-### Payload hardening
-- Empty optional Dungeon/Hunt fields are omitted where the Web already has safe defaults.
-- With all four Dungeons unlocked, the Adventure-state payload serializes to **15,475 bytes**, leaving **909 bytes** below the 16 KiB transport guardrail.
+### Player-facing Beta cleanup
+- Dungeon encounter cards show **Round X / Limit** when a room has a round limit.
+- The Dungeon Board remains frozen at Forgotten Ossuary, Emberglass Foundry, Whiteglass Bastion, and Riftglass Observatory.
+- What's New and Player Guide copy identify Beta 1 as a stability pass rather than another content expansion.
+- High-frequency Adventure state is compacted slightly while preserving all player-usable Dungeon information.
 
 ### Compatibility
-- Bot runtime: `1.4.0-dungeons-a4`
-- Hosted Web runtime: `1.4.0-dungeons-a4`
-- Frontend asset revision: `1.4.0-dungeons-a4`
+- Bot/Web/frontend runtime: `1.4.0-dungeons-b1`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **24** unchanged
+- Portal Action protocol: **25** (24 → 25)
 - Twitch prefix: `!`
-- Database migration: **none from Alpha 3**
+- Database migration: **none from Alpha 4**
 - Player reset: **none**
 - OAuth/environment changes: **none**
-- Non-Dungeon gameplay/economy rebalance: **none**
+- New environment variables: **none**
+- Gameplay/economy rebalance: **none**
+
+Because the Portal action contract advances to protocol 25, **Beta 1 Web and Bot must be deployed together**.

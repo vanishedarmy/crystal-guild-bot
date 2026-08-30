@@ -43,7 +43,7 @@ class DungeonsAlpha1Tests(unittest.TestCase):
     def test_schema10_and_protocol24_are_current(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
         self.assertEqual(self.db.schema_version(), 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 24)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeons'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeon_progress'"))
 
@@ -155,10 +155,12 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         state["cache"] = {"xp": 25, "jp": 5, "gil": 40, "items": []}
         self.game._dungeon_save("140", state)
         before = self.db.one("SELECT xp,gil FROM players WHERE twitch_id='140'")
-        run_id = str(state["run_id"])
-        room_id = str(self.game.data.dungeons["forgotten_ossuary"]["rooms"][7]["id"])
-        first = self.game.portal_dungeon_continue("140", run_id, room_id, "pa_dungeon_final")
-        second = self.game.portal_dungeon_continue("140", run_id, room_id, "pa_dungeon_final")
+        public = self.game._dungeon_public("140")
+        run_id = str(public["run_id"])
+        room_id = str(public["room"]["id"])
+        revision = int(public["revision"])
+        first = self.game.portal_dungeon_continue("140", run_id, room_id, revision, "pa_dungeon_final")
+        second = self.game.portal_dungeon_continue("140", run_id, room_id, revision, "pa_dungeon_final")
         self.assertTrue(first.ok, first.messages)
         self.assertTrue(second.ok, second.messages)
         after = self.db.one("SELECT xp,gil FROM players WHERE twitch_id='140'")
@@ -175,11 +177,11 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         first = self.game._dungeon_public("140")
         run_id = first["run_id"]
         room_id = first["room"]["id"]
-        moved = self.game.portal_dungeon_continue("140", run_id, room_id, "pa_dungeon_continue_room1")
+        moved = self.game.portal_dungeon_continue("140", run_id, room_id, first["revision"], "pa_dungeon_continue_room1")
         self.assertTrue(moved.ok, moved.messages)
         current = self.game._dungeon_public("140")
         self.assertEqual(current["room_number"], 2)
-        stale = self.game.portal_dungeon_retreat("140", run_id, room_id, "pa_dungeon_stale_retreat")
+        stale = self.game.portal_dungeon_retreat("140", run_id, room_id, first["revision"], "pa_dungeon_stale_retreat")
         self.assertFalse(stale.ok)
         self.assertTrue(stale.data.get("stale_dungeon"))
         self.assertIsNotNone(self.game._dungeon_load("140"))
