@@ -7113,6 +7113,62 @@ class CrystalGuildEngine:
         else:
             rows.append({"id": str(item_id), "name": str(self.data.items[item_id]["name"]), "quantity": int(quantity)})
 
+    def _dungeon_bonus_preview(self, bonus: dict[str, Any] | None) -> list[str]:
+        bonus = bonus if isinstance(bonus, dict) else {}
+        rows: list[str] = []
+        if int(bonus.get("xp", 0) or 0): rows.append(f"{int(bonus.get('xp', 0))} XP")
+        if int(bonus.get("jp", 0) or 0): rows.append(f"{int(bonus.get('jp', 0))} JP")
+        if int(bonus.get("gil", 0) or 0): rows.append(f"{int(bonus.get('gil', 0))} Gil")
+        for loot in list(bonus.get("items") or []):
+            item_id = str(loot.get("item_id") or "")
+            quantity = max(0, int(loot.get("quantity", 1) or 1))
+            item = self.data.items.get(item_id)
+            if item and quantity:
+                rows.append(f"{item['name']} x{quantity}")
+        return rows
+
+    def _dungeon_choice_effect_preview(self, option: dict[str, Any]) -> list[str]:
+        notes: list[str] = []
+        for effect in list(option.get("effects") or []):
+            kind = str(effect.get("type") or "").lower().strip()
+            value = float(effect.get("value", 0) or 0)
+            if kind == "cache_gil" and value:
+                notes.append(f"+{int(value)} Gil cache")
+            elif kind == "cache_item":
+                item_id = str(effect.get("item_id") or "")
+                quantity = max(0, int(effect.get("quantity", 1) or 1))
+                item = self.data.items.get(item_id)
+                if item and quantity: notes.append(f"{item['name']} x{quantity}")
+            elif kind == "damage_percent" and value:
+                notes.append(f"Lose {abs(int(value))}% max HP")
+            elif kind == "heal_percent" and value:
+                notes.append(f"Restore {abs(int(value))}% max HP")
+            elif kind == "restore_resource_percent" and value:
+                notes.append(f"Restore {abs(int(value))}% MP/AP")
+            elif kind == "next_combat_enemy_hp_percent" and value:
+                direction = "+" if value > 0 else "−"
+                notes.append(f"Next foe HP {direction}{abs(int(value))}%")
+            elif kind == "next_combat_reward_percent" and value:
+                notes.append(f"Next combat rewards +{max(0, int(value))}%")
+            elif kind == "next_hazard_reduction_percent" and value:
+                notes.append(f"Next hazard damage −{max(0, int(value))}%")
+        return notes
+
+    @staticmethod
+    def _dungeon_modifier_labels(state: dict[str, Any]) -> list[str]:
+        modifiers = state.get("modifiers") if isinstance(state.get("modifiers"), dict) else {}
+        labels: list[str] = []
+        hp_pct = int(modifiers.get("next_combat_enemy_hp_percent", 0) or 0)
+        reward_pct = int(modifiers.get("next_combat_reward_percent", 0) or 0)
+        hazard_pct = int(modifiers.get("next_hazard_reduction_percent", 0) or 0)
+        if hp_pct:
+            labels.append(f"Next foe HP {'+' if hp_pct > 0 else '−'}{abs(hp_pct)}%")
+        if reward_pct:
+            labels.append(f"Next combat rewards +{reward_pct}%")
+        if hazard_pct:
+            labels.append(f"Next hazard damage −{hazard_pct}%")
+        return labels
+
     def _dungeon_reward_for_monster(self, twitch_id: str, monster: dict[str, Any], multiplier: float) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:
@@ -7151,13 +7207,21 @@ class CrystalGuildEngine:
             combatants, _, _ = self._initialize_active_combat(encounter)
             if combatants == 0:
                 return GameResult.fail("Your hero is unable to fight. Recover before entering the Dungeon.")
-            hp_mult = max(0.5, float(room.get("hp_multiplier", 1.0) or 1.0))
+            modifiers = state.setdefault("modifiers", {})
+            route_hp_pct = max(-50, min(100, int(modifiers.pop("next_combat_enemy_hp_percent", 0) or 0)))
+            route_reward_pct = max(0, min(100, int(modifiers.pop("next_combat_reward_percent", 0) or 0)))
+            hp_mult = max(0.5, float(room.get("hp_multiplier", 1.0) or 1.0) * (1.0 + route_hp_pct / 100.0))
             scaled_hp = max(1, int(round(int(encounter.get("monster_max_hp", monster["hp"])) * hp_mult)))
             encounter["monster_hp"] = scaled_hp
             encounter["monster_max_hp"] = scaled_hp
             encounter["max_rounds"] = DUNGEON_MAX_COMBAT_ROUNDS
             encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
-            state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(roster)}
+            route_effects: list[str] = []
+            if route_hp_pct:
+                route_effects.append(f"Foe HP {'+' if route_hp_pct > 0 else '−'}{abs(route_hp_pct)}%")
+            if route_reward_pct:
+                route_effects.append(f"Combat rewards +{route_reward_pct}%")
+            state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(roster), "reward_multiplier": 1.0 + route_reward_pct / 100.0, "route_effects": route_effects}
         finally:
             self.active_encounter, self.encounter_roster = old_encounter, old_roster
         state["status"] = "combat"
@@ -7185,6 +7249,7 @@ class CrystalGuildEngine:
                     "id": str(option.get("id") or ""),
                     "label": str(option.get("label") or "Choose this path"),
                     "description": str(option.get("description") or ""),
+                    "effects": self._dungeon_choice_effect_preview(dict(option)),
                 })
             state["event"]["options"] = options
             state["status"] = "decision"
@@ -7206,11 +7271,16 @@ class CrystalGuildEngine:
             p = self._player(twitch_id)
             max_hp = self._max_hp(p) if p else 1
             before = max(1, int(p["current_hp"] or 1)) if p else 1
-            damage = max(1, int(round(max_hp * max(0.0, float(room.get("damage_percent", 10) or 10)) / 100.0)))
+            base_damage = max(1, int(round(max_hp * max(0.0, float(room.get("damage_percent", 10) or 10)) / 100.0)))
+            modifiers = state.setdefault("modifiers", {})
+            reduction = max(0, min(100, int(modifiers.pop("next_hazard_reduction_percent", 0) or 0)))
+            damage = max(0, int(round(base_damage * (1.0 - reduction / 100.0))))
             after = max(1, before - damage)
             self._save_hp(twitch_id, after)
             state["event"]["damage"] = before - after
-            state.setdefault("history", []).append({"room": room_index + 1, "type": "hazard", "label": f"Lost {before-after} HP to {room.get('name', 'a hazard')}"})
+            if reduction:
+                state["event"]["effects"] = [f"Route ward reduced hazard damage by {reduction}%"]
+            state.setdefault("history", []).append({"room": room_index + 1, "type": "hazard", "label": f"Lost {before-after} HP to {room.get('name', 'a hazard')}" if before > after else f"Crossed {room.get('name', 'a hazard')} without damage"})
         elif kind == "sanctuary":
             p = self._player(twitch_id)
             if p:
@@ -7246,6 +7316,7 @@ class CrystalGuildEngine:
             "dungeon_id": str(state.get("dungeon_id") or ""),
             "name": str(dungeon.get("name") or "Dungeon"),
             "subtitle": str(dungeon.get("subtitle") or ""),
+            "identity": str(dungeon.get("identity") or "Delve"),
             "art": str(dungeon.get("art") or ""),
             "status": str(state.get("status") or "choice"),
             "room_index": room_index,
@@ -7256,6 +7327,7 @@ class CrystalGuildEngine:
             "event": copy.deepcopy(state.get("event")),
             "history": copy.deepcopy(list(state.get("history") or [])[-8:]),
             "discoveries": copy.deepcopy(list(state.get("discoveries") or [])),
+            "modifiers": self._dungeon_modifier_labels(state),
             "choices": copy.deepcopy(list((state.get("event") or {}).get("options") or [])) if str(state.get("status")) == "decision" else [],
             "last_round": copy.deepcopy(state.get("last_round")),
             "can_continue": str(state.get("status")) == "choice" and room_index < max(0, len(rooms) - 1),
@@ -7273,6 +7345,7 @@ class CrystalGuildEngine:
                 "player": {"name": str(meta.get("name") or "Hero"), "job_id": str(meta.get("job_id") or ""), "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"), "hp": int(meta.get("hp", 0)), "max_hp": int(meta.get("max_hp", 0)), "mp": int(meta.get("mp", 0)), "max_mp": int(meta.get("max_mp", 0)), "ap": int(meta.get("ap", 0)), "max_ap": int(meta.get("max_ap", 0)), "statuses": status_text(meta.get("statuses", {}), limit=4)},
                 "abilities": self._solo_ability_rows(meta),
                 "items": self._solo_owned_battle_items(twitch_id, meta),
+                "route_effects": copy.deepcopy(list(combat.get("route_effects") or [])),
             }
         return payload
 
@@ -7293,10 +7366,15 @@ class CrystalGuildEngine:
                 "recommended_level": int(dungeon.get("recommended_level", dungeon.get("min_level", 1)) or dungeon.get("min_level", 1)),
                 "rooms": len(list(dungeon.get("rooms") or [])),
                 "choice_rooms": sum(1 for room in list(dungeon.get("rooms") or []) if str(room.get("type") or "").lower() == "choice"),
+                "identity": str(dungeon.get("identity") or "Delve"),
                 "unlocked": bool(unlocked), "missing": [str(value) for value in missing],
             }
+            if unlocked and int(progress.get("clears", 0)) == 0:
+                entry["first_clear_rewards"] = [row for row in self._dungeon_bonus_preview(dungeon.get("first_clear_bonus")) if not row.endswith(" XP") and not row.endswith(" JP") and not row.endswith(" Gil")]
             if int(progress.get("clears", 0)) or int(progress.get("best_rooms", 0)):
                 entry["progress"] = [int(progress.get("clears", 0)), int(progress.get("best_rooms", 0))]
+            if int(progress.get("clears", 0)) > 0:
+                entry["first_clear_claimed"] = True
             entries.append(entry)
         return {"dungeons": entries, "active": active}
 
@@ -7320,7 +7398,7 @@ class CrystalGuildEngine:
         now = int(time.time())
         state = {
             "version": 1, "run_id": uuid.uuid4().hex, "dungeon_id": str(dungeon["id"]), "started_at": now, "updated_at": now,
-            "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "discoveries": [], "event": None, "combat": None, "last_round": None,
+            "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "discoveries": [], "modifiers": {}, "event": None, "combat": None, "last_round": None,
         }
         self._dungeon_save(twitch_id, state)
         return self._dungeon_begin_room(twitch_id, state)
@@ -7367,6 +7445,21 @@ class CrystalGuildEngine:
                 if item_id in self.data.items and quantity:
                     self._dungeon_cache_add_item(state, item_id, quantity)
                     effect_notes.append(f"{self.data.items[item_id]['name']} x{quantity}")
+            elif kind == "next_combat_enemy_hp_percent":
+                value = max(-50, min(100, int(effect.get("value", 0) or 0)))
+                modifiers = state.setdefault("modifiers", {})
+                modifiers["next_combat_enemy_hp_percent"] = max(-50, min(100, int(modifiers.get("next_combat_enemy_hp_percent", 0) or 0) + value))
+                if value: effect_notes.append(f"next foe HP {'+' if value > 0 else '−'}{abs(value)}%")
+            elif kind == "next_combat_reward_percent":
+                value = max(0, min(100, int(effect.get("value", 0) or 0)))
+                modifiers = state.setdefault("modifiers", {})
+                modifiers["next_combat_reward_percent"] = max(0, min(100, int(modifiers.get("next_combat_reward_percent", 0) or 0) + value))
+                if value: effect_notes.append(f"next combat rewards +{value}%")
+            elif kind == "next_hazard_reduction_percent":
+                value = max(0, min(100, int(effect.get("value", 0) or 0)))
+                modifiers = state.setdefault("modifiers", {})
+                modifiers["next_hazard_reduction_percent"] = max(int(modifiers.get("next_hazard_reduction_percent", 0) or 0), value)
+                if value: effect_notes.append(f"next hazard damage −{value}%")
             elif kind == "damage_percent":
                 max_hp = self._max_hp(p)
                 before = max(1, int(p["current_hp"] or 1))
@@ -7520,7 +7613,9 @@ class CrystalGuildEngine:
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0))
         room = dict(rooms[room_index]) if room_index < len(rooms) else {}
-        rewards = self._dungeon_reward_for_monster(twitch_id, monster, float(room.get("reward_multiplier", 1.0) or 1.0))
+        combat_state = state.get("combat") if isinstance(state.get("combat"), dict) else {}
+        route_reward_multiplier = max(1.0, float(combat_state.get("reward_multiplier", 1.0) or 1.0))
+        rewards = self._dungeon_reward_for_monster(twitch_id, monster, float(room.get("reward_multiplier", 1.0) or 1.0) * route_reward_multiplier)
         cache = self._dungeon_cache(state)
         cache["xp"] = int(cache.get("xp", 0)) + int(rewards["xp"]); cache["jp"] = int(cache.get("jp", 0)) + int(rewards["jp"]); cache["gil"] = int(cache.get("gil", 0)) + int(rewards["gil"])
         for row in rewards["items"]:
@@ -7537,12 +7632,16 @@ class CrystalGuildEngine:
         self._dungeon_save(twitch_id, state)
         return GameResult.success(f"DUNGEON VICTORY — {monster['name']} defeated. Spoils secured in the delve cache.", dungeon_room_complete=True)
 
-    def _dungeon_bank(self, twitch_id: str, state: dict[str, Any], ratio: float, *, include_completion_bonus: bool) -> dict[str, Any]:
+    def _dungeon_bank(self, twitch_id: str, state: dict[str, Any], ratio: float, *, include_completion_bonus: bool, include_first_clear_bonus: bool = False) -> dict[str, Any]:
         ratio = max(0.0, min(1.0, float(ratio)))
         dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
         cache = copy.deepcopy(self._dungeon_cache(state))
+        bonus_blocks: list[dict[str, Any]] = []
         if include_completion_bonus:
-            bonus = dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {}
+            bonus_blocks.append(dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {})
+        if include_first_clear_bonus:
+            bonus_blocks.append(dungeon.get("first_clear_bonus") if isinstance(dungeon.get("first_clear_bonus"), dict) else {})
+        for bonus in bonus_blocks:
             cache["xp"] = int(cache.get("xp", 0)) + int(bonus.get("xp", 0) or 0)
             cache["jp"] = int(cache.get("jp", 0)) + int(bonus.get("jp", 0) or 0)
             cache["gil"] = int(cache.get("gil", 0)) + int(bonus.get("gil", 0) or 0)
@@ -7581,7 +7680,9 @@ class CrystalGuildEngine:
             ratio = DUNGEON_CACHE_RETREAT_RATIO
         else:
             ratio = DUNGEON_CACHE_DEFEAT_RATIO
-        rewards = self._dungeon_bank(twitch_id, state, ratio, include_completion_bonus=outcome == "complete")
+        prior_progress = self._dungeon_progress(twitch_id, str(state.get("dungeon_id") or ""))
+        first_clear = outcome == "complete" and int(prior_progress.get("clears", 0)) == 0
+        rewards = self._dungeon_bank(twitch_id, state, ratio, include_completion_bonus=outcome == "complete", include_first_clear_bonus=first_clear)
         now = int(time.time())
         with self.db.tx() as conn:
             conn.execute(
@@ -7596,7 +7697,7 @@ class CrystalGuildEngine:
             "title": f"{dungeon.get('name', 'Dungeon')} Cleared" if outcome == "complete" else f"{dungeon.get('name', 'Dungeon')} Retreat" if outcome == "retreat" else f"{dungeon.get('name', 'Dungeon')} Defeat",
             "dungeon_name": str(dungeon.get("name") or "Dungeon"), "rooms": int(reached), "room_count": int(room_count),
             "rewards": {"xp": int(rewards.get("xp", 0)), "jp": int(rewards.get("jp", 0)), "gil": int(rewards.get("gil", 0)), "loot": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in rewards.get("items", [])], "achievements": list(rewards.get("achievements") or [])[:4], "levelups": list(rewards.get("levelups") or [])[:4]},
-            "history": copy.deepcopy(list(state.get("history") or [])[-10:]), "discoveries": copy.deepcopy(list(state.get("discoveries") or [])), "player": self._solo_result_vitals(twitch_id), "interactive": True,
+            "history": copy.deepcopy(list(state.get("history") or [])[-10:]), "discoveries": copy.deepcopy(list(state.get("discoveries") or [])), "first_clear": bool(first_clear), "first_clear_bonus": self._dungeon_bonus_preview(dungeon.get("first_clear_bonus")) if first_clear else [], "player": self._solo_result_vitals(twitch_id), "interactive": True,
         }
         self._persist_portal_adventure_result(str(twitch_id), "dungeon", {"title": summary["title"], "won": outcome == "complete", "finished_at": now, "kind": "dungeon", "monster_name": "", "hunt_name": None, "messages": [], "summary": summary})
         self._dungeon_delete(twitch_id)
@@ -7866,7 +7967,7 @@ class CrystalGuildEngine:
             first_title = hunt.get("first_clear_title")
             if first_title in self.data.titles:
                 first_rewards.append(f"Title: {self.data.titles[first_title]['name']}")
-            hunts.append({
+            hunt_public = {
                 "id": hunt_id,
                 "name": str(hunt.get("name") or hunt_id),
                 "rank": str(hunt.get("rank") or "C"),
@@ -7885,13 +7986,20 @@ class CrystalGuildEngine:
                     "seals": int(rewards.get("seals", 0) or 0),
                 },
                 "clears": int(progress["clears"] or 0) if progress else 0,
-                "cooldown_available_at": available_at if remaining > 0 else 0,
-                "missing": [str(value) for value in missing[:5]],
                 "challengeable": bool(not reason_parts),
-                "reason": " ".join(value for value in reason_parts if value),
                 "first_clear_rewards": first_rewards,
                 "duration_seconds": self._hunt_duration_seconds(str(hunt.get("rank", "C"))),
-            })
+            }
+            # Keep the high-frequency Adventure Board payload lean. The Web client
+            # already treats omitted cooldown/reason fields as their zero/empty
+            # defaults, while unlock requirements are represented by ``reason``.
+            # Avoiding dozens of empty fields leaves headroom for Dungeon depth.
+            if remaining > 0:
+                hunt_public["cooldown_available_at"] = available_at
+            reason = " ".join(value for value in reason_parts if value)
+            if reason:
+                hunt_public["reason"] = reason
+            hunts.append(hunt_public)
 
         # Portal-origin Solo/Hunt results are durable and remain on the Adventure
         # Board until the player explicitly confirms them. Do not time-expire

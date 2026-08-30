@@ -629,13 +629,14 @@ class GameData:
                         seen_options.add(option_id)
                         for effect in list(option.get("effects") or []):
                             effect_type = str(effect.get("type") or "").strip().lower()
-                            if effect_type not in {"cache_gil", "cache_item", "damage_percent", "heal_percent", "restore_resource_percent"}:
+                            if effect_type not in {"cache_gil", "cache_item", "damage_percent", "heal_percent", "restore_resource_percent", "next_combat_enemy_hp_percent", "next_combat_reward_percent", "next_hazard_reduction_percent"}:
                                 errors.append(f"dungeon {dungeon['id']} room {room_id} choice {option_id}: invalid effect {effect_type!r}")
                             if effect_type == "cache_item":
                                 require(self.items, str(effect.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} choice {option_id}")
-            bonus = dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {}
-            for loot in list(bonus.get("items") or []):
-                require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} completion loot")
+            for bonus_name in ("completion_bonus", "first_clear_bonus"):
+                bonus = dungeon.get(bonus_name) if isinstance(dungeon.get(bonus_name), dict) else {}
+                for loot in list(bonus.get("items") or []):
+                    require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} {bonus_name} loot")
 
         return errors
 

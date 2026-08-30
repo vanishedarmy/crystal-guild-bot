@@ -357,7 +357,7 @@ PROJECTS["expedition_board"] = {
 }
 
 # Guild Projects II adds shorter one-time initiatives alongside permanent facility construction.
-# They intentionally reuse the existing project ledger so Alpha 2 remains schema-compatible.
+# They intentionally reuse the existing project ledger so the current Guild Expansion line remains schema-compatible.
 COMMUNITY_PROJECTS: dict[str, dict[str, Any]] = {
     "moogle_relief_shipment": {
         "id": "moogle_relief_shipment", "facility_id": "community", "tier": 0, "level": 0, "name": "Moogle Relief Shipment", "project_type": "supply_drive",

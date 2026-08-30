@@ -1,25 +1,20 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 2 Release Audit
+# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 3 Release Audit
 
-## Scope
-Dungeon content/choice expansion on the validated Alpha 1 foundation.
-
-## Current-package identity
-- Bot runtime: `1.4.0-dungeons-a2`
-- Hosted Web/runtime: `1.4.0-dungeons-a2`
-- Frontend asset revision: `1.4.0-dungeons-a2`
+## Release identity
+- Bot runtime: `1.4.0-dungeons-a3`
+- Hosted Web runtime: `1.4.0-dungeons-a3`
+- Frontend asset revision: `1.4.0-dungeons-a3`
 - Local DB schema: **10**
 - Hosted sync schema: **1**
 - Portal Action protocol: **24**
 - Twitch prefix: `!`
 
-## Audit targets
-- Add a second persistent Dungeon without requiring another schema migration.
-- Add replay-safe, run/chamber-bound Crossroads actions and preserve stale-tab failure behavior.
-- Preserve Alpha 1 HP/MP/AP, Cache, restart persistence, Bestiary integration, retreat/defeat/clear settlement, and Dungeon records.
-- Keep Portal Adventure state beneath the existing bounded-payload regression ceiling.
-- Normalize collapse-pointer rendered size while keeping right/closed and down/open state behavior.
-- Preserve v1.3 Guild Expansion, v1.2 Expeditions, optimized WebP assets, and UI4 behavior.
-- No player reset, OAuth change, or new environment variable.
+## Scope lock
+Alpha 3 is the Dungeon depth/reward pass: Whiteglass Bastion, forward route effects, first-clear bonuses, Dungeon Board/Guide clarity, payload headroom, and packaging hygiene. No non-Dungeon balance pass is included.
 
-## Result
-**PASS** once full automated validation, exact patch reconstruction, archive integrity/hygiene, and SHA-256 verification complete.
+## Continuity
+- Alpha 2 Dungeon run JSON remains readable; missing `modifiers` defaults safely.
+- Existing Dungeon progress rows determine first-clear eligibility without schema changes.
+- Portal Dungeon mutations remain run/chamber bound and replay-safe.
+- Existing Guild, Expedition, Hunt, inventory, recovery, Airship, and Fellowship persistence contracts are unchanged.
+- Shipping archives contain no `.env`, database, token JSON, cache, log, or other runtime-private state.

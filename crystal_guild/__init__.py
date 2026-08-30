@@ -1,3 +1,3 @@
 """Crystal Guild package."""
 
-__version__ = "1.4.0-dungeons-a2"
+__version__ = "1.4.0-dungeons-a3"

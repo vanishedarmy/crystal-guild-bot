@@ -46,10 +46,10 @@ class DungeonsAlpha2Tests(unittest.TestCase):
 
     def test_board_exposes_two_dungeons_with_route_choices(self):
         board = self.game._dungeon_board_state("142")
-        self.assertEqual([row["id"] for row in board["dungeons"]], ["forgotten_ossuary", "emberglass_foundry"])
-        self.assertTrue(all(row["unlocked"] for row in board["dungeons"]))
-        self.assertEqual([row["rooms"] for row in board["dungeons"]], [8, 8])
-        self.assertEqual([row["choice_rooms"] for row in board["dungeons"]], [1, 1])
+        self.assertEqual([row["id"] for row in board["dungeons"][:2]], ["forgotten_ossuary", "emberglass_foundry"])
+        self.assertTrue(all(row["unlocked"] for row in board["dungeons"][:2]))
+        self.assertEqual([row["rooms"] for row in board["dungeons"][:2]], [8, 8])
+        self.assertEqual([row["choice_rooms"] for row in board["dungeons"][:2]], [1, 1])
         self.assertEqual(board["dungeons"][1]["recommended_level"], 21)
 
     def test_locked_foundry_reports_existing_expedition_requirement(self):

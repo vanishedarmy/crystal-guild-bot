@@ -1,5 +1,6 @@
-v1.4.0 — Dungeons & Delves Alpha 2
-Runtime: 1.4.0-dungeons-a2
-DB schema: 10
+v1.4.0 — Dungeons & Delves Alpha 3
+Runtime: 1.4.0-dungeons-a3
+Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 24
+Twitch prefix: !

@@ -1,46 +1,40 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 2
+# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 3
 
-## Routes, Risk & a Second Delve
+## Dungeon Depth & Reward Identity
 
-Alpha 2 expands the persistent Dungeon foundation without changing established Guild, Expedition, Hunt, combat, or economy balance outside Dungeons.
+Alpha 3 builds on Alpha 2 with a third higher-level delve, route consequences that can carry into later chambers, and one-time first-clear rewards. The persistence, replay protection, stale-tab binding, retreat/defeat settlement, and existing economy outside Dungeons remain intact.
 
-### Two persistent Dungeons
-- **The Forgotten Ossuary** now contains **8 chambers** and adds a Crossroads route decision while preserving its Lv. 10 + 25% Emerald Wilds unlock.
-- **The Emberglass Foundry** joins the Dungeon Board as a second **8-chamber** delve, unlocking at **Lv. 18 + 35% Ashen Highlands exploration**.
-- The Foundry introduces its own combat, treasure, hazard, miniboss, sanctuary, final boss, completion bonus, and visual identity.
+### The Whiteglass Bastion
+- Adds a third persistent Dungeon: **The Whiteglass Bastion**.
+- Unlock: character **Lv. 26** plus **45% Frostveil Reach** Expedition exploration.
+- Recommended level: **30**.
+- Nine chambers with two Crossroads decisions, a miniboss, sanctuary, and final boss.
+- Dungeon identity: **Endurance & Wards**.
 
-### Crossroads route choices
-- New **choice chambers** pause progression until the player deliberately selects a route.
-- Safer routes can preserve or restore HP/MP/AP.
-- Riskier routes can deal immediate damage in exchange for additional Gil, materials, or other Dungeon Cache value.
-- Named route discoveries are carried with the active delve and shown in the final Dungeon report.
-- Portal route choices are replay-safe and remain bound to the exact run/chamber shown in the submitting browser tab.
+### Choices that echo forward
+- Crossroads can now affect later rooms rather than resolving only immediately.
+- Route effects can reduce the next hazard, strengthen or weaken the next foe, and boost the next combat payout.
+- Active Dungeon state exposes pending route effects so the player can plan around them.
+- Forward effects persist with the run, survive restart/reconnect, and are consumed only by the applicable later room.
 
-### Dungeon Board expansion
-- Dungeon cards now show scene art, minimum/recommended level, chamber count, route-choice count, unlock state, and permanent progress.
-- Active runs show their Dungeon scene, current discoveries, route options when a Crossroads is reached, persistent condition, Cache, combat controls, and history.
-- The Player Guide now documents both current Dungeons and Crossroads behavior.
+### First-clear identity
+- Each current Dungeon has a one-time first-clear bonus using existing XP, JP, Gil, and materials.
+- First-clear eligibility is derived from the existing Dungeon progress record; no new table or migration is required.
+- Dungeon cards identify their reward theme and show first-clear material rewards when unlocked.
 
-### Shared UI cleanup
-- The retro collapse hand keeps the established state language: **right when closed, down when open**.
-- All supported collapsible surfaces now share one canonical rendered pointer size so Overview/What’s New controls do not appear oversized relative to Adventure Board, Fellowship, Streamer Dashboard, or Player Guide disclosures.
+### Payload and release hardening
+- The high-frequency Adventure Board Hunt payload omits empty cooldown/reason fields, preserving the existing Web defaults while keeping an all-three-Dungeons-unlocked state below the 16 KiB transport guardrail.
+- Restores the canonical `crystal_guild/token_store.py` module to the shipping Bot archive after it was omitted from the Alpha 2 archive. No token files or secrets are packaged.
 
-### Payload / stability discipline
-- The Adventure-state payload remains below the existing 16 KiB regression ceiling even with a second Dungeon by omitting redundant Hunt fields that the frontend does not consume.
-- Alpha 1 persistent Dungeon state, restart recovery, cache settlement, stale-tab protection, and `!clearadventures` behavior remain intact.
-
-## Compatibility
-- Bot runtime: `1.4.0-dungeons-a2`
-- Hosted Web runtime: `1.4.0-dungeons-a2`
-- Frontend asset revision: `1.4.0-dungeons-a2`
-- Local DB schema: **10** unchanged from Alpha 1
+### Compatibility
+- Bot runtime: `1.4.0-dungeons-a3`
+- Hosted Web runtime: `1.4.0-dungeons-a3`
+- Frontend asset revision: `1.4.0-dungeons-a3`
+- Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **24** (advances from 23 for `DUNGEON_CHOICE`)
+- Portal Action protocol: **24** unchanged
 - Twitch prefix: `!`
-- Database migration from Alpha 1: **none**
+- Database migration: **none from Alpha 2**
 - Player reset: **none**
-- OAuth changes: **none**
-- New environment variables: **none**
-- Existing non-Dungeon gameplay/economy changes: **none**
-
-Because the Portal Action protocol advances, deploy the matching Alpha 2 Web and Bot together.
+- OAuth/environment changes: **none**
+- Non-Dungeon gameplay/economy rebalance: **none**

@@ -1,3 +1,10 @@
+# v1.4.0 — Dungeons & Delves Alpha 3
+
+- Adds The Whiteglass Bastion (Lv.26 + 45% Frostveil Reach), the third persistent Dungeon.
+- Adds forward Crossroads effects for later hazards/combat and one-time first-clear bonuses.
+- Keeps schema 10 / sync 1 / Portal protocol 24 unchanged.
+- Keeps Adventure Board payload below its 16 KiB guardrail with all three Dungeons unlocked.
+
 # Crystal Guild Changelog
 
 ## v1.4.0 — Dungeons & Delves Alpha 1

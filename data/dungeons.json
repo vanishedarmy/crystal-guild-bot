@@ -66,6 +66,10 @@
               {
                 "type": "restore_resource_percent",
                 "value": 12
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 70
               }
             ]
           },
@@ -87,6 +91,14 @@
                 "type": "cache_item",
                 "item_id": "ancient_coin",
                 "quantity": 1
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 10
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 20
               }
             ]
           }
@@ -126,7 +138,23 @@
         "description": "Stone wings unfold above the burial bell. The Ossuary's final sentinel has been waiting for a challenger."
       }
     ],
-    "art": "/retro-phase-ii/regions-hd/whispering_caverns.webp"
+    "art": "/retro-phase-ii/regions-hd/whispering_caverns.webp",
+    "identity": "Relics & Recovery",
+    "first_clear_bonus": {
+      "xp": 120,
+      "jp": 20,
+      "gil": 150,
+      "items": [
+        {
+          "item_id": "ancient_cloth",
+          "quantity": 1
+        },
+        {
+          "item_id": "ancient_coin",
+          "quantity": 1
+        }
+      ]
+    }
   },
   {
     "id": "emberglass_foundry",
@@ -204,6 +232,10 @@
               {
                 "type": "restore_resource_percent",
                 "value": 10
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 60
               }
             ]
           },
@@ -225,6 +257,14 @@
                 "type": "cache_item",
                 "item_id": "mythril_ore",
                 "quantity": 1
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 12
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 25
               }
             ]
           }
@@ -262,6 +302,242 @@
         "hp_multiplier": 1.35,
         "reward_multiplier": 1.55,
         "description": "An Inferno Drake coils around the master crucible, feeding on the furnace flame that has burned here for generations."
+      }
+    ],
+    "identity": "Materials & Momentum",
+    "first_clear_bonus": {
+      "xp": 180,
+      "jp": 30,
+      "gil": 220,
+      "items": [
+        {
+          "item_id": "magitek_capacitor",
+          "quantity": 1
+        },
+        {
+          "item_id": "mythril_ore",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "whiteglass_bastion",
+    "name": "The Whiteglass Bastion",
+    "subtitle": "A half-buried northern fortress where whiteout winds, frozen wards, and an old Behemoth have turned every surviving route into a test of endurance.",
+    "identity": "Endurance & Wards",
+    "min_level": 26,
+    "recommended_level": 30,
+    "art": "/expeditions/frostveil-reach.webp",
+    "unlock": {
+      "expedition_region": "frostveil_reach",
+      "progress": 45
+    },
+    "completion_bonus": {
+      "xp": 520,
+      "jp": 80,
+      "gil": 650,
+      "items": [
+        {
+          "item_id": "glacial_crystal",
+          "quantity": 2
+        },
+        {
+          "item_id": "behemoth_hide",
+          "quantity": 1
+        }
+      ]
+    },
+    "first_clear_bonus": {
+      "xp": 260,
+      "jp": 40,
+      "gil": 320,
+      "items": [
+        {
+          "item_id": "celestial_thread",
+          "quantity": 1
+        },
+        {
+          "item_id": "glacial_crystal",
+          "quantity": 2
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "snowbound_gate",
+        "name": "Snowbound Gate",
+        "type": "entrance",
+        "description": "A black-stone gate rises from the drift. The old watch fires are dead, but the ward crystals buried in the arch still pulse beneath the ice."
+      },
+      {
+        "id": "frozen_barracks",
+        "name": "Frozen Barracks",
+        "type": "combat",
+        "monster_id": "chimera",
+        "hp_multiplier": 1.08,
+        "reward_multiplier": 1.12,
+        "description": "A Chimera prowls between collapsed bunks and frozen weapon racks, driven inside by the storm."
+      },
+      {
+        "id": "quartermaster_icebox",
+        "name": "Quartermaster Icebox",
+        "type": "treasure",
+        "description": "The quartermaster stores froze before they could be looted. Some of the emergency supplies are still intact.",
+        "loot": [
+          {
+            "item_id": "hi_potion",
+            "quantity": 2
+          },
+          {
+            "item_id": "ether",
+            "quantity": 1
+          },
+          {
+            "item_id": "glacial_crystal",
+            "quantity": 1
+          }
+        ],
+        "gil": 170
+      },
+      {
+        "id": "shattered_rampart",
+        "name": "Shattered Rampart",
+        "type": "choice",
+        "description": "The inner wall has split. A sheltered gallery winds beneath the rampart, while the exposed battlement offers faster access to untouched stores through brutal wind.",
+        "options": [
+          {
+            "id": "sheltered_gallery",
+            "label": "Take the Sheltered Gallery",
+            "description": "Use the lower corridor, conserve resources, and let the old wardstones blunt the next environmental hazard.",
+            "discovery": "Sheltered Gallery",
+            "effects": [
+              {
+                "type": "restore_resource_percent",
+                "value": 12
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "id": "exposed_battlement",
+            "label": "Cross the Exposed Battlement",
+            "description": "Fight through the whiteout to reach abandoned stores. The exposure hurts and strengthens the next foe, but the route promises a richer combat haul.",
+            "discovery": "Exposed Battlement",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 8
+              },
+              {
+                "type": "cache_gil",
+                "value": 220
+              },
+              {
+                "type": "cache_item",
+                "item_id": "glacial_crystal",
+                "quantity": 1
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 8
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "whiteout_causeway",
+        "name": "Whiteout Causeway",
+        "type": "hazard",
+        "description": "The fortress causeway disappears beneath a sudden wall of snow and cutting ice.",
+        "damage_percent": 18
+      },
+      {
+        "id": "iron_watch",
+        "name": "The Iron Watch",
+        "type": "miniboss",
+        "monster_id": "iron_giant",
+        "hp_multiplier": 1.22,
+        "reward_multiplier": 1.35,
+        "description": "An Iron Giant frozen upright beside the command hall tears free of the ice and resumes a patrol that should have ended generations ago."
+      },
+      {
+        "id": "command_crossroads",
+        "name": "Command Crossroads",
+        "type": "choice",
+        "description": "Two sealed command routes remain. The signal tower offers intelligence and a safer final approach; the war room vault promises preserved stores behind unstable wards.",
+        "options": [
+          {
+            "id": "signal_tower",
+            "label": "Climb the Signal Tower",
+            "description": "Study the old patrol charts and mark the guardian’s approach before entering the heart of the Bastion.",
+            "discovery": "Signal Tower Survey",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 12
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": -12
+              }
+            ]
+          },
+          {
+            "id": "sealed_war_room",
+            "label": "Breach the Sealed War Room",
+            "description": "Break the command vault wards for preserved Guild-era stores, accepting backlash and a harder final fight for a greater combat payout.",
+            "discovery": "Sealed War Room",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 10
+              },
+              {
+                "type": "cache_gil",
+                "value": 260
+              },
+              {
+                "type": "cache_item",
+                "item_id": "celestial_thread",
+                "quantity": 1
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 10
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 25
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearth_crystal",
+        "name": "Hearth Crystal",
+        "type": "sanctuary",
+        "description": "A fortress hearth crystal still glows beneath layers of frost, creating one pocket of warmth before the sealed command sanctum.",
+        "hp_restore_percent": 25,
+        "resource_restore_percent": 30
+      },
+      {
+        "id": "bastion_heart",
+        "name": "Bastion Heart",
+        "type": "boss",
+        "monster_id": "behemoth",
+        "hp_multiplier": 1.28,
+        "reward_multiplier": 1.6,
+        "description": "A Behemoth has claimed the command sanctum as its den. Frost coats its mane and every broken standard bends toward it in the gale."
       }
     ]
   }

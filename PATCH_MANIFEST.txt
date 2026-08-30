@@ -1,31 +1,33 @@
-Crystal Guild v1.4.0 Dungeons & Delves Alpha 2 — Bot Patch Manifest
-Changed/new files: 25
-Deleted files: 0
-Baseline shipping files: 147
-Final shipping files: 148
+Crystal Guild v1.4.0 Dungeons & Delves Alpha 3 — Bot Patch Manifest
+Baseline: v1.4.0 Dungeons & Delves Alpha 2 Bot
+Target: 1.4.0-dungeons-a3
+Schema: 10
+Hosted sync schema: 1
+Portal Action protocol: 24
+Changed/new files: 23
+Deletions: 0
 
-CRYSTAL_GUILD_CONTROL_PANEL.bat
-FINALIZATION_AUDIT.md
-PACKAGE_MANIFEST.txt
-README.md
-README_FIRST.txt
-RELEASE_NOTES.md
-UPGRADE_GUIDE.md
-VALIDATION_REPORT.md
-VERSION.txt
-crystal_guild/__init__.py
-crystal_guild/data.py
-crystal_guild/dungeons.py
-crystal_guild/engine.py
-crystal_guild/portal_actions.py
-data/dungeons.json
-tests/test_dungeons_alpha1.py
-tests/test_dungeons_alpha2.py
-tests/test_guild_expansion_alpha3.py
-tests/test_guild_expansion_alpha4.py
-tests/test_guild_expansion_alpha5.py
-tests/test_guild_expansion_beta1.py
-tests/test_guild_expansion_beta3.py
-tests/test_guild_expansion_rc1.py
-tests/test_release_contract.py
-upgrade_crystal_guild.py
+Changed/new:
+- CHANGELOG.md
+- CRYSTAL_GUILD_CONTROL_PANEL.bat
+- FINALIZATION_AUDIT.md
+- PACKAGE_MANIFEST.txt
+- README.md
+- README_FIRST.txt
+- RELEASE_NOTES.md
+- UPGRADE_GUIDE.md
+- VALIDATION_REPORT.md
+- VERSION.txt
+- crystal_guild/__init__.py
+- crystal_guild/data.py
+- crystal_guild/engine.py
+- crystal_guild/fellowship.py
+- crystal_guild/token_store.py
+- data/dungeons.json
+- tests/test_dungeons_alpha1.py
+- tests/test_dungeons_alpha2.py
+- tests/test_dungeons_alpha3.py
+- tests/test_guild_expansion_rc1.py
+- tests/test_portal_actions.py
+- tests/test_release_contract.py
+- upgrade_crystal_guild.py

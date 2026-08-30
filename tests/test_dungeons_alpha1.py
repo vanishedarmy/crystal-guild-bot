@@ -77,7 +77,7 @@ class DungeonsAlpha1Tests(unittest.TestCase):
 
     def test_dungeon_board_unlocks_from_existing_expedition_progress(self):
         board = self.game._dungeon_board_state("140")
-        self.assertEqual(len(board["dungeons"]), 2)
+        self.assertGreaterEqual(len(board["dungeons"]), 2)
         entry = board["dungeons"][0]
         self.assertEqual(entry["id"], "forgotten_ossuary")
         self.assertTrue(entry["unlocked"])
@@ -162,8 +162,8 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         self.assertTrue(first.ok, first.messages)
         self.assertTrue(second.ok, second.messages)
         after = self.db.one("SELECT xp,gil FROM players WHERE twitch_id='140'")
-        self.assertEqual(int(after["xp"]) - int(before["xp"]), 25 + 180)
-        self.assertEqual(int(after["gil"]) - int(before["gil"]), 40 + 260)
+        self.assertEqual(int(after["xp"]) - int(before["xp"]), 25 + 180 + 120)
+        self.assertEqual(int(after["gil"]) - int(before["gil"]), 40 + 260 + 150)
         progress = self.db.one("SELECT clears FROM player_dungeon_progress WHERE player_id='140' AND dungeon_id='forgotten_ossuary'")
         self.assertEqual(int(progress["clears"]), 1)
         pending = self.db.one("SELECT COUNT(*) AS n FROM portal_adventure_results WHERE player_id='140' AND kind='dungeon'")
