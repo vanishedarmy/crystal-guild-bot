@@ -688,10 +688,26 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertTrue(ok)
         state = data["adventure_state"]
         dungeon_rows = state["dungeons"]["dungeons"]
-        self.assertEqual(len(dungeon_rows), 3)
+        self.assertGreaterEqual(len(dungeon_rows), 3)
+        self.assertTrue(all(row["unlocked"] for row in dungeon_rows[:3]))
+        encoded = json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        self.assertLess(len(encoded), 16 * 1024)
+
+    def test_alpha4_adventure_state_stays_bounded_with_four_dungeons_unlocked(self):
+        self.db.execute("UPDATE players SET level=40 WHERE twitch_id='100'")
+        for region_id, progress in (("emerald_wilds", 70), ("ashen_highlands", 70), ("frostveil_reach", 70), ("astral_scar", 70)):
+            self.db.execute(
+                "INSERT INTO player_region_exploration(player_id,region_id,progress,stages_cleared) VALUES (?,?,?,?) ON CONFLICT(player_id,region_id) DO UPDATE SET progress=excluded.progress,stages_cleared=excluded.stages_cleared",
+                ("100", region_id, progress, 8),
+            )
+        ok, _, data = self.worker._execute(self.action(id="pa_adventure_state_a4_bounded", type="ADVENTURE_STATE", payload={}))
+        self.assertTrue(ok)
+        dungeon_rows = data["adventure_state"]["dungeons"]["dungeons"]
+        self.assertEqual(len(dungeon_rows), 4)
         self.assertTrue(all(row["unlocked"] for row in dungeon_rows))
         encoded = json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
         self.assertLess(len(encoded), 16 * 1024)
+        self.assertGreater((16 * 1024) - len(encoded), 512)
 
     def test_adventure_results_persist_until_explicit_confirmation(self):
         summary = {

@@ -1,40 +1,45 @@
-# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 3
+# Crystal Guild v1.4.0 — Dungeons & Delves Alpha 4
 
-## Dungeon Depth & Reward Identity
+## Dungeon Encounter & Event Expansion
 
-Alpha 3 builds on Alpha 2 with a third higher-level delve, route consequences that can carry into later chambers, and one-time first-clear rewards. The persistence, replay protection, stale-tab binding, retreat/defeat settlement, and existing economy outside Dungeons remain intact.
+Alpha 4 builds on Alpha 3 with a fourth high-level delve, weighted Dungeon Event chambers, richer room outcomes, and encounter-specific miniboss/boss pressure. Existing Dungeon persistence, run/chamber stale-tab binding, replay protection, retreat/defeat settlement, Crossroads route effects, and first-clear records remain intact.
 
-### The Whiteglass Bastion
-- Adds a third persistent Dungeon: **The Whiteglass Bastion**.
-- Unlock: character **Lv. 26** plus **45% Frostveil Reach** Expedition exploration.
-- Recommended level: **30**.
-- Nine chambers with two Crossroads decisions, a miniboss, sanctuary, and final boss.
-- Dungeon identity: **Endurance & Wards**.
+### The Riftglass Observatory
+- Adds the fourth persistent Dungeon: **The Riftglass Observatory**.
+- Unlock: character **Lv. 34** plus **55% The Astral Scar** Expedition exploration.
+- Recommended level: **38**.
+- Ten chambers with two Crossroads, one weighted Event chamber, a Death Machine miniboss, sanctuary, and Crystal Wolf finale.
+- Dungeon identity: **Anomalies & Pressure**.
 
-### Choices that echo forward
-- Crossroads can now affect later rooms rather than resolving only immediately.
-- Route effects can reduce the next hazard, strengthen or weaken the next foe, and boost the next combat payout.
-- Active Dungeon state exposes pending route effects so the player can plan around them.
-- Forward effects persist with the run, survive restart/reconnect, and are consumed only by the applicable later room.
+### Dungeon Events
+- Adds the new **Event** room type without adding a new Portal action or database table.
+- Event rooms select from validated weighted outcomes and can restore or drain resources, damage/heal the hero, add Dungeon Cache XP/JP/Gil/items, record discoveries, or shape a later hazard/combat.
+- Event outcomes are resolved authoritatively and persisted with the active Dungeon run.
 
-### First-clear identity
-- Each current Dungeon has a one-time first-clear bonus using existing XP, JP, Gil, and materials.
-- First-clear eligibility is derived from the existing Dungeon progress record; no new table or migration is required.
-- Dungeon cards identify their reward theme and show first-clear material rewards when unlocked.
+### Encounter rules and opening pressure
+- Dungeon combat rooms can define their own round limit, opening HP/resource pressure, temporary enemy statuses, and player-facing mechanic notes.
+- The Riftglass Observatory miniboss begins protected and must be defeated within 10 rounds.
+- The final Crystal Wolf begins with Haste/brief Regen, drains 12% max MP/AP on entry, and has a 9-round collapse window.
+- Existing player-paced Dungeon combat, items, abilities, Defend, Bestiary credit, and cache settlement remain unchanged.
 
-### Payload and release hardening
-- The high-frequency Adventure Board Hunt payload omits empty cooldown/reason fields, preserving the existing Web defaults while keeping an all-three-Dungeons-unlocked state below the 16 KiB transport guardrail.
-- Restores the canonical `crystal_guild/token_store.py` module to the shipping Bot archive after it was omitted from the Alpha 2 archive. No token files or secrets are packaged.
+### Richer room outcomes
+- Treasure, hazard, sanctuary, Crossroads, and Event rooms now share a validated effect engine.
+- Forward modifiers remain restart-safe and are consumed only by the relevant later room.
+- Existing first-clear bonuses and Dungeon reward identities remain intact.
+
+### Payload hardening
+- Empty optional Dungeon/Hunt fields are omitted where the Web already has safe defaults.
+- With all four Dungeons unlocked, the Adventure-state payload serializes to **15,475 bytes**, leaving **909 bytes** below the 16 KiB transport guardrail.
 
 ### Compatibility
-- Bot runtime: `1.4.0-dungeons-a3`
-- Hosted Web runtime: `1.4.0-dungeons-a3`
-- Frontend asset revision: `1.4.0-dungeons-a3`
+- Bot runtime: `1.4.0-dungeons-a4`
+- Hosted Web runtime: `1.4.0-dungeons-a4`
+- Frontend asset revision: `1.4.0-dungeons-a4`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **24** unchanged
 - Twitch prefix: `!`
-- Database migration: **none from Alpha 2**
+- Database migration: **none from Alpha 3**
 - Player reset: **none**
 - OAuth/environment changes: **none**
 - Non-Dungeon gameplay/economy rebalance: **none**

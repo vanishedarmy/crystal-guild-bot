@@ -1,5 +1,11 @@
-# v1.4.0 — Dungeons & Delves Alpha 3
+# v1.4.0 — Dungeons & Delves Alpha 4
 
+- Adds The Riftglass Observatory (Lv.34 + 55% The Astral Scar), the fourth persistent Dungeon.
+- Adds weighted Dungeon Event chambers and room-specific encounter rules/opening pressure.
+- Expands room outcomes with cache/resource/future-room effects while preserving restart-safe run state.
+- Keeps schema 10 / sync 1 / Portal protocol 24 unchanged and preserves the 16 KiB Adventure-state guardrail.
+
+## v1.4.0 — Dungeons & Delves Alpha 3
 - Adds The Whiteglass Bastion (Lv.26 + 45% Frostveil Reach), the third persistent Dungeon.
 - Adds forward Crossroads effects for later hazards/combat and one-time first-clear bonuses.
 - Keeps schema 10 / sync 1 / Portal protocol 24 unchanged.

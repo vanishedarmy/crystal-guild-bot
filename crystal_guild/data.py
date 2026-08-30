@@ -610,13 +610,38 @@ class GameData:
                     errors.append(f"dungeon {dungeon['id']}: missing/duplicate room id {room_id!r}")
                 seen_rooms.add(room_id)
                 room_type = str(room.get("type") or "").strip().lower()
-                if room_type not in {"entrance", "combat", "treasure", "hazard", "choice", "miniboss", "sanctuary", "boss"}:
+                if room_type not in {"entrance", "combat", "treasure", "hazard", "event", "choice", "miniboss", "sanctuary", "boss"}:
                     errors.append(f"dungeon {dungeon['id']} room {room_id}: invalid type {room_type!r}")
                 monster_id = str(room.get("monster_id") or "").strip()
                 if room_type in {"combat", "miniboss", "boss"}:
                     require(self.monsters, monster_id, f"dungeon {dungeon['id']} room {room_id}")
                 for loot in list(room.get("loot") or []):
                     require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} loot")
+                valid_dungeon_effects = {"cache_xp", "cache_jp", "cache_gil", "cache_item", "damage_percent", "heal_percent", "restore_resource_percent", "resource_loss_percent", "next_combat_enemy_hp_percent", "next_combat_reward_percent", "next_hazard_reduction_percent"}
+                for effect in list(room.get("effects") or []):
+                    effect_type = str(effect.get("type") or "").strip().lower()
+                    if effect_type not in valid_dungeon_effects:
+                        errors.append(f"dungeon {dungeon['id']} room {room_id}: invalid effect {effect_type!r}")
+                    if effect_type == "cache_item":
+                        require(self.items, str(effect.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} effect")
+                if room_type == "event":
+                    outcomes = list(room.get("outcomes") or [])
+                    if not outcomes:
+                        errors.append(f"dungeon {dungeon['id']} room {room_id}: event rooms need at least 1 outcome")
+                    seen_outcomes: set[str] = set()
+                    for outcome in outcomes:
+                        outcome_id = str(outcome.get("id") or "").strip()
+                        if not outcome_id or outcome_id in seen_outcomes:
+                            errors.append(f"dungeon {dungeon['id']} room {room_id}: missing/duplicate event outcome id {outcome_id!r}")
+                        seen_outcomes.add(outcome_id)
+                        if float(outcome.get("weight", 1) or 1) <= 0:
+                            errors.append(f"dungeon {dungeon['id']} room {room_id} event {outcome_id}: weight must be > 0")
+                        for effect in list(outcome.get("effects") or []):
+                            effect_type = str(effect.get("type") or "").strip().lower()
+                            if effect_type not in valid_dungeon_effects:
+                                errors.append(f"dungeon {dungeon['id']} room {room_id} event {outcome_id}: invalid effect {effect_type!r}")
+                            if effect_type == "cache_item":
+                                require(self.items, str(effect.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} event {outcome_id}")
                 if room_type == "choice":
                     options = list(room.get("options") or [])
                     if len(options) < 2:
@@ -629,7 +654,7 @@ class GameData:
                         seen_options.add(option_id)
                         for effect in list(option.get("effects") or []):
                             effect_type = str(effect.get("type") or "").strip().lower()
-                            if effect_type not in {"cache_gil", "cache_item", "damage_percent", "heal_percent", "restore_resource_percent", "next_combat_enemy_hp_percent", "next_combat_reward_percent", "next_hazard_reduction_percent"}:
+                            if effect_type not in {"cache_xp", "cache_jp", "cache_gil", "cache_item", "damage_percent", "heal_percent", "restore_resource_percent", "resource_loss_percent", "next_combat_enemy_hp_percent", "next_combat_reward_percent", "next_hazard_reduction_percent"}:
                                 errors.append(f"dungeon {dungeon['id']} room {room_id} choice {option_id}: invalid effect {effect_type!r}")
                             if effect_type == "cache_item":
                                 require(self.items, str(effect.get("item_id") or ""), f"dungeon {dungeon['id']} room {room_id} choice {option_id}")

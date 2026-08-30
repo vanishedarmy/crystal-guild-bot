@@ -31,7 +31,7 @@ class DungeonsAlpha3Tests(unittest.TestCase):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 24)
         board = self.game._dungeon_board_state("143")
-        self.assertEqual([row["id"] for row in board["dungeons"]], ["forgotten_ossuary", "emberglass_foundry", "whiteglass_bastion"])
+        self.assertEqual([row["id"] for row in board["dungeons"][:3]], ["forgotten_ossuary", "emberglass_foundry", "whiteglass_bastion"])
         whiteglass = board["dungeons"][2]
         self.assertTrue(whiteglass["unlocked"])
         self.assertEqual(whiteglass["rooms"], 9)

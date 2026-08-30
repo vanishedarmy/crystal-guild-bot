@@ -1,14 +1,14 @@
-Crystal Guild v1.4.0 Dungeons & Delves Alpha 3 — Bot Package Manifest
-Runtime: 1.4.0-dungeons-a3
+Crystal Guild v1.4.0 Dungeons & Delves Alpha 4 — Bot Package Manifest
+Runtime: 1.4.0-dungeons-a4
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 24
 Twitch prefix: !
-Upgrade baseline: v1.4.0 Dungeons & Delves Alpha 2 Bot
+Upgrade baseline: v1.4.0 Dungeons & Delves Alpha 3 Bot
 
 Highlights:
-- Whiteglass Bastion
-- Forward Crossroads route effects
-- One-time first-clear rewards
+- Riftglass Observatory
+- Weighted Dungeon Event chambers
+- Miniboss/boss encounter rules and opening pressure
+- Richer treasure/hazard resource outcomes
 - Adventure payload headroom hardening
-- Canonical token_store.py module restored to shipping source

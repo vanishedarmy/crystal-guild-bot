@@ -14,6 +14,7 @@ def room_kind_label(room: dict[str, Any]) -> str:
         "combat": "Encounter",
         "treasure": "Treasure",
         "hazard": "Hazard",
+        "event": "Dungeon Event",
         "choice": "Crossroads",
         "miniboss": "Miniboss",
         "sanctuary": "Sanctuary",

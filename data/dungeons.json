@@ -540,5 +540,334 @@
         "description": "A Behemoth has claimed the command sanctum as its den. Frost coats its mane and every broken standard bends toward it in the gale."
       }
     ]
+  },
+  {
+    "id": "riftglass_observatory",
+    "name": "The Riftglass Observatory",
+    "subtitle": "A shattered observatory anchored above the Astral Scar, where broken lenses turn every chamber into a gamble with the rift.",
+    "identity": "Anomalies & Pressure",
+    "min_level": 34,
+    "recommended_level": 38,
+    "art": "/expeditions/astral-scar.webp",
+    "unlock": {
+      "expedition_region": "astral_scar",
+      "progress": 55
+    },
+    "completion_bonus": {
+      "xp": 720,
+      "jp": 105,
+      "gil": 860,
+      "items": [
+        {
+          "item_id": "rift_crystal",
+          "quantity": 2
+        },
+        {
+          "item_id": "dark_matter",
+          "quantity": 1
+        }
+      ]
+    },
+    "first_clear_bonus": {
+      "xp": 360,
+      "jp": 55,
+      "gil": 420,
+      "items": [
+        {
+          "item_id": "archon_shard",
+          "quantity": 1
+        },
+        {
+          "item_id": "rift_crystal",
+          "quantity": 2
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "scar_threshold",
+        "name": "Scar Threshold",
+        "type": "entrance",
+        "description": "The observatory hangs over violet nothingness. Fractured brass rings turn in the dark without wind or machinery."
+      },
+      {
+        "id": "watcher_gallery",
+        "name": "Watcher Gallery",
+        "type": "combat",
+        "monster_id": "evil_eye",
+        "hp_multiplier": 1.1,
+        "reward_multiplier": 1.14,
+        "description": "An Evil Eye drifts between cracked star charts, tracking every movement through a dozen reflected lenses."
+      },
+      {
+        "id": "unstable_lens_array",
+        "name": "Unstable Lens Array",
+        "type": "event",
+        "description": "Three damaged lenses flare at once, each catching a different possible future.",
+        "outcomes": [
+          {
+            "id": "stabilized_array",
+            "label": "The lenses stabilize",
+            "description": "The alignment settles into a protective pattern and the next passage becomes easier to read.",
+            "weight": 4,
+            "discovery": "Stabilized Lens Array",
+            "effects": [
+              {
+                "type": "restore_resource_percent",
+                "value": 12
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "id": "overcharged_array",
+            "label": "The array overloads",
+            "description": "The surge burns, but the released aether condenses into useful battle insight.",
+            "weight": 3,
+            "discovery": "Overcharged Lens",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 8
+              },
+              {
+                "type": "cache_jp",
+                "value": 24
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 20
+              }
+            ]
+          },
+          {
+            "id": "rift_echo",
+            "label": "A rift echo answers",
+            "description": "A second image of the chamber overlaps reality, leaving behind a crystallized fragment before it collapses.",
+            "weight": 2,
+            "discovery": "Rift Echo",
+            "effects": [
+              {
+                "type": "cache_xp",
+                "value": 140
+              },
+              {
+                "type": "cache_item",
+                "item_id": "rift_crystal",
+                "quantity": 1
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 10
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 25
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "astronomers_lockbox",
+        "name": "Astronomers' Lockbox",
+        "type": "treasure",
+        "description": "A counterweighted vault opens beneath the charting floor.",
+        "loot": [
+          {
+            "item_id": "hi_potion",
+            "quantity": 2
+          },
+          {
+            "item_id": "ether",
+            "quantity": 1
+          },
+          {
+            "item_id": "rift_crystal",
+            "quantity": 1
+          }
+        ],
+        "gil": 210,
+        "effects": [
+          {
+            "type": "cache_xp",
+            "value": 80
+          }
+        ]
+      },
+      {
+        "id": "broken_orrery",
+        "name": "Broken Orrery",
+        "type": "choice",
+        "description": "The main orrery is split around a rotating void seam. A service ring is stable but slow; the central bridge crosses the anomaly directly.",
+        "options": [
+          {
+            "id": "service_ring",
+            "label": "Take the Service Ring",
+            "description": "Follow the intact outer machinery, reinforce the ward lattice, and conserve strength.",
+            "discovery": "Service Ring",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 8
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 65
+              }
+            ]
+          },
+          {
+            "id": "rift_bridge",
+            "label": "Cross the Rift Bridge",
+            "description": "Take the exposed central bridge and harvest the raw crystal growths clinging to its frame.",
+            "discovery": "Rift Bridge",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 7
+              },
+              {
+                "type": "cache_item",
+                "item_id": "rift_crystal",
+                "quantity": 1
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 8
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 22
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gravity_well",
+        "name": "Gravity Well",
+        "type": "hazard",
+        "description": "The floor lurches sideways as a local gravity seam snaps across the corridor.",
+        "damage_percent": 18,
+        "effects": [
+          {
+            "type": "resource_loss_percent",
+            "value": 12
+          }
+        ]
+      },
+      {
+        "id": "clockwork_aperture",
+        "name": "Clockwork Aperture",
+        "type": "miniboss",
+        "monster_id": "death_machine",
+        "hp_multiplier": 1.18,
+        "reward_multiplier": 1.32,
+        "max_rounds": 10,
+        "enemy_statuses": [
+          {
+            "id": "protect",
+            "turns": 2,
+            "magnitude": 0.15
+          }
+        ],
+        "mechanics": [
+          "Armored aperture: Protect for the opening 2 rounds",
+          "Pressure clock: defeat it within 10 rounds"
+        ],
+        "description": "A Death Machine unfolds from the observatory's shutter mechanism, shielding its core behind rotating plates."
+      },
+      {
+        "id": "starwell",
+        "name": "Starwell",
+        "type": "sanctuary",
+        "description": "A basin of cold starlight gathers beneath the dome, quiet enough to restore breath and focus.",
+        "hp_restore_percent": 28,
+        "resource_restore_percent": 34,
+        "effects": [
+          {
+            "type": "cache_jp",
+            "value": 12
+          }
+        ]
+      },
+      {
+        "id": "shattered_dome",
+        "name": "Shattered Dome",
+        "type": "choice",
+        "description": "The final dome is open to the Scar. You can recalibrate the surviving seals or force the aperture wider and draw power from the breach.",
+        "options": [
+          {
+            "id": "recalibrate_seals",
+            "label": "Recalibrate the Seals",
+            "description": "Use the observatory's surviving ward geometry to weaken whatever waits beyond.",
+            "discovery": "Recalibrated Sealwork",
+            "effects": [
+              {
+                "type": "restore_resource_percent",
+                "value": 10
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": -10
+              }
+            ]
+          },
+          {
+            "id": "force_aperture",
+            "label": "Force the Aperture",
+            "description": "Open the breach wider. The backlash is immediate, but the final confrontation will yield richer spoils.",
+            "discovery": "Forced Aperture",
+            "effects": [
+              {
+                "type": "damage_percent",
+                "value": 6
+              },
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 12
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 30
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "riftglass_crown",
+        "name": "Riftglass Crown",
+        "type": "boss",
+        "monster_id": "crystal_wolf",
+        "hp_multiplier": 1.42,
+        "reward_multiplier": 1.68,
+        "max_rounds": 9,
+        "opening_resource_drain_percent": 12,
+        "enemy_statuses": [
+          {
+            "id": "haste",
+            "turns": 3,
+            "magnitude": 0.12
+          },
+          {
+            "id": "regen",
+            "turns": 2,
+            "magnitude": 0.02
+          }
+        ],
+        "mechanics": [
+          "Rift acceleration: Haste for 3 rounds",
+          "Crystal renewal: brief opening Regen",
+          "Aperture drain: lose 12% max MP/AP on entry",
+          "Collapse window: 9 rounds"
+        ],
+        "description": "A Crystal Wolf steps from the broken lens crown, its body splitting into prismatic afterimages as the observatory begins to collapse."
+      }
+    ]
   }
 ]

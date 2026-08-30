@@ -1,10 +1,10 @@
-Crystal Guild v1.4.0 Dungeons & Delves Alpha 3 — Bot Patch Manifest
-Baseline: v1.4.0 Dungeons & Delves Alpha 2 Bot
-Target: 1.4.0-dungeons-a3
+Crystal Guild v1.4.0 Dungeons & Delves Alpha 4 — Bot Patch Manifest
+Baseline: v1.4.0 Dungeons & Delves Alpha 3 Bot
+Target: 1.4.0-dungeons-a4
 Schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 24
-Changed/new files: 23
+Changed/new files: 22
 Deletions: 0
 
 Changed/new:
@@ -20,13 +20,12 @@ Changed/new:
 - VERSION.txt
 - crystal_guild/__init__.py
 - crystal_guild/data.py
+- crystal_guild/dungeons.py
 - crystal_guild/engine.py
-- crystal_guild/fellowship.py
-- crystal_guild/token_store.py
 - data/dungeons.json
 - tests/test_dungeons_alpha1.py
-- tests/test_dungeons_alpha2.py
 - tests/test_dungeons_alpha3.py
+- tests/test_dungeons_alpha4.py
 - tests/test_guild_expansion_rc1.py
 - tests/test_portal_actions.py
 - tests/test_release_contract.py

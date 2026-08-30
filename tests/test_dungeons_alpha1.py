@@ -82,7 +82,7 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         self.assertEqual(entry["id"], "forgotten_ossuary")
         self.assertTrue(entry["unlocked"])
         self.assertEqual(entry["rooms"], 8)
-        self.assertEqual(entry["missing"], [])
+        self.assertEqual(entry.get("missing", []), [])
 
     def test_dungeon_run_persists_and_continues_into_combat(self):
         result = self.game.dungeon_start("140", "forgotten_ossuary")
