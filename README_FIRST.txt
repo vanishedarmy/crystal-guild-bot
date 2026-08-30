@@ -1,10 +1,7 @@
-Crystal Guild v1.5.0 — Trails & Raids Alpha 1
+v1.5.0 — Trails & Raids Alpha 2
 
-Deploy matching Alpha 1 Web + Bot together.
-Runtime: 1.5.0-trails-raids-a1
-Local DB schema: 10
-Hosted sync schema: 1
-Portal Action protocol: 25
-Twitch prefix: !
-
-Upgrade directly from v1.4.0 Dungeons & Delves production. No migration or player reset is required. Preserve the live database, .env, token storage, hosted secrets, and persistent-disk state.
+PAIRED BOT/WEB ALPHA. Deploy matching Alpha 2 Web + Bot together.
+Runtime: 1.5.0-trails-raids-a2
+Schema 10 · hosted sync 1 · Portal protocol 25 · Twitch prefix !
+No migration, reset, OAuth/environment change, or new environment variable.
+See UPGRADE_GUIDE.md before deployment.

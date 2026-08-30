@@ -1,16 +1,18 @@
-# Upgrade Guide — Crystal Guild v1.5.0 Trails & Raids Alpha 1
+# Upgrade Guide — Crystal Guild v1.5.0 Trails & Raids Alpha 2
 
-Baseline: **v1.4.0 Dungeons & Delves production Web + Bot**.
+Baseline: **Alpha 1 Bot + Alpha 1 Hotfix 2 Web**. Alpha 2 is a paired Bot/Web update. Local schema remains **10**, hosted sync remains **1**, and Portal Action protocol remains **25**.
 
-1. Back up the live database and preserve `.env`, Twitch token storage, hosted secrets, and persistent-disk data.
+1. Back up the live player database and preserve `.env`, Twitch token storage, hosted secrets, and persistent-disk state.
 2. Stop the Bot cleanly.
-3. Apply the **v1.4.0 → Alpha 1 Bot patch** or replace the Bot source with the full Alpha 1 package while preserving private/runtime state.
-4. Apply the **v1.4.0 → Alpha 1 Web patch** or deploy the full Alpha 1 Web package.
-5. Restart/redeploy matching Web + Bot. No database migration should run; local schema remains **10**.
-6. Verify `!cgversion` reports `1.5.0-trails-raids-a1`.
-7. Verify `/api/health` reports Web/frontend `1.5.0-trails-raids-a1`, hosted sync schema **1**, and Portal Action protocol **25**.
-8. Spawn Ifrit in staging and confirm the opening **Incinerate** telegraph, then **Radiant Plume**, **Infernal Nails**, and weakened/empowered **Hellfire** resolution.
-9. Confirm the Adventure Board and OBS overlay show public mechanic/contribution data without player IDs or internal target IDs.
-10. Spot-check an existing Dungeon and existing player progression to confirm v1.4 state is unchanged.
+3. Apply the **Alpha 1 → Alpha 2 Bot patch** or replace Bot source with the full Alpha 2 package while preserving private/runtime state.
+4. Apply the **Alpha 1 Hotfix 2 → Alpha 2 Web patch** or deploy the full Alpha 2 Web package.
+5. Start the Bot and confirm no schema migration runs; schema must remain **10**.
+6. Redeploy/restart the hosted Web service.
+7. Verify `!cgversion` reports `1.5.0-trails-raids-a2`.
+8. Verify `/api/health` reports Web/frontend `1.5.0-trails-raids-a2`, hosted sync schema **1**, and Portal Action protocol **25**.
+9. Stage **Shiva** and confirm the Trial reports **Diamond Throne**. Verify Frostbrand Cleave → Icebound Mirrors → Diamond Aegis behavior.
+10. During Mirrors, confirm boss-directed damage reduces Mirror HP while Shiva HP does not move until the adds are cleared.
+11. Meet Diamond Aegis's Break target and confirm the next round is a Stagger vulnerability window with no Shiva response.
+12. Confirm Ifrit — Inferno Crucible, Dungeons, Expeditions, Fellowship, inventories, records, and existing player progression remain intact.
 
-No player reset, OAuth/environment change, or new environment variable is required.
+No player reset, OAuth/environment change, new environment variable, or database migration is required.

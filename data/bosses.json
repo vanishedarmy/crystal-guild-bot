@@ -90,7 +90,7 @@
     "tier": "World Boss",
     "recommended_level": 14,
     "signature": "Grave March",
-    "description": "An ancient commander who has interpreted “rest in peace” as optional guidance.",
+    "description": "An ancient commander who has interpreted \u201crest in peace\u201d as optional guidance.",
     "drops": [
       {
         "item_id": "bone_chip",
@@ -309,7 +309,37 @@
     ],
     "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "encounter_type": "Trial",
+    "encounter_name": "Diamond Throne",
+    "raid_script": "shiva_diamond_throne",
+    "mechanics": [
+      {
+        "name": "Frostbrand Cleave",
+        "kind": "cleave",
+        "description": "A marked raider and a second standing ally are struck together."
+      },
+      {
+        "name": "Icebound Mirrors",
+        "kind": "adds",
+        "description": "Two adds intercept all boss-targeted damage until shattered."
+      },
+      {
+        "name": "Diamond Aegis",
+        "kind": "break_check",
+        "description": "Fill a shared Break gauge within two rounds to Stagger Shiva."
+      },
+      {
+        "name": "Staggered",
+        "kind": "stagger",
+        "description": "A successful Break creates one vulnerable round where Shiva cannot answer."
+      },
+      {
+        "name": "Diamond Dust",
+        "kind": "resolution",
+        "description": "Failing the Break gauge triggers a heavy raidwide blast."
+      }
+    ]
   },
   {
     "id": "ramuh",
@@ -1263,7 +1293,7 @@
     "xp": 59000,
     "gil": 180000,
     "signature": "Armageddon",
-    "description": "A monster-arena nightmare assembled from the Guild’s worst collection habits.",
+    "description": "A monster-arena nightmare assembled from the Guild\u2019s worst collection habits.",
     "drops": [
       {
         "item_id": "nemesis_mark",

@@ -10721,15 +10721,52 @@ class CrystalGuildEngine:
             meta["limit"] = min(100, int(meta.get("limit", 0)) + self.rng.randint(10, 18))
         return damage
 
+    @staticmethod
+    def _raid_role_label(meta: dict[str, Any]) -> str:
+        job_id = str(meta.get("job_id") or "")
+        if job_id in TANK_JOBS:
+            return "Tank"
+        if job_id in HEALER_JOBS:
+            return "Healer"
+        if job_id in SUPPORT_JOBS:
+            return "Support"
+        return "DPS"
+
+    def _raid_live_adds(self, boss: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+        target = boss or self.active_boss or {}
+        adds = target.get("adds")
+        if not isinstance(adds, list):
+            return []
+        return [row for row in adds if isinstance(row, dict) and int(row.get("current_hp", 0)) > 0]
+
+    def _raid_apply_enemy_damage(self, damage: int, *, boss: dict[str, Any] | None = None) -> tuple[int, str]:
+        """Apply hostile-target damage, allowing scripted adds to intercept it.
+
+        Alpha 2 add phases deliberately require no new chat targeting syntax: while
+        a scripted add is alive it intercepts boss-targeted damage, keeping the
+        established !attack / enemy-ability command surface intact.
+        """
+        target_boss = boss or self.active_boss
+        if not target_boss:
+            return 0, "boss"
+        damage = max(0, int(damage))
+        live_adds = self._raid_live_adds(target_boss)
+        if live_adds:
+            add = live_adds[0]
+            before = int(add.get("current_hp", 0))
+            add["current_hp"] = max(0, before - damage)
+            return before - int(add["current_hp"]), str(add.get("name") or "Raid add")
+        before = int(target_boss.get("current_hp", 0))
+        target_boss["current_hp"] = max(0, before - damage)
+        return before - int(target_boss["current_hp"]), str(target_boss.get("name") or "boss")
+
     def _raid_damage_boss(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str], *, use_limit: bool = True) -> int:
         if not self.active_boss:
             return 0
         damage = max(0, int(damage))
         if use_limit:
             damage = self._apply_raid_limit(pid, meta, damage, limit_users)
-        before = int(self.active_boss.get("current_hp", 0))
-        self.active_boss["current_hp"] = max(0, before - damage)
-        dealt = before - int(self.active_boss["current_hp"])
+        dealt, _ = self._raid_apply_enemy_damage(damage)
         meta["damage"] = int(meta.get("damage", 0)) + dealt
         meta["best_hit"] = max(int(meta.get("best_hit", 0)), dealt)
         return dealt
@@ -11011,6 +11048,130 @@ class CrystalGuildEngine:
         self._ifrit_prepare_next_mechanic(boss)
         return total, messages
 
+    def _shiva_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
+        """Advance Diamond Throne through cleave, adds, and Break/Stagger play."""
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        step = int(boss.get("_shiva_step", 0)) % 3
+        if step == 0:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Frostbrand Cleave", "kind": "cleave",
+                "warning": "A marked raider and one nearby ally will be struck.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        elif step == 1:
+            add_hp = max(650, min(7000, 700 * max(1, len(alive))))
+            boss["adds"] = [
+                {"id": "icebound_mirror_a", "name": "Icebound Mirror A", "max_hp": add_hp, "current_hp": add_hp},
+                {"id": "icebound_mirror_b", "name": "Icebound Mirror B", "max_hp": add_hp, "current_hp": add_hp},
+            ]
+            mechanic = {
+                "name": "Icebound Mirrors", "kind": "adds",
+                "warning": "Two mirrors intercept all boss-targeted damage. Break them before Shatterstorm.",
+                "rounds_remaining": 2,
+            }
+        else:
+            required = max(500, min(14000, 600 * max(1, len(alive))))
+            boss["adds"] = []
+            mechanic = {
+                "name": "Diamond Aegis", "kind": "break_check",
+                "warning": "Fill the Break gauge within two rounds to Stagger Shiva.",
+                "rounds_remaining": 2, "required": required, "progress": 0,
+            }
+        boss["mechanic"] = mechanic
+        boss["_shiva_step"] = (step + 1) % 3
+        return mechanic
+
+    def _resolve_shiva_response(
+        self, boss: dict[str, Any], *, round_damage: int, phase_mult: float,
+        enrage_mult: float, boss_pressure: float, ko_names: list[str],
+    ) -> tuple[int, list[str]]:
+        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
+        if not mechanic:
+            mechanic = self._shiva_prepare_next_mechanic(boss)
+        messages: list[str] = []
+        total = 0
+        retaliation_enabled = int(boss.get("attacks_per_round", 2)) > 0
+        kind = str(mechanic.get("kind") or "")
+        level = int(boss.get("recommended_level", 25))
+        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
+
+        if int(boss.get("_stagger_rounds", 0)) > 0 or kind == "stagger":
+            boss["_stagger_rounds"] = max(0, int(boss.get("_stagger_rounds", 1)) - 1)
+            boss["last_mechanic"] = {"name": "Staggered", "kind": "stagger", "result": "recovered"}
+            messages.append("STAGGER — Shiva cannot act; the raid has a full vulnerability window.")
+            if int(boss.get("_stagger_rounds", 0)) <= 0:
+                self._shiva_prepare_next_mechanic(boss)
+            return 0, messages
+
+        if kind == "adds":
+            remaining = self._raid_live_adds(boss)
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            if not remaining:
+                boss["last_mechanic"] = {"name": "Icebound Mirrors", "kind": "adds", "result": "cleared"}
+                messages.append("ICEBOUND MIRRORS — both mirrors shatter before they can discharge.")
+                boss["adds"] = []
+                self._shiva_prepare_next_mechanic(boss)
+                return 0, messages
+            if retaliation_enabled:
+                raw = max(1, int(base * (0.18 + 0.12 * len(remaining)) * self.rng.uniform(0.94, 1.06)))
+                for pid, meta in self.raid_roster.items():
+                    if int(meta.get("hp", 0)) > 0:
+                        total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=30.0)
+            if int(mechanic["rounds_remaining"]) <= 0:
+                boss["last_mechanic"] = {"name": "Shatterstorm", "kind": "raidwide", "result": "adds_survived"}
+                messages.append(f"SHATTERSTORM — {len(remaining)} mirror(s) survive; the raid takes {total:,} damage.")
+                boss["adds"] = []
+                self._shiva_prepare_next_mechanic(boss)
+            else:
+                messages.append(f"ICEBOUND MIRRORS — {len(remaining)} remain; frost backlash deals {total:,} raid damage.")
+            return total, messages
+
+        if kind == "break_check":
+            mechanic["progress"] = max(0, int(mechanic.get("progress", 0))) + max(0, int(round_damage))
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            required = max(1, int(mechanic.get("required", 1)))
+            progress = max(0, int(mechanic.get("progress", 0)))
+            if progress >= required:
+                boss["_stagger_rounds"] = 1
+                apply_status(boss.setdefault("statuses", {}), "vulnerable", 2, 0.25)
+                boss["mechanic"] = {"name": "Staggered", "kind": "stagger", "warning": "Shiva is vulnerable and cannot answer the next round.", "rounds_remaining": 1}
+                boss["last_mechanic"] = {"name": "Diamond Aegis", "kind": "break_check", "result": "broken", "progress": progress, "required": required}
+                messages.append(f"BREAK — Diamond Aegis {progress:,}/{required:,}; Shiva is STAGGERED for the next round.")
+                return 0, messages
+            if int(mechanic["rounds_remaining"]) > 0:
+                messages.append(f"BREAK GAUGE — Diamond Aegis {progress:,}/{required:,} · {mechanic['rounds_remaining']} round remaining.")
+                return 0, messages
+            if retaliation_enabled:
+                raw = max(1, int(base * 0.78 * self.rng.uniform(0.94, 1.06)))
+                for pid, meta in self.raid_roster.items():
+                    if int(meta.get("hp", 0)) > 0:
+                        total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=38.0)
+            boss["last_mechanic"] = {"name": "Diamond Dust", "kind": "raidwide", "result": "break_failed"}
+            messages.append(f"DIAMOND DUST — the Break gauge stalls at {progress:,}/{required:,}; the raid takes {total:,} damage.")
+            self._shiva_prepare_next_mechanic(boss)
+            return total, messages
+
+        # Frostbrand Cleave: the marked target plus one other standing raider.
+        target_id = str(mechanic.get("target_id") or "")
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        if target_id not in alive:
+            target_id = self.rng.choice(alive) if alive else ""
+        targets = [target_id] if target_id else []
+        extras = [pid for pid in alive if pid != target_id]
+        if extras:
+            targets.append(self.rng.choice(extras))
+        if retaliation_enabled:
+            raw = max(1, int(base * 0.82 * self.rng.uniform(0.92, 1.08)))
+            for pid in targets:
+                total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=40.0)
+        names = [str(self.raid_roster.get(pid, {}).get("name") or "raider") for pid in targets]
+        boss["last_mechanic"] = {"name": "Frostbrand Cleave", "kind": "cleave", "target": ", ".join(names)}
+        messages.append(f"FROSTBRAND CLEAVE — {', '.join(names) or 'the raid'} takes {total:,} total damage." if retaliation_enabled else "FROSTBRAND CLEAVE — boss retaliation suppressed.")
+        self._shiva_prepare_next_mechanic(boss)
+        return total, messages
+
     def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
         mechanic = self._raid_public_mechanic(boss.get("mechanic"))
         if not mechanic:
@@ -11021,8 +11182,16 @@ class CrystalGuildEngine:
             return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is targeted. Defend or prepare support."
         if kind == "raidwide":
             return f"TELEGRAPH — {name}: raidwide damage incoming."
-        if kind == "damage_check":
-            return f"DAMAGE CHECK — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} damage · {int(mechanic.get('rounds_remaining', 0))} rounds."
+        if kind in {"damage_check", "break_check"}:
+            label = "BREAK GAUGE" if kind == "break_check" else "DAMAGE CHECK"
+            return f"{label} — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} damage · {int(mechanic.get('rounds_remaining', 0))} rounds."
+        if kind == "adds":
+            adds = self._raid_live_adds(boss)
+            return f"ADDS — {name}: {len(adds)} active · boss-targeted damage is intercepted."
+        if kind == "cleave":
+            return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is marked; a second raider may also be struck."
+        if kind == "stagger":
+            return f"STAGGER — {name}: boss is vulnerable and cannot answer the next round."
         return f"MECHANIC — {name}."
 
     @_state_guard
@@ -11043,9 +11212,15 @@ class CrystalGuildEngine:
         combatants = self._initialize_raid_combat()
         if combatants <= 0:
             return self._finish_raid(False, reason="No raid participants are able to fight.")
-        if self._raid_script_id(self.active_boss) == "ifrit_inferno_crucible":
+        script_id = self._raid_script_id(self.active_boss)
+        if script_id == "ifrit_inferno_crucible":
             self.active_boss["_ifrit_step"] = 0
             self._ifrit_prepare_next_mechanic(self.active_boss)
+        elif script_id == "shiva_diamond_throne":
+            self.active_boss["_shiva_step"] = 0
+            self.active_boss["_stagger_rounds"] = 0
+            self.active_boss["adds"] = []
+            self._shiva_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -11085,9 +11260,9 @@ class CrystalGuildEngine:
         if armed_summon:
             mult = RAID_SUMMONS.get(armed_summon["id"], (armed_summon["name"], 1.0))[1]
             summon_damage = max(250, int(min(75000, boss["max_hp"] * 0.04) * mult))
-            boss["current_hp"] = max(0, boss["current_hp"] - summon_damage)
-            round_damage += summon_damage
-            summon_message = f"SUMMON — {armed_summon['by']} calls {armed_summon['name']} for {summon_damage:,} damage!"
+            summon_dealt, summon_target = self._raid_apply_enemy_damage(summon_damage, boss=boss)
+            round_damage += summon_dealt
+            summon_message = f"SUMMON — {armed_summon['by']} calls {armed_summon['name']} for {summon_dealt:,} damage to {summon_target}!"
             boss["summon_armed"] = None
         # Hero actions. Explicit chat input overrides the anti-stall default Attack.
         # Queue ownership matches Active Battle: one action per hero per round,
@@ -11169,12 +11344,13 @@ class CrystalGuildEngine:
             pass
         elif self._raid_script_id(boss) == "ifrit_inferno_crucible":
             total_boss_damage, scripted_messages = self._resolve_ifrit_response(
-                boss,
-                round_damage=round_damage,
-                phase_mult=phase_mult,
-                enrage_mult=enrage_mult,
-                boss_pressure=boss_pressure,
-                ko_names=ko_names,
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
+            )
+        elif self._raid_script_id(boss) == "shiva_diamond_throne":
+            total_boss_damage, scripted_messages = self._resolve_shiva_response(
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
             )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
@@ -11251,7 +11427,7 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) == "ifrit_inferno_crucible" and not boss_stunned:
+        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne"} and not boss_stunned:
             telegraph = self._raid_telegraph_text(boss)
             if telegraph:
                 messages.append(telegraph)
@@ -11354,7 +11530,7 @@ class CrystalGuildEngine:
             reverse=True,
         )[:5]
         top=" | ".join(
-            f"{m['name']} {m.get('damage',0):,} dmg/{m.get('healing',0):,} heal/{m.get('mitigation',0):,} mit/LB {m.get('limit',0)}%"
+            f"{m['name']} [{self._raid_role_label(m)}] {m.get('damage',0):,} dmg/{m.get('healing',0):,} heal/{m.get('mitigation',0):,} mit/LB {m.get('limit',0)}%"
             for m in ranked
         ) or "no contributions yet"
         return GameResult.success(f"Raid contributions — {top}")
@@ -11497,7 +11673,7 @@ class CrystalGuildEngine:
         for m in top:
             score=raid_contribution_score(damage=m.get("damage",0), healing=m.get("healing",0), mitigation=m.get("mitigation",0))
             top_rows.append({
-                "name":m["name"], "damage":m.get("damage",0), "healing":m.get("healing",0),
+                "name":m["name"], "role":self._raid_role_label(m), "damage":m.get("damage",0), "healing":m.get("healing",0),
                 "mitigation":m.get("mitigation",0), "score":int(round(score)),
             })
         return {
@@ -11506,6 +11682,7 @@ class CrystalGuildEngine:
             "hp":boss.get("current_hp",boss["hp"]), "max_hp":boss.get("max_hp",boss["hp"]), "round":boss.get("round",0), "phase":phase.get("name","Battle"),
             "signature":boss.get("signature","Cataclysm"), "raiders":len(self.raid_roster), "alive":sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0),
             "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":top_rows,
+            "adds":[{"name":str(row.get("name") or "Add"), "hp":max(0,int(row.get("current_hp",0))), "max_hp":max(1,int(row.get("max_hp",1)))} for row in self._raid_live_adds(boss)[:4]],
             "mechanic":self._raid_public_mechanic(boss.get("mechanic")), "last_mechanic":self._raid_public_mechanic(boss.get("last_mechanic")),
             "next_round_at":boss.get("next_round_at"), "updated_at":int(time.time()),
         }

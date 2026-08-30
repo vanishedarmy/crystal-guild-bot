@@ -1,8 +1,8 @@
-Crystal Guild v1.5.0 — Trails & Raids Alpha 1 — Bot Package Manifest
-Bot runtime: 1.5.0-trails-raids-a1
-Matching Web/frontend: 1.5.0-trails-raids-a1
+v1.5.0 — Trails & Raids Alpha 2 — Bot Package Manifest
+Bot runtime: 1.5.0-trails-raids-a2
+Matching Web/frontend: 1.5.0-trails-raids-a2
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25
-Dungeons: 4, unchanged/frozen
-Migration from v1.4.0: none
+Twitch prefix: !
+Baseline: v1.5.0 Trails & Raids Alpha 1 Bot

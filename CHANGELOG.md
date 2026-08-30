@@ -1,3 +1,9 @@
+# Crystal Guild Changelog
+
+## v1.5.0 — Trails & Raids Alpha 2
+- Shiva — Diamond Throne adds encounter adds, Break/Stagger, cleave telegraphs, and role-aware contribution display.
+- Schema 10 / sync 1 / protocol 25 unchanged; no reset or migration.
+
 # v1.4.0 — Dungeons & Delves
 
 - Promotes the RC1 feature set unchanged into the final v1.4.0 production release.

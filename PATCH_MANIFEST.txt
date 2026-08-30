@@ -1,0 +1,41 @@
+Crystal Guild v1.5.0 — Trails & Raids Alpha 2 — Bot Alpha 1 → Alpha 2 Patch
+Runtime: 1.5.0-trails-raids-a2
+Changed/new files: 32
+Deleted files: 0
+Local DB schema: 10
+Hosted sync schema: 1
+Portal Action protocol: 25
+
+Changed/new:
+CHANGELOG.md
+CRYSTAL_GUILD_CONTROL_PANEL.bat
+FINALIZATION_AUDIT.md
+FULL_SETUP_README.md
+PACKAGE_MANIFEST.txt
+README.md
+README_FIRST.txt
+RELEASE_NOTES.md
+RENDER_CLOUD_SETUP.md
+SIMPLE_RENDER_SETUP.md
+UPGRADE_GUIDE.md
+VALIDATION_REPORT.md
+VERSION.txt
+WEB_SYNC_SETUP.md
+crystal_guild/__init__.py
+crystal_guild/engine.py
+crystal_guild/portal_sync.py
+data/bosses.json
+prepare_render_migration.py
+run_maintenance.py
+run_selftest.bat
+run_stress_test.bat
+run_stress_test.py
+setup_windows.bat
+tests/test_cloud_runtime.py
+tests/test_dungeons_beta3.py
+tests/test_dungeons_rc1.py
+tests/test_dungeons_release.py
+tests/test_guild_expansion_rc1.py
+tests/test_release_contract.py
+tests/test_trails_raids_alpha2.py
+upgrade_crystal_guild.py

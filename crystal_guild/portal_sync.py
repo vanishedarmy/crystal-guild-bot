@@ -150,7 +150,7 @@ class PortalSyncClient:
             return None
         allowed = {
             "active", "status", "boss", "tier", "encounter_type", "encounter_name", "hp", "max_hp", "round", "phase",
-            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "mechanic", "last_mechanic", "next_round_at", "updated_at",
+            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "adds", "mechanic", "last_mechanic", "next_round_at", "updated_at",
         }
         overlay = {key: raw[key] for key in allowed if key in raw}
         top = overlay.get("top")
@@ -158,6 +158,7 @@ class PortalSyncClient:
             overlay["top"] = [
                 {
                     "name": str(item.get("name") or "Adventurer")[:80],
+                    "role": str(item.get("role") or "DPS")[:24],
                     "damage": max(0, int(item.get("damage") or 0)),
                     "healing": max(0, int(item.get("healing") or 0)),
                     "mitigation": max(0, int(item.get("mitigation") or 0)),
@@ -167,6 +168,18 @@ class PortalSyncClient:
             ]
         else:
             overlay["top"] = []
+        adds = overlay.get("adds")
+        if isinstance(adds, list):
+            overlay["adds"] = [
+                {
+                    "name": str(item.get("name") or "Add")[:80],
+                    "hp": max(0, int(item.get("hp") or 0)),
+                    "max_hp": max(1, int(item.get("max_hp") or 1)),
+                }
+                for item in adds[:4] if isinstance(item, dict)
+            ]
+        else:
+            overlay["adds"] = []
         for field in ("mechanic", "last_mechanic"):
             mechanic = overlay.get(field)
             if not isinstance(mechanic, dict):
