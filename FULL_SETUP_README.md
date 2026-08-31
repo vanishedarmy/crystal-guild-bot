@@ -1,9 +1,9 @@
 # Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Full Setup
 
-This guide covers the supported local Windows runtime and Render cloud runtime. Gold Saucer Alpha 1 uses local DB schema **11**, hosted sync schema **1**, Portal Action protocol **26**, Twitch prefix **`!`**, and runtime `1.6.0-gold-saucer-a1h2`.
+This guide covers the supported local Windows runtime and Render cloud runtime. Gold Saucer Alpha 1 uses local DB schema **12**, hosted sync schema **1**, Portal Action protocol **27**, Twitch prefix **`!`**, and runtime `1.6.0-gold-saucer-a2`.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secrets, and persistent-disk data. Upgrading from v1.5.1 performs the additive schema **10 → 11** migration after a verified pre-migration backup. No player reset, OAuth reauthorization, or new environment variable is required. Deploy the matching v1.6.0 Alpha 1 Web + Bot together.
+Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secrets, and persistent-disk data. Upgrading from Alpha 1 H2 performs the additive schema **11 → 12** migration after a verified pre-migration backup. Older supported databases migrate sequentially. No player reset, OAuth reauthorization, or new environment variable is required. Deploy the matching v1.6.0 Alpha 2 Web + Bot together.
 
 ## Requirements
 - Python 3.11+
@@ -51,10 +51,10 @@ Expected persistent paths are configured by `render.yaml`, including `/var/data/
 - Ordinary Gil is unchanged by Gold Saucer play.
 
 ## Release verification
-- `!cgversion` → `1.6.0-gold-saucer-a1h2`
-- `/api/health` → Web/frontend `1.6.0-gold-saucer-a1h2`
-- Local DB schema → **11**
+- `!cgversion` → `1.6.0-gold-saucer-a2`
+- `/api/health` → Web/frontend `1.6.0-gold-saucer-a2`
+- Local DB schema → **12**
 - Hosted sync schema → **1**
-- Portal Action protocol → **26**
+- Portal Action protocol → **27**
 
 Use `UPGRADE_GUIDE.md`, `RENDER_CLOUD_SETUP.md`, and `WEB_SYNC_SETUP.md` for focused deployment notes.

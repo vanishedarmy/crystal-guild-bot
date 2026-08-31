@@ -1,9 +1,9 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Hotfix 2 — Bot Package
-Runtime: 1.6.0-gold-saucer-a1h2
-Matching Web/frontend: 1.6.0-gold-saucer-a1h2
-Local schema: 11
+Crystal Guild v1.6.0 — Gold Saucer Alpha 2 — Bot Package
+Runtime: 1.6.0-gold-saucer-a2
+Matching Web/frontend: 1.6.0-gold-saucer-a2
+Local schema: 12
 Hosted sync: 1
-Portal Action protocol: 26
+Portal Action protocol: 27
 Twitch prefix: !
-Baseline: v1.6.0 Gold Saucer Alpha 1 Bot
-H2: UTC Cactpot reset, result metadata, ledger-derived records/telemetry, unchanged payout tables
+Baseline: v1.6.0 Gold Saucer Alpha 1 Hotfix 2
+Alpha 2: persistent five-throw Monster Toss, daily play cap, derived records, two cosmetic Prize Counter titles

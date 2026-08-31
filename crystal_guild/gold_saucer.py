@@ -43,6 +43,50 @@ SLOT_TRIPLE_PAYOUTS = {
 SLOT_PAIR_PAYOUT = 20
 
 
+# Alpha 2 — Monster Toss. A game is five authoritative throws. Players choose
+# a target and throw style each turn; higher-scoring targets trade away hit
+# chance. Three games are available per UTC day, and an active game persists
+# across refresh/reconnect/restart.
+MONSTER_TOSS_COST = 20
+MONSTER_TOSS_THROWS = 5
+MONSTER_TOSS_DAILY_GAMES = 3
+MONSTER_TOSS_TARGETS = (
+    {"id": "small_pot", "name": "Small Pot", "points": 25, "accuracy": 0.90, "description": "Easy target with a modest score."},
+    {"id": "medium_pot", "name": "Medium Pot", "points": 55, "accuracy": 0.72, "description": "Balanced target with a useful score bump."},
+    {"id": "large_pot", "name": "Large Pot", "points": 100, "accuracy": 0.52, "description": "Difficult target with a strong score reward."},
+    {"id": "golden_cactuar", "name": "Golden Cactuar", "points": 250, "accuracy": 0.28, "description": "Jackpot target: difficult, volatile, and worth a huge score."},
+)
+MONSTER_TOSS_STYLES = (
+    {"id": "safe", "name": "Safe Throw", "accuracy_mod": 0.12, "score_mult": 0.75, "description": "More accurate, but scores less on a hit."},
+    {"id": "normal", "name": "Normal Throw", "accuracy_mod": 0.0, "score_mult": 1.0, "description": "Balanced accuracy and score."},
+    {"id": "power", "name": "Power Throw", "accuracy_mod": -0.15, "score_mult": 1.5, "description": "Harder to land, but scores much more."},
+)
+MONSTER_TOSS_PAYOUTS = (
+    (900, 70, "jackpot"),
+    (600, 40, "gold"),
+    (400, 22, "silver"),
+    (250, 12, "bronze"),
+    (100, 5, "participation"),
+    (0, 0, "miss"),
+)
+MONSTER_TOSS_TARGETS_BY_ID = {row["id"]: row for row in MONSTER_TOSS_TARGETS}
+MONSTER_TOSS_STYLES_BY_ID = {row["id"]: row for row in MONSTER_TOSS_STYLES}
+
+def monster_toss_throw_profile(target_id: str, style_id: str) -> tuple[float, int]:
+    target = MONSTER_TOSS_TARGETS_BY_ID[str(target_id)]
+    style = MONSTER_TOSS_STYLES_BY_ID[str(style_id)]
+    accuracy = max(0.05, min(0.95, float(target["accuracy"]) + float(style["accuracy_mod"])))
+    score = max(1, int(round(int(target["points"]) * float(style["score_mult"]))))
+    return accuracy, score
+
+def monster_toss_payout(score: int) -> tuple[int, str]:
+    value = max(0, int(score))
+    for minimum, payout, tier in MONSTER_TOSS_PAYOUTS:
+        if value >= int(minimum):
+            return int(payout), str(tier)
+    return 0, "miss"
+
+
 # Alpha 1 Prize Counter is intentionally cosmetic-only. Rewards unlock
 # existing title functionality and never grant combat power, Gil, items,
 # or progression shortcuts.
@@ -67,6 +111,20 @@ PRIZES = (
         "name": "Jackpot Chaser",
         "cost": 2500,
         "description": "A prestige title for adventurers who have spent far too long watching reels spin.",
+    },
+    {
+        "id": "toss_tactician",
+        "title_id": "toss_tactician",
+        "name": "Toss Tactician",
+        "cost": 1800,
+        "description": "For players who know when to play safe and when to aim at the Golden Cactuar.",
+    },
+    {
+        "id": "pot_shot_pro",
+        "title_id": "pot_shot_pro",
+        "name": "Pot Shot Pro",
+        "cost": 3200,
+        "description": "A prestige Monster Toss title for suspiciously accurate carnival heroes.",
     },
 )
 PRIZES_BY_ID = {str(row["id"]): row for row in PRIZES}

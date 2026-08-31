@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 26
+ACTION_PROTOCOL_VERSION = 27
 
 
 class PortalActionWorker:
@@ -483,6 +483,16 @@ class PortalActionWorker:
             if payload:
                 return False, "Crystal Slots spin does not accept parameters.", {}
             return self._game_result(self.game.portal_slots_spin(twitch_id, str(action.get("id") or "")))
+        if action_type == "MONSTER_TOSS_START":
+            if payload:
+                return False, "Monster Toss start does not accept parameters.", {}
+            return self._game_result(self.game.portal_monster_toss_start(twitch_id, str(action.get("id") or "")))
+        if action_type == "MONSTER_TOSS_THROW":
+            if set(payload) != {"target", "style"}:
+                return False, "Monster Toss throw requires only target and style.", {}
+            target = str(payload.get("target") or "").strip().lower()
+            style = str(payload.get("style") or "").strip().lower()
+            return self._game_result(self.game.portal_monster_toss_throw(twitch_id, target, style, str(action.get("id") or "")))
         if action_type == "SAUCER_BUY":
             if set(payload) != {"prize_id"}:
                 return False, "Gold Saucer prize purchase requires only prize_id.", {}

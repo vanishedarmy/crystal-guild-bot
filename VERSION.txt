@@ -1,6 +1,6 @@
-v1.6.0 — Gold Saucer Alpha 1 Hotfix 2
-Runtime: 1.6.0-gold-saucer-a1h2
-Local DB schema: 11
+Crystal Guild v1.6.0 — Gold Saucer Alpha 2
+Runtime: 1.6.0-gold-saucer-a2
+Local DB schema: 12
 Hosted sync schema: 1
-Portal Action protocol: 26
+Portal Action protocol: 27
 Twitch prefix: !

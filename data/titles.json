@@ -417,7 +417,7 @@
   },
   {
     "id": "everyones_grudge",
-    "name": "Everyone\u2019s Grudge",
+    "name": "Everyone’s Grudge",
     "description": "Has made the Tonberry community collectively aware of their existence.",
     "category": "Comedy",
     "rarity": "epic",
@@ -506,7 +506,7 @@
   {
     "id": "master_artisan",
     "name": "Master Artisan",
-    "description": "Crafted enough equipment to start criticizing other people\u2019s hammer technique.",
+    "description": "Crafted enough equipment to start criticizing other people’s hammer technique.",
     "category": "Crafting",
     "rarity": "epic",
     "source": "Achievement"
@@ -626,7 +626,7 @@
   {
     "id": "breath_test_failure",
     "name": "Breath Test Failure",
-    "description": "Has been KO\u2019d by Malboro enough times to identify Bad Breath by vintage.",
+    "description": "Has been KO’d by Malboro enough times to identify Bad Breath by vintage.",
     "category": "Secret",
     "rarity": "rare",
     "source": "Achievement"
@@ -747,6 +747,22 @@
     "id": "jackpot_chaser",
     "name": "Jackpot Chaser",
     "description": "The reels have definitely noticed you by now.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "toss_tactician",
+    "name": "Toss Tactician",
+    "description": "Knows exactly when the sensible target is a trap.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "pot_shot_pro",
+    "name": "Pot Shot Pro",
+    "description": "Five throws, several broken pots, absolutely no apologies.",
     "category": "Gold Saucer",
     "rarity": "epic",
     "source": "Gold Saucer Prize Counter"

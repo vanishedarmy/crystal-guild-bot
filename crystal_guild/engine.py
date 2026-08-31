@@ -105,7 +105,10 @@ from .gold_saucer import (
     WELCOME_POINTS as SAUCER_WELCOME_POINTS, DAILY_ALLOWANCE_POINTS as SAUCER_DAILY_ALLOWANCE,
     CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
     SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOTS_THEORETICAL_RETURN_PCT, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
+    MONSTER_TOSS_COST, MONSTER_TOSS_THROWS, MONSTER_TOSS_DAILY_GAMES, MONSTER_TOSS_TARGETS, MONSTER_TOSS_STYLES, MONSTER_TOSS_PAYOUTS,
+    MONSTER_TOSS_TARGETS_BY_ID, MONSTER_TOSS_STYLES_BY_ID,
     masked_grid as saucer_masked_grid, slot_labels as saucer_slot_labels, slot_payout as saucer_slot_payout,
+    monster_toss_throw_profile as saucer_toss_profile, monster_toss_payout as saucer_toss_payout,
 )
 from .time_format import format_duration
 from .chocobo import (
@@ -9583,6 +9586,46 @@ class CrystalGuildEngine:
             "cactpot_high_rolls": int(aggregate["cactpot_high_rolls"] or 0) if aggregate else 0,
         }
         day_start = now - (now % 86400)
+        toss_row = conn.execute("SELECT * FROM gold_saucer_monster_toss WHERE player_id=?", (twitch_id,)).fetchone()
+        toss_today_row = conn.execute(
+            "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='monster_toss' AND created_at>=?",
+            (twitch_id, day_start),
+        ).fetchone()
+        toss_games_today = int(toss_today_row["n"] or 0) if toss_today_row else 0
+        toss_active = None
+        if toss_row and str(toss_row["state"] or "") == "active":
+            toss_throws = self._gold_saucer_json(toss_row["throws_json"], [])
+            if not isinstance(toss_throws, list):
+                toss_throws = []
+            toss_active = {
+                "id": str(toss_row["game_id"]),
+                "state": "active",
+                "throw_index": int(toss_row["throw_index"] or 0),
+                "throws_remaining": max(0, MONSTER_TOSS_THROWS - int(toss_row["throw_index"] or 0)),
+                "score": int(toss_row["score"] or 0),
+                "throws": toss_throws[-MONSTER_TOSS_THROWS:],
+                "started_at": int(toss_row["started_at"] or 0),
+            }
+        toss_aggregate = conn.execute(
+            "SELECT COUNT(*) AS games, COALESCE(MAX(CAST(json_extract(details_json,'$.score') AS INTEGER)),0) AS best_score, "
+            "COALESCE(MAX(payout),0) AS best_payout, "
+            "COALESCE(SUM(CAST(json_extract(details_json,'$.hits') AS INTEGER)),0) AS hits, "
+            "COALESCE(SUM(CAST(json_extract(details_json,'$.throws') AS INTEGER)),0) AS throws "
+            "FROM gold_saucer_history WHERE player_id=? AND game='monster_toss'",
+            (twitch_id,),
+        ).fetchone()
+        toss_games = int(toss_aggregate["games"] or 0) if toss_aggregate else 0
+        toss_hits = int(toss_aggregate["hits"] or 0) if toss_aggregate else 0
+        toss_throws_total = int(toss_aggregate["throws"] or 0) if toss_aggregate else 0
+        records.update({
+            "monster_toss_games": toss_games,
+            "monster_toss_best_score": int(toss_aggregate["best_score"] or 0) if toss_aggregate else 0,
+            "monster_toss_best_payout": int(toss_aggregate["best_payout"] or 0) if toss_aggregate else 0,
+            "monster_toss_hits": toss_hits,
+            "monster_toss_throws": toss_throws_total,
+            "monster_toss_accuracy_pct": round((toss_hits / toss_throws_total) * 100, 1) if toss_throws_total else 0.0,
+        })
+        records["games_played"] = int(records.get("games_played", 0)) + toss_games
         return {
             "points": points,
             "welcome_points": SAUCER_WELCOME_POINTS,
@@ -9619,10 +9662,26 @@ class CrystalGuildEngine:
                 "symbols": [{"id": sid, "name": name} for sid, name, _weight in SLOT_SYMBOLS],
                 "last_spin": last_slots,
             },
+            "monster_toss": {
+                "cost": MONSTER_TOSS_COST,
+                "throws_per_game": MONSTER_TOSS_THROWS,
+                "daily_games": MONSTER_TOSS_DAILY_GAMES,
+                "games_today": toss_games_today,
+                "games_remaining": max(0, MONSTER_TOSS_DAILY_GAMES - toss_games_today),
+                "next_daily_reset_at": day_start + 86400,
+                "can_start": toss_active is None and toss_games_today < MONSTER_TOSS_DAILY_GAMES and points >= MONSTER_TOSS_COST,
+                "active_game": toss_active,
+                "targets": [dict(row) for row in MONSTER_TOSS_TARGETS],
+                "styles": [dict(row) for row in MONSTER_TOSS_STYLES],
+                "payouts": [
+                    {"minimum_score": int(minimum), "payout": int(payout), "tier": str(tier)}
+                    for minimum, payout, tier in MONSTER_TOSS_PAYOUTS
+                ],
+            },
             "attractions": [
                 {"id": "mini_cactpot", "name": "Mini Cactpot", "status": "open", "description": "One persistent daily ticket. Reveal four cells, then choose a line."},
                 {"id": "crystal_slots", "name": "Crystal Slots", "status": "open", "description": "Quick three-reel spins using Saucer Points."},
-                {"id": "monster_toss", "name": "Monster Toss", "status": "coming_soon", "description": "Target-timing attraction planned for a later Gold Saucer alpha."},
+                {"id": "monster_toss", "name": "Monster Toss", "status": "open", "description": "Five persistent throws. Choose a target and throw style, then chase the best score before the daily games run out."},
                 {"id": "chocobo_racing", "name": "Chocobo Racing", "status": "coming_soon", "description": "Your registered Chocobo will race in a later Gold Saucer alpha."},
                 {"id": "triple_triad", "name": "Triple Triad", "status": "coming_soon", "description": "Card collection and matches are reserved for a later Gold Saucer alpha."},
             ],
@@ -9796,6 +9855,120 @@ class CrystalGuildEngine:
                     result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} Saucer Points!", reels=reels, payout=payout, net=net, outcome=outcome, result_tier=result_tier)
                 else:
                     result = GameResult.success(f"CRYSTAL SLOTS — {labels} — no payout this spin.", reels=reels, payout=0, net=net, outcome=outcome, result_tier=result_tier)
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_monster_toss_start(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        now = int(time.time())
+        day_start = now - (now % 86400)
+        with self.db.tx(immediate=True) as conn:
+            locked_replay = self._portal_action_replay_sql(conn, action_id)
+            if locked_replay is not None:
+                return locked_replay
+            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            active = conn.execute("SELECT * FROM gold_saucer_monster_toss WHERE player_id=? AND state='active'", (twitch_id,)).fetchone()
+            played = conn.execute("SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='monster_toss' AND created_at>=?", (twitch_id, day_start)).fetchone()
+            games_today = int(played["n"] or 0) if played else 0
+            if active:
+                result = GameResult.fail("Finish your current Monster Toss game before starting another one.")
+            elif games_today >= MONSTER_TOSS_DAILY_GAMES:
+                remaining = max(0, day_start + 86400 - now)
+                result = GameResult.fail(f"Monster Toss daily games reset in {self._format_seconds(remaining)}.")
+            elif int(account["points"] or 0) < MONSTER_TOSS_COST:
+                result = GameResult.fail(f"Monster Toss costs {MONSTER_TOSS_COST} Saucer Points per game.")
+            else:
+                game_id = uuid.uuid4().hex
+                conn.execute(
+                    "UPDATE player_gold_saucer SET points=points-?,lifetime_spent=lifetime_spent+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                    (MONSTER_TOSS_COST, MONSTER_TOSS_COST, twitch_id),
+                )
+                conn.execute(
+                    "INSERT INTO gold_saucer_monster_toss(player_id,game_id,state,throw_index,score,throws_json,started_at,updated_at) VALUES (?,?, 'active',0,0,'[]',?,?) "
+                    "ON CONFLICT(player_id) DO UPDATE SET game_id=excluded.game_id,state='active',throw_index=0,score=0,throws_json='[]',started_at=excluded.started_at,resolved_at=NULL,updated_at=excluded.updated_at",
+                    (twitch_id, game_id, now, now),
+                )
+                result = GameResult.success(f"MONSTER TOSS — game opened for {MONSTER_TOSS_COST} Saucer Points. You have {MONSTER_TOSS_THROWS} throws.", monster_toss_game_id=game_id)
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_monster_toss_throw(self, twitch_id: str, target_id: str, style_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        target_key = str(target_id or "").strip().lower()
+        style_key = str(style_id or "").strip().lower()
+        if target_key not in MONSTER_TOSS_TARGETS_BY_ID:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a valid Monster Toss target."))
+        if style_key not in MONSTER_TOSS_STYLES_BY_ID:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a valid Monster Toss throw style."))
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            locked_replay = self._portal_action_replay_sql(conn, action_id)
+            if locked_replay is not None:
+                return locked_replay
+            self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            game = conn.execute("SELECT * FROM gold_saucer_monster_toss WHERE player_id=?", (twitch_id,)).fetchone()
+            if not game or str(game["state"] or "") != "active":
+                result = GameResult.fail("Start a Monster Toss game first.")
+            else:
+                throw_index = int(game["throw_index"] or 0)
+                if throw_index >= MONSTER_TOSS_THROWS:
+                    result = GameResult.fail("That Monster Toss game is already complete. Refresh the Gold Saucer floor.")
+                else:
+                    accuracy, hit_score = saucer_toss_profile(target_key, style_key)
+                    hit = bool(self.rng.random() < accuracy)
+                    gained = int(hit_score if hit else 0)
+                    next_score = int(game["score"] or 0) + gained
+                    throws = self._gold_saucer_json(game["throws_json"], [])
+                    if not isinstance(throws, list):
+                        throws = []
+                    target = MONSTER_TOSS_TARGETS_BY_ID[target_key]
+                    style = MONSTER_TOSS_STYLES_BY_ID[style_key]
+                    throw_payload = {
+                        "throw": throw_index + 1, "target": target_key, "target_name": str(target["name"]),
+                        "style": style_key, "style_name": str(style["name"]), "accuracy_pct": round(float(accuracy) * 100, 1),
+                        "hit": hit, "points": gained, "potential_points": int(hit_score),
+                    }
+                    throws.append(throw_payload)
+                    next_index = throw_index + 1
+                    if next_index >= MONSTER_TOSS_THROWS:
+                        payout, tier = saucer_toss_payout(next_score)
+                        hits = sum(1 for row in throws if isinstance(row, dict) and row.get("hit"))
+                        conn.execute(
+                            "UPDATE gold_saucer_monster_toss SET state='resolved',throw_index=?,score=?,throws_json=?,resolved_at=?,updated_at=? WHERE player_id=?",
+                            (next_index, next_score, json.dumps(throws, separators=(",", ":")), now, now, twitch_id),
+                        )
+                        conn.execute(
+                            "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                            (payout, payout, twitch_id),
+                        )
+                        details = {"game_id": str(game["game_id"]), "score": next_score, "hits": hits, "throws": len(throws), "tier": tier, "throw_log": throws}
+                        conn.execute(
+                            "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'monster_toss',?,?,?,?,?)",
+                            (twitch_id, MONSTER_TOSS_COST, payout, tier, json.dumps(details, separators=(",", ":")), now),
+                        )
+                        result = GameResult.success(
+                            f"MONSTER TOSS — final score {next_score:,}. {payout:,} Saucer Points awarded.",
+                            monster_toss_throw=throw_payload, monster_toss_score=next_score, monster_toss_payout=payout, result_tier=tier, monster_toss_complete=True,
+                        )
+                    else:
+                        conn.execute(
+                            "UPDATE gold_saucer_monster_toss SET throw_index=?,score=?,throws_json=?,updated_at=? WHERE player_id=?",
+                            (next_index, next_score, json.dumps(throws, separators=(",", ":")), now, twitch_id),
+                        )
+                        result = GameResult.success(
+                            f"MONSTER TOSS — {'HIT' if hit else 'MISS'} on {target['name']} with {style['name']}. Score: {next_score:,}.",
+                            monster_toss_throw=throw_payload, monster_toss_score=next_score, monster_toss_complete=False,
+                        )
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -10047,6 +10220,20 @@ class CrystalGuildEngine:
             stock=[item_payload(item) for item in stock],
             combat_locked=combat_locked,
         )
+
+    @staticmethod
+    def _portal_action_replay_sql(conn: Any, action_id: str) -> GameResult | None:
+        key = f"portal_action:{str(action_id).strip()}"
+        row = conn.execute("SELECT value_json FROM runtime_state WHERE state_key=?", (key,)).fetchone()
+        if not row:
+            return None
+        try:
+            payload = json.loads(row["value_json"])
+            if not isinstance(payload, dict):
+                return None
+            return GameResult(bool(payload.get("ok")), [str(value) for value in payload.get("messages", [])], dict(payload.get("data") or {}))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return None
 
     def _portal_action_replay(self, action_id: str) -> GameResult | None:
         key = f"portal_action:{str(action_id).strip()}"
@@ -13618,7 +13805,7 @@ class CrystalGuildEngine:
             return result
 
     def streamer_saucer_reset(self, request: str, *, action_id: str = "") -> GameResult:
-        """Owner-only test reset: clears a player's active Saucer ticket and Saucer cooldowns, preserving balance/records."""
+        """Owner-only test reset: clears active Gold Saucer game state/cooldowns while preserving balance and records."""
         if action_id:
             replay = self._portal_action_replay(action_id)
             if replay is not None:
@@ -13633,13 +13820,14 @@ class CrystalGuildEngine:
         with self.db.tx(immediate=True) as conn:
             self._gold_saucer_ensure_account_sql(conn, player_id, now)
             conn.execute("DELETE FROM gold_saucer_cactpot WHERE player_id=?", (player_id,))
+            conn.execute("DELETE FROM gold_saucer_monster_toss WHERE player_id=?", (player_id,))
             conn.execute("DELETE FROM cooldowns WHERE player_id=? AND action IN ('gold_saucer_cactpot','gold_saucer_slots')", (player_id,))
             conn.execute(
                 "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'admin_reset',0,0,'admin_reset','{}',?)",
                 (player_id, now),
             )
             result = GameResult.success(
-                f"GOLD SAUCER — Cleared active ticket and attraction cooldowns for {display}. Balance and records were preserved.",
+                f"GOLD SAUCER — Cleared active Cactpot/Monster Toss state and attraction cooldowns for {display}. Balance and records were preserved.",
                 player_id=player_id,
             )
             if action_id:

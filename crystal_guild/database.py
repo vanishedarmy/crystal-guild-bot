@@ -256,7 +256,8 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent v1.2 Expedition runs and per-region exploration progress; version 9 adds
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
--- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history.
+-- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
+-- persistent Gold Saucer Monster Toss game state.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -264,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 11
+DATABASE_SCHEMA_VERSION = 12
 
 
 class Database:
@@ -812,6 +813,39 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_gold_saucer_history_player
                     ON gold_saucer_history(player_id, created_at DESC, id DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (11,'gold_saucer_foundation');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v12 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=12").fetchone()
+        )
+        if not already_v12:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(12)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS gold_saucer_monster_toss (
+                        player_id TEXT PRIMARY KEY,
+                        game_id TEXT NOT NULL,
+                        state TEXT NOT NULL,
+                        throw_index INTEGER NOT NULL DEFAULT 0,
+                        score INTEGER NOT NULL DEFAULT 0,
+                        throws_json TEXT NOT NULL DEFAULT '[]',
+                        started_at INTEGER NOT NULL,
+                        resolved_at INTEGER,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_gold_saucer_monster_toss_state
+                    ON gold_saucer_monster_toss(state, updated_at DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (12,'gold_saucer_monster_toss');
                     COMMIT;
                     """
                 )

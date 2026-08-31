@@ -1,18 +1,26 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Hotfix 2
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 2
 
-Alpha 1 Hotfix 2 is the Gold Saucer UX, animation, records, and balance-polish pass. It carries the Alpha 1 feature set and Web Hotfix 1 visual treatment forward while leaving the normal Gil economy, combat progression, Prize Counter costs, Mini Cactpot payout table, and Crystal Slots payout table unchanged.
+Gold Saucer Alpha 2 opens **Monster Toss** as the third playable Saucer attraction while carrying Mini Cactpot, Crystal Slots, Prize Counter, H1 scenic artwork, and Alpha 1 Hotfix 2 UX/records behavior forward.
 
-## Gold Saucer polish
-- Mini Cactpot now schedules each newly opened ticket to the next **00:00 UTC** reset instead of 24 hours from the opening time.
-- The authoritative state exposes the resolved Cactpot line sum and a bounded result tier for clearer Portal presentation.
-- Crystal Slots results now expose net SP and a presentation tier; the server still commits every result before any client animation.
-- Gold Saucer records are derived from the existing transaction ledger: net SP, games played, Slot win rate, realized Slot return, pair/triple/miss counts, Cactpot total payout, and Cactpot high-roll count.
-- The validated Slots payout table remains unchanged at approximately **87.5% long-run expected return** for a 15 SP spin.
+## Monster Toss
+- **20 SP** entry per game.
+- **5 throws** per game and **3 completed games per UTC day**.
+- Choose one of four targets each throw: Small Pot, Medium Pot, Large Pot, or Golden Cactuar.
+- Choose Safe, Normal, or Power throw style to trade hit chance against score.
+- Active game ID, score, throw count, and throw history persist across Portal refreshes, reconnects, and Bot restarts.
+- Every start/throw uses Portal action replay receipts; duplicate delivery returns the committed result instead of charging or throwing twice.
+- Final score maps to a bounded SP reward tier; Monster Toss never uses ordinary Gil.
+
+## Records & prizes
+- Adds Monster Toss games, best score, hit accuracy, total throws/hits, and best payout to the personal Saucer Ledger.
+- Adds cosmetic-only Prize Counter titles **Toss Tactician** and **Pot Shot Pro**.
+- Existing Cactpot and Slots payout tables are unchanged.
 
 ## Compatibility
-- Runtime: `1.6.0-gold-saucer-a1h2`
-- Local DB schema: **11** unchanged
-- Hosted sync schema: **1** unchanged
-- Portal Action protocol: **26** unchanged
+- Runtime: `1.6.0-gold-saucer-a2`
+- Local DB schema: **12**
+- Hosted sync schema: **1**
+- Portal Action protocol: **27**
 - Twitch prefix: `!`
-- No H2 database migration, player reset, OAuth/environment change, new required variable, Gil economy change, or combat balance change.
+- Schema 12 is additive and contains only persistent Monster Toss active-game state.
+- No player reset, OAuth/environment change, new required environment variable, Gil economy change, combat progression change, Cactpot payout change, or Crystal Slots payout change.
