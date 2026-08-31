@@ -1,6 +1,6 @@
-v1.5.0 — Trails & Raids RC1 — Bot Package Manifest
-Bot runtime: 1.5.0-trails-raids-rc1
-Matching Web/frontend: 1.5.0-trails-raids-rc1
+v1.5.0 — Trails & Raids — Bot Package Manifest
+Bot runtime: 1.5.0-trails-raids
+Matching Web/frontend: 1.5.0-trails-raids
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25

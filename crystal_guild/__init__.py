@@ -1,3 +1,3 @@
 """Crystal Guild package."""
 
-__version__ = "1.5.0-trails-raids-rc1"
+__version__ = "1.5.0-trails-raids"

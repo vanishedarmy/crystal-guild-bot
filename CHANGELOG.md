@@ -1,3 +1,8 @@
+## v1.5.0 — Trails & Raids
+- Promotes the validated RC1 feature set into the final production release.
+- Adds production scenic backgrounds for Active Hunt and the collapsed/open Trial & Raid Board.
+- Keeps Trial content, rewards, economy, combat, progression, schema 10, hosted sync 1, Portal protocol 25, OAuth, and environment requirements unchanged from RC1.
+
 ## v1.5.0 — Trails & Raids RC1
 - Freezes the seven-Trial feature set and reward/economy model for release-candidate validation.
 - Readiness counts and all-actions-ready checks now use the same exact Raid run + upcoming-round ownership rule as round resolution.
