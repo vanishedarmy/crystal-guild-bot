@@ -1,12 +1,12 @@
-# Crystal Guild v1.5.1 — Relic Arsenal Complete Simplified Render Setup
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Simplified Render Setup
 
-**Existing cloud install:** deploy the v1.5.1 Bot source without touching `/var/data`, then deploy the matching v1.5.1 Web source. Verify `!cgversion` = `1.5.1-relic-arsenal-complete`, `!health`, and `/api/health`.
+**Existing cloud install:** preserve `/var/data` and all Render environment variables, stop any duplicate/local Bot, deploy the v1.6.0 Alpha 1 Bot, then deploy the matching Web source.
 
-1. Preserve Render environment variables and persistent disk.
-2. Stop any duplicate/local Bot instance.
-3. Deploy the v1.5.1 worker source.
-4. Confirm the worker reaches Twitch and Portal Sync.
-5. Deploy/restart the matching v1.5.1 Web service.
-6. Confirm the Trial & Raid Board shows the Trial Chronicle and retained Bahamut — The Final Coil capstone.
+1. Back up or snapshot persistent state before deployment.
+2. Deploy the Bot and allow the verified **schema 10 → 11** migration to complete.
+3. Confirm `!cgversion` = `1.6.0-gold-saucer-a1` and `!health` is clean.
+4. Deploy/restart the matching v1.6.0 Alpha 1 Web service.
+5. Confirm `/api/health` reports runtime/frontend `1.6.0-gold-saucer-a1`, hosted sync **1**, protocol **26**.
+6. Open **Gold Saucer** on your own character and test Mini Cactpot plus one Crystal Slots spin.
 
-Schema **10**, hosted sync **1**, protocol **25**. Beta 3 adds no environment variables.
+Gold Saucer Alpha 1 adds no environment variables and requires no player reset or OAuth reauthorization.

@@ -54,8 +54,8 @@ class DungeonsBeta1Tests(unittest.TestCase):
         return combat
 
     def test_beta1_protocol25_schema10_and_four_dungeon_feature_freeze(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 11)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 26)
         board = self.game._dungeon_board_state("1410")
         self.assertEqual(len(board["dungeons"]), 4)
         self.assertEqual(

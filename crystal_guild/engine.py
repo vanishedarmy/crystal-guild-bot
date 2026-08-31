@@ -101,6 +101,12 @@ from .enemy_combat import (
 )
 from .database import Database
 from .fellowship_system import FellowshipSystem
+from .gold_saucer import (
+    WELCOME_POINTS as SAUCER_WELCOME_POINTS, DAILY_ALLOWANCE_POINTS as SAUCER_DAILY_ALLOWANCE,
+    CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
+    SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
+    masked_grid as saucer_masked_grid, slot_labels as saucer_slot_labels, slot_payout as saucer_slot_payout,
+)
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
@@ -9416,6 +9422,376 @@ class CrystalGuildEngine:
         result.messages.extend(fellowship_notes[:2])
         return self._portal_crafting_result(action_id, result, twitch_id)
 
+    @staticmethod
+    def _gold_saucer_json(value: Any, fallback: Any) -> Any:
+        try:
+            parsed = json.loads(str(value or ""))
+            return parsed
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return fallback
+
+    def _gold_saucer_ensure_account_sql(self, conn: Any, twitch_id: str, now: int) -> Any:
+        cursor = conn.execute(
+            "INSERT OR IGNORE INTO player_gold_saucer(player_id,points,lifetime_earned) VALUES (?,?,?)",
+            (twitch_id, SAUCER_WELCOME_POINTS, SAUCER_WELCOME_POINTS),
+        )
+        if int(cursor.rowcount or 0) > 0:
+            conn.execute(
+                "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) "
+                "VALUES (?,'welcome',0,?,'welcome',?,?)",
+                (twitch_id, SAUCER_WELCOME_POINTS, json.dumps({"welcome_points": SAUCER_WELCOME_POINTS}, separators=(",", ":")), now),
+            )
+        # The welcome purse replaces the daily allowance on a player's first
+        # visit. On later UTC days, the first Saucer request of the day grants
+        # a small recovery allowance so a player can never become permanently
+        # locked out after spending down to zero. BEGIN IMMEDIATE serialization
+        # makes this exactly-once even across simultaneous Portal requests.
+        day_start = int(now) - (int(now) % 86400)
+        day_credit = conn.execute(
+            "SELECT 1 FROM gold_saucer_history WHERE player_id=? AND game IN ('welcome','daily_allowance') AND created_at>=? LIMIT 1",
+            (twitch_id, day_start),
+        ).fetchone()
+        if not day_credit:
+            conn.execute(
+                "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                (SAUCER_DAILY_ALLOWANCE, SAUCER_DAILY_ALLOWANCE, twitch_id),
+            )
+            conn.execute(
+                "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) "
+                "VALUES (?,'daily_allowance',0,?,'daily_allowance',?,?)",
+                (twitch_id, SAUCER_DAILY_ALLOWANCE, json.dumps({"daily_allowance": SAUCER_DAILY_ALLOWANCE}, separators=(",", ":")), now),
+            )
+        return conn.execute("SELECT * FROM player_gold_saucer WHERE player_id=?", (twitch_id,)).fetchone()
+
+    def _gold_saucer_state_sql(self, conn: Any, twitch_id: str, now: int | None = None) -> dict[str, Any]:
+        now = int(time.time()) if now is None else int(now)
+        account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+        if not account:
+            return {}
+        ticket = conn.execute("SELECT * FROM gold_saucer_cactpot WHERE player_id=?", (twitch_id,)).fetchone()
+        cooldowns = {
+            str(row["action"]): int(row["available_at"] or 0)
+            for row in conn.execute(
+                "SELECT action,available_at FROM cooldowns WHERE player_id=? AND action IN ('gold_saucer_cactpot','gold_saucer_slots')",
+                (twitch_id,),
+            ).fetchall()
+        }
+        cactpot_available_at = int(cooldowns.get("gold_saucer_cactpot", 0))
+        slots_available_at = int(cooldowns.get("gold_saucer_slots", 0))
+        cactpot_remaining = max(0, cactpot_available_at - now)
+        slots_remaining = max(0, slots_available_at - now)
+        cactpot: dict[str, Any] = {
+            "cost": CACTPOT_COST,
+            "cooldown_seconds": CACTPOT_COOLDOWN_SECONDS,
+            "available_at": cactpot_available_at if cactpot_remaining else 0,
+            "remaining_seconds": cactpot_remaining,
+            "active": False,
+            "can_start": cactpot_remaining <= 0 and int(account["points"] or 0) >= CACTPOT_COST,
+            "ticket": None,
+            "payouts": {str(key): int(value) for key, value in sorted(CACTPOT_PAYOUTS.items())},
+            "lines": [{"index": index, "cells": list(cells)} for index, cells in enumerate(CACTPOT_LINES)],
+        }
+        if ticket:
+            grid = [int(value) for value in self._gold_saucer_json(ticket["grid_json"], [])]
+            revealed = sorted({int(value) for value in self._gold_saucer_json(ticket["revealed_json"], []) if 0 <= int(value) <= 8})
+            state = str(ticket["state"] or "reveal")
+            active = state in {"reveal", "line"}
+            cactpot["active"] = active
+            cactpot["can_start"] = False if active else cactpot["can_start"]
+            cactpot["ticket"] = {
+                "id": str(ticket["ticket_id"]),
+                "state": state,
+                "grid": saucer_masked_grid(grid, revealed, show_all=state == "resolved") if len(grid) == 9 else [None] * 9,
+                "revealed": revealed,
+                "reveals_remaining": max(0, 4 - len(revealed)),
+                "can_choose_line": state == "line" and len(revealed) >= 4,
+                "chosen_line": int(ticket["chosen_line"]) if ticket["chosen_line"] is not None else None,
+                "payout": int(ticket["payout"] or 0),
+                "started_at": int(ticket["started_at"] or 0),
+                "resolved_at": int(ticket["resolved_at"] or 0),
+            }
+        history_rows = conn.execute(
+            "SELECT game,wager,payout,outcome,details_json,created_at FROM gold_saucer_history "
+            "WHERE player_id=? ORDER BY created_at DESC,id DESC LIMIT 8",
+            (twitch_id,),
+        ).fetchall()
+        history = []
+        last_slots = None
+        for row in history_rows:
+            details = self._gold_saucer_json(row["details_json"], {})
+            item = {
+                "game": str(row["game"]), "wager": int(row["wager"] or 0), "payout": int(row["payout"] or 0),
+                "outcome": str(row["outcome"]), "details": details if isinstance(details, dict) else {},
+                "created_at": int(row["created_at"] or 0),
+            }
+            history.append(item)
+            if last_slots is None and item["game"] == "slots":
+                last_slots = item
+        points = int(account["points"] or 0)
+        owned_titles = {
+            str(row["title_id"])
+            for row in conn.execute("SELECT title_id FROM player_titles WHERE player_id=?", (twitch_id,)).fetchall()
+        }
+        prizes = []
+        for prize in SAUCER_PRIZES:
+            title_id = str(prize["title_id"])
+            owned = title_id in owned_titles
+            cost = int(prize["cost"])
+            prizes.append({
+                "id": str(prize["id"]),
+                "title_id": title_id,
+                "name": str(prize["name"]),
+                "cost": cost,
+                "description": str(prize["description"]),
+                "kind": "title",
+                "owned": owned,
+                "can_buy": (not owned and points >= cost),
+            })
+        day_start = now - (now % 86400)
+        return {
+            "points": points,
+            "welcome_points": SAUCER_WELCOME_POINTS,
+            "daily_allowance_points": SAUCER_DAILY_ALLOWANCE,
+            "next_daily_allowance_at": day_start + 86400,
+            "currency_name": "Saucer Points",
+            "account": {
+                "points": points,
+                "lifetime_earned": int(account["lifetime_earned"] or 0),
+                "lifetime_spent": int(account["lifetime_spent"] or 0),
+                "cactpot_plays": int(account["cactpot_plays"] or 0),
+                "cactpot_wins": int(account["cactpot_wins"] or 0),
+                "cactpot_best_payout": int(account["cactpot_best_payout"] or 0),
+                "slots_spins": int(account["slots_spins"] or 0),
+                "slots_wins": int(account["slots_wins"] or 0),
+                "slots_best_payout": int(account["slots_best_payout"] or 0),
+                "prizes_bought": sum(1 for prize in prizes if prize["owned"]),
+            },
+            "prizes": prizes,
+            "cactpot": cactpot,
+            "slots": {
+                "cost": SLOTS_COST,
+                "cooldown_seconds": SLOTS_COOLDOWN_SECONDS,
+                "available_at": slots_available_at if slots_remaining else 0,
+                "remaining_seconds": slots_remaining,
+                "can_spin": slots_remaining <= 0 and points >= SLOTS_COST,
+                "symbols": [{"id": sid, "name": name} for sid, name, _weight in SLOT_SYMBOLS],
+                "last_spin": last_slots,
+            },
+            "attractions": [
+                {"id": "mini_cactpot", "name": "Mini Cactpot", "status": "open", "description": "One persistent daily ticket. Reveal four cells, then choose a line."},
+                {"id": "crystal_slots", "name": "Crystal Slots", "status": "open", "description": "Quick three-reel spins using Saucer Points."},
+                {"id": "monster_toss", "name": "Monster Toss", "status": "coming_soon", "description": "Target-timing attraction planned for a later Gold Saucer alpha."},
+                {"id": "chocobo_racing", "name": "Chocobo Racing", "status": "coming_soon", "description": "Your registered Chocobo will race in a later Gold Saucer alpha."},
+                {"id": "triple_triad", "name": "Triple Triad", "status": "coming_soon", "description": "Card collection and matches are reserved for a later Gold Saucer alpha."},
+            ],
+            "history": history,
+        }
+
+    def portal_gold_saucer_state(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        with self.db.tx(immediate=True) as conn:
+            state = self._gold_saucer_state_sql(conn, twitch_id)
+        return GameResult.success("Gold Saucer floor ready.", gold_saucer_state=state)
+
+    def portal_cactpot_start(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            ticket = conn.execute("SELECT state FROM gold_saucer_cactpot WHERE player_id=?", (twitch_id,)).fetchone()
+            if ticket and str(ticket["state"]) in {"reveal", "line"}:
+                result = GameResult.fail("Finish your current Mini Cactpot ticket before starting another one.")
+            else:
+                cooldown = conn.execute("SELECT available_at FROM cooldowns WHERE player_id=? AND action='gold_saucer_cactpot'", (twitch_id,)).fetchone()
+                available_at = int(cooldown["available_at"] or 0) if cooldown else 0
+                remaining = max(0, available_at - now)
+                if remaining > 0:
+                    result = GameResult.fail(f"Mini Cactpot is available again in {self._format_seconds(remaining)}.")
+                elif int(account["points"] or 0) < CACTPOT_COST:
+                    result = GameResult.fail(f"Mini Cactpot costs {CACTPOT_COST} Saucer Points.")
+                else:
+                    grid = list(range(1, 10))
+                    self.rng.shuffle(grid)
+                    initial = int(self.rng.randrange(9))
+                    ticket_id = uuid.uuid4().hex
+                    conn.execute(
+                        "UPDATE player_gold_saucer SET points=points-?,lifetime_spent=lifetime_spent+?,cactpot_plays=cactpot_plays+1,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                        (CACTPOT_COST, CACTPOT_COST, twitch_id),
+                    )
+                    conn.execute(
+                        "INSERT INTO gold_saucer_cactpot(player_id,ticket_id,state,grid_json,revealed_json,started_at,updated_at) VALUES (?,?,?,?,?,?,?) "
+                        "ON CONFLICT(player_id) DO UPDATE SET ticket_id=excluded.ticket_id,state=excluded.state,grid_json=excluded.grid_json,revealed_json=excluded.revealed_json,chosen_line=NULL,payout=0,started_at=excluded.started_at,resolved_at=NULL,updated_at=excluded.updated_at",
+                        (twitch_id, ticket_id, "reveal", json.dumps(grid), json.dumps([initial]), now, now),
+                    )
+                    conn.execute(
+                        "INSERT INTO cooldowns(player_id,action,available_at) VALUES (?,'gold_saucer_cactpot',?) "
+                        "ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at",
+                        (twitch_id, now + CACTPOT_COOLDOWN_SECONDS),
+                    )
+                    result = GameResult.success(f"Mini Cactpot ticket opened for {CACTPOT_COST} Saucer Points. Reveal three more cells.")
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_cactpot_reveal(self, twitch_id: str, cell: int, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        if cell < 0 or cell > 8:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a Mini Cactpot cell from 0 to 8."))
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            ticket = conn.execute("SELECT * FROM gold_saucer_cactpot WHERE player_id=?", (twitch_id,)).fetchone()
+            if not ticket or str(ticket["state"]) not in {"reveal", "line"}:
+                result = GameResult.fail("Open a Mini Cactpot ticket first.")
+            else:
+                revealed = [int(value) for value in self._gold_saucer_json(ticket["revealed_json"], [])]
+                if str(ticket["state"]) == "line" or len(set(revealed)) >= 4:
+                    result = GameResult.fail("Four cells are already revealed. Choose a line now.")
+                elif cell in revealed:
+                    result = GameResult.fail("That Mini Cactpot cell is already revealed.")
+                else:
+                    revealed.append(cell)
+                    state = "line" if len(set(revealed)) >= 4 else "reveal"
+                    conn.execute(
+                        "UPDATE gold_saucer_cactpot SET state=?,revealed_json=?,updated_at=? WHERE player_id=?",
+                        (state, json.dumps(sorted(set(revealed))), now, twitch_id),
+                    )
+                    remaining = max(0, 4 - len(set(revealed)))
+                    result = GameResult.success("Mini Cactpot cell revealed. Choose a payout line." if state == "line" else f"Mini Cactpot cell revealed. Reveal {remaining} more.")
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_cactpot_line(self, twitch_id: str, line_index: int, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        if line_index < 0 or line_index >= len(CACTPOT_LINES):
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose one of the eight Mini Cactpot lines."))
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            ticket = conn.execute("SELECT * FROM gold_saucer_cactpot WHERE player_id=?", (twitch_id,)).fetchone()
+            if not ticket or str(ticket["state"]) != "line":
+                result = GameResult.fail("Reveal four Mini Cactpot cells before choosing a line.")
+            else:
+                grid = [int(value) for value in self._gold_saucer_json(ticket["grid_json"], [])]
+                revealed = [int(value) for value in self._gold_saucer_json(ticket["revealed_json"], [])]
+                if len(grid) != 9 or len(set(revealed)) < 4:
+                    result = GameResult.fail("That Mini Cactpot ticket is incomplete. Refresh the Gold Saucer floor.")
+                else:
+                    cells = CACTPOT_LINES[line_index]
+                    total = sum(grid[index] for index in cells)
+                    payout = int(CACTPOT_PAYOUTS.get(total, 0))
+                    conn.execute(
+                        "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,cactpot_wins=cactpot_wins+?,cactpot_best_payout=MAX(cactpot_best_payout,?),updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                        (payout, payout, 1 if payout > 0 else 0, payout, twitch_id),
+                    )
+                    conn.execute(
+                        "UPDATE gold_saucer_cactpot SET state='resolved',chosen_line=?,payout=?,resolved_at=?,updated_at=? WHERE player_id=?",
+                        (line_index, payout, now, now, twitch_id),
+                    )
+                    details = {"line": line_index, "cells": list(cells), "sum": total, "grid": grid}
+                    conn.execute(
+                        "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'mini_cactpot',?,?,?, ?,?)",
+                        (twitch_id, CACTPOT_COST, payout, f"sum_{total}", json.dumps(details, separators=(",", ":")), now),
+                    )
+                    result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} Saucer Points!", cactpot_sum=total, cactpot_payout=payout)
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_slots_spin(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            cooldown = conn.execute("SELECT available_at FROM cooldowns WHERE player_id=? AND action='gold_saucer_slots'", (twitch_id,)).fetchone()
+            available_at = int(cooldown["available_at"] or 0) if cooldown else 0
+            remaining = max(0, available_at - now)
+            if remaining > 0:
+                result = GameResult.fail(f"Crystal Slots reset in {self._format_seconds(remaining)}.")
+            elif int(account["points"] or 0) < SLOTS_COST:
+                result = GameResult.fail(f"Crystal Slots costs {SLOTS_COST} Saucer Points per spin.")
+            else:
+                ids = [row[0] for row in SLOT_SYMBOLS]
+                weights = [int(row[2]) for row in SLOT_SYMBOLS]
+                reels = list(self.rng.choices(ids, weights=weights, k=3))
+                payout, outcome = saucer_slot_payout(reels)
+                conn.execute(
+                    "UPDATE player_gold_saucer SET points=points-?+?,lifetime_spent=lifetime_spent+?,lifetime_earned=lifetime_earned+?,slots_spins=slots_spins+1,slots_wins=slots_wins+?,slots_best_payout=MAX(slots_best_payout,?),updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                    (SLOTS_COST, payout, SLOTS_COST, payout, 1 if payout > 0 else 0, payout, twitch_id),
+                )
+                conn.execute(
+                    "INSERT INTO cooldowns(player_id,action,available_at) VALUES (?,'gold_saucer_slots',?) ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at",
+                    (twitch_id, now + SLOTS_COOLDOWN_SECONDS),
+                )
+                details = {"reels": reels, "labels": saucer_slot_labels(reels)}
+                conn.execute(
+                    "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'slots',?,?,?,?,?)",
+                    (twitch_id, SLOTS_COST, payout, outcome, json.dumps(details, separators=(",", ":")), now),
+                )
+                labels = " · ".join(saucer_slot_labels(reels))
+                if payout > 0:
+                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} Saucer Points!", reels=reels, payout=payout, outcome=outcome)
+                else:
+                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — no payout this spin.", reels=reels, payout=0, outcome=outcome)
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_saucer_buy(self, twitch_id: str, prize_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        prize_key = str(prize_id or "").strip().lower()
+        prize = SAUCER_PRIZES_BY_ID.get(prize_key)
+        if not prize:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Gold Saucer prize is not available."))
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            title_id = str(prize["title_id"])
+            owned = conn.execute("SELECT 1 FROM player_titles WHERE player_id=? AND title_id=?", (twitch_id, title_id)).fetchone()
+            cost = int(prize["cost"])
+            if owned:
+                result = GameResult.fail(f"{prize['name']} is already in your title collection.")
+            elif int(account["points"] or 0) < cost:
+                result = GameResult.fail(f"{prize['name']} costs {cost:,} Saucer Points.")
+            elif title_id not in self.data.titles:
+                result = GameResult.fail("That Gold Saucer prize is temporarily unavailable. Refresh and try again later.")
+            else:
+                conn.execute(
+                    "UPDATE player_gold_saucer SET points=points-?,lifetime_spent=lifetime_spent+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                    (cost, cost, twitch_id),
+                )
+                conn.execute("INSERT INTO player_titles(player_id,title_id) VALUES (?,?)", (twitch_id, title_id))
+                conn.execute(
+                    "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'prize',?,0,?,?,?)",
+                    (twitch_id, cost, prize_key, json.dumps({"prize_id": prize_key, "title_id": title_id, "name": str(prize["name"])}, separators=(",", ":")), now),
+                )
+                result = GameResult.success(f"PRIZE COUNTER — {prize['name']} unlocked for {cost:,} Saucer Points!", prize_id=prize_key, title_id=title_id)
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
     def _portal_daily_state_data(self, twitch_id: str, subscriber_tier: int = 0) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:
@@ -13150,6 +13526,80 @@ class CrystalGuildEngine:
         ]
         unique = {str(row["twitch_id"]): row for row in fuzzy}
         return next(iter(unique.values())) if len(unique) == 1 else None
+
+    def streamer_saucer_grant(self, request: str, *, action_id: str = "") -> GameResult:
+        """Owner-only Saucer Point grant for testing/events. Syntax: player | amount."""
+        if action_id:
+            replay = self._portal_action_replay(action_id)
+            if replay is not None:
+                return replay
+
+        parts = [part.strip() for part in str(request or "").split("|")]
+        if len(parts) != 2 or not parts[0] or not parts[1]:
+            result = GameResult.fail("Usage: !saucergrant <player> | <amount>")
+            return self._portal_store_nonmutating_result(action_id, result) if action_id else result
+        try:
+            amount = int(parts[1])
+        except (TypeError, ValueError):
+            result = GameResult.fail("Saucer Point grant must be a whole number between 1 and 100,000.")
+            return self._portal_store_nonmutating_result(action_id, result) if action_id else result
+        if amount < 1 or amount > 100000:
+            result = GameResult.fail("Saucer Point grant must be between 1 and 100,000.")
+            return self._portal_store_nonmutating_result(action_id, result) if action_id else result
+        player = self._streamer_player_match(parts[0])
+        if not player:
+            result = GameResult.fail(f"Player '{parts[0]}' was not found or is ambiguous. Use the exact Twitch username.")
+            return self._portal_store_nonmutating_result(action_id, result) if action_id else result
+        player_id = str(player["twitch_id"])
+        display = str(player["display_name"] or player["username"] or player_id)
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            self._gold_saucer_ensure_account_sql(conn, player_id, now)
+            conn.execute(
+                "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                (amount, amount, player_id),
+            )
+            conn.execute(
+                "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'admin_grant',0,?,'admin_grant',?,?)",
+                (player_id, amount, json.dumps({"source": "streamer_admin"}, separators=(",", ":")), now),
+            )
+            balance = int(conn.execute("SELECT points FROM player_gold_saucer WHERE player_id=?", (player_id,)).fetchone()["points"])
+            result = GameResult.success(
+                f"GOLD SAUCER — Granted {amount:,} Saucer Points to {display}. Balance: {balance:,} SP.",
+                player_id=player_id, amount=amount, points=balance,
+            )
+            if action_id:
+                self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def streamer_saucer_reset(self, request: str, *, action_id: str = "") -> GameResult:
+        """Owner-only test reset: clears a player's active Saucer ticket and Saucer cooldowns, preserving balance/records."""
+        if action_id:
+            replay = self._portal_action_replay(action_id)
+            if replay is not None:
+                return replay
+        player = self._streamer_player_match(str(request or "").strip())
+        if not player:
+            result = GameResult.fail("Usage: !saucerreset <player> (use the exact Twitch username).")
+            return self._portal_store_nonmutating_result(action_id, result) if action_id else result
+        player_id = str(player["twitch_id"])
+        display = str(player["display_name"] or player["username"] or player_id)
+        now = int(time.time())
+        with self.db.tx(immediate=True) as conn:
+            self._gold_saucer_ensure_account_sql(conn, player_id, now)
+            conn.execute("DELETE FROM gold_saucer_cactpot WHERE player_id=?", (player_id,))
+            conn.execute("DELETE FROM cooldowns WHERE player_id=? AND action IN ('gold_saucer_cactpot','gold_saucer_slots')", (player_id,))
+            conn.execute(
+                "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'admin_reset',0,0,'admin_reset','{}',?)",
+                (player_id, now),
+            )
+            result = GameResult.success(
+                f"GOLD SAUCER — Cleared active ticket and attraction cooldowns for {display}. Balance and records were preserved.",
+                player_id=player_id,
+            )
+            if action_id:
+                self._portal_action_store_sql(conn, action_id, result)
+            return result
 
     def streamer_item_admin(self, request: str, *, remove: bool = False, action_id: str = "") -> GameResult:
         """Streamer-only inventory adjustment shared by chat and Portal controls.

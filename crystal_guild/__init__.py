@@ -1,3 +1,3 @@
 """Crystal Guild package."""
 
-__version__ = "1.5.1-relic-arsenal-complete"
+__version__ = "1.6.0-gold-saucer-a1"

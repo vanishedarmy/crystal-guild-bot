@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 25
+ACTION_PROTOCOL_VERSION = 26
 
 
 class PortalActionWorker:
@@ -298,7 +298,7 @@ class PortalActionWorker:
             }
         passive_state_actions = {
             "CHARACTER_STATE", "SHOP_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
-            "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE",
+            "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE",
         }
         if action_type not in passive_state_actions:
             # Only intentional Portal mutations reset the Long Rest inactivity
@@ -455,6 +455,41 @@ class PortalActionWorker:
                 return False, "Forge request is missing an equipment item.", {}
             result = self.game.portal_forge_item(twitch_id, item_id, str(action.get("id") or ""))
             return self._game_result(result)
+        if action_type == "GOLD_SAUCER_STATE":
+            if payload:
+                return False, "Gold Saucer state does not accept parameters.", {}
+            return self._game_result(self.game.portal_gold_saucer_state(twitch_id))
+        if action_type == "CACTPOT_START":
+            if payload:
+                return False, "Mini Cactpot start does not accept parameters.", {}
+            return self._game_result(self.game.portal_cactpot_start(twitch_id, str(action.get("id") or "")))
+        if action_type == "CACTPOT_REVEAL":
+            if set(payload) != {"cell"}:
+                return False, "Mini Cactpot reveal requires only cell.", {}
+            try:
+                cell = int(payload.get("cell"))
+            except (TypeError, ValueError):
+                return False, "Mini Cactpot cell is invalid.", {}
+            return self._game_result(self.game.portal_cactpot_reveal(twitch_id, cell, str(action.get("id") or "")))
+        if action_type == "CACTPOT_LINE":
+            if set(payload) != {"line"}:
+                return False, "Mini Cactpot line requires only line.", {}
+            try:
+                line_index = int(payload.get("line"))
+            except (TypeError, ValueError):
+                return False, "Mini Cactpot line is invalid.", {}
+            return self._game_result(self.game.portal_cactpot_line(twitch_id, line_index, str(action.get("id") or "")))
+        if action_type == "SLOTS_SPIN":
+            if payload:
+                return False, "Crystal Slots spin does not accept parameters.", {}
+            return self._game_result(self.game.portal_slots_spin(twitch_id, str(action.get("id") or "")))
+        if action_type == "SAUCER_BUY":
+            if set(payload) != {"prize_id"}:
+                return False, "Gold Saucer prize purchase requires only prize_id.", {}
+            prize_id = str(payload.get("prize_id") or "").strip().lower()
+            if not prize_id:
+                return False, "Gold Saucer prize purchase is missing a prize.", {}
+            return self._game_result(self.game.portal_saucer_buy(twitch_id, prize_id, str(action.get("id") or "")))
         if action_type == "DAILY_STATE":
             result = self.game.portal_daily_state(twitch_id, self._subscriber_tier(twitch_id))
             return self._game_result(result)
@@ -706,6 +741,16 @@ class PortalActionWorker:
             return self._game_result(result)
         if command == "resolveboss":
             return self._game_result(self.game.resolve_boss())
+        if command == "saucergrant":
+            text = str(argument or "").strip()
+            if not text:
+                return False, "saucergrant requires player | amount.", {}
+            return self._game_result(self.game.streamer_saucer_grant(text, action_id=action_id))
+        if command == "saucerreset":
+            text = str(argument or "").strip()
+            if not text:
+                return False, "saucerreset requires an exact player username.", {}
+            return self._game_result(self.game.streamer_saucer_reset(text, action_id=action_id))
         if command in {"additem", "removeitem"}:
             text = str(argument or "").strip()
             if not text:

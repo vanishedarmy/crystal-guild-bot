@@ -417,7 +417,7 @@
   },
   {
     "id": "everyones_grudge",
-    "name": "Everyone’s Grudge",
+    "name": "Everyone\u2019s Grudge",
     "description": "Has made the Tonberry community collectively aware of their existence.",
     "category": "Comedy",
     "rarity": "epic",
@@ -506,7 +506,7 @@
   {
     "id": "master_artisan",
     "name": "Master Artisan",
-    "description": "Crafted enough equipment to start criticizing other people’s hammer technique.",
+    "description": "Crafted enough equipment to start criticizing other people\u2019s hammer technique.",
     "category": "Crafting",
     "rarity": "epic",
     "source": "Achievement"
@@ -626,7 +626,7 @@
   {
     "id": "breath_test_failure",
     "name": "Breath Test Failure",
-    "description": "Has been KO’d by Malboro enough times to identify Bad Breath by vintage.",
+    "description": "Has been KO\u2019d by Malboro enough times to identify Bad Breath by vintage.",
     "category": "Secret",
     "rarity": "rare",
     "source": "Achievement"
@@ -726,5 +726,29 @@
     "category": "Expeditions",
     "rarity": "legendary",
     "source": "Expedition Atlas"
+  },
+  {
+    "id": "saucer_regular",
+    "name": "Saucer Regular",
+    "description": "Knows exactly which counter has the shortest line.",
+    "category": "Gold Saucer",
+    "rarity": "uncommon",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "cactpot_connoisseur",
+    "name": "Cactpot Connoisseur",
+    "description": "Can turn nine little numbers into a very serious discussion.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "jackpot_chaser",
+    "name": "Jackpot Chaser",
+    "description": "The reels have definitely noticed you by now.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Gold Saucer Prize Counter"
   }
 ]

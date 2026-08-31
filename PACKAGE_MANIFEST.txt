@@ -1,5 +1,9 @@
-v1.5.1 — Relic Arsenal Complete — Bot Package Manifest
-Bot runtime: 1.5.1-relic-arsenal-complete
-Matching Web/frontend: 1.5.1-relic-arsenal-complete
-Schema 10 / hosted sync 1 / Portal protocol 25 / prefix !
-Baseline: v1.5.0 — Trails & Raids stable Bot
+Crystal Guild v1.6.0 — Gold Saucer Alpha 1 — Bot Package
+Runtime: 1.6.0-gold-saucer-a1
+Matching Web/frontend: 1.6.0-gold-saucer-a1
+Local schema: 11
+Hosted sync: 1
+Portal Action protocol: 26
+Twitch prefix: !
+Baseline: v1.5.1 — Relic Arsenal Complete
+Alpha 1: Gold Saucer hub, SP account/allowance, Mini Cactpot, Crystal Slots, cosmetic Prize Counter, records/ledger, streamer controls

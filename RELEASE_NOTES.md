@@ -1,31 +1,48 @@
-# Crystal Guild v1.5.1 — Relic Arsenal Complete
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 1
 
-v1.5.1 completes the existing Relic system rather than adding another gameplay layer. All **18 playable Jobs** now have exactly one dedicated three-stage Relic path.
+Gold Saucer Alpha 1 opens Crystal Guild's first dedicated attraction hall without changing the existing combat, Relic, Dungeon, Trial/Raid, Expedition, Fellowship, Chocobo, crafting, or normal Gil economies.
 
-## New Relic lines
-- **Warrior:** Bravura
-- **Red Mage:** Murgleis
-- **Ninja:** Yoshimitsu
-- **Summoner:** Veil of Wiyu
-- **Blue Mage:** Almace
-- **Time Mage:** Chronos
-- **Bard:** Artemis Bow
-- **Machinist:** Armageddon
-- **Beastmaster:** Guttler
-- **Sage:** Astral Codex
+## Gold Saucer foundation
+- Adds a private **Saucer Point (SP)** account for every adventurer.
+- First Gold Saucer visit grants **500 SP** exactly once.
+- Starting on the next UTC day, the first Saucer visit each day grants a **50 SP floor allowance** so a zero-balance player can always recover access without touching Gil.
+- SP cannot be purchased with Gil or real money and is not convertible back into Gil.
+- Tracks lifetime SP earned/spent plus attraction records and recent ledger activity.
 
-Each new line uses the established **Dormant → Awakened → Zenith** structure, the existing Relic economy and level gates, and Job-appropriate monster/Hunt/material objectives. The release adds **30 stage weapon items** and **30 matching 512×512 transparent WebP artworks**.
+## Prize Counter
+- Adds an Alpha 1 cosmetic-only Prize Counter.
+- **Saucer Regular** — 400 SP.
+- **Cactpot Connoisseur** — 1,200 SP.
+- **Jackpot Chaser** — 2,500 SP.
+- Prize purchases are atomic, replay-safe, and unlock existing Title-system records only; no combat stats, Gil, items, or progression power are sold.
 
-## Portal and Guide
-- Relic collection progress now resolves against all **18 Jobs / 18 Relics**.
-- The Player Guide and public item/relic catalogs include all new paths and stage items.
-- Existing Relic artwork routing expands from 24 to **54 Relic stage assets**.
-- The Active Hunt scenic artwork now remains visible through the completed Hunt result/confirmation state instead of disappearing when the timer resolves.
+## Mini Cactpot
+- One persistent daily ticket costing **10 SP**.
+- One cell is revealed automatically; the player reveals three more cells.
+- The player then chooses one of eight rows/columns/diagonals and receives the sum-based payout.
+- Ticket grid, reveals, state, choice, and result persist through Portal refreshes, reconnects, and Bot restarts.
+- Duplicate Portal delivery replays the committed result instead of charging or paying twice.
+
+## Crystal Slots
+- Quick three-reel attraction costing **15 SP** per spin.
+- Six weighted symbols, bounded pair/triple payouts, and a short server-authoritative cooldown.
+- Every spin is replay-safe and recorded in the Saucer ledger.
+
+## Portal & roadmap
+- Adds a dedicated **Gold Saucer** tab to each character profile.
+- Adds personal balance, Mini Cactpot board, Crystal Slots, Prize Counter, recent activity ledger, records, and attraction roadmap.
+- **Monster Toss**, **Chocobo Racing**, and **Triple Triad** are visible as Coming Soon and are not partially enabled in Alpha 1.
+- Chocobo Racing is reserved to use the existing registered Chocobo system in a later Alpha.
+
+## Streamer controls
+- `!saucergrant <player> | <amount>` grants bounded test/event SP.
+- `!saucerreset <player>` clears an active ticket and Saucer cooldowns while preserving balance and records.
+- Matching controls are available from the Streamer Dashboard.
 
 ## Compatibility
-- Runtime: `1.5.1-relic-arsenal-complete`
-- Local DB schema: **10**
-- Hosted sync schema: **1**
-- Portal Action protocol: **25**
-- Twitch prefix: **`!`**
-- No player reset, database migration, OAuth/environment change, new environment variable, Trial/Raid rebalance, or new combat system.
+- Runtime: `1.6.0-gold-saucer-a1`
+- Local DB schema: **11** (additive migration with verified pre-migration backup)
+- Hosted sync schema: **1** unchanged
+- Portal Action protocol: **26**
+- Twitch prefix: **`!`** unchanged
+- No player reset, OAuth reauthorization, new required environment variable, or hosted sync migration.

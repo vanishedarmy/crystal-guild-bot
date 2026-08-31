@@ -755,6 +755,24 @@ class RPGCommands(commands.Component):
             self.bot.portal_sync.wake()
 
     @commands.command()
+    async def saucergrant(self, ctx: commands.Context, *, request: str) -> None:
+        if not await self._owner_only(ctx):
+            return
+        result = self.game.streamer_saucer_grant(request)
+        await send_result(ctx, result, limit=2)
+        if result.ok and self.bot.portal_sync:
+            self.bot.portal_sync.wake()
+
+    @commands.command()
+    async def saucerreset(self, ctx: commands.Context, *, player: str) -> None:
+        if not await self._owner_only(ctx):
+            return
+        result = self.game.streamer_saucer_reset(player)
+        await send_result(ctx, result, limit=2)
+        if result.ok and self.bot.portal_sync:
+            self.bot.portal_sync.wake()
+
+    @commands.command()
     async def economy(self, ctx: commands.Context, days: int = 7) -> None:
         if not await self._owner_only(ctx):
             return

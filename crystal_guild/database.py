@@ -255,7 +255,8 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Chocobo portrait selection; version 7 adds durable Portal adventure result acknowledgements; version 8 adds
 -- persistent v1.2 Expedition runs and per-region exploration progress; version 9 adds
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
--- persistent per-player Dungeon runs and Dungeon clear/failure progress.
+-- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
+-- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -263,7 +264,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 10
+DATABASE_SCHEMA_VERSION = 11
 
 
 class Database:
@@ -751,6 +752,66 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_dungeon_progress_clears
                     ON player_dungeon_progress(dungeon_id, clears DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (10,'dungeons_foundation');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v11 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=11").fetchone()
+        )
+        if not already_v11:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(11)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_gold_saucer (
+                        player_id TEXT PRIMARY KEY,
+                        points INTEGER NOT NULL DEFAULT 0 CHECK(points >= 0),
+                        lifetime_earned INTEGER NOT NULL DEFAULT 0 CHECK(lifetime_earned >= 0),
+                        lifetime_spent INTEGER NOT NULL DEFAULT 0 CHECK(lifetime_spent >= 0),
+                        cactpot_plays INTEGER NOT NULL DEFAULT 0 CHECK(cactpot_plays >= 0),
+                        cactpot_wins INTEGER NOT NULL DEFAULT 0 CHECK(cactpot_wins >= 0),
+                        cactpot_best_payout INTEGER NOT NULL DEFAULT 0 CHECK(cactpot_best_payout >= 0),
+                        slots_spins INTEGER NOT NULL DEFAULT 0 CHECK(slots_spins >= 0),
+                        slots_wins INTEGER NOT NULL DEFAULT 0 CHECK(slots_wins >= 0),
+                        slots_best_payout INTEGER NOT NULL DEFAULT 0 CHECK(slots_best_payout >= 0),
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS gold_saucer_cactpot (
+                        player_id TEXT PRIMARY KEY,
+                        ticket_id TEXT NOT NULL,
+                        state TEXT NOT NULL,
+                        grid_json TEXT NOT NULL,
+                        revealed_json TEXT NOT NULL,
+                        chosen_line INTEGER,
+                        payout INTEGER NOT NULL DEFAULT 0,
+                        started_at INTEGER NOT NULL,
+                        resolved_at INTEGER,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS gold_saucer_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id TEXT NOT NULL,
+                        game TEXT NOT NULL,
+                        wager INTEGER NOT NULL DEFAULT 0,
+                        payout INTEGER NOT NULL DEFAULT 0,
+                        outcome TEXT NOT NULL,
+                        details_json TEXT NOT NULL DEFAULT '{}',
+                        created_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_gold_saucer_history_player
+                    ON gold_saucer_history(player_id, created_at DESC, id DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (11,'gold_saucer_foundation');
                     COMMIT;
                     """
                 )

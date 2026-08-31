@@ -1,21 +1,23 @@
-# Crystal Guild v1.5.1 — Relic Arsenal Complete Release Audit
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Release Audit
 
-## Frozen scope
-- Completes Relic coverage from 8/18 to **18/18 Jobs**.
-- Adds **10 Relic questlines**, **30 stage items**, and **30 matching WebP stage artworks**.
-- Preserves the established three-stage Relic progression/economy.
-- Keeps Hunt scenic artwork through the completed result state.
-- Carries v1.5.0 Trails & Raids and Web Hotfix 4 behavior forward unchanged otherwise.
+## Frozen Alpha 1 scope
+- Dedicated Gold Saucer Portal hub.
+- Separate non-purchasable **Saucer Point (SP)** economy.
+- One-time **500 SP** welcome purse plus **50 SP daily floor allowance** beginning after the welcome day.
+- Persistent daily Mini Cactpot.
+- Replay-safe Crystal Slots.
+- Cosmetic-only Prize Counter with three Gold Saucer Titles.
+- Personal Gold Saucer records and recent transaction history.
+- Streamer SP grant and attraction-reset controls.
+- Monster Toss, Chocobo Racing, and Triple Triad remain Coming Soon.
+- Existing v1.5.1 Relic Arsenal, 54-asset Relic Artwork Refresh, v1.5.0 Trails & Raids Hotfix 4 scenic behavior, Dungeons, Expeditions, and all existing progression are carried forward.
 
 ## Frozen contract
-Runtime `1.5.1-relic-arsenal-complete`; local DB schema 10; hosted sync 1; Portal Action protocol 25; Twitch prefix `!`.
+Runtime `1.6.0-gold-saucer-a1`; local DB schema **11**; hosted sync **1**; Portal Action protocol **26**; Twitch prefix `!`.
 
-No migration, reset, OAuth/environment change, new variable, Trial/Raid content change, reward rebalance, or new Portal combat action.
+Schema 11 is additive and verified against a genuine schema-10 database. No player reset, OAuth/environment change, new required variable, or hosted sync migration.
 
-## Validation
-601/601 Bot, 469/469 frontend, 47/47 hosted; 110/110 Python compile; 214/214 frontend parser; 173/173 Node syntax; 0 CSS parse errors; 18/18 Relics; 435 items; 611/611 WebP decode; 0 PNG.
+## Release gate
+**607/607 Bot**, **472/472 frontend**, **49/49 hosted**, **113/113 Python parse**, **216/216 frontend parser**, **174/174 Node syntax**, CSS parse clean, **0 PNG / 665 WebP decode**, **54/54 Relic v2 assets**.
 
-The local `npm run build` gate was attempted but Vite is not installed in this source-only container; this limitation is explicitly recorded rather than represented as a pass.
-
-## Package verification
-Final release engineering verifies exact reconstruction from the official v1.5.0 Bot + Web Hotfix 4 baselines: **164/164 Bot files** and **877/877 Web files**, **6/6 ZIP CRC**, **0 runtime/private-artifact hygiene violations**, and **10/10 SHA-256 entries**.
+The local Vite production build was attempted but cannot run in this source-only container because the pinned Vite executable is not installed; no Vite-build pass is claimed.

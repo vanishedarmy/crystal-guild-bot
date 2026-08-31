@@ -90,6 +90,8 @@ COMMAND_USAGE: dict[str, str] = {
     "fellowshipproject": "!fellowshipproject <project>",
     "additem": "!additem <player> | <item> | [quantity]",
     "removeitem": "!removeitem <player> | <item> | [quantity]",
+    "saucergrant": "!saucergrant <player> | <amount>",
+    "saucerreset": "!saucerreset <player>",
     "resolveencounter": "!resolveencounter",
     "clearencounter": "!clearencounter",
     "spawnboss": "!spawnboss <name>",

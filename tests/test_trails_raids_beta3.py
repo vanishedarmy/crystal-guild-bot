@@ -40,10 +40,10 @@ class TrailsRaidsBeta3Tests(unittest.TestCase):
         return self.game.active_boss
 
     def test_beta3_identity_keeps_schema10_protocol25(self):
-        self.assertEqual(__version__, "1.5.1-relic-arsenal-complete")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
-        self.assertEqual(self.db.schema_version(), 10)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a1")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 11)
+        self.assertEqual(self.db.schema_version(), 11)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 26)
 
     def test_cross_connection_action_queues_merge_instead_of_clobbering(self):
         self._start()

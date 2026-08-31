@@ -1,5 +1,7 @@
-# Crystal Guild v1.5.1 — Relic Arsenal Complete Web Sync
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Web Sync
 
-Beta 1 keeps hosted sync schema **1**, Portal Action protocol **25**, and the existing sync compatibility contract. No new action type or environment variable is introduced. Dungeon mutations retain exact run/chamber/revision validation and replay-safe receipts; Raid Overlay state remains sanitized and read-only on the Portal. Trial Chronicle records are exposed through the existing authenticated player-record endpoint.
+Gold Saucer Alpha 1 keeps hosted sync schema **1** and advances Portal Action protocol to **26**. The authenticated action relay adds bounded Gold Saucer state/game actions while the local Bot remains authoritative for SP balances, Mini Cactpot tickets, Crystal Slots results, cooldowns, replay receipts, and records.
 
-Deploy matching runtime `1.5.1-relic-arsenal-complete` Bot and Web together. Preserve existing `PORTAL_PUBLIC_URL`, `PORTAL_SYNC_KEY`, Twitch tokens, and live database state.
+Deploy matching runtime `1.6.0-gold-saucer-a1` Bot and Web together. Preserve existing `PORTAL_PUBLIC_URL`, `PORTAL_SYNC_KEY`, Twitch tokens, and live database state. No new environment variable is required.
+
+The existing Dungeon, Expedition, Fellowship, Shop, Recovery, Chocobo, and Trial/Raid contracts remain compatible. Raid Overlay state stays sanitized and read-only on the Portal.
