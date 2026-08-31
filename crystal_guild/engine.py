@@ -151,31 +151,46 @@ CAMP_REST_OFFLINE_SECONDS = 60 * 60
 def _state_guard(method):
     """Serialize and atomically persist authoritative live-combat state.
 
-    The state lock is coupled to one composable database transaction. Beta 3
-    starts the outer transaction with SQLite write intent so a second engine
-    connection cannot validate the same stale authoritative state concurrently.
-    Nested reward/inventory/record writes therefore commit together with the
-    encounter/raid checkpoint. If a command or daemon tick raises, both SQLite
-    and the in-memory combat state return to the pre-call snapshot.
+    Trails & Raids Beta 3 extends the existing SQLite write-intent guard across
+    Bot connections. The outermost guarded call refreshes from the committed
+    runtime checkpoint *after* acquiring BEGIN IMMEDIATE whenever another
+    connection has advanced the runtime revision. That prevents two Bot
+    processes from accepting actions or timer ticks against divergent copies of
+    the same Raid. Nested guarded helpers share the outer transaction/state and
+    persist once at the end.
+
+    ``_finish_raid`` intentionally keeps its stale local run long enough to
+    consult the Beta 2 settlement receipt; that path performs its own safe
+    authoritative reload when it detects a replay.
     """
     @wraps(method)
     def wrapped(self, *args, **kwargs):
         with self._state_lock:
-            before = self._capture_runtime_state()
+            depth = int(getattr(self, "_state_guard_depth", 0))
+            outermost = depth == 0
+            self._state_guard_depth = depth + 1
+            before = None
             try:
-                # Beta 3 obtains SQLite write intent before reading any
-                # authoritative state. The in-process RLock still orders local
-                # callers, while BEGIN IMMEDIATE also serializes a second Bot
-                # connection/process against the same Guild database.
-                with self.db.tx(immediate=True):
+                with self.db.tx(immediate=outermost):
+                    if outermost and method.__name__ != "_finish_raid":
+                        self._refresh_authoritative_runtime_state_if_newer()
+                    before = self._capture_runtime_state()
                     result = method(self, *args, **kwargs)
                     after = self._capture_runtime_state()
-                    if after != before:
+                    if outermost and after != before:
+                        self._runtime_revision = max(
+                            int(getattr(self, "_runtime_revision", 0)),
+                            int(after.get("revision", 0) or 0),
+                        ) + 1
+                        after["revision"] = self._runtime_revision
                         self._persist_runtime_state(after)
                     return result
             except Exception:
-                self._apply_runtime_state(before)
+                if before is not None:
+                    self._apply_runtime_state(before)
                 raise
+            finally:
+                self._state_guard_depth = depth
     return wrapped
 
 
@@ -210,6 +225,8 @@ class CrystalGuildEngine:
         self.rng = rng or random.Random()
         self.venture_treasure_chance = max(0.0, min(1.0, float(venture_treasure_chance)))
         self._state_lock = threading.RLock()
+        self._state_guard_depth = 0
+        self._runtime_revision = 0
         self.active_encounter: dict[str, Any] | None = None
         self.encounter_roster: dict[str, dict[str, Any]] = {}
         # Timed Hunts are per-player autonomous assignments. They are persisted
@@ -239,6 +256,7 @@ class CrystalGuildEngine:
     def _capture_runtime_state(self) -> dict[str, Any]:
         return {
             "schema": RUNTIME_STATE_SCHEMA,
+            "revision": int(self._runtime_revision),
             "encounter_seq": int(self._encounter_seq),
             "active_encounter": copy.deepcopy(self.active_encounter),
             "encounter_roster": copy.deepcopy(self.encounter_roster),
@@ -248,6 +266,7 @@ class CrystalGuildEngine:
         }
 
     def _apply_runtime_state(self, state: dict[str, Any]) -> None:
+        self._runtime_revision = max(0, int(state.get("revision", 0) or 0))
         self._encounter_seq = max(0, int(state.get("encounter_seq", 0)))
         self.active_encounter = copy.deepcopy(state.get("active_encounter"))
         encounter_roster = state.get("encounter_roster") or {}
@@ -257,6 +276,31 @@ class CrystalGuildEngine:
         self.active_boss = copy.deepcopy(state.get("active_boss"))
         raid_roster = state.get("raid_roster") or {}
         self.raid_roster = copy.deepcopy(raid_roster) if isinstance(raid_roster, dict) else {}
+
+
+    def _refresh_authoritative_runtime_state_if_newer(self) -> bool:
+        """Reload a newer committed combat checkpoint while holding write intent.
+
+        Runtime revision is an additive field inside the existing schema-1
+        checkpoint, so Beta 2 checkpoints naturally begin at revision zero and
+        require no migration. Local test/simulator mutations remain intact when
+        no other connection has committed a newer revision.
+        """
+        row = self.db.runtime_state(RUNTIME_STATE_KEY)
+        if not row:
+            return False
+        try:
+            state = json.loads(row["value_json"])
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return False
+        if not isinstance(state, dict):
+            return False
+        authoritative_revision = max(0, int(state.get("revision", 0) or 0))
+        if authoritative_revision <= int(getattr(self, "_runtime_revision", 0)):
+            return False
+        self._validate_runtime_state(state)
+        self._apply_runtime_state(state)
+        return True
 
     def _reload_authoritative_runtime_state(self) -> None:
         """Refresh this engine instance from the committed combat checkpoint.
@@ -2693,6 +2737,25 @@ class CrystalGuildEngine:
             return partial[0]
         return None
 
+    def _raid_action_stamp(self) -> dict[str, Any]:
+        boss = self.active_boss or {}
+        return {
+            "raid_round": int(boss.get("round", 0)) + 1,
+            "raid_run": self._raid_instance_id(boss) if boss else "",
+        }
+
+    def _raid_action_is_current(self, action: dict[str, Any] | None, boss: dict[str, Any], round_no: int) -> bool:
+        if not action:
+            return False
+        # Beta 2 checkpoints can contain a queued action without a stamp. Treat
+        # that single restored action as belonging to the next round; all new
+        # Beta 3 queue operations are explicitly round/run scoped.
+        queued_round = action.get("raid_round")
+        queued_run = str(action.get("raid_run") or "")
+        if queued_round is None and not queued_run:
+            return True
+        return int(queued_round or -1) == int(round_no) and queued_run == self._raid_instance_id(boss)
+
     def _queue_raid_ability(self, twitch_id: str, ability_query: str | None) -> GameResult:
         meta, error = self._raid_actor(twitch_id)
         if error:
@@ -2738,7 +2801,7 @@ class CrystalGuildEngine:
 
         meta["action"] = {
             "kind": "ability", "ability_id": ability["id"], "target_id": target_id,
-            "resource": resource, "cost": cost,
+            "resource": resource, "cost": cost, **self._raid_action_stamp(),
         }
         target_name = self.raid_roster.get(target_id, {}).get("name", "boss" if target_id == "boss" else "party")
         return GameResult.success(
@@ -2774,7 +2837,7 @@ class CrystalGuildEngine:
         target = self.raid_roster.get(target_id) if target_id not in {"boss", "party"} else None
         if any(effect.get("type") == "revive" for effect in effects) and (not target or int(target.get("hp", 0)) > 0):
             return GameResult.fail(f"{item['name']} needs a KO'd raid ally target. Example: !use {item['name']} <hero>.")
-        meta["action"] = {"kind": "item", "item_id": item["id"], "target_id": target_id}
+        meta["action"] = {"kind": "item", "item_id": item["id"], "target_id": target_id, **self._raid_action_stamp()}
         return GameResult.success(
             f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: {item['name']} → {target_name}.",
             all_actions_queued=self._all_raid_actions_queued(),
@@ -2786,7 +2849,7 @@ class CrystalGuildEngine:
             meta, error = self._raid_actor(twitch_id)
             if error:
                 return error
-            meta["action"] = {"kind": "attack"}
+            meta["action"] = {"kind": "attack", **self._raid_action_stamp()}
             return GameResult.success(
                 f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: Attack.",
                 all_actions_queued=self._all_raid_actions_queued(),
@@ -2807,7 +2870,7 @@ class CrystalGuildEngine:
             meta, error = self._raid_actor(twitch_id)
             if error:
                 return error
-            meta["action"] = {"kind": "defend"}
+            meta["action"] = {"kind": "defend", **self._raid_action_stamp()}
             return GameResult.success(
                 f"RAID QUEUED R{int(self.active_boss.get('round', 0)) + 1} — {meta['name']}: Defend.",
                 all_actions_queued=self._all_raid_actions_queued(),
@@ -12005,12 +12068,26 @@ class CrystalGuildEngine:
         return GameResult.success(*messages, raid_started=True, boss_id=self.active_boss["id"])
 
     @_state_guard
-    def raid_round(self, boss_id: str | None = None) -> GameResult:
+    def raid_round(
+        self,
+        boss_id: str | None = None,
+        *,
+        expected_instance_id: str | None = None,
+        expected_round: int | None = None,
+    ) -> GameResult:
         if not self.active_boss:
+            if expected_instance_id is not None or expected_round is not None:
+                return GameResult.success(stale_raid_tick=True)
             return GameResult.fail("There is no active raid.")
         boss = self.active_boss
         if boss_id and boss["id"] != boss_id:
+            if expected_instance_id is not None or expected_round is not None:
+                return GameResult.success(stale_raid_tick=True)
             return GameResult.fail("That raid has already ended.")
+        if expected_instance_id is not None and self._raid_instance_id(boss) != str(expected_instance_id):
+            return GameResult.success(stale_raid_tick=True)
+        if expected_round is not None and int(boss.get("round", 0)) != int(expected_round):
+            return GameResult.success(stale_raid_tick=True)
         if boss.get("state") == "rally":
             started = self.start_raid(boss_id)
             if not started.ok:
@@ -12045,8 +12122,8 @@ class CrystalGuildEngine:
         for pid in alive_ids:
             meta = self.raid_roster[pid]
             meta["defending"] = False
-            if not meta.get("action"):
-                meta["action"] = {"kind": "attack", "auto": True}
+            if not self._raid_action_is_current(meta.get("action"), boss, round_no):
+                meta["action"] = {"kind": "attack", "auto": True, "raid_round": round_no, "raid_run": self._raid_instance_id(boss)}
 
         ordered = sorted(
             [(pid, self.raid_roster[pid]) for pid in alive_ids],
@@ -12569,6 +12646,7 @@ class CrystalGuildEngine:
                 "closes_at": self.active_boss.get("closes_at"),
                 "next_round_at": self.active_boss.get("next_round_at"),
                 "round": self.active_boss.get("round", 0),
+                "raid_instance_id": self._raid_instance_id(self.active_boss),
             }
         return {
             "encounter": encounter,

@@ -1,5 +1,5 @@
-# Crystal Guild Bot — v1.5.0 Trails & Raids Beta 2
+# Crystal Guild Bot — v1.5.0 Trails & Raids Beta 3
 
-Beta 2 adds **repeat-clear mastery, Last Trial Result presentation, live action readiness, and exactly-once Raid settlement hardening** while carrying the Beta 1 Trial Chronicle forward unchanged. The seven scripted Trials, ordinary raids, and frozen Dungeons remain supported.
+Beta 3 adds **authoritative active-Raid revision reconciliation, exact run/round action scoping, and stale timer-tick protection** while preserving Beta 2 exactly-once settlement and the frozen seven-Trial catalog.
 
-Runtime `1.5.0-trails-raids-b2` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching Beta 2 Bot + Web together. See `UPGRADE_GUIDE.md`.
+Runtime `1.5.0-trails-raids-b3` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching Beta 3 Bot + Web together. See `UPGRADE_GUIDE.md`.

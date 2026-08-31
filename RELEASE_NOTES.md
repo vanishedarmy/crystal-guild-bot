@@ -1,36 +1,34 @@
-# Crystal Guild v1.5.0 — Trails & Raids Beta 2
+# Crystal Guild v1.5.0 — Trails & Raids Beta 3
 
-## Repeat Mastery & Settlement Hardening
+## Shared-State Hardening & Trial UX Consolidation
 
-Beta 2 turns repeat Trial clears into visible mastery progress and hardens Raid/Trial settlement against duplicate rewards from stale or recovered Bot connections. The seven flagship Trial encounters remain content-frozen; there is no new boss, currency, reward rebalance, database table, or Portal mutation.
+Beta 3 is the final active-Raid stability pass before release-candidate work. The seven flagship Trials remain content-frozen. This release does not add a boss, currency, reward rebalance, database table, Portal combat mutation, or new player command.
 
-### Repeat-clear mastery
-- Every flagship Trial now derives a repeat-clear tier from the existing authoritative clear ledger: **Proven (1)**, **Seasoned (3)**, **Veteran (5)**, and **Mastered (10)**.
-- Repeat mastery is retroactive because it is calculated from existing clear counts; no conversion or backfill job is required.
-- The Trial & Raid Board and Records page show the current tier and next clear milestone.
-- The Trial Chronicle summary shows how many of the seven Trials have reached **Mastered**.
-- Repeat mastery is presentation/progression only. It does not add bonus loot, currency, or reward multipliers.
+### Authoritative active-Raid revisions
+- The existing runtime checkpoint now carries an additive combat **revision** inside the same runtime-state JSON contract.
+- Outermost guarded combat writes acquire SQLite write intent, then refresh from a newer committed revision before mutating state.
+- Two Bot connections can therefore queue different raiders in the same round without a stale connection overwriting an action committed by the other.
+- Nested guarded operations share the same authoritative transaction and persist only once at the outer boundary.
+- This is a runtime-state compatibility extension only; local DB schema remains **10** and hosted sync schema remains **1**.
 
-### Last Trial Result & live readiness
-- After a victory or wipe, the Trial & Raid Board retains a **Last Trial Result** recap instead of immediately falling back to a generic Standby presentation.
-- The recap shows the encounter, result, final round, standing raiders, last mechanic, and leading contribution rows from the existing final Overlay state.
-- Active raids now expose sanitized **ready actions / actionable raiders** counts so the Portal and OBS presentation can show how many eligible raiders have queued an action.
-- Raid combat remains Twitch/Bot-authoritative; no new Portal combat action is introduced.
+### Exact run + round serialization
+- Newly queued Raid actions are internally stamped to the exact Raid run and target round.
+- A restored Beta 2 action that has no stamp is accepted once for compatibility and then replaced by normal Beta 3 round-scoped state.
+- Raid timer work is now bound to both the observed `raid_instance_id` and observed round number.
+- If another Bot connection has already advanced that same snapshot, the stale timer worker returns a silent no-op rather than resolving a second round.
+- Beta 2 exactly-once victory/wipe settlement receipts remain intact and continue preventing duplicate rewards after the encounter ends.
 
-### Exactly-once Raid settlement
-- Every newly spawned Raid/Trial receives an exact **raid instance identity**.
-- Victory/wipe settlement writes a bounded atomic receipt before the authoritative runtime checkpoint is cleared.
-- If a stale or recovered second Bot connection tries to settle the same run, it detects the committed receipt, applies **no rewards, Fellowship credit, clear records, or Chronicle records again**, and reloads authoritative runtime state.
-- Up to the latest **64** settlement receipts are retained in the existing runtime-state store to keep the guard bounded.
-- A Raid already active during a Beta 1 → Beta 2 upgrade receives a stable legacy identity derived from its original boss/rally identity, so in-progress encounters receive the same protection without migration.
+### Trial & Raid Board clarity
+- Live encounters now include a dedicated **Round Readiness** strip showing queued actions, actionable raiders, and how many are still waiting.
+- **Last Trial Result** keeps the leading contributors visible with role, contribution score, damage, healing, and mitigation rather than only a condensed score row.
+- The roomy two-column Trial catalog, full-width Bahamut capstone card, remembered collapse state, Trial Chronicle, and repeat-clear mastery remain unchanged.
 
-### Continuity
-- Beta 1 Trial Chronicle metrics remain intact and continue tracking wipes, fastest successful clear round, best contribution score, best damage, best healing, and best mitigation.
-- Trial rewards, contribution reward weighting, encounter scripts, unscripted raids, and the four production Dungeons are unchanged.
-- Ifrit, Shiva, Ramuh, Titan, Garuda, Leviathan, and Bahamut remain the frozen scripted Trial catalog.
+### Privacy and authority
+- Internal action stamps, exact Raid run IDs, and internal mechanic target IDs remain Bot-side and are not exposed through the public Overlay payload.
+- Raid combat remains Twitch/Bot-authoritative; the Portal Trial & Raid Board remains read-only.
 
 ### Compatibility
-- Bot/Web/frontend runtime: `1.5.0-trails-raids-b2`
+- Bot/Web/frontend runtime: `1.5.0-trails-raids-b3`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **25** unchanged
@@ -40,4 +38,4 @@ Beta 2 turns repeat Trial clears into visible mastery progress and hardens Raid/
 - OAuth/environment changes: **none**
 - New environment variables: **none**
 
-Deploy matching Beta 2 Web + Bot together.
+Deploy matching Beta 3 Web + Bot together.

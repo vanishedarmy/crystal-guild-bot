@@ -542,9 +542,13 @@ class EncounterDaemon:
             if due and due <= now:
                 self._record_deadline("raid-round", due, now)
                 LOGGER.info("Combat daemon advancing raid %s round", boss_id)
-                result = self.game.raid_round(boss_id)
+                result = self.game.raid_round(
+                    boss_id,
+                    expected_instance_id=boss.get("raid_instance_id"),
+                    expected_round=int(boss.get("round", 0)),
+                )
                 self._last_raid_id = boss_id
-                self._last_action = f"raid-round:{boss_id}"
+                self._last_action = f"raid-round:{boss_id}:{int(boss.get('round', 0))}"
                 self._publish(result)
                 return True
         return False

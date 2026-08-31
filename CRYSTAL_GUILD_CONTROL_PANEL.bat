@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title Crystal Guild v1.5.0 - Trails & Raids Beta 2
+title Crystal Guild v1.5.0 - Trails & Raids Beta 3
 
 :menu
 cls
