@@ -994,6 +994,21 @@ class PortalRepository:
                 wipes = int(stats.get(prefix + "wipes", 0) or 0)
                 fastest = int(stats.get(prefix + "fastest_rounds", 0) or 0)
                 best_damage = max(int(legacy.get("best_damage", 0) or 0), int(stats.get(prefix + "best_damage", 0) or 0))
+                if clears >= 10:
+                    repeat_mastery = "Mastered"
+                    next_clear_goal = None
+                elif clears >= 5:
+                    repeat_mastery = "Veteran"
+                    next_clear_goal = 10
+                elif clears >= 3:
+                    repeat_mastery = "Seasoned"
+                    next_clear_goal = 5
+                elif clears >= 1:
+                    repeat_mastery = "Proven"
+                    next_clear_goal = 3
+                else:
+                    repeat_mastery = "Uncleared"
+                    next_clear_goal = 1
                 trials.append({
                     "id": boss_id,
                     "name": boss.get("name", boss_id),
@@ -1009,6 +1024,8 @@ class PortalRepository:
                     "best_healing": int(stats.get(prefix + "best_healing", 0) or 0),
                     "best_mitigation": int(stats.get(prefix + "best_mitigation", 0) or 0),
                     "last_cleared_at": legacy.get("last_cleared_at"),
+                    "repeat_mastery": repeat_mastery,
+                    "next_clear_goal": next_clear_goal,
                 })
             trials.sort(key=lambda row: (row["recommended_level"], row["name"].lower()))
             unique_trial_clears = sum(1 for row in trials if row["clears"] > 0)
@@ -1034,6 +1051,7 @@ class PortalRepository:
                 "total_clears": sum(row["clears"] for row in trials),
                 "tracked_wipes": sum(row["wipes"] for row in trials),
                 "best_score": max((row["best_score"] for row in trials), default=0),
+                "mastered_trials": sum(1 for row in trials if row.get("repeat_mastery") == "Mastered"),
                 "next_unique_clear_goal": next_trial_goal,
             }
 

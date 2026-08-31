@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.5.0-trails-raids-b1")
+        self.assertEqual(__version__, "1.5.0-trails-raids-b2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 10)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)
@@ -31,7 +31,7 @@ class DungeonsProductionReleaseTests(unittest.TestCase):
         for name in ("VERSION.txt", "README_FIRST.txt", "PACKAGE_MANIFEST.txt", "RELEASE_NOTES.md", "FINALIZATION_AUDIT.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
             self.assertIn("Trails & Raids", text, name)
-            self.assertIn("1.5.0-trails-raids-b1", text, name)
+            self.assertIn("1.5.0-trails-raids-b2", text, name)
             self.assertNotIn("1.4.0-dungeons-rc1", text, name)
 
 

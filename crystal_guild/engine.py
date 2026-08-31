@@ -139,6 +139,8 @@ RAID_SUMMONS = {
 LOGGER = logging.getLogger(__name__)
 RUNTIME_STATE_KEY = "combat"
 RUNTIME_STATE_SCHEMA = 1
+RAID_SETTLEMENT_STATE_KEY = "raid_settlements"
+RAID_SETTLEMENT_RECEIPT_LIMIT = 64
 LONG_REST_SECONDS = 8 * 60 * 60
 PLAYER_ACTIVITY_STATE_PREFIX = "player_activity:"
 STREAM_REFRESH_STATE_KEY = "stream_live_refresh"
@@ -255,6 +257,69 @@ class CrystalGuildEngine:
         self.active_boss = copy.deepcopy(state.get("active_boss"))
         raid_roster = state.get("raid_roster") or {}
         self.raid_roster = copy.deepcopy(raid_roster) if isinstance(raid_roster, dict) else {}
+
+    def _reload_authoritative_runtime_state(self) -> None:
+        """Refresh this engine instance from the committed combat checkpoint.
+
+        Beta 2 uses this when a stale second Bot connection discovers that a
+        raid run was already settled. Reloading instead of clearing local state
+        prevents that stale connection from overwriting a newer authoritative
+        raid that may have started after the settlement.
+        """
+        row = self.db.runtime_state(RUNTIME_STATE_KEY)
+        if not row:
+            self._apply_runtime_state({
+                "schema": RUNTIME_STATE_SCHEMA,
+                "encounter_seq": 0,
+                "active_encounter": None,
+                "encounter_roster": {},
+                "active_hunts": {},
+                "active_boss": None,
+                "raid_roster": {},
+            })
+            return
+        state = json.loads(row["value_json"])
+        self._validate_runtime_state(state)
+        self._apply_runtime_state(state)
+
+    def _raid_instance_id(self, boss: dict[str, Any]) -> str:
+        run_id = str(boss.get("raid_instance_id") or "").strip()
+        if not run_id:
+            # Active raids restored from Beta 1 or earlier did not yet carry an
+            # explicit run id. Derive a stable compatibility id from the old
+            # boss+rally identity so their settlement is protected too.
+            run_id = f"legacy-{boss.get('id','boss')}-{int(boss.get('closes_at') or 0)}"
+            boss["raid_instance_id"] = run_id
+        return run_id
+
+    def _raid_settlement_receipts(self) -> list[dict[str, Any]]:
+        row = self.db.runtime_state(RAID_SETTLEMENT_STATE_KEY)
+        if not row:
+            return []
+        try:
+            payload = json.loads(row["value_json"])
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return []
+        if not isinstance(payload, list):
+            return []
+        return [entry for entry in payload if isinstance(entry, dict) and entry.get("raid_instance_id")]
+
+    def _raid_settlement_receipt(self, boss: dict[str, Any]) -> dict[str, Any] | None:
+        run_id = self._raid_instance_id(boss)
+        return next((entry for entry in reversed(self._raid_settlement_receipts()) if entry.get("raid_instance_id") == run_id), None)
+
+    def _record_raid_settlement_receipt(self, boss: dict[str, Any], *, won: bool) -> None:
+        run_id = self._raid_instance_id(boss)
+        receipts = [entry for entry in self._raid_settlement_receipts() if entry.get("raid_instance_id") != run_id]
+        receipts.append({
+            "raid_instance_id": run_id,
+            "boss_id": str(boss.get("id") or ""),
+            "won": bool(won),
+            "round": max(0, int(boss.get("round") or 0)),
+            "settled_at": int(time.time()),
+        })
+        receipts = receipts[-RAID_SETTLEMENT_RECEIPT_LIMIT:]
+        self.db.set_runtime_state(RAID_SETTLEMENT_STATE_KEY, json.dumps(receipts, separators=(",", ":"), sort_keys=True))
 
     def _normalize_encounter_resources(self) -> None:
         """Upgrade restored v1.0 combat checkpoints to the MP/AP resource model.
@@ -10605,6 +10670,7 @@ class CrystalGuildEngine:
         self.active_boss.update({
             "max_hp": int(boss["hp"]), "current_hp": int(boss["hp"]), "round": 0,
             "state": "rally", "closes_at": now + self.raid_join_seconds, "summon_gauge": 0, "summon_armed": None,
+            "raid_instance_id": uuid.uuid4().hex,
         })
         self.raid_roster.clear()
         self._update_raid_overlay()
@@ -10663,8 +10729,10 @@ class CrystalGuildEngine:
             return GameResult.success(f"{boss['name']} [{boss.get('tier','World Boss')}] | HP {boss['current_hp']:,}/{boss['max_hp']:,} | RAID RALLY {self._format_seconds(remaining)} | Raiders {len(self.raid_roster)} | !raid to join")
         phase = self._boss_phase(boss)
         alive = sum(1 for m in self.raid_roster.values() if m.get("hp",0) > 0)
+        actionable = [m for m in self.raid_roster.values() if int(m.get("hp",0)) > 0 and not m.get("restrained")]
+        ready = sum(1 for m in actionable if m.get("action"))
         enrage = " | ENRAGED" if boss.get("round",0) >= boss.get("enrage_round",99) else ""
-        return GameResult.success(f"{boss['name']} | HP {boss['current_hp']:,}/{boss['max_hp']:,} | R{boss['round']} | Phase: {phase['name']} | Heroes {alive}/{len(self.raid_roster)}{enrage}")
+        return GameResult.success(f"{boss['name']} | HP {boss['current_hp']:,}/{boss['max_hp']:,} | R{boss['round']} | Phase: {phase['name']} | Heroes {alive}/{len(self.raid_roster)} | Actions {ready}/{len(actionable)}{enrage}")
 
     def _initialize_raid_combat(self) -> int:
         """Hydrate Raid participants with the same action/resource state used by Active Battle."""
@@ -12336,6 +12404,19 @@ class CrystalGuildEngine:
         if not self.active_boss:
             return GameResult.fail("The raid is already over.")
         boss=self.active_boss
+        existing_settlement = self._raid_settlement_receipt(boss)
+        if existing_settlement is not None:
+            # A stale/recovered second engine can hold the same raid in memory.
+            # The receipt is committed atomically with rewards, so replaying the
+            # finish path must never grant XP/Gil/loot or records twice. Refresh
+            # from the authoritative checkpoint rather than clearing blindly.
+            boss_name = str(boss.get("name") or "Raid")
+            settled_won = bool(existing_settlement.get("won"))
+            self._reload_authoritative_runtime_state()
+            return GameResult.success(
+                f"RAID SETTLEMENT REPLAY — {boss_name} was already settled; no rewards or records were applied again.",
+                raid_finished=True, won=settled_won, settlement_replay=True,
+            )
         total_damage=sum(max(0,int(m.get("damage",0))) for m in self.raid_roster.values())
         contribution_scores = {
             pid: raid_contribution_score(
@@ -12378,7 +12459,7 @@ class CrystalGuildEngine:
                 healing_done=int(meta.get("healing", 0)),
                 boss_damage=int(meta.get("damage", 0)),
             )
-            raid_key = f"{boss['id']}:{boss.get('closes_at', 0)}"
+            raid_key = self._raid_instance_id(boss)
             self.fellowship_system.record_activity(
                 pid, "raid_participation", event_key=f"raid_participation:{raid_key}:{pid}"
             )
@@ -12417,6 +12498,7 @@ class CrystalGuildEngine:
         if fellowship_raid_notes:
             messages.append("Fellowship — " + " | ".join(dict.fromkeys(fellowship_raid_notes[:5])))
         self._record_trial_result(boss, won=won)
+        self._record_raid_settlement_receipt(boss, won=won)
         final_overlay=self._overlay_payload(active=False,status=final_status,boss_override=boss)
         self._write_overlay(final_overlay)
         self.active_boss=None; self.raid_roster.clear()
@@ -12448,11 +12530,14 @@ class CrystalGuildEngine:
                 "name":m["name"], "role":self._raid_role_label(m), "damage":m.get("damage",0), "healing":m.get("healing",0),
                 "mitigation":m.get("mitigation",0), "score":int(round(score)),
             })
+        actionable = [m for m in self.raid_roster.values() if int(m.get("hp",0)) > 0 and not m.get("restrained")]
+        ready_actions = sum(1 for m in actionable if m.get("action"))
         return {
             "active":active, "status":status or boss.get("state","rally").upper(), "boss":boss["name"], "tier":boss.get("tier","World Boss"),
             "encounter_type":boss.get("encounter_type","Raid"), "encounter_name":boss.get("encounter_name") or boss.get("name"),
             "hp":boss.get("current_hp",boss["hp"]), "max_hp":boss.get("max_hp",boss["hp"]), "round":boss.get("round",0), "phase":phase.get("name","Battle"),
             "signature":boss.get("signature","Cataclysm"), "raiders":len(self.raid_roster), "alive":sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0),
+            "ready_actions":ready_actions, "actionable_raiders":len(actionable),
             "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":top_rows,
             "adds":[{"name":str(row.get("name") or "Add"), "hp":max(0,int(row.get("current_hp",0))), "max_hp":max(1,int(row.get("max_hp",1)))} for row in self._raid_live_adds(boss)[:4]],
             "mechanic":self._raid_public_mechanic(boss.get("mechanic")), "last_mechanic":self._raid_public_mechanic(boss.get("last_mechanic")),
