@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import logging
 import random
 import re
@@ -11551,6 +11552,150 @@ class CrystalGuildEngine:
         self._garuda_prepare_next_mechanic(boss)
         return total, messages
 
+
+    def _leviathan_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
+        """Advance Tidebreak Expanse through side pressure, Undertow, and a survival check."""
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        step = int(boss.get("_leviathan_step", 0)) % 3
+        if step == 0:
+            shuffled = list(alive)
+            self.rng.shuffle(shuffled)
+            count = max(1, (len(shuffled) + 1) // 2) if shuffled else 0
+            target_ids = shuffled[:count]
+            target_names = [str(self.raid_roster[pid].get("name") or "Adventurer") for pid in target_ids]
+            side = "Port" if int(boss.get("_leviathan_sweep_side", 0)) % 2 == 0 else "Starboard"
+            boss["_leviathan_sweep_side"] = int(boss.get("_leviathan_sweep_side", 0)) + 1
+            mechanic = {
+                "name": "Tidal Sweep", "kind": "side_sweep",
+                "warning": f"{side} side is about to be crushed. Marked raiders should Defend to brace.",
+                "target_ids": target_ids, "target": ", ".join(target_names) or "one side of the raid",
+                "side": side, "rounds_remaining": 1,
+            }
+        elif step == 1:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Undertow", "kind": "undertow",
+                "warning": "One raider is dragged beneath the current. Defend to brace and protect resources.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        else:
+            required = max(2, int(math.ceil(max(1, len(alive)) * 1.5)))
+            mechanic = {
+                "name": "Maelstrom Surge", "kind": "survival_check",
+                "warning": "Coordinate Defends across two rounds to stabilize the platform before Tidal Wave.",
+                "rounds_remaining": 2, "required": required, "progress": 0,
+            }
+        boss["mechanic"] = mechanic
+        boss["_leviathan_step"] = (step + 1) % 3
+        return mechanic
+
+    def _resolve_leviathan_response(
+        self, boss: dict[str, Any], *, round_damage: int, phase_mult: float,
+        enrage_mult: float, boss_pressure: float, ko_names: list[str],
+    ) -> tuple[int, list[str]]:
+        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
+        if not mechanic:
+            mechanic = self._leviathan_prepare_next_mechanic(boss)
+        messages: list[str] = []
+        total = 0
+        retaliation_enabled = int(boss.get("attacks_per_round", 2)) > 0
+        kind = str(mechanic.get("kind") or "")
+        level = int(boss.get("recommended_level", 35))
+        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+
+        if kind == "survival_check":
+            defenders = [pid for pid in alive if self.raid_roster.get(pid, {}).get("defending")]
+            mechanic["progress"] = max(0, int(mechanic.get("progress", 0))) + len(defenders)
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            if retaliation_enabled:
+                pulse_mult = max(0.20, 0.46 - 0.06 * len(defenders))
+                raw = max(1, int(base * pulse_mult * self.rng.uniform(0.94, 1.06)))
+                for pid in alive:
+                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=28.0)
+            required = max(1, int(mechanic.get("required", 1)))
+            progress = max(0, int(mechanic.get("progress", 0)))
+            if int(mechanic["rounds_remaining"]) > 0:
+                messages.append(f"MAELSTROM SURGE — stability {progress}/{required} Defends · {mechanic['rounds_remaining']} round remaining · {total:,} raid damage.")
+                return total, messages
+            success = progress >= required
+            result = "stabilized" if success else "overwhelmed"
+            blast_mult = 0.34 if success else 0.94
+            if retaliation_enabled:
+                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
+                for pid, meta in self.raid_roster.items():
+                    if int(meta.get("hp", 0)) > 0:
+                        total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=42.0)
+            boss["last_mechanic"] = {
+                "name": "Tidal Wave", "kind": "resolution", "result": result,
+                "warning": "The raid stabilized the Maelstrom." if success else "The Maelstrom overwhelmed the raid.",
+            }
+            messages.append(
+                f"TIDAL WAVE — stability {progress}/{required}; the surge is {result}"
+                + (f" for {total:,} total raid damage." if retaliation_enabled else " (boss retaliation suppressed).")
+            )
+            self._leviathan_prepare_next_mechanic(boss)
+            return total, messages
+
+        if kind == "undertow":
+            target_id = str(mechanic.get("target_id") or "")
+            if target_id not in alive:
+                target_id = self.rng.choice(alive) if alive else ""
+            target_name = str(self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider")
+            braced = bool(target_id and self.raid_roster.get(target_id, {}).get("defending"))
+            if retaliation_enabled and target_id:
+                raw = max(1, int(base * 0.72 * self.rng.uniform(0.94, 1.06)))
+                total += self._raid_apply_scripted_hit(target_id, raw=raw, ko_names=ko_names, limit_gain=34.0)
+                if not braced:
+                    meta = self.raid_roster[target_id]
+                    for key in ("mp", "ap"):
+                        maximum = max(0, int(meta.get(f"max_{key}", 0)))
+                        if maximum > 0:
+                            meta[key] = max(0, int(meta.get(key, 0)) - max(1, int(maximum * 0.18)))
+                    splash = max(1, int(base * 0.22 * self.rng.uniform(0.94, 1.06)))
+                    for pid in alive:
+                        if pid != target_id:
+                            total += self._raid_apply_scripted_hit(pid, raw=splash, ko_names=ko_names, limit_gain=24.0)
+            result = "braced" if braced else "dragged_under"
+            boss["last_mechanic"] = {"name": "Undertow", "kind": "undertow", "target": target_name, "result": result}
+            messages.append(
+                f"UNDERTOW — {target_name} {'braces against' if braced else 'is dragged through'} the current; {total:,} total damage."
+                if retaliation_enabled else "UNDERTOW — boss retaliation suppressed."
+            )
+            self._leviathan_prepare_next_mechanic(boss)
+            return total, messages
+
+        # Tidal Sweep strikes the marked half of the raid; each raider can brace independently.
+        target_ids = [str(pid) for pid in mechanic.get("target_ids", []) if str(pid) in alive]
+        if not target_ids and alive:
+            target_ids = alive[: max(1, (len(alive) + 1) // 2)]
+        braced_names: list[str] = []
+        hit_names: list[str] = []
+        if retaliation_enabled:
+            raw = max(1, int(base * 0.92 * self.rng.uniform(0.94, 1.06)))
+            for pid in target_ids:
+                meta = self.raid_roster[pid]
+                name = str(meta.get("name") or "Adventurer")
+                if meta.get("defending"):
+                    braced_names.append(name)
+                else:
+                    hit_names.append(name)
+                    apply_status(meta.setdefault("statuses", {}), "slow", 2, 0.12)
+                total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=38.0)
+        result = "braced" if target_ids and len(braced_names) == len(target_ids) else "partial" if braced_names else "unbraced"
+        boss["last_mechanic"] = {
+            "name": "Tidal Sweep", "kind": "side_sweep",
+            "target": str(mechanic.get("target") or ", ".join(hit_names + braced_names)), "result": result,
+        }
+        side = str(mechanic.get("side") or "one side")
+        messages.append(
+            f"TIDAL SWEEP — {side} pressure crashes through {len(target_ids)} raider(s) for {total:,} damage; {len(braced_names)} braced."
+            if retaliation_enabled else "TIDAL SWEEP — boss retaliation suppressed."
+        )
+        self._leviathan_prepare_next_mechanic(boss)
+        return total, messages
+
     def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
         mechanic = self._raid_public_mechanic(boss.get("mechanic"))
         if not mechanic:
@@ -11585,6 +11730,12 @@ class CrystalGuildEngine:
             return f"TELEGRAPH — {name}: {mechanic.get('target') or 'a raider'} is marked; Defend to brace against the focused gale."
         if kind == "wind_mark":
             return f"WIND MARK — {name}: {mechanic.get('target') or 'a raider'} must Defend to contain the pressure and protect the raid."
+        if kind == "side_sweep":
+            return f"SIDE PRESSURE — {name}: {mechanic.get('target') or 'one side of the raid'} is marked; Defend to brace the sweep."
+        if kind == "undertow":
+            return f"UNDERTOW — {name}: {mechanic.get('target') or 'a raider'} must Defend to protect HP and resources."
+        if kind == "survival_check":
+            return f"STABILITY GAUGE — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} Defends · {int(mechanic.get('rounds_remaining', 0))} rounds."
         if kind == "stagger":
             return f"STAGGER — {name}: boss is vulnerable and cannot answer the next round."
         return f"MECHANIC — {name}."
@@ -11629,6 +11780,10 @@ class CrystalGuildEngine:
             self.active_boss["_garuda_step"] = 0
             self.active_boss["adds"] = []
             self._garuda_prepare_next_mechanic(self.active_boss)
+        elif script_id == "leviathan_tidebreak_expanse":
+            self.active_boss["_leviathan_step"] = 0
+            self.active_boss["_leviathan_sweep_side"] = 0
+            self._leviathan_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -11778,6 +11933,11 @@ class CrystalGuildEngine:
                 boss, round_damage=round_damage, phase_mult=phase_mult,
                 enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
             )
+        elif self._raid_script_id(boss) == "leviathan_tidebreak_expanse":
+            total_boss_damage, scripted_messages = self._resolve_leviathan_response(
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
+            )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
             for pid in targets:
@@ -11853,7 +12013,7 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag", "garuda_eye_of_storm"} and not boss_stunned:
+        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag", "garuda_eye_of_storm", "leviathan_tidebreak_expanse"} and not boss_stunned:
             telegraph = self._raid_telegraph_text(boss)
             if telegraph:
                 messages.append(telegraph)

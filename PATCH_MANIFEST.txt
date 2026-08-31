@@ -1,6 +1,6 @@
-Crystal Guild v1.5.0 — Trails & Raids Alpha 5 — Bot Alpha 4 → Alpha 5 Patch
-Runtime: 1.5.0-trails-raids-a5
-Changed/new files: 39
+Crystal Guild v1.5.0 — Trails & Raids Alpha 6 — Bot Alpha 5 → Alpha 6 Patch
+Runtime: 1.5.0-trails-raids-a6
+Changed/new files: 31
 Deleted files: 0
 Local DB schema: 10
 Hosted sync schema: 1
@@ -21,28 +21,22 @@ UPGRADE_GUIDE.md
 VALIDATION_REPORT.md
 VERSION.txt
 WEB_SYNC_SETUP.md
-backup_database.bat
 crystal_guild/__init__.py
 crystal_guild/engine.py
 data/bosses.json
-generate_portal_sync_key.bat
-overlay/raid_overlay.html
 prepare_render_migration.py
-run_bot.bat
 run_maintenance.py
-run_overlay.bat
-run_portal_sync.bat
 run_selftest.bat
-run_simulator.bat
 run_stress_test.bat
 run_stress_test.py
 setup_windows.bat
-test_portal_sync.bat
 tests/test_cloud_runtime.py
 tests/test_dungeons_beta3.py
 tests/test_dungeons_rc1.py
 tests/test_dungeons_release.py
 tests/test_guild_expansion_rc1.py
 tests/test_release_contract.py
-tests/test_trails_raids_alpha5.py
+tests/test_trails_raids_alpha6.py
 upgrade_crystal_guild.py
+
+Deleted:

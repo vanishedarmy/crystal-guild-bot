@@ -1,6 +1,6 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 5 Simplified Render Setup
+# Crystal Guild v1.5.0 — Trails & Raids Alpha 6 Simplified Render Setup
 
-**Existing cloud install:** deploy the Alpha 5 Bot source without touching `/var/data`, then deploy the matching v1.5.0 Alpha 5 Web source. Verify `!cgversion` = `1.5.0-trails-raids-a5`, `!health`, and `/api/health`.
+**Existing cloud install:** deploy the Alpha 6 Bot source without touching `/var/data`, then deploy the matching v1.5.0 Alpha 6 Web source. Verify `!cgversion` = `1.5.0-trails-raids-a6`, `!health`, and `/api/health`.
 
 **Fresh setup:**
 1. Prepare the Bot source in a private repository.
@@ -8,6 +8,6 @@
 3. Put live databases/token storage only on the persistent disk.
 4. Run `python run_cloud_preflight.py`.
 5. Ensure no older Bot instance is connected.
-6. Start the worker and deploy the matching v1.5.0 Alpha 5 Web service.
+6. Start the worker and deploy the matching v1.5.0 Alpha 6 Web service.
 
-Schema **10**, hosted sync **1**, protocol **25**. Alpha 5 adds no environment variables.
+Schema **10**, hosted sync **1**, protocol **25**. Alpha 6 adds no environment variables.

@@ -1,12 +1,12 @@
 # Changelog
 
-## v1.5.0 — Trails & Raids Alpha 5
-- Garuda — Eye of the Storm becomes the fifth flagship Trial.
-- Slipstream uses Defend to brace against focused wind pressure and avoid lingering Slow.
-- Friction asks the marked raider to Defend and contain a burst that otherwise splashes the party.
-- Satin and Razor Plumes intercept boss-directed damage for two rounds and determine Aerial Blast strength.
-- The Trial & Raid Board is rebuilt into a roomier two-column desktop layout with responsive one-column fallbacks.
-- Schema 10, hosted sync 1, Portal Action protocol 25, existing rewards/progression, and the four frozen Dungeons remain unchanged.
+## v1.5.0 — Trails & Raids Alpha 6
+- Leviathan — Tidebreak Expanse becomes the sixth flagship Trial.
+- Tidal Sweep pressures one marked side and rewards individual Defend responses.
+- Undertow adds target resource pressure and party splash when the marked raider does not brace.
+- Maelstrom Surge creates a two-round Stability Gauge driven by coordinated Defends; Tidal Wave strength depends on the result.
+- Alpha 5's roomy two-column Trial Board, collapse state, earlier Trials, rewards/economy, and four frozen Dungeons remain unchanged.
+- Runtime `1.5.0-trails-raids-a6`; schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
 
 # Crystal Guild Changelog
 

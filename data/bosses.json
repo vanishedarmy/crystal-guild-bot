@@ -90,7 +90,7 @@
     "tier": "World Boss",
     "recommended_level": 14,
     "signature": "Grave March",
-    "description": "An ancient commander who has interpreted “rest in peace” as optional guidance.",
+    "description": "An ancient commander who has interpreted \u201crest in peace\u201d as optional guidance.",
     "drops": [
       {
         "item_id": "bone_chip",
@@ -571,7 +571,7 @@
       {
         "name": "Heart of the Crag",
         "kind": "heart_check",
-        "description": "A two-round party damage check against Titan’s exposed Heart."
+        "description": "A two-round party damage check against Titan\u2019s exposed Heart."
       },
       {
         "name": "Earthen Fury",
@@ -660,7 +660,32 @@
     ],
     "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "encounter_type": "Trial",
+    "encounter_name": "Tidebreak Expanse",
+    "raid_script": "leviathan_tidebreak_expanse",
+    "mechanics": [
+      {
+        "name": "Tidal Sweep",
+        "kind": "side_sweep",
+        "description": "Leviathan crashes across one side of the raid; marked raiders Defend to brace the sweep and avoid lingering Slow."
+      },
+      {
+        "name": "Undertow",
+        "kind": "undertow",
+        "description": "One raider is pulled under. Defend to brace or lose MP/AP and splash water pressure into the party."
+      },
+      {
+        "name": "Maelstrom Surge",
+        "kind": "survival_check",
+        "description": "A two-round survival gauge asks the raid to coordinate Defends while repeated surges batter the party."
+      },
+      {
+        "name": "Tidal Wave",
+        "kind": "resolution",
+        "description": "Stabilizing the Maelstrom weakens Tidal Wave; failing the survival check empowers the final raidwide."
+      }
+    ]
   },
   {
     "id": "gilgamesh",
@@ -1368,7 +1393,7 @@
     "xp": 59000,
     "gil": 180000,
     "signature": "Armageddon",
-    "description": "A monster-arena nightmare assembled from the Guild’s worst collection habits.",
+    "description": "A monster-arena nightmare assembled from the Guild\u2019s worst collection habits.",
     "drops": [
       {
         "item_id": "nemesis_mark",
