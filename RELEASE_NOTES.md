@@ -1,34 +1,35 @@
-# Crystal Guild v1.5.0 — Trails & Raids Beta 3
+# Crystal Guild v1.5.0 — Trails & Raids RC1
 
-## Shared-State Hardening & Trial UX Consolidation
+## Release-Candidate Hardening & Feature Freeze
 
-Beta 3 is the final active-Raid stability pass before release-candidate work. The seven flagship Trials remain content-frozen. This release does not add a boss, currency, reward rebalance, database table, Portal combat mutation, or new player command.
+RC1 freezes the seven flagship Trials and the Beta 1–3 progression/reliability model for release-candidate validation. It does not add a boss, currency, reward rebalance, database table, Portal combat mutation, or new player command.
 
-### Authoritative active-Raid revisions
-- The existing runtime checkpoint now carries an additive combat **revision** inside the same runtime-state JSON contract.
-- Outermost guarded combat writes acquire SQLite write intent, then refresh from a newer committed revision before mutating state.
-- Two Bot connections can therefore queue different raiders in the same round without a stale connection overwriting an action committed by the other.
-- Nested guarded operations share the same authoritative transaction and persist only once at the outer boundary.
-- This is a runtime-state compatibility extension only; local DB schema remains **10** and hosted sync schema remains **1**.
+### Exact readiness ownership
+- The live **Round Readiness** count and the internal all-actions-ready decision now use the same ownership rule as round resolution: an action must belong to the exact active Raid run and the upcoming round.
+- A stale action stamp from an earlier round or different Raid no longer makes the Board falsely report that player as ready.
+- This closes the final presentation/decision gap left after Beta 3 introduced exact run/round action stamps.
 
-### Exact run + round serialization
-- Newly queued Raid actions are internally stamped to the exact Raid run and target round.
-- A restored Beta 2 action that has no stamp is accepted once for compatibility and then replaced by normal Beta 3 round-scoped state.
-- Raid timer work is now bound to both the observed `raid_instance_id` and observed round number.
-- If another Bot connection has already advanced that same snapshot, the stale timer worker returns a silent no-op rather than resolving a second round.
-- Beta 2 exactly-once victory/wipe settlement receipts remain intact and continue preventing duplicate rewards after the encounter ends.
+### Corrupt/stale checkpoint resilience
+- A malformed restored `raid_round` stamp now fails closed instead of raising during round resolution.
+- Invalid or stale stamped actions safely fall back to the normal automatic Attack for that round.
+- The one unstamped queued action restored from a pre-Beta-3 checkpoint is still honored once for upgrade compatibility.
 
-### Trial & Raid Board clarity
-- Live encounters now include a dedicated **Round Readiness** strip showing queued actions, actionable raiders, and how many are still waiting.
-- **Last Trial Result** keeps the leading contributors visible with role, contribution score, damage, healing, and mitigation rather than only a condensed score row.
-- The roomy two-column Trial catalog, full-width Bahamut capstone card, remembered collapse state, Trial Chronicle, and repeat-clear mastery remain unchanged.
+### Release-candidate cleanup
+- Current Bot/Web/frontend identity advances to `1.5.0-trails-raids-rc1`.
+- Player-facing What's New and Player Guide receive an RC1 feature-freeze/readiness note.
+- The Bot control-panel banner and current deployment/package metadata are refreshed to the RC1 identity and Beta 3 baseline.
+- Historical Alpha/Beta changelog entries remain engineering history.
 
-### Privacy and authority
-- Internal action stamps, exact Raid run IDs, and internal mechanic target IDs remain Bot-side and are not exposed through the public Overlay payload.
-- Raid combat remains Twitch/Bot-authoritative; the Portal Trial & Raid Board remains read-only.
+### Frozen systems carried forward
+- Seven scripted Trials: Ifrit, Shiva, Ramuh, Titan, Garuda, Leviathan, Bahamut.
+- Trial Chronicle and repeat-clear mastery.
+- Beta 2 exact-run bounded settlement receipts.
+- Beta 3 authoritative combat revisions, cross-connection action merge, and exact timer-tick stale-state protection.
+- Roomy collapsible Trial & Raid Board, Last Trial Result, contribution details, and Round Readiness.
+- All four v1.4 production Dungeons and their existing stale-state/replay protections.
 
 ### Compatibility
-- Bot/Web/frontend runtime: `1.5.0-trails-raids-b3`
+- Bot/Web/frontend runtime: `1.5.0-trails-raids-rc1`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **25** unchanged
@@ -38,4 +39,4 @@ Beta 3 is the final active-Raid stability pass before release-candidate work. Th
 - OAuth/environment changes: **none**
 - New environment variables: **none**
 
-Deploy matching Beta 3 Web + Bot together.
+Deploy matching RC1 Web + Bot together.

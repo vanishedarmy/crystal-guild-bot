@@ -1,5 +1,5 @@
-Crystal Guild v1.5.0 — Trails & Raids Beta 3 — Bot Beta 2 → Beta 3 Patch
-Runtime: 1.5.0-trails-raids-b3
+Crystal Guild v1.5.0 — Trails & Raids RC1 — Bot Beta 3 → RC1 Patch
+Runtime: 1.5.0-trails-raids-rc1
 Changed/new files: 33
 Deleted files: 0
 Local DB schema: 10
@@ -22,7 +22,6 @@ VALIDATION_REPORT.md
 VERSION.txt
 WEB_SYNC_SETUP.md
 crystal_guild/__init__.py
-crystal_guild/encounter_daemon.py
 crystal_guild/engine.py
 prepare_render_migration.py
 run_maintenance.py
@@ -38,7 +37,8 @@ tests/test_guild_expansion_rc1.py
 tests/test_release_contract.py
 tests/test_trails_raids_beta1.py
 tests/test_trails_raids_beta2.py
-upgrade_crystal_guild.py
 tests/test_trails_raids_beta3.py
+upgrade_crystal_guild.py
+tests/test_trails_raids_rc1.py
 
 Deleted:

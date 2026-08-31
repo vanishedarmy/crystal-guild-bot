@@ -151,7 +151,7 @@ CAMP_REST_OFFLINE_SECONDS = 60 * 60
 def _state_guard(method):
     """Serialize and atomically persist authoritative live-combat state.
 
-    Trails & Raids Beta 3 extends the existing SQLite write-intent guard across
+    Trails & Raids Beta 3 introduced the existing SQLite write-intent guard across
     Bot connections. The outermost guarded call refreshes from the committed
     runtime checkpoint *after* acquiring BEGIN IMMEDIATE whenever another
     connection has advanced the runtime revision. That prevents two Bot
@@ -2709,11 +2709,25 @@ class CrystalGuildEngine:
             return None, GameResult.fail(f"{meta.get('name', 'Adventurer')} is trapped in {meta['restrained']} and cannot act until the party breaks it.")
         return meta, None
 
+    def _raid_action_ready_for_next_round(self, meta: dict[str, Any], boss: dict[str, Any] | None = None) -> bool:
+        """Return whether one queued action belongs to the exact upcoming Raid round.
+
+        RC1 uses the same run/round ownership check for both gameplay and
+        presentation. This keeps a malformed or stale restored stamp from
+        making the party look ready before resolution. The one legacy
+        unstamped action accepted by Beta 3 remains compatible for its first
+        restored round.
+        """
+        boss = boss or self.active_boss
+        if not boss or boss.get("state") != "combat":
+            return False
+        return self._raid_action_is_current(meta.get("action"), boss, int(boss.get("round", 0)) + 1)
+
     def _all_raid_actions_queued(self) -> bool:
         if not self.active_boss or self.active_boss.get("state") != "combat":
             return False
         living = [m for m in self.raid_roster.values() if int(m.get("hp", 0)) > 0 and not m.get("restrained")]
-        return bool(living and all(m.get("action") for m in living))
+        return bool(living and all(self._raid_action_ready_for_next_round(m, self.active_boss) for m in living))
 
     def _raid_target_id(self, query: str, *, default_id: str | None = None) -> str | None:
         token = normalize_action_text(query)
@@ -2745,16 +2759,20 @@ class CrystalGuildEngine:
         }
 
     def _raid_action_is_current(self, action: dict[str, Any] | None, boss: dict[str, Any], round_no: int) -> bool:
-        if not action:
+        if not action or not isinstance(action, dict):
             return False
         # Beta 2 checkpoints can contain a queued action without a stamp. Treat
         # that single restored action as belonging to the next round; all new
-        # Beta 3 queue operations are explicitly round/run scoped.
+        # Beta 3+ queue operations are explicitly round/run scoped.
         queued_round = action.get("raid_round")
         queued_run = str(action.get("raid_run") or "")
         if queued_round is None and not queued_run:
             return True
-        return int(queued_round or -1) == int(round_no) and queued_run == self._raid_instance_id(boss)
+        try:
+            queued_round = int(queued_round)
+        except (TypeError, ValueError, OverflowError):
+            return False
+        return queued_round == int(round_no) and queued_run == self._raid_instance_id(boss)
 
     def _queue_raid_ability(self, twitch_id: str, ability_query: str | None) -> GameResult:
         meta, error = self._raid_actor(twitch_id)
@@ -12608,7 +12626,7 @@ class CrystalGuildEngine:
                 "mitigation":m.get("mitigation",0), "score":int(round(score)),
             })
         actionable = [m for m in self.raid_roster.values() if int(m.get("hp",0)) > 0 and not m.get("restrained")]
-        ready_actions = sum(1 for m in actionable if m.get("action"))
+        ready_actions = sum(1 for m in actionable if self._raid_action_ready_for_next_round(m, boss))
         return {
             "active":active, "status":status or boss.get("state","rally").upper(), "boss":boss["name"], "tier":boss.get("tier","World Boss"),
             "encounter_type":boss.get("encounter_type","Raid"), "encounter_name":boss.get("encounter_name") or boss.get("name"),

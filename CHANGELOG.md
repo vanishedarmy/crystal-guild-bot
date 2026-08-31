@@ -1,3 +1,10 @@
+## v1.5.0 — Trails & Raids RC1
+- Freezes the seven-Trial feature set and reward/economy model for release-candidate validation.
+- Readiness counts and all-actions-ready checks now use the same exact Raid run + upcoming-round ownership rule as round resolution.
+- Malformed/stale action stamps fail closed and fall back to the normal automatic Attack instead of breaking resolution or falsely showing ready.
+- Preserves one-time compatibility for an unstamped queued action restored from pre-Beta-3 state.
+- Refreshes current release/deployment metadata and the Bot control-panel identity; runtime `1.5.0-trails-raids-rc1`, schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
+
 ## v1.5.0 — Trails & Raids Beta 3
 - Serializes active Raid mutations against the newest committed runtime revision.
 - Scopes queued Raid actions and timer ticks to an exact run/round.
@@ -8,7 +15,7 @@
 - Adds repeat-clear mastery milestones at 1/3/5/10 clears using the existing clear ledger.
 - Retains Last Trial Result and live action-readiness presentation on the Trial & Raid Board.
 - Adds exact Raid run identity plus bounded atomic settlement receipts to prevent duplicate rewards from stale/recovered Bot connections.
-- Runtime `1.5.0-trails-raids-b3`; schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
+- Runtime `1.5.0-trails-raids-b2`; schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
 
 ## v1.5.0 — Trails & Raids Beta 1
 - Freezes the seven scripted Trials and adds Trial Chronicle & Personal Records.

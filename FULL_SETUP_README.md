@@ -1,9 +1,9 @@
-# Crystal Guild v1.5.0 — Trails & Raids Beta 3 Full Setup
+# Crystal Guild v1.5.0 — Trails & Raids RC1 Full Setup
 
-This guide covers the supported local Windows runtime and Render cloud runtime. Beta 3 uses local DB schema **10**, hosted sync schema **1**, Portal Action protocol **25**, Twitch prefix **`!`**, and runtime `1.5.0-trails-raids-b3`.
+This guide covers the supported local Windows runtime and Render cloud runtime. RC1 uses local DB schema **10**, hosted sync schema **1**, Portal Action protocol **25**, Twitch prefix **`!`**, and runtime `1.5.0-trails-raids-rc1`.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, and persistent-disk data. Beta 3 requires no database migration from Beta 2 and introduces no new environment variables. Deploy the matching v1.5.0 Beta 3 Web + Bot together.
+Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, and persistent-disk data. RC1 requires no database migration from Beta 3 and introduces no new environment variables. Deploy the matching v1.5.0 RC1 Web + Bot together.
 
 ## Requirements
 - Python 3.11+
@@ -39,8 +39,8 @@ The Render worker uses the persistent `/var/data` location for the live Guild da
 Expected persistent paths are configured by `render.yaml`, including `/var/data/crystal_guild.db`, `/var/data/twitch_tokens.db`, and `/var/data/overlay/state.json`.
 
 ## Release verification
-- `!cgversion` → `1.5.0-trails-raids-b3`
-- `/api/health` → Web/frontend `1.5.0-trails-raids-b3`
+- `!cgversion` → `1.5.0-trails-raids-rc1`
+- `/api/health` → Web/frontend `1.5.0-trails-raids-rc1`
 - Local DB schema → **10**
 - Hosted sync schema → **1**
 - Portal Action protocol → **25**

@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GuildExpansionFinalTests(unittest.TestCase):
     def test_final_identity_schema_and_protocol_are_release_values(self):
-        self.assertEqual(__version__, "1.5.0-trails-raids-b3")
+        self.assertEqual(__version__, "1.5.0-trails-raids-rc1")
         self.assertEqual(ACTION_PROTOCOL_VERSION, 25)
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "final.db")
@@ -58,8 +58,8 @@ class GuildExpansionFinalTests(unittest.TestCase):
     def test_control_panel_and_upgrade_helper_identify_final_release(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
         upgrade = (ROOT / "upgrade_crystal_guild.py").read_text(encoding="utf-8")
-        self.assertIn("TRAILS & RAIDS BETA 3", panel.upper())
-        self.assertIn("Trails & Raids Beta 3", upgrade)
+        self.assertIn("TRAILS & RAIDS RC1", panel.upper())
+        self.assertIn("Trails & Raids RC1", upgrade)
         self.assertNotIn("GUILD EXPANSION BETA 1", panel.upper())
 
 
