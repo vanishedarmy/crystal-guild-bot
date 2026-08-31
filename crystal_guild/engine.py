@@ -11696,6 +11696,140 @@ class CrystalGuildEngine:
         self._leviathan_prepare_next_mechanic(boss)
         return total, messages
 
+    def _bahamut_prepare_next_mechanic(self, boss: dict[str, Any]) -> dict[str, Any]:
+        """Advance The Final Coil and unlock Teraflare at critical HP."""
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+        max_hp = max(1, int(boss.get("max_hp", boss.get("hp", 1))))
+        hp_ratio = max(0.0, min(1.0, int(boss.get("current_hp", max_hp)) / max_hp))
+        if hp_ratio <= 0.30 and not boss.get("_bahamut_teraflare_done") and not boss.get("_bahamut_teraflare_active"):
+            required = max(3500, min(65000, 3500 * max(1, len(alive))))
+            boss["_bahamut_teraflare_active"] = True
+            mechanic = {
+                "name": "Teraflare Charge", "kind": "final_damage_check",
+                "warning": "Bahamut begins the final cast. Meet the damage target within three rounds to weaken Teraflare.",
+                "rounds_remaining": 3, "required": required, "progress": 0,
+            }
+            boss["mechanic"] = mechanic
+            return mechanic
+        step = int(boss.get("_bahamut_step", 0)) % 3
+        if step == 0:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Flare Breath", "kind": "cleave",
+                "warning": "Dragonfire locks onto one raider and splashes a nearby ally.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        elif step == 1:
+            target_id = self.rng.choice(alive) if alive else None
+            target_name = self.raid_roster.get(target_id, {}).get("name") if target_id else None
+            mechanic = {
+                "name": "Akh Morn", "kind": "shared_hit",
+                "warning": "Akh Morn marks one raider. Defending allies join the stack and split the blast.",
+                "target_id": target_id, "target": target_name or "a raider", "rounds_remaining": 1,
+            }
+        else:
+            required = max(1, int(math.ceil(max(1, len(alive)) * 0.67)))
+            mechanic = {
+                "name": "Megaflare Towers", "kind": "tower_check",
+                "warning": "Enough standing raiders must Defend this round to soak the Megaflare Towers.",
+                "rounds_remaining": 1, "required": required, "progress": 0,
+            }
+        boss["mechanic"] = mechanic
+        boss["_bahamut_step"] = (step + 1) % 3
+        return mechanic
+
+    def _resolve_bahamut_response(
+        self, boss: dict[str, Any], *, round_damage: int, phase_mult: float,
+        enrage_mult: float, boss_pressure: float, ko_names: list[str],
+    ) -> tuple[int, list[str]]:
+        mechanic = boss.get("mechanic") if isinstance(boss.get("mechanic"), dict) else None
+        if not mechanic:
+            mechanic = self._bahamut_prepare_next_mechanic(boss)
+        messages: list[str] = []
+        total = 0
+        retaliation_enabled = int(boss.get("attacks_per_round", 3)) > 0
+        kind = str(mechanic.get("kind") or "")
+        level = int(boss.get("recommended_level", 65))
+        base = max(1, int((level * 7 + 90) * phase_mult * enrage_mult * boss_pressure))
+        alive = [pid for pid, meta in self.raid_roster.items() if int(meta.get("hp", 0)) > 0]
+
+        if kind == "final_damage_check":
+            mechanic["progress"] = max(0, int(mechanic.get("progress", 0))) + max(0, int(round_damage))
+            mechanic["rounds_remaining"] = max(0, int(mechanic.get("rounds_remaining", 1)) - 1)
+            required = max(1, int(mechanic.get("required", 1)))
+            progress = max(0, int(mechanic.get("progress", 0)))
+            if progress < required and int(mechanic["rounds_remaining"]) > 0:
+                messages.append(f"TERAFLARE CHARGE — {progress:,}/{required:,} damage · {mechanic['rounds_remaining']} rounds remaining.")
+                return 0, messages
+            success = progress >= required
+            result = "contained" if success else "cataclysmic"
+            blast_mult = 0.42 if success else 1.15
+            if retaliation_enabled:
+                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
+                for pid in alive:
+                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=48.0)
+            boss["_bahamut_teraflare_done"] = True
+            boss["_bahamut_teraflare_active"] = False
+            boss["last_mechanic"] = {"name": "Teraflare", "kind": "resolution", "result": result,
+                                      "warning": "The final charge was broken." if success else "Teraflare reaches full power."}
+            messages.append(f"TERAFLARE — charge {progress:,}/{required:,}; the blast is {result}" + (f" for {total:,} raid damage." if retaliation_enabled else " (boss retaliation suppressed)."))
+            self._bahamut_prepare_next_mechanic(boss)
+            return total, messages
+
+        if kind == "tower_check":
+            defenders = [pid for pid in alive if bool(self.raid_roster[pid].get("defending"))]
+            required = max(1, int(mechanic.get("required", 1)))
+            progress = len(defenders)
+            mechanic["progress"] = progress
+            success = progress >= required
+            result = "soaked" if success else "unsoaked"
+            blast_mult = 0.34 if success else 0.88
+            if retaliation_enabled:
+                raw = max(1, int(base * blast_mult * self.rng.uniform(0.94, 1.06)))
+                for pid in alive:
+                    total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=40.0)
+            boss["last_mechanic"] = {"name": "Megaflare", "kind": "resolution", "result": result, "progress": progress, "required": required}
+            messages.append(f"MEGAFLARE — Towers {progress}/{required} {result}; {total:,} raid damage." if retaliation_enabled else "MEGAFLARE — boss retaliation suppressed.")
+            self._bahamut_prepare_next_mechanic(boss)
+            return total, messages
+
+        target_id = str(mechanic.get("target_id") or "")
+        if target_id not in alive:
+            target_id = self.rng.choice(alive) if alive else ""
+        target_name = str(self.raid_roster.get(target_id, {}).get("name") or mechanic.get("target") or "a raider")
+
+        if kind == "shared_hit":
+            stack = [target_id] if target_id else []
+            for pid in alive:
+                if pid != target_id and bool(self.raid_roster[pid].get("defending")):
+                    stack.append(pid)
+            if retaliation_enabled and stack:
+                total_raw = max(1, int(base * 1.90 * self.rng.uniform(0.94, 1.06)))
+                per_target = max(1, int(total_raw / len(stack)))
+                for pid in stack:
+                    total += self._raid_apply_scripted_hit(pid, raw=per_target, ko_names=ko_names, limit_gain=46.0)
+            names = [str(self.raid_roster.get(pid, {}).get("name") or "raider") for pid in stack]
+            boss["last_mechanic"] = {"name": "Akh Morn", "kind": "shared_hit", "target": target_name, "result": f"shared_{len(stack)}"}
+            messages.append(f"AKH MORN — {', '.join(names) or target_name} split the blast for {total:,} total damage." if retaliation_enabled else "AKH MORN — boss retaliation suppressed.")
+            self._bahamut_prepare_next_mechanic(boss)
+            return total, messages
+
+        # Flare Breath cleaves the marked raider and one additional standing ally.
+        targets = [target_id] if target_id else []
+        others = [pid for pid in alive if pid != target_id]
+        if others:
+            targets.append(self.rng.choice(others))
+        if retaliation_enabled:
+            for index, pid in enumerate(targets):
+                raw = max(1, int(base * (1.12 if index == 0 else 0.72) * self.rng.uniform(0.94, 1.06)))
+                total += self._raid_apply_scripted_hit(pid, raw=raw, ko_names=ko_names, limit_gain=42.0)
+        names = [str(self.raid_roster.get(pid, {}).get("name") or "raider") for pid in targets]
+        boss["last_mechanic"] = {"name": "Flare Breath", "kind": "cleave", "target": ", ".join(names)}
+        messages.append(f"FLARE BREATH — {', '.join(names) or target_name} take {total:,} total damage." if retaliation_enabled else "FLARE BREATH — boss retaliation suppressed.")
+        self._bahamut_prepare_next_mechanic(boss)
+        return total, messages
+
     def _raid_telegraph_text(self, boss: dict[str, Any]) -> str:
         mechanic = self._raid_public_mechanic(boss.get("mechanic"))
         if not mechanic:
@@ -11736,6 +11870,10 @@ class CrystalGuildEngine:
             return f"UNDERTOW — {name}: {mechanic.get('target') or 'a raider'} must Defend to protect HP and resources."
         if kind == "survival_check":
             return f"STABILITY GAUGE — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} Defends · {int(mechanic.get('rounds_remaining', 0))} rounds."
+        if kind == "tower_check":
+            return f"TOWER CHECK — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} Defends required this round."
+        if kind == "final_damage_check":
+            return f"FINAL DAMAGE CHECK — {name}: {int(mechanic.get('progress', 0)):,}/{int(mechanic.get('required', 0)):,} damage · {int(mechanic.get('rounds_remaining', 0))} rounds."
         if kind == "stagger":
             return f"STAGGER — {name}: boss is vulnerable and cannot answer the next round."
         return f"MECHANIC — {name}."
@@ -11784,6 +11922,11 @@ class CrystalGuildEngine:
             self.active_boss["_leviathan_step"] = 0
             self.active_boss["_leviathan_sweep_side"] = 0
             self._leviathan_prepare_next_mechanic(self.active_boss)
+        elif script_id == "bahamut_final_coil":
+            self.active_boss["_bahamut_step"] = 0
+            self.active_boss["_bahamut_teraflare_active"] = False
+            self.active_boss["_bahamut_teraflare_done"] = False
+            self._bahamut_prepare_next_mechanic(self.active_boss)
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
@@ -11938,6 +12081,11 @@ class CrystalGuildEngine:
                 boss, round_damage=round_damage, phase_mult=phase_mult,
                 enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
             )
+        elif self._raid_script_id(boss) == "bahamut_final_coil":
+            total_boss_damage, scripted_messages = self._resolve_bahamut_response(
+                boss, round_damage=round_damage, phase_mult=phase_mult,
+                enrage_mult=enrage_mult, boss_pressure=boss_pressure, ko_names=ko_names,
+            )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
             for pid in targets:
@@ -12013,7 +12161,7 @@ class CrystalGuildEngine:
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
             messages.append(f"ENRAGE — {boss['name']} is beyond R{enrage_round}; damage escalates every round.")
-        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag", "garuda_eye_of_storm", "leviathan_tidebreak_expanse"} and not boss_stunned:
+        if self._raid_script_id(boss) in {"ifrit_inferno_crucible", "shiva_diamond_throne", "ramuh_judgment_spire", "titan_heart_of_crag", "garuda_eye_of_storm", "leviathan_tidebreak_expanse", "bahamut_final_coil"} and not boss_stunned:
             telegraph = self._raid_telegraph_text(boss)
             if telegraph:
                 messages.append(telegraph)

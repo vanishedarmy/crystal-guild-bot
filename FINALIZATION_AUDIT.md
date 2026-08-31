@@ -1,31 +1,31 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 6 Release Audit
+# Crystal Guild v1.5.0 — Trails & Raids Alpha 7 Release Audit
 
-## Frozen Alpha 6 contract
-- Bot/Web/frontend: `1.5.0-trails-raids-a6`
+## Frozen Alpha 7 contract
+- Bot/Web/frontend: `1.5.0-trails-raids-a7`
 - Local DB schema: **10**
 - Hosted sync schema: **1**
 - Portal Action protocol: **25**
 - Twitch prefix: `!`
 - Production Dungeon catalog: **4**, unchanged
-- Scripted flagship Trials: **6**
+- Scripted flagship Trials: **7** (six elemental Trials + Bahamut capstone)
 
 ## Release scope
-Alpha 6 adds **Leviathan — Tidebreak Expanse** with Tidal Sweep side pressure, Undertow resource pressure, a two-round Maelstrom Stability Gauge, and stability-dependent Tidal Wave. Alpha 5's roomy collapsible Trial Board remains intact. Existing raid rewards/economy, earlier Trials, unscripted raids, and all four production Dungeons remain unchanged.
+Alpha 7 adds **Bahamut — The Final Coil** with Flare Breath, Akh Morn, Megaflare Towers, and a critical-HP Teraflare damage race. Bahamut receives a full-width capstone card while the existing roomy collapsible Trial Board remains intact. Existing raid rewards/economy, earlier Trials, unscripted raids, and all four production Dungeons remain unchanged.
 
 ## Validation
-- **568/568 Bot**, **430/430 frontend**, **47/47 hosted Web/API**.
-- **104/104 Python compile**, **206/206 frontend parser**, **165/165 Node syntax**.
+- **574/574 Bot**, **435/435 frontend**, **47/47 hosted Web/API**.
+- **105/105 Python compile**, **207/207 frontend parser**, **166/166 Node syntax**.
 - **37 bosses / 4 Dungeons / 0 GameData errors**.
-- Public artwork: **0 PNG / 575 WebP**; active image routes **154/154**.
-- Real Alpha 5 → Alpha 6 schema-10 upgrade/recovery drill: **PASS**; Lv.17 / 4,321 Gil preserved exactly.
+- Public artwork: **0 PNG / 575 WebP**; literal image routes **165/165**.
+- Real Alpha 6 → Alpha 7 schema-10 upgrade/recovery drill: **PASS**; Lv.17 / 4,321 Gil preserved exactly.
 
 ## Packaging verification
-- Alpha 5 → Alpha 6 Bot: **31 changed/new, 0 deleted**; final **158 files**.
-- Alpha 5 → Alpha 6 Web: **57 changed/new, 0 deleted**; final **833 files**.
-- Full/individual/paired reconstruction: **158/158 Bot** and **833/833 Web PASS**.
+- Alpha 6 → Alpha 7 Bot: **31 changed/new, 0 deleted**; final **159 files**.
+- Alpha 6 → Alpha 7 Web: **58 changed/new, 0 deleted**; final **834 files**.
+- Full/individual/paired reconstruction: **159/159 Bot** and **834/834 Web PASS**.
 - Release ZIP CRC/integrity: **6 / 6 PASS**.
 - Runtime/private-artifact hygiene: **0 violations**.
 - SHA-256 verification: **10 / 10 PASS**.
 
 ## Deployment
-Deploy matching Alpha 6 Web + Bot together. Preserve the live database, `.env`, Twitch tokens, hosted secrets, and persistent-disk state. No migration is required from Alpha 5.
+Deploy matching Alpha 7 Web + Bot together. Preserve the live database, `.env`, Twitch tokens, hosted secrets, and persistent-disk state. No migration is required from Alpha 6.

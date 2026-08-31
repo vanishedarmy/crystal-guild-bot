@@ -1,17 +1,23 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 6
+# Crystal Guild v1.5.0 — Trails & Raids Alpha 7
 
-## Tidebreak Expanse
-Alpha 6 adds **Leviathan — Tidebreak Expanse** as the sixth scripted Trial. Alpha 5's spacious, collapsible Trial & Raid Board remains the presentation baseline, while Ifrit, Shiva, Ramuh, Titan, Garuda, unscripted raids, and all four production Dungeons remain supported.
+## The Final Coil
+Alpha 7 adds **Bahamut — The Final Coil** as Crystal Guild's first capstone scripted Trial. The six elemental flagship Trials remain supported, the roomy collapsible Trial & Raid Board remains the presentation baseline, and all four production Dungeons remain unchanged.
 
-### Leviathan mechanics
-- **Tidal Sweep** marks roughly half of the standing raid on alternating Port/Starboard pressure. Each marked raider can Defend to brace and avoid lingering Slow.
-- **Undertow** targets one raider. Defend protects the target; an unbraced target loses MP/AP and releases splash pressure into allies.
-- **Maelstrom Surge** is a two-round survival phase. Coordinated Defends fill a shared Stability Gauge while repeated water pressure hits the raid.
-- **Tidal Wave** resolves weakened when the Stability Gauge succeeds and empowered when the raid fails to stabilize.
-- No new target or mechanic command is required; existing `!attack`, `!ability`, `!defend`, item, Limit Break, Summon, and revive commands remain the combat surface.
+### Bahamut mechanics
+- **Flare Breath** cleaves a marked raider and one nearby ally.
+- **Akh Morn** marks one raider; Defending allies join the stack and split the blast.
+- **Megaflare Towers** requires enough standing raiders to Defend in the same round to contain Megaflare.
+- At critical HP, **Teraflare Charge** begins a one-time three-round damage race. Meeting the target contains Teraflare; failure unleashes the full blast.
+- No new target or mechanic command is required; the existing raid command vocabulary remains authoritative.
+
+### Presentation
+- Bahamut receives a **full-width capstone card** on desktop while the six elemental Trials retain the roomy two-column layout.
+- Portal and OBS telegraphs understand **Tower Check** and **Final Damage Check** states.
+- Player Guide coverage documents the complete Final Coil mechanic set.
+- The Trial & Raid Board remains collapsible, remembers its open/closed state, and keeps the canonical right-hand closed / down-hand open pointer.
 
 ### Compatibility
-- Bot/Web/frontend runtime: `1.5.0-trails-raids-a6`
+- Bot/Web/frontend runtime: `1.5.0-trails-raids-a7`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **25** unchanged

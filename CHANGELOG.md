@@ -1,3 +1,9 @@
+## v1.5.0 — Trails & Raids Alpha 7
+- Bahamut — The Final Coil becomes the first capstone Trial.
+- Flare Breath, Akh Morn, Megaflare Towers, and critical-HP Teraflare Charge add multi-phase coordination.
+- The Trial Board gives Bahamut a full-width capstone card while preserving the roomy collapsible layout.
+- Runtime `1.5.0-trails-raids-a7`; schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
+
 # Changelog
 
 ## v1.5.0 — Trails & Raids Alpha 6

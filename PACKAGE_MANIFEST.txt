@@ -1,8 +1,8 @@
-v1.5.0 — Trails & Raids Alpha 6 — Bot Package Manifest
-Bot runtime: 1.5.0-trails-raids-a6
-Matching Web/frontend: 1.5.0-trails-raids-a6
+v1.5.0 — Trails & Raids Alpha 7 — Bot Package Manifest
+Bot runtime: 1.5.0-trails-raids-a7
+Matching Web/frontend: 1.5.0-trails-raids-a7
 Local DB schema: 10
 Hosted sync schema: 1
 Portal Action protocol: 25
 Twitch prefix: !
-Baseline: v1.5.0 Trails & Raids Alpha 5 Bot
+Baseline: v1.5.0 Trails & Raids Alpha 6 Bot
