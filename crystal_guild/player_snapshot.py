@@ -983,6 +983,59 @@ class PortalRepository:
                     }
                 )
             bosses.sort(key=lambda b: (-b["clears"], -b["best_damage"], b["name"].lower()))
+            boss_history = {row["id"]: row for row in bosses}
+            trials = []
+            for boss_id, boss in self.data.bosses.items():
+                if str(boss.get("encounter_type") or "").lower() != "trial":
+                    continue
+                prefix = f"trial_{boss_id}_"
+                legacy = boss_history.get(boss_id) or {}
+                clears = int(legacy.get("clears", 0) or 0)
+                wipes = int(stats.get(prefix + "wipes", 0) or 0)
+                fastest = int(stats.get(prefix + "fastest_rounds", 0) or 0)
+                best_damage = max(int(legacy.get("best_damage", 0) or 0), int(stats.get(prefix + "best_damage", 0) or 0))
+                trials.append({
+                    "id": boss_id,
+                    "name": boss.get("name", boss_id),
+                    "encounter_name": boss.get("encounter_name") or boss.get("name", boss_id),
+                    "recommended_level": int(boss.get("recommended_level", 1) or 1),
+                    "capstone": str(boss.get("raid_script") or "") == "bahamut_final_coil",
+                    "clears": clears,
+                    "wipes": wipes,
+                    "attempts": clears + wipes,
+                    "fastest_clear_rounds": fastest or None,
+                    "best_score": int(stats.get(prefix + "best_score", 0) or 0),
+                    "best_damage": best_damage,
+                    "best_healing": int(stats.get(prefix + "best_healing", 0) or 0),
+                    "best_mitigation": int(stats.get(prefix + "best_mitigation", 0) or 0),
+                    "last_cleared_at": legacy.get("last_cleared_at"),
+                })
+            trials.sort(key=lambda row: (row["recommended_level"], row["name"].lower()))
+            unique_trial_clears = sum(1 for row in trials if row["clears"] > 0)
+            if unique_trial_clears >= len(trials) and trials:
+                trial_rank = "Coilbreaker"
+                next_trial_goal = None
+            elif unique_trial_clears >= 6:
+                trial_rank = "Primal Conqueror"
+                next_trial_goal = len(trials)
+            elif unique_trial_clears >= 3:
+                trial_rank = "Trial Vanguard"
+                next_trial_goal = 6
+            elif unique_trial_clears >= 1:
+                trial_rank = "Trial Initiate"
+                next_trial_goal = 3
+            else:
+                trial_rank = "Unproven"
+                next_trial_goal = 1
+            trial_summary = {
+                "rank": trial_rank,
+                "unique_clears": unique_trial_clears,
+                "total_trials": len(trials),
+                "total_clears": sum(row["clears"] for row in trials),
+                "tracked_wipes": sum(row["wipes"] for row in trials),
+                "best_score": max((row["best_score"] for row in trials), default=0),
+                "next_unique_clear_goal": next_trial_goal,
+            }
 
             economy = conn.execute(
                 """
@@ -1146,6 +1199,8 @@ class PortalRepository:
                     "nemesis": nemesis,
                 },
                 "bosses": bosses,
+                "trial_summary": trial_summary,
+                "trials": trials,
             }
 
     def _find_player(self, conn: sqlite3.Connection, key: str) -> sqlite3.Row | None:

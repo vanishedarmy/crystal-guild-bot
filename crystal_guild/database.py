@@ -908,6 +908,22 @@ class Database:
                 (player_id, metric, int(value)),
             )
 
+    def min_record_stat(self, player_id: str, metric: str, value: int) -> None:
+        """Persist a positive personal-best metric where lower is better."""
+        value = int(value)
+        if value <= 0:
+            return
+        with self.tx() as conn:
+            conn.execute(
+                """
+                INSERT INTO player_record_stats(player_id, metric, value) VALUES (?, ?, ?)
+                ON CONFLICT(player_id, metric) DO UPDATE SET
+                    value=MIN(player_record_stats.value, excluded.value),
+                    updated_at=CURRENT_TIMESTAMP
+                """,
+                (player_id, metric, value),
+            )
+
     def record_monster_result(
         self,
         player_id: str,

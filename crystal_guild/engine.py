@@ -12294,6 +12294,43 @@ class CrystalGuildEngine:
             messages.extend(final.messages)
         return GameResult.success(*messages[-5:])
 
+    def _record_trial_result(self, boss: dict[str, Any], *, won: bool) -> None:
+        """Persist per-player flagship Trial records without another schema table.
+
+        Legacy Trial clears already live in player_boss_clears. Beta 1 adds the
+        metrics that older releases did not retain (wipes, fastest clear and
+        contribution bests) through player_record_stats so schema 10 remains
+        authoritative and existing progression is preserved in place.
+        """
+        if str(boss.get("encounter_type") or "").lower() != "trial":
+            return
+        boss_id = str(boss.get("id") or "").strip()
+        if not boss_id:
+            return
+        rounds = max(0, int(boss.get("round") or 0))
+        prefix = f"trial_{boss_id}_"
+        for pid, meta in self.raid_roster.items():
+            if not self._player(pid):
+                continue
+            if not won:
+                self.db.add_record_stat(pid, prefix + "wipes", 1)
+            score = int(round(raid_contribution_score(
+                damage=int(meta.get("damage", 0)),
+                healing=int(meta.get("healing", 0)),
+                mitigation=int(meta.get("mitigation", 0)),
+            )))
+            self.db.update_record_stats(
+                pid,
+                maxima={
+                    prefix + "best_score": score,
+                    prefix + "best_damage": int(meta.get("damage", 0)),
+                    prefix + "best_healing": int(meta.get("healing", 0)),
+                    prefix + "best_mitigation": int(meta.get("mitigation", 0)),
+                },
+            )
+            if won and rounds > 0:
+                self.db.min_record_stat(pid, prefix + "fastest_rounds", rounds)
+
     @_state_guard
     def _finish_raid(self, won: bool, reason: str | None = None) -> GameResult:
         if not self.active_boss:
@@ -12379,6 +12416,7 @@ class CrystalGuildEngine:
             final_status="WIPE"
         if fellowship_raid_notes:
             messages.append("Fellowship — " + " | ".join(dict.fromkeys(fellowship_raid_notes[:5])))
+        self._record_trial_result(boss, won=won)
         final_overlay=self._overlay_payload(active=False,status=final_status,boss_override=boss)
         self._write_overlay(final_overlay)
         self.active_boss=None; self.raid_roster.clear()

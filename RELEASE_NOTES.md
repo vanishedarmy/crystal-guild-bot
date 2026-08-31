@@ -1,23 +1,22 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 7
+# Crystal Guild v1.5.0 — Trails & Raids Beta 1
 
-## The Final Coil
-Alpha 7 adds **Bahamut — The Final Coil** as Crystal Guild's first capstone scripted Trial. The six elemental flagship Trials remain supported, the roomy collapsible Trial & Raid Board remains the presentation baseline, and all four production Dungeons remain unchanged.
+## Trial Chronicle & Records Consolidation
+Beta 1 freezes the seven scripted Trial encounters introduced during Alpha and turns them into durable personal progression records. No new boss, currency, reward table, combat mechanic, or Portal mutation is added in this pass.
 
-### Bahamut mechanics
-- **Flare Breath** cleaves a marked raider and one nearby ally.
-- **Akh Morn** marks one raider; Defending allies join the stack and split the blast.
-- **Megaflare Towers** requires enough standing raiders to Defend in the same round to contain Megaflare.
-- At critical HP, **Teraflare Charge** begins a one-time three-round damage race. Meeting the target contains Teraflare; failure unleashes the full blast.
-- No new target or mechanic command is required; the existing raid command vocabulary remains authoritative.
+### Trial Chronicle
+- The Trial & Raid Board now shows a persistent **Trial Chronicle** for the viewed adventurer.
+- Existing Alpha-era Trial clears are preserved automatically from the authoritative boss-clear ledger.
+- From Beta 1 onward, each flagship Trial tracks **wipes, fastest clear round, best contribution score, best damage, best healing, and best mitigation**.
+- Unique Trial clears advance a visible mastery rank: **Unproven → Trial Initiate → Trial Vanguard → Primal Conqueror → Coilbreaker**.
+- The Records page now includes the same seven-Trial Chronicle and personal-best breakdown.
 
-### Presentation
-- Bahamut receives a **full-width capstone card** on desktop while the six elemental Trials retain the roomy two-column layout.
-- Portal and OBS telegraphs understand **Tower Check** and **Final Damage Check** states.
-- Player Guide coverage documents the complete Final Coil mechanic set.
-- The Trial & Raid Board remains collapsible, remembers its open/closed state, and keeps the canonical right-hand closed / down-hand open pointer.
+### Continuity
+- Existing boss clears and best clear damage remain authoritative and require no conversion.
+- Historical wipes/fastest rounds/contribution bests cannot be reconstructed from Alpha data, so those metrics begin tracking with Beta 1.
+- Trial rewards, loot, encounter scripts, contribution reward weighting, unscripted raids, and the four production Dungeons are unchanged.
 
 ### Compatibility
-- Bot/Web/frontend runtime: `1.5.0-trails-raids-a7`
+- Bot/Web/frontend runtime: `1.5.0-trails-raids-b1`
 - Local DB schema: **10** unchanged
 - Hosted sync schema: **1** unchanged
 - Portal Action protocol: **25** unchanged

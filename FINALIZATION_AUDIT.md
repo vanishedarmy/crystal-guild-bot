@@ -1,31 +1,41 @@
-# Crystal Guild v1.5.0 — Trails & Raids Alpha 7 Release Audit
+# Crystal Guild v1.5.0 — Trails & Raids Beta 1 Release Audit
 
-## Frozen Alpha 7 contract
-- Bot/Web/frontend: `1.5.0-trails-raids-a7`
+## Frozen Beta 1 contract
+- Bot/Web/frontend: `1.5.0-trails-raids-b1`
 - Local DB schema: **10**
 - Hosted sync schema: **1**
 - Portal Action protocol: **25**
 - Twitch prefix: `!`
-- Production Dungeon catalog: **4**, unchanged
-- Scripted flagship Trials: **7** (six elemental Trials + Bahamut capstone)
+- Scripted flagship Trials: **7**, content frozen
+- Production Dungeons: **4**, unchanged
 
-## Release scope
-Alpha 7 adds **Bahamut — The Final Coil** with Flare Breath, Akh Morn, Megaflare Towers, and a critical-HP Teraflare damage race. Bahamut receives a full-width capstone card while the existing roomy collapsible Trial Board remains intact. Existing raid rewards/economy, earlier Trials, unscripted raids, and all four production Dungeons remain unchanged.
+## Scope
+Beta 1 consolidates the seven Alpha Trials into durable personal progression records. It adds the Trial Chronicle, personal bests, and mastery presentation without changing Trial rewards, encounter mechanics, unscripted raids, Dungeon progression, or the economy.
 
-## Validation
-- **574/574 Bot**, **435/435 frontend**, **47/47 hosted Web/API**.
-- **105/105 Python compile**, **207/207 frontend parser**, **166/166 Node syntax**.
+Existing Trial clears are inherited from the authoritative boss-clear ledger. Metrics that did not exist during Alpha—tracked wipes, fastest clear rounds, and contribution bests—begin recording from Beta 1 onward rather than being guessed retroactively.
+
+## Release-quality guarantees
+- Trial metrics use the existing schema-10 generic record-stat store; no migration is introduced.
+- Unscripted raids remain excluded from Trial Chronicle metrics.
+- Raid combat remains Twitch/Bot-authoritative; Chronicle surfaces are read-only Portal presentation.
+- Existing exact Dungeon stale-state/replay protections and all seven scripted Trial combat systems remain regression-covered.
+- Alpha 7 → Beta 1 upgrade/recovery preserves existing player data exactly.
+
+## Final validation
+- **580/580 Bot**, **440/440 frontend**, **47/47 hosted Web/API**.
+- **106/106 Python compile**, **208/208 JS/JSX/MJS parser**, **167/167 Node syntax**.
+- **155/155** unique static literal image paths resolve; route set unchanged from Alpha 7.
+- **7/7** flagship Trial art routes resolve; public artwork remains **0 PNG / 575 WebP**.
 - **37 bosses / 4 Dungeons / 0 GameData errors**.
-- Public artwork: **0 PNG / 575 WebP**; literal image routes **165/165**.
-- Real Alpha 6 → Alpha 7 schema-10 upgrade/recovery drill: **PASS**; Lv.17 / 4,321 Gil preserved exactly.
+- Real Alpha 7 → Beta 1 schema-10 in-place upgrade and non-destructive recovery drill: **PASS**.
 
 ## Packaging verification
-- Alpha 6 → Alpha 7 Bot: **31 changed/new, 0 deleted**; final **159 files**.
-- Alpha 6 → Alpha 7 Web: **58 changed/new, 0 deleted**; final **834 files**.
-- Full/individual/paired reconstruction: **159/159 Bot** and **834/834 Web PASS**.
-- Release ZIP CRC/integrity: **6 / 6 PASS**.
-- Runtime/private-artifact hygiene: **0 violations**.
-- SHA-256 verification: **10 / 10 PASS**.
+- Alpha 7 → Beta 1 Bot patch: **31 changed/new, 0 deleted**; final **160 files**.
+- Alpha 7 → Beta 1 Web patch: **59 changed/new, 0 deleted**; final **835 files**.
+- Individual and paired patch helpers reconstruct the exact final Bot/Web trees: **PASS**.
+- Full Bot/Web and Complete archives match the frozen source trees: **PASS**.
+- All **6/6** release ZIPs pass CRC/integrity checks; private/runtime-artifact hygiene is **0 violations**.
+- SHA-256 checksum verification: **10/10 PASS**.
 
 ## Deployment
-Deploy matching Alpha 7 Web + Bot together. Preserve the live database, `.env`, Twitch tokens, hosted secrets, and persistent-disk state. No migration is required from Alpha 6.
+Deploy matching Beta 1 Web + Bot together. Preserve the live database, `.env`, Twitch tokens, hosted secrets, and persistent-disk state. No migration or reset is required from Alpha 7.

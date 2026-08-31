@@ -1,5 +1,5 @@
-# Crystal Guild Bot — v1.5.0 Trails & Raids Alpha 7
+# Crystal Guild Bot — v1.5.0 Trails & Raids Beta 1
 
-Alpha 7 expands Trails & Raids with **Bahamut — The Final Coil**, the first capstone Trial: Flare Breath, Akh Morn, Megaflare Towers, and a critical-HP Teraflare damage race. Ifrit, Shiva, Ramuh, Titan, Garuda, Leviathan, ordinary raids, and the roomy collapsible Trial & Raid Board remain supported.
+Beta 1 consolidates the seven scripted Trials with the **Trial Chronicle & Personal Records** layer. Existing Trial clears are retained, while new clears/wipes begin tracking fastest clear rounds and best contribution, damage, healing, and mitigation records. The elemental Trials, Bahamut capstone, ordinary raids, and frozen Dungeons remain supported.
 
-Runtime `1.5.0-trails-raids-a7` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching Alpha 7 Bot + Web together. See `UPGRADE_GUIDE.md`.
+Runtime `1.5.0-trails-raids-b1` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching Beta 1 Bot + Web together. See `UPGRADE_GUIDE.md`.

@@ -1,15 +1,16 @@
-# Upgrade Guide — v1.5.0 Trails & Raids Alpha 7
+# Upgrade Guide — v1.5.0 Trails & Raids Beta 1
 
-Baseline: **v1.5.0 Trails & Raids Alpha 6**.
+Baseline: **v1.5.0 Trails & Raids Alpha 7**.
 
-1. Back up the current player database and persistent Twitch/token data.
+1. Back up the live player database and persistent Twitch/token data as usual.
 2. Stop the Bot cleanly.
-3. Apply the **Alpha 6 → Alpha 7 Bot patch**, or replace the Bot source while preserving `.env`, database files, token storage, and persistent-disk state.
-4. Deploy the matching **Alpha 6 → Alpha 7 Web patch** or full Alpha 7 Web package.
-5. Restart/redeploy both services.
-6. Verify `!cgversion` and `/api/health` report `1.5.0-trails-raids-a7`; local schema remains 10, hosted sync 1, Portal protocol 25.
-7. Open the collapsible **Trial & Raid Board** and confirm **Bahamut — The Final Coil** appears as the full-width capstone card.
-8. In staging, verify Flare Breath → Akh Morn → Megaflare Towers. Lower Bahamut below 30% HP and confirm the one-time Teraflare Charge appears.
-9. Confirm existing players, Guild/Fellowship state, Expeditions, Dungeons, inventories, records, and the six earlier Trials remain intact.
+3. Apply the **Alpha 7 → Beta 1 Bot patch**, or replace Bot source while preserving `.env`, the live database, tokens, and persistent-disk configuration.
+4. Deploy the matching **Alpha 7 → Beta 1 Web patch**, or replace the Web source.
+5. Start the Bot and confirm `!cgversion` reports `1.5.0-trails-raids-b1` with local schema **10** and Portal protocol **25**.
+6. Redeploy/restart the hosted Web service and confirm `/api/health` reports Web/frontend `1.5.0-trails-raids-b1`, hosted sync schema **1**, and Portal protocol **25**.
+7. Open Adventure Board → Trial & Raid Board. Confirm the Chronicle shows existing Trial clears and per-Trial records.
+8. Resolve a Trial in staging if practical and confirm tracked wipes/fastest clear/contribution bests update after Portal sync.
+9. Open Records → Trial Chronicle and confirm the same personal records are shown there.
+10. Verify existing players, inventories, Fellowship, Expeditions, Dungeons, boss clears, and all seven Trial encounters remain intact.
 
-No migration, reset, OAuth/environment change, or new environment variable is required.
+No database migration, player reset, OAuth/environment change, or new environment variable is required.
