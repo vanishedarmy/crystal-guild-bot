@@ -1,8 +1,5 @@
-v1.5.0 — Trails & Raids — Bot Package Manifest
-Bot runtime: 1.5.0-trails-raids
-Matching Web/frontend: 1.5.0-trails-raids
-Local DB schema: 10
-Hosted sync schema: 1
-Portal Action protocol: 25
-Twitch prefix: !
-Baseline: v1.5.0 Trails & Raids Beta 3 Bot
+v1.5.1 — Relic Arsenal Complete — Bot Package Manifest
+Bot runtime: 1.5.1-relic-arsenal-complete
+Matching Web/frontend: 1.5.1-relic-arsenal-complete
+Schema 10 / hosted sync 1 / Portal protocol 25 / prefix !
+Baseline: v1.5.0 — Trails & Raids stable Bot

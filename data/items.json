@@ -7619,5 +7619,694 @@
     "shop": false,
     "unsellable": true,
     "description": "A provisional Fellowship Stable writ. It activates one hour after issue and is consumed when a Chocobo is registered."
+  },
+  {
+    "id": "bravura_dormant",
+    "name": "Bravura — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "warrior"
+    ],
+    "bonuses": {
+      "attack": 84,
+      "str": 11,
+      "vit": 9
+    },
+    "relic_id": "bravura",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "axe",
+    "description": "Dormant form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "bravura_awakened",
+    "name": "Bravura — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "warrior"
+    ],
+    "bonuses": {
+      "attack": 121,
+      "str": 17,
+      "vit": 14,
+      "lck": 4
+    },
+    "relic_id": "bravura",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "axe",
+    "description": "Awakened form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "bravura_zenith",
+    "name": "Bravura — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "warrior"
+    ],
+    "bonuses": {
+      "attack": 162,
+      "str": 23,
+      "vit": 20,
+      "lck": 7
+    },
+    "relic_id": "bravura",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "axe",
+    "description": "Zenith form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "murgleis_dormant",
+    "name": "Murgleis — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "redmage"
+    ],
+    "bonuses": {
+      "attack": 76,
+      "magic_power": 76,
+      "dex": 8,
+      "mag": 8
+    },
+    "relic_id": "murgleis",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "rapier",
+    "description": "Dormant form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "murgleis_awakened",
+    "name": "Murgleis — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "redmage"
+    ],
+    "bonuses": {
+      "attack": 109,
+      "magic_power": 109,
+      "dex": 13,
+      "mag": 13,
+      "spr": 6
+    },
+    "relic_id": "murgleis",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "rapier",
+    "description": "Awakened form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "murgleis_zenith",
+    "name": "Murgleis — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "redmage"
+    ],
+    "bonuses": {
+      "attack": 147,
+      "magic_power": 147,
+      "dex": 18,
+      "mag": 18,
+      "spr": 10
+    },
+    "relic_id": "murgleis",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "rapier",
+    "description": "Zenith form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "yoshimitsu_dormant",
+    "name": "Yoshimitsu — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 78,
+      "dex": 13,
+      "lck": 10
+    },
+    "relic_id": "yoshimitsu",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "dagger",
+    "description": "Dormant form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "yoshimitsu_awakened",
+    "name": "Yoshimitsu — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 112,
+      "dex": 20,
+      "lck": 16,
+      "mag": 5
+    },
+    "relic_id": "yoshimitsu",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "dagger",
+    "description": "Awakened form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "yoshimitsu_zenith",
+    "name": "Yoshimitsu — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 151,
+      "dex": 27,
+      "lck": 23,
+      "mag": 9
+    },
+    "relic_id": "yoshimitsu",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "dagger",
+    "description": "Zenith form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "veil_of_wiyu_dormant",
+    "name": "Veil of Wiyu — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "summoner"
+    ],
+    "bonuses": {
+      "magic_power": 90,
+      "mag": 13,
+      "spr": 8
+    },
+    "relic_id": "veil_of_wiyu",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "tome",
+    "description": "Dormant form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "veil_of_wiyu_awakened",
+    "name": "Veil of Wiyu — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "summoner"
+    ],
+    "bonuses": {
+      "magic_power": 130,
+      "mag": 20,
+      "spr": 13,
+      "lck": 5
+    },
+    "relic_id": "veil_of_wiyu",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "tome",
+    "description": "Awakened form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "veil_of_wiyu_zenith",
+    "name": "Veil of Wiyu — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "summoner"
+    ],
+    "bonuses": {
+      "magic_power": 174,
+      "mag": 28,
+      "spr": 19,
+      "lck": 8
+    },
+    "relic_id": "veil_of_wiyu",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "tome",
+    "description": "Zenith form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "almace_dormant",
+    "name": "Almace — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 78,
+      "magic_power": 76,
+      "vit": 7,
+      "mag": 8
+    },
+    "relic_id": "almace",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "sword",
+    "description": "Dormant form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "almace_awakened",
+    "name": "Almace — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 112,
+      "magic_power": 110,
+      "vit": 11,
+      "mag": 13,
+      "dex": 6
+    },
+    "relic_id": "almace",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "sword",
+    "description": "Awakened form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "almace_zenith",
+    "name": "Almace — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 151,
+      "magic_power": 148,
+      "vit": 16,
+      "mag": 18,
+      "dex": 10
+    },
+    "relic_id": "almace",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "sword",
+    "description": "Zenith form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "chronos_dormant",
+    "name": "Chronos — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "timemage"
+    ],
+    "bonuses": {
+      "magic_power": 86,
+      "mag": 12,
+      "dex": 8
+    },
+    "relic_id": "chronos",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "staff",
+    "description": "Dormant form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "chronos_awakened",
+    "name": "Chronos — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "timemage"
+    ],
+    "bonuses": {
+      "magic_power": 124,
+      "mag": 18,
+      "dex": 13,
+      "spr": 7
+    },
+    "relic_id": "chronos",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "staff",
+    "description": "Awakened form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "chronos_zenith",
+    "name": "Chronos — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "timemage"
+    ],
+    "bonuses": {
+      "magic_power": 166,
+      "mag": 25,
+      "dex": 18,
+      "spr": 11
+    },
+    "relic_id": "chronos",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "staff",
+    "description": "Zenith form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "artemis_bow_dormant",
+    "name": "Artemis Bow — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 76,
+      "magic_power": 76,
+      "spr": 10,
+      "dex": 8
+    },
+    "relic_id": "artemis_bow",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "bow",
+    "description": "Dormant form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "artemis_bow_awakened",
+    "name": "Artemis Bow — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 109,
+      "magic_power": 109,
+      "spr": 16,
+      "dex": 13,
+      "lck": 6
+    },
+    "relic_id": "artemis_bow",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "bow",
+    "description": "Awakened form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "artemis_bow_zenith",
+    "name": "Artemis Bow — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 147,
+      "magic_power": 147,
+      "spr": 22,
+      "dex": 18,
+      "lck": 10
+    },
+    "relic_id": "artemis_bow",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "bow",
+    "description": "Zenith form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "armageddon_dormant",
+    "name": "Armageddon — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 84,
+      "dex": 12,
+      "lck": 9
+    },
+    "relic_id": "armageddon",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "firearm",
+    "description": "Dormant form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "armageddon_awakened",
+    "name": "Armageddon — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 120,
+      "dex": 19,
+      "lck": 15,
+      "str": 5
+    },
+    "relic_id": "armageddon",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "firearm",
+    "description": "Awakened form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "armageddon_zenith",
+    "name": "Armageddon — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 160,
+      "dex": 26,
+      "lck": 21,
+      "str": 9
+    },
+    "relic_id": "armageddon",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "firearm",
+    "description": "Zenith form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "guttler_dormant",
+    "name": "Guttler — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "beastmaster"
+    ],
+    "bonuses": {
+      "attack": 84,
+      "str": 10,
+      "vit": 8
+    },
+    "relic_id": "guttler",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "axe",
+    "description": "Dormant form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "guttler_awakened",
+    "name": "Guttler — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "beastmaster"
+    ],
+    "bonuses": {
+      "attack": 121,
+      "str": 16,
+      "vit": 13,
+      "lck": 5
+    },
+    "relic_id": "guttler",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "axe",
+    "description": "Awakened form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "guttler_zenith",
+    "name": "Guttler — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "beastmaster"
+    ],
+    "bonuses": {
+      "attack": 162,
+      "str": 22,
+      "vit": 18,
+      "lck": 9
+    },
+    "relic_id": "guttler",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "axe",
+    "description": "Zenith form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "astral_codex_dormant",
+    "name": "Astral Codex — Dormant",
+    "type": "weapon",
+    "rarity": "relic",
+    "price": 7000,
+    "shop": false,
+    "min_level": 45,
+    "allowed_jobs": [
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 86,
+      "spr": 14,
+      "mag": 9
+    },
+    "relic_id": "astral_codex",
+    "relic_stage": 1,
+    "unsellable": true,
+    "gear_family": "tome",
+    "description": "Dormant form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "astral_codex_awakened",
+    "name": "Astral Codex — Awakened",
+    "type": "weapon",
+    "rarity": "artifact",
+    "price": 12000,
+    "shop": false,
+    "min_level": 55,
+    "allowed_jobs": [
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 124,
+      "spr": 21,
+      "mag": 15,
+      "vit": 5
+    },
+    "relic_id": "astral_codex",
+    "relic_stage": 2,
+    "unsellable": true,
+    "gear_family": "tome",
+    "description": "Awakened form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "astral_codex_zenith",
+    "name": "Astral Codex — Zenith",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 25000,
+    "shop": false,
+    "min_level": 65,
+    "allowed_jobs": [
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 166,
+      "spr": 29,
+      "mag": 22,
+      "vit": 9
+    },
+    "relic_id": "astral_codex",
+    "relic_stage": 3,
+    "unsellable": true,
+    "gear_family": "tome",
+    "description": "Zenith form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
   }
 ]

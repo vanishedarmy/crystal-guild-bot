@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo Running Crystal Guild v1.5.0 - Trails & Raids synthetic release stress test...
+echo Running Crystal Guild v1.5.1 - Relic Arsenal Complete synthetic release stress test...
 python run_stress_test.py %*
 if errorlevel 1 (
   echo.

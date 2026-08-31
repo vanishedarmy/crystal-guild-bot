@@ -1,3 +1,9 @@
+## v1.5.1 — Relic Arsenal Complete
+- Completes Relic coverage for all 18 playable Jobs with 10 new three-stage questlines and 30 stage weapon items.
+- Adds matching Relic artwork and 18-Job collection progress in the Portal and Player Guide.
+- Keeps the Active Hunt scenic layer visible through Hunt resolution/result confirmation.
+- Runtime `1.5.1-relic-arsenal-complete`; schema 10 / hosted sync 1 / Portal protocol 25 unchanged.
+
 ## v1.5.0 — Trails & Raids
 - Promotes the validated RC1 feature set into the final production release.
 - Adds production scenic backgrounds for Active Hunt and the collapsed/open Trial & Raid Board.

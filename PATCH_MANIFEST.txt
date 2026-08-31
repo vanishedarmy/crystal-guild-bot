@@ -1,6 +1,7 @@
-Crystal Guild v1.5.0 — Trails & Raids — Bot RC1 → Production Patch
-Runtime: 1.5.0-trails-raids
-Changed/new files: 32
+Crystal Guild v1.5.1 — Relic Arsenal Complete — Bot Patch
+Baseline: v1.5.0 stable Bot
+Runtime: 1.5.1-relic-arsenal-complete
+Changed/new files: 38
 Deleted files: 0
 Local DB schema: 10
 Hosted sync schema: 1
@@ -22,7 +23,11 @@ VALIDATION_REPORT.md
 VERSION.txt
 WEB_SYNC_SETUP.md
 crystal_guild/__init__.py
+data/items.json
+data/relics.json
+open_twitch_authorization.bat
 prepare_render_migration.py
+pyproject.toml
 run_maintenance.py
 run_selftest.bat
 run_stress_test.bat
@@ -33,11 +38,13 @@ tests/test_dungeons_beta3.py
 tests/test_dungeons_rc1.py
 tests/test_dungeons_release.py
 tests/test_guild_expansion_rc1.py
+tests/test_item_expansion.py
 tests/test_release_contract.py
 tests/test_trails_raids_beta1.py
 tests/test_trails_raids_beta2.py
 tests/test_trails_raids_beta3.py
 tests/test_trails_raids_rc1.py
 upgrade_crystal_guild.py
+tests/test_relic_arsenal_151.py
 
 Deleted:

@@ -1,9 +1,9 @@
-# Crystal Guild v1.5.0 — Trails & Raids Full Setup
+# Crystal Guild v1.5.1 — Relic Arsenal Complete Full Setup
 
-This guide covers the supported local Windows runtime and Render cloud runtime. v1.5.0 uses local DB schema **10**, hosted sync schema **1**, Portal Action protocol **25**, Twitch prefix **`!`**, and runtime `1.5.0-trails-raids`.
+This guide covers the supported local Windows runtime and Render cloud runtime. v1.5.1 uses local DB schema **10**, hosted sync schema **1**, Portal Action protocol **25**, Twitch prefix **`!`**, and runtime `1.5.1-relic-arsenal-complete`.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, and persistent-disk data. v1.5.0 requires no database migration from RC1 and introduces no new environment variables. Deploy the matching v1.5.0 Web + Bot together.
+Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, and persistent-disk data. v1.5.1 requires no database migration from v1.5.0 and introduces no new environment variables. Deploy the matching v1.5.1 Web + Bot together.
 
 ## Requirements
 - Python 3.11+
@@ -39,8 +39,8 @@ The Render worker uses the persistent `/var/data` location for the live Guild da
 Expected persistent paths are configured by `render.yaml`, including `/var/data/crystal_guild.db`, `/var/data/twitch_tokens.db`, and `/var/data/overlay/state.json`.
 
 ## Release verification
-- `!cgversion` → `1.5.0-trails-raids`
-- `/api/health` → Web/frontend `1.5.0-trails-raids`
+- `!cgversion` → `1.5.1-relic-arsenal-complete`
+- `/api/health` → Web/frontend `1.5.1-relic-arsenal-complete`
 - Local DB schema → **10**
 - Hosted sync schema → **1**
 - Portal Action protocol → **25**

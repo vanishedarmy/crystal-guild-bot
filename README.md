@@ -1,5 +1,3 @@
-# Crystal Guild Bot — v1.5.0 Trails & Raids
+# Crystal Guild Bot — v1.5.1 Relic Arsenal Complete
 
-v1.5.0 ships the frozen seven-Trial catalog and preserves the final readiness boundary: only actions owned by the exact active Raid run and upcoming round count as ready, while malformed or stale stamps fail closed without breaking resolution. Beta 3 shared-state protection and Beta 2 exactly-once settlement remain intact.
-
-Runtime `1.5.0-trails-raids` · schema 10 · hosted sync 1 · Portal protocol 25 · prefix `!`. Deploy matching v1.5.0 Bot + Web together. See `UPGRADE_GUIDE.md`.
+Completes dedicated Relic progression for all 18 playable Jobs while preserving the v1.5.0 gameplay, database, and Portal contracts. Runtime `1.5.1-relic-arsenal-complete`; schema 10; hosted sync 1; Portal protocol 25.
