@@ -1,29 +1,29 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 3
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 4 — Chocobo Racing
 
-Gold Saucer Alpha 3 makes **MGP** the canonical Gold Saucer currency name without changing any stored balance, attraction cost, payout table, daily allowance, or ordinary Gil behavior.
+Gold Saucer Alpha 4 opens **Chocobo Racing** using each player's existing registered Chocobo. It preserves the Alpha 3 MGP contract and every existing Gold Saucer balance, payout table, Prize Counter purchase, and record.
 
-## MGP contract
-- **MGP** replaces the player-facing **SP / Saucer Points** name everywhere in the Bot-side Gold Saucer contract and result messages.
-- Existing `player_gold_saucer.points` storage is intentionally retained so live balances require **no database migration**.
-- New canonical Portal state fields are `mgp`, `welcome_mgp`, `daily_allowance_mgp`, `account.mgp`, and `records.net_mgp`.
-- `currency_name` and `currency_code` both report `MGP`.
-- Legacy `points`, `welcome_points`, `daily_allowance_points`, `account.points`, and `records.net_points` remain additive compatibility aliases for an Alpha 2 frontend during rollout.
+## Chocobo Racing
+- Uses the Chocobo already registered through the existing Stable; no duplicate companion system is created.
+- **3 races per UTC day**, resetting at 00:00 UTC.
+- Three courses:
+  - **Manderville Sprint** — Bond Lv. 1+, 25 MGP entry; podium 70 / 40 / 20 MGP.
+  - **Crystal Circuit** — Bond Lv. 5+, 35 MGP entry; podium 110 / 55 / 25 MGP.
+  - **Golden Gauntlet** — Bond Lv. 10+, 50 MGP entry; podium 160 / 75 / 35 MGP.
+- Three race paces: **Steady Pace**, **Balanced**, and **Final Sprint**. They trade consistency against upside rather than guaranteeing placement.
+- Existing Bond level provides a modest performance curve. Existing Chocobo traits receive a small course-favored bonus.
+- Six-racer outcomes are committed by the authoritative Bot in one idempotent Portal action. Duplicate action delivery replays the same result without a second entry charge or payout.
 
-## Existing Gold Saucer gameplay carried forward
-- One-time welcome purse: **500 MGP**.
-- Daily floor allowance: **50 MGP** on the first Saucer request of a later UTC day.
-- Mini Cactpot: **10 MGP** per daily ticket; payout table unchanged.
-- Crystal Slots: **15 MGP** per spin; payout table and cooldown unchanged.
-- Monster Toss: **20 MGP** per game, 5 throws, maximum 3 completed games per UTC day; payout tiers unchanged.
-- Prize Counter prices are numerically unchanged and now display MGP.
-- Gold Saucer remains isolated from ordinary Gil and combat progression.
+## Records and rewards
+- Saucer Ledger adds races, wins, podiums, win rate, best finish, and best race payout.
+- Race activity is stored in the existing Gold Saucer history ledger.
+- Prize Counter adds cosmetic titles **Feathered Finisher** and **Circuit Champion**.
+- Racing awards MGP only; it does not create Gil, items, combat stats, or a separate Chocobo progression track.
 
 ## Compatibility
-- Runtime: `1.6.0-gold-saucer-a3`
+- Runtime: `1.6.0-gold-saucer-a4`
 - Local DB schema: **12** unchanged
 - Hosted sync schema: **1** unchanged
-- Portal Action protocol: **27** unchanged
+- Portal Action protocol: **28** (new `CHOCOBO_RACE` action)
 - Twitch prefix: `!`
-- No player reset, OAuth/environment change, new required variable, database migration, payout rebalance, or gameplay reset.
-
-The Alpha 2 Web relay remains protocol-compatible because Alpha 3 adds no new Portal action type. A matching frontend source update is still required wherever the UI hardcodes the old SP/Saucer Points wording.
+- MGP remains canonical; legacy Alpha 2 balance aliases remain available for compatibility.
+- No player reset, OAuth/environment change, new required variable, or database migration.

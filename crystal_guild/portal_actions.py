@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 27
+ACTION_PROTOCOL_VERSION = 28
 
 
 class PortalActionWorker:
@@ -493,6 +493,16 @@ class PortalActionWorker:
             target = str(payload.get("target") or "").strip().lower()
             style = str(payload.get("style") or "").strip().lower()
             return self._game_result(self.game.portal_monster_toss_throw(twitch_id, target, style, str(action.get("id") or "")))
+        if action_type == "CHOCOBO_RACE":
+            course = str(payload.get("course") or "").strip().lower()
+            strategy = str(payload.get("strategy") or "").strip().lower()
+            if set(payload) != {"course", "strategy"}:
+                return False, "Chocobo Racing requires only course and strategy.", {}
+            if course not in {"manderville_sprint", "crystal_circuit", "golden_gauntlet"}:
+                return False, "Chocobo Racing course is invalid.", {}
+            if strategy not in {"steady", "balanced", "sprint"}:
+                return False, "Chocobo Racing strategy is invalid.", {}
+            return self._game_result(self.game.portal_chocobo_race(twitch_id, course, strategy, str(action.get("id") or "")))
         if action_type == "SAUCER_BUY":
             if set(payload) != {"prize_id"}:
                 return False, "Gold Saucer prize purchase requires only prize_id.", {}

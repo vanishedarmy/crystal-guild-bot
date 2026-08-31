@@ -90,6 +90,83 @@ def monster_toss_payout(score: int) -> tuple[int, str]:
     return 0, "miss"
 
 
+# Alpha 4 — Chocobo Racing. Races resolve authoritatively in one Portal action
+# and use the player's existing registered Chocobo. Level provides a modest
+# performance curve, while each course favors one or more existing traits.
+# MGP remains separate from Gil and all race rewards stay inside the Saucer.
+CHOCOBO_RACING_DAILY_RACES = 3
+CHOCOBO_RACING_COURSES = (
+    {
+        "id": "manderville_sprint",
+        "name": "Manderville Sprint",
+        "min_level": 1,
+        "cost": 25,
+        "field_rating": 56.0,
+        "field_variance": 7.0,
+        "favored_traits": ("steady_strider", "forager"),
+        "description": "A welcoming short course with a tight final turn.",
+        "payouts": {1: 70, 2: 40, 3: 20},
+    },
+    {
+        "id": "crystal_circuit",
+        "name": "Crystal Circuit",
+        "min_level": 5,
+        "cost": 35,
+        "field_rating": 60.5,
+        "field_variance": 7.5,
+        "favored_traits": ("keen_eye", "fleet_feet"),
+        "description": "A faster technical circuit where clean lines matter.",
+        "payouts": {1: 110, 2: 55, 3: 25},
+    },
+    {
+        "id": "golden_gauntlet",
+        "name": "Golden Gauntlet",
+        "min_level": 10,
+        "cost": 50,
+        "field_rating": 66.0,
+        "field_variance": 8.0,
+        "favored_traits": ("lucky_plume",),
+        "description": "The headline race: a demanding field with the richest podium purse.",
+        "payouts": {1: 160, 2: 75, 3: 35},
+    },
+)
+CHOCOBO_RACING_STRATEGIES = (
+    {"id": "steady", "name": "Steady Pace", "performance_mod": 1.0, "variance": 5.0, "description": "Lower variance for a dependable run."},
+    {"id": "balanced", "name": "Balanced", "performance_mod": 0.0, "variance": 8.0, "description": "A neutral pace with normal risk and upside."},
+    {"id": "sprint", "name": "Final Sprint", "performance_mod": -0.5, "variance": 11.0, "description": "Higher variance creates a bigger ceiling and a bigger chance to fade late."},
+)
+CHOCOBO_RACING_COURSES_BY_ID = {row["id"]: row for row in CHOCOBO_RACING_COURSES}
+CHOCOBO_RACING_STRATEGIES_BY_ID = {row["id"]: row for row in CHOCOBO_RACING_STRATEGIES}
+
+
+def chocobo_race_result(level: int, traits: set[str] | list[str] | tuple[str, ...], course_id: str, strategy_id: str, rng: Any) -> dict[str, Any]:
+    course = CHOCOBO_RACING_COURSES_BY_ID[str(course_id)]
+    strategy = CHOCOBO_RACING_STRATEGIES_BY_ID[str(strategy_id)]
+    level = max(1, min(20, int(level)))
+    trait_set = {str(value) for value in traits}
+    trait_bonus = 1.5 if trait_set.intersection(course["favored_traits"]) else 0.0
+    level_bonus = min(3.0, max(0, level - int(course["min_level"])) * 0.2)
+    player_mean = float(course["field_rating"]) + level_bonus + float(strategy["performance_mod"]) + trait_bonus
+    player_score = float(rng.gauss(player_mean, float(strategy["variance"])))
+    opponents = [
+        float(rng.gauss(float(course["field_rating"]), float(course["field_variance"])))
+        for _ in range(5)
+    ]
+    placement = 1 + sum(1 for score in opponents if score > player_score)
+    payout = int(course["payouts"].get(placement, 0))
+    return {
+        "placement": int(placement),
+        "field_size": 6,
+        "payout": payout,
+        "performance": round(player_score, 1),
+        "trait_bonus": round(trait_bonus, 1),
+        "course_id": str(course["id"]),
+        "course_name": str(course["name"]),
+        "strategy_id": str(strategy["id"]),
+        "strategy_name": str(strategy["name"]),
+    }
+
+
 # Alpha 1 Prize Counter is intentionally cosmetic-only. Rewards unlock
 # existing title functionality and never grant combat power, Gil, items,
 # or progression shortcuts.
@@ -128,6 +205,20 @@ PRIZES = (
         "name": "Pot Shot Pro",
         "cost": 3200,
         "description": "A prestige Monster Toss title for suspiciously accurate carnival heroes.",
+    },
+    {
+        "id": "feathered_finisher",
+        "title_id": "feathered_finisher",
+        "name": "Feathered Finisher",
+        "cost": 2200,
+        "description": "For riders who discovered that every straightaway is an invitation.",
+    },
+    {
+        "id": "circuit_champion",
+        "title_id": "circuit_champion",
+        "name": "Circuit Champion",
+        "cost": 5000,
+        "description": "A prestige title for Gold Saucer riders with podium feathers to spare.",
     },
 )
 PRIZES_BY_ID = {str(row["id"]): row for row in PRIZES}

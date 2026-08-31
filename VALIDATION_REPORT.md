@@ -1,31 +1,30 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 3 Validation Report
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 4 Validation Report
 
 ## Result
-**PASS — Bot / authoritative gameplay package**
+**PASS**
 
-## Automated validation
-- Full Bot regression suite: **619 / 619 PASS**.
-- Alpha 3 MGP-specific tests: **4 / 4 PASS**.
-- Python compile sweep: **PASS**.
+## Regression suites
+- Bot: **623 / 623 PASS**.
+- Alpha 4 Chocobo Racing focused tests: **4 / 4 PASS**.
 
-## Alpha 3 MGP coverage
-- Runtime reports `1.6.0-gold-saucer-a3`.
-- Local DB schema remains **12** and Portal Action protocol remains **27**.
-- `currency_name` and `currency_code` return **MGP**.
-- Canonical `mgp`, `welcome_mgp`, `daily_allowance_mgp`, `account.mgp`, and `records.net_mgp` fields are present.
-- Legacy Alpha 2 `points` aliases resolve to exactly the same values.
-- A manually seeded existing Gold Saucer balance was read back unchanged through both `mgp` and `points` fields.
-- Mini Cactpot and Monster Toss player-facing result messages use **MGP**.
-- Streamer `!saucergrant` returns the canonical `mgp` balance while retaining `points` as a compatibility alias.
-- Existing attraction costs/payouts and daily limits were not rebalanced.
+## Alpha 4 coverage
+- Runtime reports `1.6.0-gold-saucer-a4`.
+- Local DB schema remains **12**; no migration is required.
+- Hosted sync remains **1**.
+- Portal Action protocol is **28** with authoritative `CHOCOBO_RACE` handling.
+- Registration, Bond-level course gates, 3-races-per-UTC-day limit, MGP debit/payout settlement, and exactly-once replay are covered.
+- Existing registered Chocobo level and traits are consumed without creating a duplicate companion progression system.
+- Mini Cactpot, Crystal Slots, Monster Toss, Prize Counter, MGP balances, and prior gameplay regressions remain green.
 
-## Compatibility contract
-- Runtime: `1.6.0-gold-saucer-a3`
+## Source gate
+- Python parse across matched Bot + Web source: **119 / 119 PASS**.
+
+## Frozen contract
+- Runtime: `1.6.0-gold-saucer-a4`
 - Local DB schema: **12**
 - Hosted sync schema: **1**
-- Portal Action protocol: **27**
-- Twitch prefix: **`!`**
-- No database migration, player reset, OAuth/environment change, or new required environment variable.
+- Portal Action protocol: **28**
+- Twitch prefix: `!`
+- MGP remains canonical.
 
-## Web validation scope
-The canonical Alpha 2 Hotfix 2 Web archive was not available in the working Library for this continuation, so this report does **not** claim an Alpha 3 frontend build or frontend regression pass. The Bot-side API deliberately keeps protocol 27 and legacy `points` aliases to preserve relay compatibility until the canonical Web source is available for the UI rename pass.
+No player reset, database migration, OAuth/environment change, new required variable, or existing-attraction economy rebalance is required.

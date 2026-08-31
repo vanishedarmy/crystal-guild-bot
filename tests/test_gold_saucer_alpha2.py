@@ -27,10 +27,10 @@ class GoldSaucerAlpha2Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_alpha2_contract_and_monster_toss_state(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a3")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a4")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 12)
         self.assertEqual(self.db.schema_version(), 12)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 27)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 28)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='gold_saucer_monster_toss'"))
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
         toss = state["monster_toss"]
@@ -94,7 +94,7 @@ class GoldSaucerAlpha2Tests(unittest.TestCase):
 
     def test_portal_worker_routes_monster_toss_actions(self):
         worker = PortalActionWorker(self.game, "https://guild.example", "sync-key")
-        base = {"protocol_version": 27, "twitch_id": "100", "username": "van", "payload": {}, "lease_token": "lease"}
+        base = {"protocol_version": 28, "twitch_id": "100", "username": "van", "payload": {}, "lease_token": "lease"}
         ok, _message, data = worker._execute({**base, "id": "worker-toss-start", "type": "MONSTER_TOSS_START"})
         self.assertTrue(ok)
         self.assertIsNotNone(data["gold_saucer_state"]["monster_toss"]["active_game"])

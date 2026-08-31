@@ -1,13 +1,10 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 3 — Bot Package
-Runtime: 1.6.0-gold-saucer-a3
+Crystal Guild v1.6.0 — Gold Saucer Alpha 4 — Bot Package
+Runtime: 1.6.0-gold-saucer-a4
 Local schema: 12
 Hosted sync: 1
-Portal Action protocol: 27
+Portal Action protocol: 28
 Twitch prefix: !
-Baseline: v1.6.0 Gold Saucer Alpha 2 Hotfix 2 canonical Bot
-Alpha 3: MGP canonical currency contract, compatibility aliases, MGP player-facing Bot copy
-Gameplay rebalance: none
+Baseline: v1.6.0 Gold Saucer Alpha 3 MGP canonical complete baseline
+Alpha 4: Chocobo Racing, racing ledger records, race titles, protocol-28 CHOCOBO_RACE action
 Database migration: none
-Matching Alpha 3 Web package: not included in this artifact
-Full Bot tree: 170 files
-Delta from Alpha 2 H2 canonical Bot: 35 changed/new files, 1 newly added test, 0 deleted
+MGP balance migration/rebalance: none

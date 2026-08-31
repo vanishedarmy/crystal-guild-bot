@@ -107,8 +107,11 @@ from .gold_saucer import (
     SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOTS_THEORETICAL_RETURN_PCT, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
     MONSTER_TOSS_COST, MONSTER_TOSS_THROWS, MONSTER_TOSS_DAILY_GAMES, MONSTER_TOSS_TARGETS, MONSTER_TOSS_STYLES, MONSTER_TOSS_PAYOUTS,
     MONSTER_TOSS_TARGETS_BY_ID, MONSTER_TOSS_STYLES_BY_ID,
+    CHOCOBO_RACING_DAILY_RACES, CHOCOBO_RACING_COURSES, CHOCOBO_RACING_STRATEGIES,
+    CHOCOBO_RACING_COURSES_BY_ID, CHOCOBO_RACING_STRATEGIES_BY_ID,
     masked_grid as saucer_masked_grid, slot_labels as saucer_slot_labels, slot_payout as saucer_slot_payout,
     monster_toss_throw_profile as saucer_toss_profile, monster_toss_payout as saucer_toss_payout,
+    chocobo_race_result as saucer_chocobo_race_result,
 )
 from .time_format import format_duration
 from .chocobo import (
@@ -9627,6 +9630,77 @@ class CrystalGuildEngine:
             "monster_toss_accuracy_pct": round((toss_hits / toss_throws_total) * 100, 1) if toss_throws_total else 0.0,
         })
         records["games_played"] = int(records.get("games_played", 0)) + toss_games
+
+        race_rows = conn.execute(
+            "SELECT wager,payout,outcome,details_json,created_at FROM gold_saucer_history "
+            "WHERE player_id=? AND game='chocobo_racing' ORDER BY created_at DESC,id DESC",
+            (twitch_id,),
+        ).fetchall()
+        race_entries: list[dict[str, Any]] = []
+        for row in race_rows:
+            details = self._gold_saucer_json(row["details_json"], {})
+            race_entries.append({
+                "wager": int(row["wager"] or 0),
+                "payout": int(row["payout"] or 0),
+                "outcome": str(row["outcome"] or ""),
+                "details": details if isinstance(details, dict) else {},
+                "created_at": int(row["created_at"] or 0),
+            })
+        races_today = sum(1 for row in race_entries if int(row["created_at"] or 0) >= day_start)
+        race_wins = sum(1 for row in race_entries if int(row["details"].get("placement", 99)) == 1)
+        race_podiums = sum(1 for row in race_entries if int(row["details"].get("placement", 99)) <= 3)
+        best_finish = min((int(row["details"].get("placement", 99)) for row in race_entries), default=0)
+        if best_finish >= 99:
+            best_finish = 0
+        records.update({
+            "chocobo_races": len(race_entries),
+            "chocobo_race_wins": race_wins,
+            "chocobo_race_podiums": race_podiums,
+            "chocobo_race_best_finish": best_finish,
+            "chocobo_race_best_payout": max((int(row["payout"] or 0) for row in race_entries), default=0),
+            "chocobo_race_win_rate_pct": round((race_wins / len(race_entries)) * 100, 1) if race_entries else 0.0,
+        })
+        records["games_played"] = int(records.get("games_played", 0)) + len(race_entries)
+
+        chocobo_row = conn.execute(
+            "SELECT name,xp,portrait_id,registered_at FROM player_chocobos WHERE player_id=?",
+            (twitch_id,),
+        ).fetchone()
+        race_registered = bool(chocobo_row and chocobo_row["registered_at"] and chocobo_row["name"])
+        race_level = 0
+        race_traits: list[str] = []
+        race_companion = None
+        if race_registered and chocobo_row:
+            race_level, _race_xp_current, _race_xp_next = chocobo_level_from_total_xp(int(chocobo_row["xp"] or 0))
+            race_traits = [
+                str(row["trait_id"])
+                for row in conn.execute(
+                    "SELECT trait_id FROM player_chocobo_traits WHERE player_id=? ORDER BY unlocked_at,trait_id",
+                    (twitch_id,),
+                ).fetchall()
+            ]
+            race_companion = {
+                "name": str(chocobo_row["name"] or "Chocobo"),
+                "level": int(race_level),
+                "portrait_id": str(chocobo_row["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID),
+                "traits": race_traits,
+            }
+        race_courses = []
+        for course in CHOCOBO_RACING_COURSES:
+            cost = int(course["cost"])
+            min_level = int(course["min_level"])
+            race_courses.append({
+                "id": str(course["id"]),
+                "name": str(course["name"]),
+                "min_level": min_level,
+                "cost": cost,
+                "description": str(course["description"]),
+                "favored_traits": list(course["favored_traits"]),
+                "payouts": [{"place": place, "payout": int(course["payouts"].get(place, 0))} for place in (1, 2, 3)],
+                "eligible": bool(race_registered and race_level >= min_level),
+                "can_enter": bool(race_registered and race_level >= min_level and races_today < CHOCOBO_RACING_DAILY_RACES and points >= cost),
+            })
+        last_race = race_entries[0] if race_entries else None
         return {
             # Alpha 3 canonical currency fields. Legacy points fields remain as
             # compatibility aliases so an Alpha 2 Web cannot lose the balance
@@ -9687,11 +9761,26 @@ class CrystalGuildEngine:
                     for minimum, payout, tier in MONSTER_TOSS_PAYOUTS
                 ],
             },
+            "chocobo_racing": {
+                "daily_races": CHOCOBO_RACING_DAILY_RACES,
+                "races_today": races_today,
+                "races_remaining": max(0, CHOCOBO_RACING_DAILY_RACES - races_today),
+                "next_daily_reset_at": day_start + 86400,
+                "registered": race_registered,
+                "companion": race_companion,
+                "courses": race_courses,
+                "strategies": [
+                    {"id": str(row["id"]), "name": str(row["name"]), "description": str(row["description"])}
+                    for row in CHOCOBO_RACING_STRATEGIES
+                ],
+                "last_race": last_race,
+                "can_race": bool(race_registered and races_today < CHOCOBO_RACING_DAILY_RACES and any(row["can_enter"] for row in race_courses)),
+            },
             "attractions": [
                 {"id": "mini_cactpot", "name": "Mini Cactpot", "status": "open", "description": "One persistent daily ticket. Reveal four cells, then choose a line."},
                 {"id": "crystal_slots", "name": "Crystal Slots", "status": "open", "description": "Quick three-reel spins using MGP."},
                 {"id": "monster_toss", "name": "Monster Toss", "status": "open", "description": "Five persistent throws. Choose a target and throw style, then chase the best score before the daily games run out."},
-                {"id": "chocobo_racing", "name": "Chocobo Racing", "status": "coming_soon", "description": "Your registered Chocobo will race in a later Gold Saucer alpha."},
+                {"id": "chocobo_racing", "name": "Chocobo Racing", "status": "open", "description": "Race your existing registered Chocobo across three daily circuits with course and pace choices."},
                 {"id": "triple_triad", "name": "Triple Triad", "status": "coming_soon", "description": "Card collection and matches are reserved for a later Gold Saucer alpha."},
             ],
             "history": history,
@@ -9977,6 +10066,84 @@ class CrystalGuildEngine:
                         result = GameResult.success(
                             f"MONSTER TOSS — {'HIT' if hit else 'MISS'} on {target['name']} with {style['name']}. Score: {next_score:,}.",
                             monster_toss_throw=throw_payload, monster_toss_score=next_score, monster_toss_complete=False,
+                        )
+            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_chocobo_race(self, twitch_id: str, course_id: str, strategy_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        course_key = str(course_id or "").strip().lower()
+        strategy_key = str(strategy_id or "").strip().lower()
+        if course_key not in CHOCOBO_RACING_COURSES_BY_ID:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a valid Chocobo Racing course."))
+        if strategy_key not in CHOCOBO_RACING_STRATEGIES_BY_ID:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a valid Chocobo Racing pace."))
+        now = int(time.time())
+        day_start = now - (now % 86400)
+        with self.db.tx(immediate=True) as conn:
+            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
+            chocobo = conn.execute(
+                "SELECT name,xp,portrait_id,registered_at FROM player_chocobos WHERE player_id=?",
+                (twitch_id,),
+            ).fetchone()
+            registered = bool(chocobo and chocobo["registered_at"] and chocobo["name"])
+            course = CHOCOBO_RACING_COURSES_BY_ID[course_key]
+            if not registered or not chocobo:
+                result = GameResult.fail("Chocobo Racing requires your registered Chocobo. Visit the Chocobo Stable first.")
+            else:
+                level, _xp_current, _xp_next = chocobo_level_from_total_xp(int(chocobo["xp"] or 0))
+                races_today_row = conn.execute(
+                    "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='chocobo_racing' AND created_at>=?",
+                    (twitch_id, day_start),
+                ).fetchone()
+                races_today = int(races_today_row["n"] or 0) if races_today_row else 0
+                cost = int(course["cost"])
+                if races_today >= CHOCOBO_RACING_DAILY_RACES:
+                    result = GameResult.fail("You have used all Chocobo Racing entries for today. The circuit resets at 00:00 UTC.")
+                elif int(level) < int(course["min_level"]):
+                    result = GameResult.fail(f"{course['name']} requires Chocobo Lv. {int(course['min_level'])}.")
+                elif int(account["points"] or 0) < cost:
+                    result = GameResult.fail(f"{course['name']} costs {cost} MGP to enter.")
+                else:
+                    traits = {
+                        str(row["trait_id"])
+                        for row in conn.execute(
+                            "SELECT trait_id FROM player_chocobo_traits WHERE player_id=?",
+                            (twitch_id,),
+                        ).fetchall()
+                    }
+                    race = saucer_chocobo_race_result(level, traits, course_key, strategy_key, self.rng)
+                    payout = int(race["payout"])
+                    details = {
+                        **race,
+                        "chocobo_name": str(chocobo["name"] or "Chocobo"),
+                        "chocobo_level": int(level),
+                        "portrait_id": str(chocobo["portrait_id"] or CHOCOBO_DEFAULT_PORTRAIT_ID),
+                    }
+                    conn.execute(
+                        "UPDATE player_gold_saucer SET points=points-?+?,lifetime_spent=lifetime_spent+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                        (cost, payout, cost, payout, twitch_id),
+                    )
+                    conn.execute(
+                        "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'chocobo_racing',?,?,?,?,?)",
+                        (twitch_id, cost, payout, f"place_{int(race['placement'])}", json.dumps(details, separators=(",", ":")), now),
+                    )
+                    placement = int(race["placement"])
+                    ordinal = "1st" if placement == 1 else "2nd" if placement == 2 else "3rd" if placement == 3 else f"{placement}th"
+                    if payout > 0:
+                        result = GameResult.success(
+                            f"CHOCOBO RACING — {details['chocobo_name']} finished {ordinal} in {course['name']} and won {payout} MGP!",
+                            chocobo_race=details, race_payout=payout, race_placement=placement,
+                        )
+                    else:
+                        result = GameResult.success(
+                            f"CHOCOBO RACING — {details['chocobo_name']} finished {ordinal} in {course['name']}. No podium MGP this race.",
+                            chocobo_race=details, race_payout=0, race_placement=placement,
                         )
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)

@@ -766,5 +766,21 @@
     "category": "Gold Saucer",
     "rarity": "epic",
     "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "feathered_finisher",
+    "name": "Feathered Finisher",
+    "description": "Always finds one more straightaway in the tank.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "circuit_champion",
+    "name": "Circuit Champion",
+    "description": "The checkered flag has started recognizing you on sight.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Gold Saucer Prize Counter"
   }
 ]
