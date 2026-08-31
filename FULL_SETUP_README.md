@@ -1,60 +1,41 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Full Setup
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 3 Setup
 
-This guide covers the supported local Windows runtime and Render cloud runtime. Gold Saucer Alpha 1 uses local DB schema **12**, hosted sync schema **1**, Portal Action protocol **27**, Twitch prefix **`!`**, and runtime `1.6.0-gold-saucer-a2`.
+Alpha 3 is an in-place Bot update from the **Gold Saucer Alpha 2 Hotfix 2 canonical baseline**. It changes the canonical Gold Saucer currency name to **MGP** without changing the stored balance, schema, payout tables, or Portal action protocol.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secrets, and persistent-disk data. Upgrading from Alpha 1 H2 performs the additive schema **11 → 12** migration after a verified pre-migration backup. Older supported databases migrate sequentially. No player reset, OAuth reauthorization, or new environment variable is required. Deploy the matching v1.6.0 Alpha 2 Web + Bot together.
+Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secrets, and persistent-disk data. Replace the Bot source and restart the worker. No schema migration, player reset, OAuth reauthorization, or new environment variable is required.
 
-## Requirements
-- Python 3.11+
-- Twitch broadcaster account and dedicated Bot account
-- Twitch Developer application
-- Hosted Adventurer Portal for Portal sync/actions
-- Render account/private repository when using cloud mode
+## Gold Saucer verification
+- First visit still grants **500 MGP** once.
+- On later UTC days, the first Saucer request still grants the **50 MGP** floor allowance once.
+- Mini Cactpot remains **10 MGP** per ticket.
+- Crystal Slots remains **15 MGP** per spin.
+- Monster Toss remains **20 MGP** per game, 5 throws, maximum 3 completed games per UTC day.
+- Prize Counter values are unchanged.
+- Ordinary Gil remains separate.
+- An existing Gold Saucer balance must be identical before and after upgrading.
+
+## Release verification
+- `!cgversion` → `1.6.0-gold-saucer-a3`
+- Local DB schema → **12**
+- Hosted sync schema → **1**
+- Portal Action protocol → **27**
+- Twitch prefix → `!`
+
+See `UPGRADE_GUIDE.md`, `WEB_SYNC_SETUP.md`, and `VALIDATION_REPORT.md` for the Alpha 3-specific contract and validation scope.
 
 ## Twitch application and authorization
-Register the local redirect URL in the Twitch Developer Console:
+For fresh installs, register the local callback in the Twitch Developer Console:
 
 https://dev.twitch.tv/console/apps
 
 Redirect URL: `http://localhost:4343/oauth/callback`
 
-The dedicated Bot authorization uses the established `user:read:chat`, `user:write:chat`, and `user:bot` scopes. The broadcaster authorization includes `channel:bot` and `channel:read:subscriptions`. Existing authorized installs do not need to reauthorize for Gold Saucer Alpha 1.
+The dedicated Bot authorization uses `user:read:chat`, `user:write:chat`, and `user:bot`. The broadcaster authorization includes `channel:bot` and the established subscription scope. Existing Alpha 2 installs do not need to reauthorize for Alpha 3.
 
-## Hosted Web / secret separation
-Keep `PORTAL_PUBLIC_URL` and `PORTAL_SYNC_KEY` in the appropriate Bot/Web environment configuration. Never put `crystal_guild.db`, Twitch token databases, `.env`, OAuth secrets, or live player state into public Web assets or source-control releases.
-
-## Local setup
-1. Copy `.env.example` to `.env` only for a fresh installation; never overwrite an existing `.env` during an upgrade.
-2. Install dependencies with `python -m pip install -r requirements.txt`.
-3. Complete Twitch authorization using the control-panel helpers if this is a fresh install.
-4. Run `python run_maintenance.py --check` or the control-panel readiness option.
-5. Start the Bot with `python run_bot.py`.
-
-The established local OAuth redirect URL remains `http://localhost:4343/oauth/callback`.
-
-## Cloud setup
-Open the Render dashboard when creating or updating the hosted worker/Web services:
+## Hosted Web and secret separation
+Manage the hosted services from:
 
 https://dashboard.render.com
 
-The Render worker uses the persistent `/var/data` location for the live Guild database and Twitch token database. Existing secrets remain valid. Keep the old Bot stopped before the cloud worker connects, and run `python run_cloud_preflight.py` before first live startup or after moving private state.
-
-Expected persistent paths are configured by `render.yaml`, including `/var/data/crystal_guild.db`, `/var/data/twitch_tokens.db`, and `/var/data/overlay/state.json`.
-
-## Gold Saucer verification
-- Open your own Adventurer Portal character and select **Gold Saucer**.
-- First visit grants the one-time **500 SP** welcome purse; from the next UTC day onward, the first Saucer visit each day grants the **50 SP floor allowance**.
-- Mini Cactpot opens a persistent daily ticket and survives refresh/restart.
-- Crystal Slots resolves through the authoritative Bot and observes its server cooldown.
-- The Prize Counter spends SP only on cosmetic Gold Saucer Titles and never changes combat power or Gil.
-- Ordinary Gil is unchanged by Gold Saucer play.
-
-## Release verification
-- `!cgversion` → `1.6.0-gold-saucer-a2`
-- `/api/health` → Web/frontend `1.6.0-gold-saucer-a2`
-- Local DB schema → **12**
-- Hosted sync schema → **1**
-- Portal Action protocol → **27**
-
-Use `UPGRADE_GUIDE.md`, `RENDER_CLOUD_SETUP.md`, and `WEB_SYNC_SETUP.md` for focused deployment notes.
+Keep `PORTAL_PUBLIC_URL` and `PORTAL_SYNC_KEY` in the appropriate environment configuration. Never put `crystal_guild.db`, Twitch token databases, `.env`, OAuth secrets, or live player state into public Web assets or source-control releases.

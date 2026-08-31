@@ -1,5 +1,5 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 2
-Runtime: 1.6.0-gold-saucer-a2
+Crystal Guild v1.6.0 — Gold Saucer Alpha 3
+Runtime: 1.6.0-gold-saucer-a3
 Local DB schema: 12
 Hosted sync schema: 1
 Portal Action protocol: 27

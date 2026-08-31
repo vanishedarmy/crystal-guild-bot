@@ -1,12 +1,10 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Simplified Render Setup
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 3 Simplified Render Setup
 
-**Existing cloud install:** preserve `/var/data` and all Render environment variables, stop any duplicate/local Bot, deploy the v1.6.0 Alpha 1 Bot, then deploy the matching Web source.
+1. Preserve `/var/data` and all Render environment variables.
+2. Stop any duplicate/local Bot instance.
+3. Deploy the Alpha 3 Bot source.
+4. Confirm `!cgversion` = `1.6.0-gold-saucer-a3` and `!health` is clean.
+5. Confirm local schema **12**, hosted sync **1**, Portal protocol **27**.
+6. Open Gold Saucer and confirm the existing balance is unchanged and now reported as **MGP**.
 
-1. Back up or snapshot persistent state before deployment.
-2. Deploy the Bot and allow the verified **schema 11 → 12** migration to complete.
-3. Confirm `!cgversion` = `1.6.0-gold-saucer-a2` and `!health` is clean.
-4. Deploy/restart the matching v1.6.0 Alpha 1 Web service.
-5. Confirm `/api/health` reports runtime/frontend `1.6.0-gold-saucer-a2`, hosted sync **1**, protocol **27**.
-6. Open **Gold Saucer** on your own character and test Mini Cactpot plus one Crystal Slots spin.
-
-Gold Saucer Alpha 1 adds no environment variables and requires no player reset or OAuth reauthorization.
+No database migration, player reset, OAuth reauthorization, or new environment variable is required.

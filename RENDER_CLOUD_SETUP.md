@@ -1,24 +1,16 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 1 Render Cloud Setup
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 3 Render Cloud Setup
 
-## Existing cloud deployment
-Gold Saucer Alpha 1 is an in-place paired update from v1.5.1. Preserve the worker's persistent state and existing Render secrets. Do not upload packaged databases or token files with source.
+Preserve the worker's persistent `/var/data` state and all Render environment variables. Do not package or overwrite the live database, token databases, `.env`, or hosted secrets.
 
-Typical persistent paths:
+Typical persistent paths remain:
 ```text
 /var/data/crystal_guild.db
 /var/data/twitch_tokens.db
 /var/data/overlay/state.json
 ```
 
-Deploy the matching v1.6.0 Alpha 1 Web + Bot together. On first Bot startup, the local database performs the additive **schema 10 → 11** migration after creating and verifying a pre-migration backup. Hosted sync remains **1** and Portal Action protocol advances to **26**. No player reset, OAuth reauthorization, or new environment variable is required.
+Deploy the Alpha 3 Bot source and restart the worker. There is **no database migration**: local schema remains **12**, hosted sync remains **1**, and Portal Action protocol remains **27**.
 
-After deployment verify `!cgversion`, `!health`, and `/api/health`, then open **Gold Saucer** from your own Portal profile and confirm the one-time 500 SP welcome purse, Mini Cactpot, and Crystal Slots.
+After deployment verify `!cgversion` reports `1.6.0-gold-saucer-a3`, then open Gold Saucer and confirm the existing balance is unchanged and displayed/reported as **MGP**. Mini Cactpot, Crystal Slots, Monster Toss, and Prize Counter should retain their prior numeric behavior.
 
-## Fresh Render deployment
-Create the worker from `render.yaml`, configure the required Twitch/Portal secrets, place private persistent state only on the persistent disk, and run:
-```bash
-python run_cloud_preflight.py
-```
-Continue only after the preflight passes. Keep any old local/cloud Bot instance stopped before the v1.6.0 Alpha 1 worker connects.
-
-The hosted raid overlay remains available from the matching Web service at `/overlay`.
+The prior Alpha 2 Hotfix 2 Web relay remains protocol-compatible with this Bot-side Alpha 3 package. Run `python run_cloud_preflight.py` before reconnecting a moved/restored worker. No player reset is required. The hosted raid overlay route remains `/overlay` on the matching Web service.

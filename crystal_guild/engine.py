@@ -102,7 +102,7 @@ from .enemy_combat import (
 from .database import Database
 from .fellowship_system import FellowshipSystem
 from .gold_saucer import (
-    WELCOME_POINTS as SAUCER_WELCOME_POINTS, DAILY_ALLOWANCE_POINTS as SAUCER_DAILY_ALLOWANCE,
+    WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP,
     CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
     SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOTS_THEORETICAL_RETURN_PCT, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
     MONSTER_TOSS_COST, MONSTER_TOSS_THROWS, MONSTER_TOSS_DAILY_GAMES, MONSTER_TOSS_TARGETS, MONSTER_TOSS_STYLES, MONSTER_TOSS_PAYOUTS,
@@ -9436,13 +9436,13 @@ class CrystalGuildEngine:
     def _gold_saucer_ensure_account_sql(self, conn: Any, twitch_id: str, now: int) -> Any:
         cursor = conn.execute(
             "INSERT OR IGNORE INTO player_gold_saucer(player_id,points,lifetime_earned) VALUES (?,?,?)",
-            (twitch_id, SAUCER_WELCOME_POINTS, SAUCER_WELCOME_POINTS),
+            (twitch_id, SAUCER_WELCOME_MGP, SAUCER_WELCOME_MGP),
         )
         if int(cursor.rowcount or 0) > 0:
             conn.execute(
                 "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) "
                 "VALUES (?,'welcome',0,?,'welcome',?,?)",
-                (twitch_id, SAUCER_WELCOME_POINTS, json.dumps({"welcome_points": SAUCER_WELCOME_POINTS}, separators=(",", ":")), now),
+                (twitch_id, SAUCER_WELCOME_MGP, json.dumps({"welcome_points": SAUCER_WELCOME_MGP}, separators=(",", ":")), now),
             )
         # The welcome purse replaces the daily allowance on a player's first
         # visit. On later UTC days, the first Saucer request of the day grants
@@ -9457,12 +9457,12 @@ class CrystalGuildEngine:
         if not day_credit:
             conn.execute(
                 "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
-                (SAUCER_DAILY_ALLOWANCE, SAUCER_DAILY_ALLOWANCE, twitch_id),
+                (SAUCER_DAILY_ALLOWANCE_MGP, SAUCER_DAILY_ALLOWANCE_MGP, twitch_id),
             )
             conn.execute(
                 "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) "
                 "VALUES (?,'daily_allowance',0,?,'daily_allowance',?,?)",
-                (twitch_id, SAUCER_DAILY_ALLOWANCE, json.dumps({"daily_allowance": SAUCER_DAILY_ALLOWANCE}, separators=(",", ":")), now),
+                (twitch_id, SAUCER_DAILY_ALLOWANCE_MGP, json.dumps({"daily_allowance": SAUCER_DAILY_ALLOWANCE_MGP}, separators=(",", ":")), now),
             )
         return conn.execute("SELECT * FROM player_gold_saucer WHERE player_id=?", (twitch_id,)).fetchone()
 
@@ -9574,6 +9574,7 @@ class CrystalGuildEngine:
         cactpot_plays = int(account["cactpot_plays"] or 0)
         cactpot_wins = int(account["cactpot_wins"] or 0)
         records = {
+            "net_mgp": int(account["lifetime_earned"] or 0) - int(account["lifetime_spent"] or 0),
             "net_points": int(account["lifetime_earned"] or 0) - int(account["lifetime_spent"] or 0),
             "games_played": cactpot_plays + slots_spins,
             "slots_win_rate_pct": round((slots_wins / slots_spins) * 100, 1) if slots_spins else 0.0,
@@ -9627,12 +9628,20 @@ class CrystalGuildEngine:
         })
         records["games_played"] = int(records.get("games_played", 0)) + toss_games
         return {
+            # Alpha 3 canonical currency fields. Legacy points fields remain as
+            # compatibility aliases so an Alpha 2 Web cannot lose the balance
+            # during a staggered Bot/Web rollout.
+            "mgp": points,
+            "welcome_mgp": SAUCER_WELCOME_MGP,
+            "daily_allowance_mgp": SAUCER_DAILY_ALLOWANCE_MGP,
+            "currency_name": "MGP",
+            "currency_code": "MGP",
             "points": points,
-            "welcome_points": SAUCER_WELCOME_POINTS,
-            "daily_allowance_points": SAUCER_DAILY_ALLOWANCE,
+            "welcome_points": SAUCER_WELCOME_MGP,
+            "daily_allowance_points": SAUCER_DAILY_ALLOWANCE_MGP,
             "next_daily_allowance_at": day_start + 86400,
-            "currency_name": "Saucer Points",
             "account": {
+                "mgp": points,
                 "points": points,
                 "lifetime_earned": int(account["lifetime_earned"] or 0),
                 "lifetime_spent": int(account["lifetime_spent"] or 0),
@@ -9680,7 +9689,7 @@ class CrystalGuildEngine:
             },
             "attractions": [
                 {"id": "mini_cactpot", "name": "Mini Cactpot", "status": "open", "description": "One persistent daily ticket. Reveal four cells, then choose a line."},
-                {"id": "crystal_slots", "name": "Crystal Slots", "status": "open", "description": "Quick three-reel spins using Saucer Points."},
+                {"id": "crystal_slots", "name": "Crystal Slots", "status": "open", "description": "Quick three-reel spins using MGP."},
                 {"id": "monster_toss", "name": "Monster Toss", "status": "open", "description": "Five persistent throws. Choose a target and throw style, then chase the best score before the daily games run out."},
                 {"id": "chocobo_racing", "name": "Chocobo Racing", "status": "coming_soon", "description": "Your registered Chocobo will race in a later Gold Saucer alpha."},
                 {"id": "triple_triad", "name": "Triple Triad", "status": "coming_soon", "description": "Card collection and matches are reserved for a later Gold Saucer alpha."},
@@ -9714,7 +9723,7 @@ class CrystalGuildEngine:
                 if remaining > 0:
                     result = GameResult.fail(f"Mini Cactpot is available again in {self._format_seconds(remaining)}.")
                 elif int(account["points"] or 0) < CACTPOT_COST:
-                    result = GameResult.fail(f"Mini Cactpot costs {CACTPOT_COST} Saucer Points.")
+                    result = GameResult.fail(f"Mini Cactpot costs {CACTPOT_COST} MGP.")
                 else:
                     grid = list(range(1, 10))
                     self.rng.shuffle(grid)
@@ -9734,7 +9743,7 @@ class CrystalGuildEngine:
                         "ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at",
                         (twitch_id, (now - (now % 86400)) + CACTPOT_COOLDOWN_SECONDS),
                     )
-                    result = GameResult.success(f"Mini Cactpot ticket opened for {CACTPOT_COST} Saucer Points. Reveal three more cells.")
+                    result = GameResult.success(f"Mini Cactpot ticket opened for {CACTPOT_COST} MGP. Reveal three more cells.")
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -9809,7 +9818,7 @@ class CrystalGuildEngine:
                         "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'mini_cactpot',?,?,?, ?,?)",
                         (twitch_id, CACTPOT_COST, payout, f"sum_{total}", json.dumps(details, separators=(",", ":")), now),
                     )
-                    result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} Saucer Points!", cactpot_sum=total, cactpot_payout=payout, result_tier=result_tier)
+                    result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} MGP!", cactpot_sum=total, cactpot_payout=payout, result_tier=result_tier)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -9829,7 +9838,7 @@ class CrystalGuildEngine:
             if remaining > 0:
                 result = GameResult.fail(f"Crystal Slots reset in {self._format_seconds(remaining)}.")
             elif int(account["points"] or 0) < SLOTS_COST:
-                result = GameResult.fail(f"Crystal Slots costs {SLOTS_COST} Saucer Points per spin.")
+                result = GameResult.fail(f"Crystal Slots costs {SLOTS_COST} MGP per spin.")
             else:
                 ids = [row[0] for row in SLOT_SYMBOLS]
                 weights = [int(row[2]) for row in SLOT_SYMBOLS]
@@ -9852,7 +9861,7 @@ class CrystalGuildEngine:
                 )
                 labels = " · ".join(saucer_slot_labels(reels))
                 if payout > 0:
-                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} Saucer Points!", reels=reels, payout=payout, net=net, outcome=outcome, result_tier=result_tier)
+                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} MGP!", reels=reels, payout=payout, net=net, outcome=outcome, result_tier=result_tier)
                 else:
                     result = GameResult.success(f"CRYSTAL SLOTS — {labels} — no payout this spin.", reels=reels, payout=0, net=net, outcome=outcome, result_tier=result_tier)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
@@ -9881,7 +9890,7 @@ class CrystalGuildEngine:
                 remaining = max(0, day_start + 86400 - now)
                 result = GameResult.fail(f"Monster Toss daily games reset in {self._format_seconds(remaining)}.")
             elif int(account["points"] or 0) < MONSTER_TOSS_COST:
-                result = GameResult.fail(f"Monster Toss costs {MONSTER_TOSS_COST} Saucer Points per game.")
+                result = GameResult.fail(f"Monster Toss costs {MONSTER_TOSS_COST} MGP per game.")
             else:
                 game_id = uuid.uuid4().hex
                 conn.execute(
@@ -9893,7 +9902,7 @@ class CrystalGuildEngine:
                     "ON CONFLICT(player_id) DO UPDATE SET game_id=excluded.game_id,state='active',throw_index=0,score=0,throws_json='[]',started_at=excluded.started_at,resolved_at=NULL,updated_at=excluded.updated_at",
                     (twitch_id, game_id, now, now),
                 )
-                result = GameResult.success(f"MONSTER TOSS — game opened for {MONSTER_TOSS_COST} Saucer Points. You have {MONSTER_TOSS_THROWS} throws.", monster_toss_game_id=game_id)
+                result = GameResult.success(f"MONSTER TOSS — game opened for {MONSTER_TOSS_COST} MGP. You have {MONSTER_TOSS_THROWS} throws.", monster_toss_game_id=game_id)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -9957,7 +9966,7 @@ class CrystalGuildEngine:
                             (twitch_id, MONSTER_TOSS_COST, payout, tier, json.dumps(details, separators=(",", ":")), now),
                         )
                         result = GameResult.success(
-                            f"MONSTER TOSS — final score {next_score:,}. {payout:,} Saucer Points awarded.",
+                            f"MONSTER TOSS — final score {next_score:,}. {payout:,} MGP awarded.",
                             monster_toss_throw=throw_payload, monster_toss_score=next_score, monster_toss_payout=payout, result_tier=tier, monster_toss_complete=True,
                         )
                     else:
@@ -9992,7 +10001,7 @@ class CrystalGuildEngine:
             if owned:
                 result = GameResult.fail(f"{prize['name']} is already in your title collection.")
             elif int(account["points"] or 0) < cost:
-                result = GameResult.fail(f"{prize['name']} costs {cost:,} Saucer Points.")
+                result = GameResult.fail(f"{prize['name']} costs {cost:,} MGP.")
             elif title_id not in self.data.titles:
                 result = GameResult.fail("That Gold Saucer prize is temporarily unavailable. Refresh and try again later.")
             else:
@@ -10005,7 +10014,7 @@ class CrystalGuildEngine:
                     "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'prize',?,0,?,?,?)",
                     (twitch_id, cost, prize_key, json.dumps({"prize_id": prize_key, "title_id": title_id, "name": str(prize["name"])}, separators=(",", ":")), now),
                 )
-                result = GameResult.success(f"PRIZE COUNTER — {prize['name']} unlocked for {cost:,} Saucer Points!", prize_id=prize_key, title_id=title_id)
+                result = GameResult.success(f"PRIZE COUNTER — {prize['name']} unlocked for {cost:,} MGP!", prize_id=prize_key, title_id=title_id)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -13760,7 +13769,7 @@ class CrystalGuildEngine:
         return next(iter(unique.values())) if len(unique) == 1 else None
 
     def streamer_saucer_grant(self, request: str, *, action_id: str = "") -> GameResult:
-        """Owner-only Saucer Point grant for testing/events. Syntax: player | amount."""
+        """Owner-only MGP grant for testing/events. Syntax: player | amount."""
         if action_id:
             replay = self._portal_action_replay(action_id)
             if replay is not None:
@@ -13773,10 +13782,10 @@ class CrystalGuildEngine:
         try:
             amount = int(parts[1])
         except (TypeError, ValueError):
-            result = GameResult.fail("Saucer Point grant must be a whole number between 1 and 100,000.")
+            result = GameResult.fail("MGP grant must be a whole number between 1 and 100,000.")
             return self._portal_store_nonmutating_result(action_id, result) if action_id else result
         if amount < 1 or amount > 100000:
-            result = GameResult.fail("Saucer Point grant must be between 1 and 100,000.")
+            result = GameResult.fail("MGP grant must be between 1 and 100,000.")
             return self._portal_store_nonmutating_result(action_id, result) if action_id else result
         player = self._streamer_player_match(parts[0])
         if not player:
@@ -13797,8 +13806,8 @@ class CrystalGuildEngine:
             )
             balance = int(conn.execute("SELECT points FROM player_gold_saucer WHERE player_id=?", (player_id,)).fetchone()["points"])
             result = GameResult.success(
-                f"GOLD SAUCER — Granted {amount:,} Saucer Points to {display}. Balance: {balance:,} SP.",
-                player_id=player_id, amount=amount, points=balance,
+                f"GOLD SAUCER — Granted {amount:,} MGP to {display}. Balance: {balance:,} MGP.",
+                player_id=player_id, amount=amount, mgp=balance, points=balance,
             )
             if action_id:
                 self._portal_action_store_sql(conn, action_id, result)

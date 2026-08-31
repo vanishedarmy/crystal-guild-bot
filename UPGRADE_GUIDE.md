@@ -1,14 +1,17 @@
-# Upgrade Guide — v1.6.0 Gold Saucer Alpha 2
+# Upgrade Guide — v1.6.0 Gold Saucer Alpha 3
 
-Supported baseline: **v1.6.0 Gold Saucer Alpha 1 Hotfix 2** Bot + Web.
+Supported baseline: **v1.6.0 Gold Saucer Alpha 2 Hotfix 2 / Canonical Baseline**.
 
-1. Stop the Bot worker and hosted Web service.
-2. Back up `crystal_guild.db` and preserve `.env`, Twitch token storage, hosted secrets, and persistent-disk data.
-3. Apply the H2 → Alpha 2 Bot patch or replace with the full Alpha 2 Bot tree.
-4. Apply the H2 → Alpha 2 Web patch or replace with the full Alpha 2 Web tree.
-5. Restart/deploy both services together because Portal Action protocol advances to **27**.
-6. On first Bot start, schema **11 → 12** runs automatically after creating and verifying a pre-migration backup.
-7. Verify `!cgversion`, `!health`, and `/api/health` report `1.6.0-gold-saucer-a2`, hosted sync **1**, Portal protocol **27**, and local schema **12**.
-8. Open Gold Saucer and confirm Monster Toss can start, preserve throws through refresh, settle after throw five, and appear in personal records.
+1. Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secrets, and persistent-disk state.
+2. Replace the Bot source with the Alpha 3 Bot package.
+3. Restart the Bot worker.
+4. Verify `!cgversion` reports `1.6.0-gold-saucer-a3`.
+5. Verify the local DB remains schema **12**, hosted sync remains **1**, and Portal Action protocol remains **27**.
+6. Open Gold Saucer and verify the existing balance is shown unchanged as **MGP**.
+7. Verify Mini Cactpot, Crystal Slots, Monster Toss, and Prize Counter all use MGP wording while retaining their existing costs and payouts.
 
-Do not replace or delete the live database. Existing characters, Gil, inventory, Fellowship, Chocobos, Expeditions, Dungeons, Trials/Raids, Relics, Titles, Mini Cactpot, Crystal Slots, Saucer Points, Prize Counter purchases, and records are preserved.
+## Data safety
+There is **no schema migration** in Alpha 3. The physical `player_gold_saucer.points` column remains the authoritative stored balance and is re-exposed as canonical `mgp` in the Portal state. Existing characters, Gil, inventory, Fellowship, Chocobos, Expeditions, Dungeons, Trials/Raids, Relics, Titles, Gold Saucer balance, Prize Counter purchases, and records are preserved.
+
+## Web compatibility
+Portal Action protocol remains **27**, so the Alpha 2 Hotfix 2 relay remains action-compatible. The Alpha 3 state also retains legacy `points` aliases. A frontend source update is still needed for any UI text that hardcodes SP/Saucer Points rather than reading the currency metadata.

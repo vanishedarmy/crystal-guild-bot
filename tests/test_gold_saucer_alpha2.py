@@ -27,7 +27,7 @@ class GoldSaucerAlpha2Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_alpha2_contract_and_monster_toss_state(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a2")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a3")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 12)
         self.assertEqual(self.db.schema_version(), 12)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 27)

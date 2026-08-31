@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
-WELCOME_POINTS = 500
-DAILY_ALLOWANCE_POINTS = 50
+WELCOME_MGP = 500
+DAILY_ALLOWANCE_MGP = 50
+# Compatibility aliases for pre-Alpha-3 callers/tests. New code should use MGP names.
+WELCOME_POINTS = WELCOME_MGP
+DAILY_ALLOWANCE_POINTS = DAILY_ALLOWANCE_MGP
 CACTPOT_COST = 10
 CACTPOT_COOLDOWN_SECONDS = 24 * 60 * 60
 SLOTS_COST = 15
@@ -17,7 +20,7 @@ CACTPOT_LINES = (
 )
 
 # Familiar Mini-Cactpot-style sum table, denominated only in Crystal Guild
-# Saucer Points. The currency cannot be purchased for Gil or real money.
+# MGP. The currency cannot be purchased for Gil or real money.
 CACTPOT_PAYOUTS = {
     6: 10000, 7: 36, 8: 720, 9: 360, 10: 80, 11: 252,
     12: 108, 13: 72, 14: 54, 15: 180, 16: 72, 17: 180,

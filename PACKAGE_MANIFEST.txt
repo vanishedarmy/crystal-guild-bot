@@ -1,9 +1,13 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 2 — Bot Package
-Runtime: 1.6.0-gold-saucer-a2
-Matching Web/frontend: 1.6.0-gold-saucer-a2
+Crystal Guild v1.6.0 — Gold Saucer Alpha 3 — Bot Package
+Runtime: 1.6.0-gold-saucer-a3
 Local schema: 12
 Hosted sync: 1
 Portal Action protocol: 27
 Twitch prefix: !
-Baseline: v1.6.0 Gold Saucer Alpha 1 Hotfix 2
-Alpha 2: persistent five-throw Monster Toss, daily play cap, derived records, two cosmetic Prize Counter titles
+Baseline: v1.6.0 Gold Saucer Alpha 2 Hotfix 2 canonical Bot
+Alpha 3: MGP canonical currency contract, compatibility aliases, MGP player-facing Bot copy
+Gameplay rebalance: none
+Database migration: none
+Matching Alpha 3 Web package: not included in this artifact
+Full Bot tree: 170 files
+Delta from Alpha 2 H2 canonical Bot: 35 changed/new files, 1 newly added test, 0 deleted

@@ -1,3 +1,5 @@
-# Crystal Guild Bot — v1.6.0 Gold Saucer Alpha 1 Hotfix 2
+# Crystal Guild Bot — v1.6.0 Gold Saucer Alpha 3
 
-Gold Saucer UX/balance hardening: UTC Mini Cactpot reset, richer derived records/telemetry, and result metadata for presentation. Runtime `1.6.0-gold-saucer-a2`; local schema 12; hosted sync 1; Portal protocol 27; prefix `!`. No player reset or H2 database migration.
+Alpha 3 makes **MGP** the canonical Gold Saucer currency name while preserving every existing balance and keeping schema **12**, hosted sync **1**, Portal Action protocol **27**, and prefix `!` unchanged.
+
+Mini Cactpot, Crystal Slots, Monster Toss, Prize Counter, daily allowance behavior, costs, and payout tables are unchanged. Legacy `points` state keys remain temporarily available as compatibility aliases for the Alpha 2 frontend.
