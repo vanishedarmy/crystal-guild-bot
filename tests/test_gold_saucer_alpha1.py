@@ -33,7 +33,7 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_advances_only_local_schema_and_portal_protocol(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a1")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a1h2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 11)
         self.assertEqual(self.db.schema_version(), 11)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 26)

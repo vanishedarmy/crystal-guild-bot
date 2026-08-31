@@ -1,5 +1,5 @@
-v1.6.0 — Gold Saucer Alpha 1
-Runtime: 1.6.0-gold-saucer-a1
+v1.6.0 — Gold Saucer Alpha 1 Hotfix 2
+Runtime: 1.6.0-gold-saucer-a1h2
 Local DB schema: 11
 Hosted sync schema: 1
 Portal Action protocol: 26

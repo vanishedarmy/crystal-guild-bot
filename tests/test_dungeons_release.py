@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a1")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a1h2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 11)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 26)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)
@@ -31,7 +31,7 @@ class DungeonsProductionReleaseTests(unittest.TestCase):
         for name in ("VERSION.txt", "README_FIRST.txt", "PACKAGE_MANIFEST.txt", "RELEASE_NOTES.md", "FINALIZATION_AUDIT.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
             self.assertIn("Gold Saucer Alpha 1", text, name)
-            self.assertIn("1.6.0-gold-saucer-a1", text, name)
+            self.assertIn("1.6.0-gold-saucer-a1h2", text, name)
             self.assertNotIn("1.4.0-dungeons-rc1", text, name)
 
 

@@ -104,7 +104,7 @@ from .fellowship_system import FellowshipSystem
 from .gold_saucer import (
     WELCOME_POINTS as SAUCER_WELCOME_POINTS, DAILY_ALLOWANCE_POINTS as SAUCER_DAILY_ALLOWANCE,
     CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
-    SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
+    SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOTS_THEORETICAL_RETURN_PCT, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
     masked_grid as saucer_masked_grid, slot_labels as saucer_slot_labels, slot_payout as saucer_slot_payout,
 )
 from .time_format import format_duration
@@ -9498,6 +9498,9 @@ class CrystalGuildEngine:
             active = state in {"reveal", "line"}
             cactpot["active"] = active
             cactpot["can_start"] = False if active else cactpot["can_start"]
+            chosen_line = int(ticket["chosen_line"]) if ticket["chosen_line"] is not None else None
+            payout = int(ticket["payout"] or 0)
+            line_sum = sum(grid[index] for index in CACTPOT_LINES[chosen_line]) if state == "resolved" and chosen_line is not None and len(grid) == 9 else 0
             cactpot["ticket"] = {
                 "id": str(ticket["ticket_id"]),
                 "state": state,
@@ -9505,8 +9508,10 @@ class CrystalGuildEngine:
                 "revealed": revealed,
                 "reveals_remaining": max(0, 4 - len(revealed)),
                 "can_choose_line": state == "line" and len(revealed) >= 4,
-                "chosen_line": int(ticket["chosen_line"]) if ticket["chosen_line"] is not None else None,
-                "payout": int(ticket["payout"] or 0),
+                "chosen_line": chosen_line,
+                "line_sum": line_sum,
+                "result_tier": "jackpot" if payout >= 1000 else "big_win" if payout >= 300 else "win" if payout > 0 else "miss",
+                "payout": payout,
                 "started_at": int(ticket["started_at"] or 0),
                 "resolved_at": int(ticket["resolved_at"] or 0),
             }
@@ -9547,6 +9552,36 @@ class CrystalGuildEngine:
                 "owned": owned,
                 "can_buy": (not owned and points >= cost),
             })
+        aggregate = conn.execute(
+            "SELECT "
+            "COALESCE(SUM(CASE WHEN game='slots' THEN wager ELSE 0 END),0) AS slots_wager, "
+            "COALESCE(SUM(CASE WHEN game='slots' THEN payout ELSE 0 END),0) AS slots_payout, "
+            "COALESCE(SUM(CASE WHEN game='slots' AND outcome='triple' THEN 1 ELSE 0 END),0) AS slots_triples, "
+            "COALESCE(SUM(CASE WHEN game='slots' AND outcome='pair' THEN 1 ELSE 0 END),0) AS slots_pairs, "
+            "COALESCE(SUM(CASE WHEN game='slots' AND outcome='miss' THEN 1 ELSE 0 END),0) AS slots_misses, "
+            "COALESCE(SUM(CASE WHEN game='mini_cactpot' THEN payout ELSE 0 END),0) AS cactpot_payout, "
+            "COALESCE(SUM(CASE WHEN game='mini_cactpot' AND payout>=1000 THEN 1 ELSE 0 END),0) AS cactpot_high_rolls "
+            "FROM gold_saucer_history WHERE player_id=?",
+            (twitch_id,),
+        ).fetchone()
+        slots_wager = int(aggregate["slots_wager"] or 0) if aggregate else 0
+        slots_payout = int(aggregate["slots_payout"] or 0) if aggregate else 0
+        slots_spins = int(account["slots_spins"] or 0)
+        slots_wins = int(account["slots_wins"] or 0)
+        cactpot_plays = int(account["cactpot_plays"] or 0)
+        cactpot_wins = int(account["cactpot_wins"] or 0)
+        records = {
+            "net_points": int(account["lifetime_earned"] or 0) - int(account["lifetime_spent"] or 0),
+            "games_played": cactpot_plays + slots_spins,
+            "slots_win_rate_pct": round((slots_wins / slots_spins) * 100, 1) if slots_spins else 0.0,
+            "slots_realized_return_pct": round((slots_payout / slots_wager) * 100, 1) if slots_wager else 0.0,
+            "slots_triples": int(aggregate["slots_triples"] or 0) if aggregate else 0,
+            "slots_pairs": int(aggregate["slots_pairs"] or 0) if aggregate else 0,
+            "slots_misses": int(aggregate["slots_misses"] or 0) if aggregate else 0,
+            "cactpot_win_rate_pct": round((cactpot_wins / cactpot_plays) * 100, 1) if cactpot_plays else 0.0,
+            "cactpot_total_payout": int(aggregate["cactpot_payout"] or 0) if aggregate else 0,
+            "cactpot_high_rolls": int(aggregate["cactpot_high_rolls"] or 0) if aggregate else 0,
+        }
         day_start = now - (now % 86400)
         return {
             "points": points,
@@ -9565,6 +9600,13 @@ class CrystalGuildEngine:
                 "slots_wins": int(account["slots_wins"] or 0),
                 "slots_best_payout": int(account["slots_best_payout"] or 0),
                 "prizes_bought": sum(1 for prize in prizes if prize["owned"]),
+            },
+            "records": records,
+            "balance": {
+                "slots_theoretical_return_pct": float(SLOTS_THEORETICAL_RETURN_PCT),
+                "slots_cost": int(SLOTS_COST),
+                "cactpot_cost": int(CACTPOT_COST),
+                "note": "Alpha 1 H2 keeps the validated payout table; this panel reports realized results rather than changing odds mid-alpha.",
             },
             "prizes": prizes,
             "cactpot": cactpot,
@@ -9631,7 +9673,7 @@ class CrystalGuildEngine:
                     conn.execute(
                         "INSERT INTO cooldowns(player_id,action,available_at) VALUES (?,'gold_saucer_cactpot',?) "
                         "ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at",
-                        (twitch_id, now + CACTPOT_COOLDOWN_SECONDS),
+                        (twitch_id, (now - (now % 86400)) + CACTPOT_COOLDOWN_SECONDS),
                     )
                     result = GameResult.success(f"Mini Cactpot ticket opened for {CACTPOT_COST} Saucer Points. Reveal three more cells.")
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
@@ -9702,12 +9744,13 @@ class CrystalGuildEngine:
                         "UPDATE gold_saucer_cactpot SET state='resolved',chosen_line=?,payout=?,resolved_at=?,updated_at=? WHERE player_id=?",
                         (line_index, payout, now, now, twitch_id),
                     )
-                    details = {"line": line_index, "cells": list(cells), "sum": total, "grid": grid}
+                    result_tier = "jackpot" if payout >= 1000 else "big_win" if payout >= 300 else "win" if payout > 0 else "miss"
+                    details = {"line": line_index, "cells": list(cells), "sum": total, "grid": grid, "result_tier": result_tier}
                     conn.execute(
                         "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'mini_cactpot',?,?,?, ?,?)",
                         (twitch_id, CACTPOT_COST, payout, f"sum_{total}", json.dumps(details, separators=(",", ":")), now),
                     )
-                    result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} Saucer Points!", cactpot_sum=total, cactpot_payout=payout)
+                    result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} Saucer Points!", cactpot_sum=total, cactpot_payout=payout, result_tier=result_tier)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -9741,16 +9784,18 @@ class CrystalGuildEngine:
                     "INSERT INTO cooldowns(player_id,action,available_at) VALUES (?,'gold_saucer_slots',?) ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at",
                     (twitch_id, now + SLOTS_COOLDOWN_SECONDS),
                 )
-                details = {"reels": reels, "labels": saucer_slot_labels(reels)}
+                net = int(payout) - int(SLOTS_COST)
+                result_tier = "jackpot" if outcome == "triple" and payout >= 400 else "triple" if outcome == "triple" else "pair" if outcome == "pair" else "miss"
+                details = {"reels": reels, "labels": saucer_slot_labels(reels), "net": net, "result_tier": result_tier}
                 conn.execute(
                     "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'slots',?,?,?,?,?)",
                     (twitch_id, SLOTS_COST, payout, outcome, json.dumps(details, separators=(",", ":")), now),
                 )
                 labels = " · ".join(saucer_slot_labels(reels))
                 if payout > 0:
-                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} Saucer Points!", reels=reels, payout=payout, outcome=outcome)
+                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} Saucer Points!", reels=reels, payout=payout, net=net, outcome=outcome, result_tier=result_tier)
                 else:
-                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — no payout this spin.", reels=reels, payout=0, outcome=outcome)
+                    result = GameResult.success(f"CRYSTAL SLOTS — {labels} — no payout this spin.", reels=reels, payout=0, net=net, outcome=outcome, result_tier=result_tier)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
