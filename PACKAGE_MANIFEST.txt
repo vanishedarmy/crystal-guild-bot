@@ -1,8 +1,9 @@
-Crystal Guild v1.6.0 — Gold Saucer RC1
-Runtime: 1.6.0-gold-saucer-rc1
+Crystal Guild v1.6.0 — Gold Saucer RC2
+Runtime: 1.6.0-gold-saucer-rc2
 Local DB schema: 13
 Hosted sync schema: 1
 Portal Action protocol: 29
 Currency: MGP
 Feature freeze: Mini Cactpot; Crystal Slots; Monster Toss; Chocobo Racing; Triple Triad
-RC1 hardening: persistent Toss/Triad daily entries bind to UTC start day
+RC2 balance change: Mini Cactpot payout scale + net win/draw/loss accounting
+RC1 hardening retained: persistent Toss/Triad daily entries bind to UTC start day

@@ -1,6 +1,6 @@
-# Crystal Guild v1.6.0 — Gold Saucer RC1 Manual Check
+# Crystal Guild v1.6.0 — Gold Saucer RC2 Manual Check
 
-- [ ] `!cgversion` reports `1.6.0-gold-saucer-rc1`.
+- [ ] `!cgversion` reports `1.6.0-gold-saucer-rc2`.
 - [ ] Existing player MGP balance, Prize Counter ownership, Triple Triad collection/deck, and Gold Saucer records survive the upgrade unchanged.
 - [ ] Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Triple Triad are all playable from the Gold Saucer tab.
 - [ ] Starting Monster Toss immediately changes its daily counter from 0/3 to 1/3 before the fifth throw resolves.

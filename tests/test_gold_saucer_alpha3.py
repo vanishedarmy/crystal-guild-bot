@@ -31,7 +31,7 @@ class GoldSaucerAlpha3MGPTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_alpha3_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-rc1")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-rc2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
         self.assertEqual(self.db.schema_version(), 13)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 29)

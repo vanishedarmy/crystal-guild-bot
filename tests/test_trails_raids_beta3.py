@@ -40,7 +40,7 @@ class TrailsRaidsBeta3Tests(unittest.TestCase):
         return self.game.active_boss
 
     def test_beta3_identity_keeps_schema10_protocol25(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-rc1")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-rc2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
         self.assertEqual(self.db.schema_version(), 13)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 29)

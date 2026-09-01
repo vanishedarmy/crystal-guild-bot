@@ -1,9 +1,5 @@
-Crystal Guild v1.6.0 — Gold Saucer RC1
-Runtime: 1.6.0-gold-saucer-rc1
-Local DB schema: 13
-Hosted sync schema: 1
-Portal Action protocol: 29
-Twitch prefix: !
-Canonical Gold Saucer currency: MGP
+Crystal Guild v1.6.0 — Gold Saucer RC2
+Runtime: 1.6.0-gold-saucer-rc2
+Schema: 13 | Hosted sync: 1 | Portal protocol: 29 | Prefix: ! | Currency: MGP
 
-RC1 freezes all five Gold Saucer attractions and hardens UTC daily-entry accounting for persistent Monster Toss and Triple Triad sessions.
+RC2 is the final Gold Saucer balance candidate. Deploy the matched Bot and Web together. Mini Cactpot payouts are the only economy change from RC1; no database migration or player reset is required.

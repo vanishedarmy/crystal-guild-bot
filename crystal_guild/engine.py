@@ -9765,6 +9765,9 @@ class CrystalGuildEngine:
             "COALESCE(SUM(CASE WHEN game='slots' AND outcome='pair' THEN 1 ELSE 0 END),0) AS slots_pairs, "
             "COALESCE(SUM(CASE WHEN game='slots' AND outcome='miss' THEN 1 ELSE 0 END),0) AS slots_misses, "
             "COALESCE(SUM(CASE WHEN game='mini_cactpot' THEN payout ELSE 0 END),0) AS cactpot_payout, "
+            "COALESCE(SUM(CASE WHEN game='mini_cactpot' AND payout>wager THEN 1 ELSE 0 END),0) AS cactpot_net_wins, "
+            "COALESCE(SUM(CASE WHEN game='mini_cactpot' AND payout=wager THEN 1 ELSE 0 END),0) AS cactpot_draws, "
+            "COALESCE(SUM(CASE WHEN game='mini_cactpot' AND payout<wager THEN 1 ELSE 0 END),0) AS cactpot_losses, "
             "COALESCE(SUM(CASE WHEN game='mini_cactpot' AND payout>=1000 THEN 1 ELSE 0 END),0) AS cactpot_high_rolls "
             "FROM gold_saucer_history WHERE player_id=?",
             (twitch_id,),
@@ -9784,7 +9787,10 @@ class CrystalGuildEngine:
             "slots_triples": int(aggregate["slots_triples"] or 0) if aggregate else 0,
             "slots_pairs": int(aggregate["slots_pairs"] or 0) if aggregate else 0,
             "slots_misses": int(aggregate["slots_misses"] or 0) if aggregate else 0,
-            "cactpot_win_rate_pct": round((cactpot_wins / cactpot_plays) * 100, 1) if cactpot_plays else 0.0,
+            "cactpot_win_rate_pct": round((int(aggregate["cactpot_net_wins"] or 0) / cactpot_plays) * 100, 1) if cactpot_plays and aggregate else 0.0,
+            "cactpot_net_wins": int(aggregate["cactpot_net_wins"] or 0) if aggregate else 0,
+            "cactpot_draws": int(aggregate["cactpot_draws"] or 0) if aggregate else 0,
+            "cactpot_losses": int(aggregate["cactpot_losses"] or 0) if aggregate else 0,
             "cactpot_total_payout": int(aggregate["cactpot_payout"] or 0) if aggregate else 0,
             "cactpot_high_rolls": int(aggregate["cactpot_high_rolls"] or 0) if aggregate else 0,
         }
@@ -10115,16 +10121,17 @@ class CrystalGuildEngine:
                     cells = CACTPOT_LINES[line_index]
                     total = sum(grid[index] for index in cells)
                     payout = int(CACTPOT_PAYOUTS.get(total, 0))
+                    net_outcome = "win" if payout > CACTPOT_COST else "draw" if payout == CACTPOT_COST else "loss"
                     conn.execute(
                         "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,cactpot_wins=cactpot_wins+?,cactpot_best_payout=MAX(cactpot_best_payout,?),updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
-                        (payout, payout, 1 if payout > 0 else 0, payout, twitch_id),
+                        (payout, payout, 1 if net_outcome == "win" else 0, payout, twitch_id),
                     )
                     conn.execute(
                         "UPDATE gold_saucer_cactpot SET state='resolved',chosen_line=?,payout=?,resolved_at=?,updated_at=? WHERE player_id=?",
                         (line_index, payout, now, now, twitch_id),
                     )
                     result_tier = "jackpot" if payout >= 1000 else "big_win" if payout >= 300 else "win" if payout > 0 else "miss"
-                    details = {"line": line_index, "cells": list(cells), "sum": total, "grid": grid, "result_tier": result_tier}
+                    details = {"line": line_index, "cells": list(cells), "sum": total, "grid": grid, "result_tier": result_tier, "net_outcome": net_outcome, "net_mgp": payout - CACTPOT_COST}
                     conn.execute(
                         "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'mini_cactpot',?,?,?, ?,?)",
                         (twitch_id, CACTPOT_COST, payout, f"sum_{total}", json.dumps(details, separators=(",", ":")), now),

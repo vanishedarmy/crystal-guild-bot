@@ -21,10 +21,15 @@ CACTPOT_LINES = (
 
 # Familiar Mini-Cactpot-style sum table, denominated only in Crystal Guild
 # MGP. The currency cannot be purchased for Gil or real money.
+# RC2 balance pass: Crystal Guild uses a much smaller MGP prize economy than
+# the source inspiration for this table. These payouts preserve the familiar
+# high/low sum shape while scaling the daily ticket to Crystal Guild's 400–
+# 6,000 MGP Prize Counter. A 10 MGP ticket can now net-win, break even, or
+# net-lose; the 6-sum remains a meaningful 1,000 MGP jackpot.
 CACTPOT_PAYOUTS = {
-    6: 10000, 7: 36, 8: 720, 9: 360, 10: 80, 11: 252,
-    12: 108, 13: 72, 14: 54, 15: 180, 16: 72, 17: 180,
-    18: 119, 19: 36, 20: 306, 21: 1080, 22: 144, 23: 1800, 24: 3600,
+    6: 1000, 7: 5, 8: 75, 9: 40, 10: 10, 11: 25,
+    12: 10, 13: 5, 14: 5, 15: 20, 16: 5, 17: 20,
+    18: 10, 19: 5, 20: 30, 21: 110, 22: 15, 23: 180, 24: 360,
 }
 
 SLOT_SYMBOLS = (

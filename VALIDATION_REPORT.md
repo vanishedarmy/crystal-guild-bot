@@ -1,21 +1,23 @@
-# Validation Report — Crystal Guild v1.6.0 — Gold Saucer RC1
+# Validation Report — Crystal Guild v1.6.0 — Gold Saucer RC2
 
 **PASS**
 
 ## Regression suites
-- Bot: **636 / 636 PASS**
-- RC1-specific hardening: included in the Bot suite (same-day entry counting, midnight-crossing Toss/Triad accounting, five-attraction freeze).
+- Bot: **641 / 641 PASS**
+- RC2 balance tests: included in the Bot suite (Cactpot scale/WDL, exact Slots RTP, Monster Toss fixed-profile bound, Racing/Triad stake relationships).
 
 ## Source / release gates
-- Bot Python parse: **111 / 111 PASS**
+- Bot Python parse: **112 / 112 PASS**
 - Database integrity / non-destructive recovery drill / synthetic stress guardrails: **PASS** through the release-readiness suite.
-- Balance freeze audit: **PASS** (`reports/GOLD_SAUCER_BALANCE_AUDIT_RC1.md`).
+- RC2 win/draw/loss balance audit: **PASS** (`reports/GOLD_SAUCER_BALANCE_AUDIT_RC2.md`).
 
-## Focused RC1 checks
-- Monster Toss consumes its daily entry at start and writes settlement history against the original `started_at`.
-- Triple Triad consumes its daily entry at start and writes settlement history against the original `started_at`.
-- Sessions carried over 00:00 UTC remain attached to their original entry day.
-- All five planned Gold Saucer attractions report `open`.
-- MGP values/economy, Triple Triad card values, Chocobo Racing tuning, schema, sync, and Portal protocol are frozen from the validated H5/H6 baseline.
+## Focused RC2 checks
+- Mini Cactpot random-line EV is ~36.19 MGP on a 10 MGP daily ticket; sum 6 pays 1,000 MGP.
+- Mini Cactpot records net win/draw/loss against wager and preserves legacy RC1 history.
+- Crystal Slots remains 87.453% theoretical return.
+- Monster Toss best fixed profile remains below break-even (~85.87% return).
+- Chocobo Racing remains progression-sensitive and daily-bounded.
+- Triple Triad win/draw/loss stakes remain profit / exact refund / forfeited entry.
+- RC1 start-day accounting hardening remains active.
 
-Contract: runtime `1.6.0-gold-saucer-rc1`, schema **13**, hosted sync **1**, Portal protocol **29**, prefix `!`, MGP canonical.
+Contract: runtime `1.6.0-gold-saucer-rc2`, schema **13**, hosted sync **1**, Portal protocol **29**, prefix `!`, MGP canonical.

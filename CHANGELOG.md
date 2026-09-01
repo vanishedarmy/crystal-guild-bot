@@ -1,3 +1,8 @@
+# v1.6.0 — Gold Saucer RC2
+- Rebalances Mini Cactpot to Crystal Guild’s MGP scale while retaining the 10 MGP daily ticket and 1,000 MGP top jackpot.
+- Adds net win/draw/loss accounting for Mini Cactpot and a full RC2 Gold Saucer outcome audit.
+- Keeps Crystal Slots, Monster Toss, Chocobo Racing, Triple Triad, Prize Counter prices, grants, card values, schema 13, hosted sync 1, and Portal protocol 29 unchanged from RC1.
+
 # v1.6.0 — Gold Saucer RC1
 - Freezes the five-attraction Gold Saucer feature/economy set for release-candidate validation.
 - Binds Monster Toss and Triple Triad daily entries to `started_at`, so active same-day sessions count immediately and midnight-crossing sessions remain charged to their entry day.
