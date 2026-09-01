@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-# v1.7.0 Alpha 1 — Retainer Service
+# v1.7.0 Alpha 2 — Retainer Service
 # Retainers are deliberately lightweight procurement agents. They do not hold
 # gear, equip items, enter combat, or replace Expeditions/Hunts. Every listed
 # reward is an existing crafting/material item and the reward roll is committed
@@ -28,6 +28,7 @@ RETAINER_ASSIGNMENTS = (
         "rank_required": 1,
         "duration_seconds": 30 * 60,
         "cost_gil": 100,
+        "focused_cost_gil": 125,
         "xp": 20,
         "rolls": 2,
         "quantity": (1, 2),
@@ -44,6 +45,7 @@ RETAINER_ASSIGNMENTS = (
         "rank_required": 1,
         "duration_seconds": 60 * 60,
         "cost_gil": 250,
+        "focused_cost_gil": 325,
         "xp": 35,
         "rolls": 3,
         "quantity": (1, 2),
@@ -61,6 +63,7 @@ RETAINER_ASSIGNMENTS = (
         "rank_required": 2,
         "duration_seconds": 2 * 60 * 60,
         "cost_gil": 500,
+        "focused_cost_gil": 625,
         "xp": 65,
         "rolls": 3,
         "quantity": (1, 2),
@@ -77,6 +80,7 @@ RETAINER_ASSIGNMENTS = (
         "rank_required": 3,
         "duration_seconds": 4 * 60 * 60,
         "cost_gil": 900,
+        "focused_cost_gil": 1125,
         "xp": 110,
         "rolls": 4,
         "quantity": (1, 2),
@@ -94,6 +98,7 @@ RETAINER_ASSIGNMENTS = (
         "rank_required": 4,
         "duration_seconds": 8 * 60 * 60,
         "cost_gil": 1500,
+        "focused_cost_gil": 1875,
         "xp": 180,
         "rolls": 4,
         "quantity": (1, 2),
@@ -139,17 +144,22 @@ def _weighted_pick(pool: tuple[tuple[str, int], ...], rng: Any) -> str:
     return str(rng.choices(ids, weights=weights, k=1)[0])
 
 
-def roll_retainer_rewards(assignment: dict[str, Any], rank: int, rng: Any) -> dict[str, Any]:
+def roll_retainer_rewards(assignment: dict[str, Any], rank: int, rng: Any, priority_item_id: str = "") -> dict[str, Any]:
     pool = tuple(assignment.get("pool") or ())
+    pool_ids = {str(item_id) for item_id, _weight in pool}
+    priority = str(priority_item_id or "").strip().lower()
+    if priority and priority not in pool_ids:
+        raise ValueError("Priority material is not available on this assignment.")
     low, high = assignment.get("quantity", (1, 1))
     aggregated: dict[str, int] = {}
-    for _ in range(max(1, int(assignment.get("rolls", 1)))):
-        item_id = _weighted_pick(pool, rng)
+    rolls = max(1, int(assignment.get("rolls", 1)))
+    for roll_index in range(rolls):
+        # A focused dispatch redirects exactly one existing normal roll. It does
+        # not add output or alter the independent bonus-find chance.
+        item_id = priority if priority and roll_index == 0 else _weighted_pick(pool, rng)
         qty = int(rng.randint(max(1, int(low)), max(1, int(high))))
         aggregated[item_id] = aggregated.get(item_id, 0) + qty
 
-    # Small bonus-find chance, improving slightly with Retainer Rank. This is
-    # intentionally modest; the main haul remains the predictable value source.
     bonus: dict[str, Any] | None = None
     bonus_chance = min(0.10, 0.05 + (max(1, int(rank)) * 0.01))
     if float(rng.random()) < bonus_chance:
@@ -160,4 +170,5 @@ def roll_retainer_rewards(assignment: dict[str, Any], rank: int, rng: Any) -> di
         "items": [{"item_id": item_id, "quantity": quantity} for item_id, quantity in sorted(aggregated.items())],
         "bonus": bonus,
         "bonus_chance": bonus_chance,
+        "priority_item_id": priority or None,
     }

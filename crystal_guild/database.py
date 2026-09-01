@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 14
+DATABASE_SCHEMA_VERSION = 15
 
 
 class Database:
@@ -942,6 +942,40 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_retainer_assignments_state
                     ON retainer_assignments(state, ready_at);
                     INSERT INTO schema_migrations(version,name) VALUES (14,'retainer_service');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+
+        already_v15 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=15").fetchone()
+        )
+        if not already_v15:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(15)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS retainer_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id TEXT NOT NULL,
+                        assignment_id TEXT NOT NULL UNIQUE,
+                        assignment_type TEXT NOT NULL,
+                        priority_item_id TEXT,
+                        cost_gil INTEGER NOT NULL CHECK(cost_gil >= 0),
+                        reward_json TEXT NOT NULL DEFAULT '{}',
+                        retainer_xp INTEGER NOT NULL DEFAULT 0 CHECK(retainer_xp >= 0),
+                        collected_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_retainer_history_player_collected
+                    ON retainer_history(player_id, collected_at DESC, id DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (15,'retainer_targeted_procurement');
                     COMMIT;
                     """
                 )

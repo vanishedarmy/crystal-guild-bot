@@ -1,10 +1,9 @@
-# Upgrade to v1.7.0 Retainer Service Alpha 1
+# Upgrade to v1.7.0 Retainer Service Alpha 2
 
-1. Stop the local Bot cleanly.
-2. Back up the existing Crystal Guild directory/database as usual.
-3. Apply the Alpha 1 Bot files.
-4. Start the Bot. Schema 13 upgrades sequentially to schema **14**; a verified `pre_schema_14_*.db` backup is created before the structural migration.
-5. Deploy the matching Alpha 1 Web build because Portal Action protocol is now **30**.
-6. Confirm the Portal connection reports protocol 30 and open **Retainer Service** from Guild Services.
+Upgrade Bot and Web together. Alpha 2 uses runtime `1.7.0-retainer-a2`, local schema **15**, hosted sync **1**, and Portal Action protocol **31**.
 
-No player reset, MGP conversion, or Gold Saucer balance change is required.
+The schema 14→15 migration is additive and creates `retainer_history`. Existing player progression, inventory, Gil, MGP, Retainer Rank/EXP, and any active or returned Alpha 1 Retainer assignment are preserved. The normal verified `pre_schema_15_*.db` backup is created before migration.
+
+`RETAINER_DISPATCH` accepts `{ "assignment": "...", "priority": "..." }`. An empty priority keeps the Alpha 1 general mixed-haul behavior. A valid priority must be a material offered by the selected assignment.
+
+Preserve your existing database and secrets. Do not copy packaged example environment files over live credentials.

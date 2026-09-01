@@ -132,7 +132,7 @@ class ResourceMigrationTests(unittest.TestCase):
                 columns = {row[1] for row in db.conn.execute("PRAGMA table_info(players)").fetchall()}
                 self.assertIn("current_mp", columns)
                 self.assertIn("current_ap", columns)
-                self.assertEqual(db.schema_version(), 14)
+                self.assertEqual(db.schema_version(), 15)
                 self.assertIsNone(db.one("SELECT current_mp FROM players WHERE twitch_id='100'")["current_mp"])
                 self.assertIsNotNone(db.pre_migration_backup_path)
                 self.assertTrue(Path(db.pre_migration_backup_path).exists())

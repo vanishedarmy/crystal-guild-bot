@@ -38,7 +38,7 @@ class GuildExpansionAlpha1Tests(unittest.TestCase):
         dock = next(facility for facility in guild["facilities"] if facility["id"] == "airship_dock")
         self.assertFalse(dock["locked"])
         self.assertIn(dock["status"], {"Buildable", "Complete"})
-        self.assertEqual(self.db.schema_version(), 14)
+        self.assertEqual(self.db.schema_version(), 15)
 
     def test_major_facility_projects_use_shared_resources_and_gameplay_milestones(self):
         self.db.execute("UPDATE fellowship_state SET level=6,renown=13000 WHERE singleton_id=1")
@@ -71,7 +71,7 @@ class GuildExpansionAlpha1Tests(unittest.TestCase):
             self.db, GameData(ROOT / "data"), venture_cooldown_seconds=0,
             overlay_state_path=str(Path(self.tmp.name) / "overlay2.json"), rng=random.Random(32),
         )
-        self.assertEqual(self.db.schema_version(), 14)
+        self.assertEqual(self.db.schema_version(), 15)
         dock = self.db.one("SELECT tier FROM fellowship_facilities WHERE facility_id='airship_dock'")
         workshop = self.db.one("SELECT tier FROM fellowship_facilities WHERE facility_id='workshop'")
         player = self.db.one("SELECT display_name FROM players WHERE twitch_id='1'")

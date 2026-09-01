@@ -1,2 +1,2 @@
-Crystal Guild v1.7.0 Retainer Service Alpha 1
-Runtime: 1.7.0-retainer-a1
+Crystal Guild v1.7.0 Retainer Service Alpha 2
+Runtime: 1.7.0-retainer-a2

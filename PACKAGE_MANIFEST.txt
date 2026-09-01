@@ -1,9 +1,9 @@
-Crystal Guild v1.7.0 — Retainer Service Alpha 1
-Runtime: 1.7.0-retainer-a1
-Local DB schema: 14
+Crystal Guild v1.7.0 — Retainer Service Alpha 2
+Runtime: 1.7.0-retainer-a2
+Local DB schema: 15
 Hosted sync schema: 1
-Portal Action protocol: 30
+Portal Action protocol: 31
 Currency: MGP
-Feature set: v1.6.0 Gold Saucer production baseline + Retainer Service Alpha 1
-Retainer: one personal procurement agent; one active assignment; Gil-funded timed material hauls; Rank/EXP; bonus finds; restart-safe exactly-once collection
-Moogle Emporium Annex: planned for a later v1.7.0 phase; not included in Alpha 1
+Feature set: v1.6.0 Gold Saucer production baseline + Retainer Service Alpha 2
+Retainer: one personal procurement agent; one active assignment; general or priority-targeted Gil-funded material hauls; Rank/EXP; bonus finds; eight-entry collection history; restart-safe exactly-once collection
+Moogle Emporium Annex: planned for a later v1.7.0 phase; not included in Alpha 2

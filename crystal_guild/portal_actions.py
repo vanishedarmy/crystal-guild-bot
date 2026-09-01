@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import logging
 import os
 import socket
@@ -15,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 30
+ACTION_PROTOCOL_VERSION = 31
 
 
 class PortalActionWorker:
@@ -534,12 +535,15 @@ class PortalActionWorker:
                 return False, "Retainer state does not accept parameters.", {}
             return self._game_result(self.game.portal_retainer_state(twitch_id))
         if action_type == "RETAINER_DISPATCH":
-            if set(payload) != {"assignment"}:
-                return False, "Retainer dispatch requires only assignment.", {}
+            if not set(payload).issubset({"assignment", "priority"}) or "assignment" not in payload:
+                return False, "Retainer dispatch accepts assignment and optional priority only.", {}
             assignment = str(payload.get("assignment") or "").strip().lower()
+            priority = str(payload.get("priority") or "").strip().lower()
             if not assignment:
                 return False, "Retainer dispatch is missing an assignment.", {}
-            return self._game_result(self.game.portal_retainer_dispatch(twitch_id, assignment, str(action.get("id") or "")))
+            if priority and (len(priority) > 100 or not re.fullmatch(r"[a-z0-9_]+", priority)):
+                return False, "Retainer priority material is invalid.", {}
+            return self._game_result(self.game.portal_retainer_dispatch(twitch_id, assignment, str(action.get("id") or ""), priority))
         if action_type == "RETAINER_COLLECT":
             if payload:
                 return False, "Retainer collect does not accept parameters.", {}

@@ -38,10 +38,10 @@ class RetainerServiceAlpha1Tests(unittest.TestCase):
         return self.game.portal_retainer_state("100").data["retainer_state"]
 
     def test_alpha1_contract_schema_protocol_and_default_retainer(self):
-        self.assertEqual(__version__, "1.7.0-retainer-a1")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 14)
-        self.assertEqual(self.db.schema_version(), 14)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 30)
+        self.assertEqual(__version__, "1.7.0-retainer-a2")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
+        self.assertEqual(self.db.schema_version(), 15)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 31)
         state = self.state()
         self.assertEqual(state["retainer"]["name"], "Guild Retainer")
         self.assertEqual(state["retainer"]["rank"], 1)

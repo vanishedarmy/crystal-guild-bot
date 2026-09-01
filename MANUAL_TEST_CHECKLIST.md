@@ -1,7 +1,7 @@
-# Crystal Guild v1.7.0 — Retainer Service Alpha 1 Manual Check
+# Crystal Guild v1.7.0 — Retainer Service Alpha 2 Manual Check
 
-- [ ] `!cgversion` reports `1.7.0-retainer-a1`.
-- [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 13→14.
+- [ ] `!cgversion` reports `1.7.0-retainer-a2`.
+- [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 14→15.
 - [ ] A verified `backups/pre_schema_14_*.db` exists after upgrading an existing schema-13 database.
 - [ ] Retainer Service appears under Guild Services on the player's own Portal.
 - [ ] Rank 1 shows Field Gathering and Monster Salvage unlocked; higher routes are visibly rank-gated.

@@ -48,7 +48,7 @@ class ExpeditionV12Tests(unittest.TestCase):
             )
 
     def test_schema_and_five_regions_are_present(self):
-        self.assertEqual(self.db.schema_version(), 14)
+        self.assertEqual(self.db.schema_version(), 15)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_expeditions'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_region_exploration'"))
         self.assertEqual(len(self.data.expedition_regions), 5)
