@@ -1,7 +1,7 @@
-# Crystal Guild Bot — v1.6.0 Gold Saucer RC2
+# Crystal Guild Bot — v1.6.0 Gold Saucer
 
-Final balance-candidate Bot baseline for the complete Gold Saucer. Runtime `1.6.0-gold-saucer-rc2`; local DB schema **13**; hosted sync **1**; Portal Action protocol **29**; command prefix `!`; MGP canonical.
+Production Bot baseline for Crystal Guild v1.6.0. Runtime `1.6.0-gold-saucer`; local DB schema **13**; hosted sync **1**; Portal Action protocol **29**; command prefix `!`; MGP canonical.
 
-RC2 retains all five attractions and RC1 persistence/daily-entry hardening. The only economy change is Mini Cactpot: its 10 MGP daily ticket now uses a Crystal Guild-scaled payout table with a 1,000 MGP top jackpot and net win/draw/loss accounting. Slots, Monster Toss, Chocobo Racing, Triple Triad, grants, limits, card values, and Prize Counter prices are frozen.
+The production Gold Saucer contains Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Triple Triad. RC1 daily-entry hardening, RC2 Mini Cactpot balance/W-D-L accounting, the H5 artwork-synced Triple Triad card parameters, and all persistence/idempotency protections are retained unchanged.
 
-See `RELEASE_NOTES.md`, `UPGRADE_GUIDE.md`, and `reports/GOLD_SAUCER_BALANCE_AUDIT_RC2.md`.
+See `RELEASE_NOTES.md`, `UPGRADE_GUIDE.md`, `VALIDATION_REPORT.md`, and `reports/GOLD_SAUCER_BALANCE_AUDIT_RC2.md`.

@@ -1,7 +1,2 @@
-Crystal Guild v1.6.0 — Gold Saucer RC2
-Runtime: 1.6.0-gold-saucer-rc2
-Local DB schema: 13
-Hosted sync schema: 1
-Portal Action protocol: 29
-Twitch prefix: !
-Canonical Gold Saucer currency: MGP
+Crystal Guild v1.6.0 — Gold Saucer
+Runtime: 1.6.0-gold-saucer

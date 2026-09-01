@@ -1,23 +1,17 @@
-# Validation Report — Crystal Guild v1.6.0 — Gold Saucer RC2
+# Validation Report — Crystal Guild v1.6.0 — Gold Saucer
 
-**PASS**
+## Automated release gates
 
-## Regression suites
-- Bot: **641 / 641 PASS**
-- RC2 balance tests: included in the Bot suite (Cactpot scale/WDL, exact Slots RTP, Monster Toss fixed-profile bound, Racing/Triad stake relationships).
+- Bot regression suite: **641 / 641 PASS**
+- Bot Python AST parse: **112 / 112 PASS**
+- Authoritative `gold_saucer.py`: byte-identical to RC2
+- Authoritative `engine.py`: byte-identical to RC2
+- Local DB schema: **13**
+- Hosted sync: **1**
+- Portal Action protocol: **29**
+- Command prefix: `!`
+- Currency: **MGP**
 
-## Source / release gates
-- Bot Python parse: **112 / 112 PASS**
-- Database integrity / non-destructive recovery drill / synthetic stress guardrails: **PASS** through the release-readiness suite.
-- RC2 win/draw/loss balance audit: **PASS** (`reports/GOLD_SAUCER_BALANCE_AUDIT_RC2.md`).
+The suite includes persistence/recovery, exactly-once Portal action handling, Gold Saucer daily-entry accounting, RC2 Mini Cactpot W/D/L balance coverage, Triple Triad card-value synchronization, and synthetic stress guardrails.
 
-## Focused RC2 checks
-- Mini Cactpot random-line EV is ~36.19 MGP on a 10 MGP daily ticket; sum 6 pays 1,000 MGP.
-- Mini Cactpot records net win/draw/loss against wager and preserves legacy RC1 history.
-- Crystal Slots remains 87.453% theoretical return.
-- Monster Toss best fixed profile remains below break-even (~85.87% return).
-- Chocobo Racing remains progression-sensitive and daily-bounded.
-- Triple Triad win/draw/loss stakes remain profit / exact refund / forfeited entry.
-- RC1 start-day accounting hardening remains active.
-
-Contract: runtime `1.6.0-gold-saucer-rc2`, schema **13**, hosted sync **1**, Portal protocol **29**, prefix `!`, MGP canonical.
+Contract: runtime `1.6.0-gold-saucer`. No gameplay/economy change is introduced by the production promotion.

@@ -1,6 +1,6 @@
-# Web Sync — Crystal Guild v1.6.0 Gold Saucer RC2 — Chocobo Racing
+# Web Sync — Crystal Guild v1.6.0 Gold Saucer — Chocobo Racing
 
-Gold Saucer RC2 keeps hosted sync schema **1** and advances Portal Action protocol to **28** for `CHOCOBO_RACE`. The local Bot remains authoritative for MGP balances, Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, Prize Counter purchases, replay receipts, and records.
+Gold Saucer keeps hosted sync schema **1** and uses Portal Action protocol **29** for the complete Gold Saucer action set. The local Bot remains authoritative for MGP balances, Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, Triple Triad, Prize Counter purchases, replay receipts, and records.
 
 The Gold Saucer state now exposes canonical `mgp`, `welcome_mgp`, `daily_allowance_mgp`, `account.mgp`, `records.net_mgp`, `currency_name: "MGP"`, and `currency_code: "MGP"` fields. Legacy Alpha 2 `points` fields remain available as compatibility aliases.
 

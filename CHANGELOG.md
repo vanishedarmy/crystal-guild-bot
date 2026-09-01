@@ -1,3 +1,9 @@
+# v1.6.0 — Gold Saucer
+- Promotes the validated RC2 feature and balance set into the production release.
+- Keeps schema 13, hosted sync 1, Portal protocol 29, MGP balances, attraction economics, Triple Triad values, and player progression unchanged from RC2.
+- Ships with the final regenerated 15-card Triple Triad Web set and mobile Gold Saucer disclosure-pointer alignment fix.
+- Runtime `1.6.0-gold-saucer`.
+
 # v1.6.0 — Gold Saucer RC2
 - Rebalances Mini Cactpot to Crystal Guild’s MGP scale while retaining the 10 MGP daily ticket and 1,000 MGP top jackpot.
 - Adds net win/draw/loss accounting for Mini Cactpot and a full RC2 Gold Saucer outcome audit.

@@ -64,7 +64,7 @@ def main() -> None:
 
     manifest = output / "MIGRATION_MANIFEST.txt"
     manifest.write_text(
-        "Crystal Guild v1.6.0 — Gold Saucer RC2 private migration bundle\n"
+        "Crystal Guild v1.6.0 — Gold Saucer private migration bundle\n"
         f"Database: crystal_guild.db ({database_target.stat().st_size} bytes)\n"
         f"Token database: twitch_tokens.db ({token_target.stat().st_size} bytes)\n"
         f"Token rows: {token_rows}\n"

@@ -1,4 +1,4 @@
-# Crystal Guild v1.6.0 — Gold Saucer RC2 Setup
+# Crystal Guild v1.6.0 — Gold Saucer Setup
 
 Alpha 4 is an in-place upgrade from the **Gold Saucer Alpha 3 MGP canonical baseline**. It adds Chocobo Racing without changing stored MGP balances or the local schema; Portal Action protocol advances from 27 to 28.
 
@@ -16,7 +16,7 @@ Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secre
 - An existing Gold Saucer balance must be identical before and after upgrading.
 
 ## Release verification
-- `!cgversion` → `1.6.0-gold-saucer-rc2`
+- `!cgversion` → `1.6.0-gold-saucer`
 - Local DB schema → **12**
 - Hosted sync schema → **1**
 - Portal Action protocol → **27**
