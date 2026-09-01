@@ -1,5 +1,5 @@
-Crystal Guild v1.6.0 — Gold Saucer
-Runtime: 1.6.0-gold-saucer
-Schema: 13 | Hosted sync: 1 | Portal protocol: 29 | Prefix: ! | Currency: MGP
+Crystal Guild v1.7.0 — Retainer Service Alpha 1
+Runtime: 1.7.0-retainer-a1
+Schema: 14 | Hosted sync: 1 | Portal protocol: 30 | Prefix: ! | Currency: MGP
 
-Production release. Preserve your existing database and secrets when upgrading.
+Alpha build. Preserve your existing database and secrets when upgrading.

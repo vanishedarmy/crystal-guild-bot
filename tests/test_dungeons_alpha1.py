@@ -41,9 +41,9 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_schema10_and_protocol24_are_current(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
-        self.assertEqual(self.db.schema_version(), 13)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 29)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 14)
+        self.assertEqual(self.db.schema_version(), 14)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 30)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeons'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeon_progress'"))
 
@@ -66,7 +66,7 @@ class DungeonsAlpha1Tests(unittest.TestCase):
             raw.close()
         upgraded = Database(path)
         try:
-            self.assertEqual(upgraded.schema_version(), 13)
+            self.assertEqual(upgraded.schema_version(), 14)
             row = upgraded.one("SELECT level,gil FROM players WHERE twitch_id='909'")
             self.assertEqual((int(row["level"]), int(row["gil"])), (37, 54321))
             self.assertIsNotNone(upgraded.pre_migration_backup_path)

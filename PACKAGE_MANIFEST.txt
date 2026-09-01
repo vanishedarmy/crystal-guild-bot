@@ -1,9 +1,9 @@
-Crystal Guild v1.6.0 — Gold Saucer
-Runtime: 1.6.0-gold-saucer
-Local DB schema: 13
+Crystal Guild v1.7.0 — Retainer Service Alpha 1
+Runtime: 1.7.0-retainer-a1
+Local DB schema: 14
 Hosted sync schema: 1
-Portal Action protocol: 29
+Portal Action protocol: 30
 Currency: MGP
-Feature set: Mini Cactpot; Crystal Slots; Monster Toss; Chocobo Racing; Triple Triad
-Balance baseline: RC2 Mini Cactpot table + W/D/L accounting; all other RC2 attraction economics frozen
-Persistence baseline: Toss/Triad daily entries bind to UTC start day; authoritative exactly-once settlement retained
+Feature set: v1.6.0 Gold Saucer production baseline + Retainer Service Alpha 1
+Retainer: one personal procurement agent; one active assignment; Gil-funded timed material hauls; Rank/EXP; bonus finds; restart-safe exactly-once collection
+Moogle Emporium Annex: planned for a later v1.7.0 phase; not included in Alpha 1

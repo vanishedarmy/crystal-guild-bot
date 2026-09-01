@@ -46,10 +46,10 @@ class GoldSaucerAlpha4ChocoboRacingTests(unittest.TestCase):
         self.db.execute("INSERT OR IGNORE INTO player_chocobo_traits(player_id,trait_id) VALUES (?,?)", ("100", trait))
 
     def test_alpha4_contract_opens_chocobo_racing_without_schema_migration(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
-        self.assertEqual(self.db.schema_version(), 13)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 29)
+        self.assertEqual(__version__, "1.7.0-retainer-a1")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 14)
+        self.assertEqual(self.db.schema_version(), 14)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 30)
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
         attraction = next(row for row in state["attractions"] if row["id"] == "chocobo_racing")
         self.assertEqual(attraction["status"], "open")

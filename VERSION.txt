@@ -1,2 +1,2 @@
-Crystal Guild v1.6.0 — Gold Saucer
-Runtime: 1.6.0-gold-saucer
+Crystal Guild v1.7.0 Retainer Service Alpha 1
+Runtime: 1.7.0-retainer-a1

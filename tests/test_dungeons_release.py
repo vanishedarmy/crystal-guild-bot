@@ -14,14 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 29)
+        self.assertEqual(__version__, "1.7.0-retainer-a1")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 14)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 30)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)
 
     def test_project_metadata_is_semver_151(self):
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual(pyproject["project"]["version"], "1.6.0")
+        self.assertEqual(pyproject["project"]["version"], "1.7.0a1")
 
     def test_shipping_contract_keeps_runtime_state_out(self):
         self.assertIn("overlay/state.json", (ROOT / ".gitignore").read_text(encoding="utf-8"))
@@ -30,8 +30,8 @@ class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_production_package_surfaces_have_no_current_rc_label(self):
         for name in ("VERSION.txt", "README_FIRST.txt", "PACKAGE_MANIFEST.txt", "RELEASE_NOTES.md", "FINALIZATION_AUDIT.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
-            self.assertIn("Gold Saucer", text, name)
-            self.assertIn("1.6.0-gold-saucer", text, name)
+            self.assertIn("Retainer Service", text, name)
+            self.assertIn("1.7.0-retainer-a1", text, name)
             self.assertNotIn("1.4.0-dungeons-rc1", text, name)
 
 

@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 29
+ACTION_PROTOCOL_VERSION = 30
 
 
 class PortalActionWorker:
@@ -529,6 +529,21 @@ class PortalActionWorker:
             if not prize_id:
                 return False, "Gold Saucer prize purchase is missing a prize.", {}
             return self._game_result(self.game.portal_saucer_buy(twitch_id, prize_id, str(action.get("id") or "")))
+        if action_type == "RETAINER_STATE":
+            if payload:
+                return False, "Retainer state does not accept parameters.", {}
+            return self._game_result(self.game.portal_retainer_state(twitch_id))
+        if action_type == "RETAINER_DISPATCH":
+            if set(payload) != {"assignment"}:
+                return False, "Retainer dispatch requires only assignment.", {}
+            assignment = str(payload.get("assignment") or "").strip().lower()
+            if not assignment:
+                return False, "Retainer dispatch is missing an assignment.", {}
+            return self._game_result(self.game.portal_retainer_dispatch(twitch_id, assignment, str(action.get("id") or "")))
+        if action_type == "RETAINER_COLLECT":
+            if payload:
+                return False, "Retainer collect does not accept parameters.", {}
+            return self._game_result(self.game.portal_retainer_collect(twitch_id, str(action.get("id") or "")))
         if action_type == "DAILY_STATE":
             result = self.game.portal_daily_state(twitch_id, self._subscriber_tier(twitch_id))
             return self._game_result(result)

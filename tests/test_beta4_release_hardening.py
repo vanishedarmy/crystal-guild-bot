@@ -203,7 +203,7 @@ class Beta4ReleaseHardeningTests(unittest.TestCase):
 
         upgraded = Database(path)
         try:
-            self.assertEqual(upgraded.schema_version(), 13)
+            self.assertEqual(upgraded.schema_version(), 14)
             row = upgraded.one(
                 "SELECT level,xp,gil,current_hp,current_mp,current_ap FROM players WHERE twitch_id='999'"
             )
@@ -212,7 +212,7 @@ class Beta4ReleaseHardeningTests(unittest.TestCase):
             self.assertEqual(upgraded.one("SELECT name FROM player_chocobos WHERE player_id='999'")["name"], "Legacy Bird")
             self.assertIsNotNone(upgraded.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_expeditions'"))
             self.assertIsNotNone(upgraded.pre_migration_backup_path)
-            self.assertIn("pre_schema_13", Path(upgraded.pre_migration_backup_path).name)
+            self.assertIn("pre_schema_14", Path(upgraded.pre_migration_backup_path).name)
             self.assertEqual(upgraded.quick_check(), [])
         finally:
             upgraded.close()

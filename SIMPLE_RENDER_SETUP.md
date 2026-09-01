@@ -1,10 +1,9 @@
-# Crystal Guild v1.6.0 — Gold Saucer Simplified Render Setup
+# Crystal Guild v1.7.0 — Retainer Service Alpha 1 Simplified Render Setup
 
-1. Preserve `/var/data` and all Render environment variables.
-2. Stop any duplicate/local Bot instance.
-3. Deploy the Alpha 4 Bot source.
-4. Confirm `!cgversion` = `1.6.0-gold-saucer` and `!health` is clean.
-5. Confirm local schema **12**, hosted sync **1**, Portal protocol **27**.
-6. Open Gold Saucer and confirm the existing balance is unchanged and now reported as **MGP**.
+1. Preserve the existing persistent disk/database and environment secrets.
+2. Deploy this Bot build.
+3. Deploy the matching v1.7.0 Retainer Service Alpha 1 Web build.
+4. Confirm `!cgversion` = `1.7.0-retainer-a1`, schema = **14**, Portal protocol = **30**, and `!health` is clean.
+5. Open Retainer Service in the Adventurer Portal and perform a state check/dispatch smoke test.
 
-No database migration, player reset, OAuth reauthorization, or new environment variable is required.
+Alpha 1 requires no new environment variable and does not reset player progression.

@@ -1,12 +1,12 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title Crystal Guild v1.6.0 - Gold Saucer
+title Crystal Guild v1.7.0 - Retainer Service Alpha 1
 
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.6.0 - GOLD SAUCER
+echo              CRYSTAL GUILD v1.7.0 - RETAINER SERVICE ALPHA 1
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

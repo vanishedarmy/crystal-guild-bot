@@ -1,13 +1,10 @@
-# Upgrade Guide — Crystal Guild v1.6.0 Gold Saucer
+# Upgrade to v1.7.0 Retainer Service Alpha 1
 
-## From RC2
+1. Stop the local Bot cleanly.
+2. Back up the existing Crystal Guild directory/database as usual.
+3. Apply the Alpha 1 Bot files.
+4. Start the Bot. Schema 13 upgrades sequentially to schema **14**; a verified `pre_schema_14_*.db` backup is created before the structural migration.
+5. Deploy the matching Alpha 1 Web build because Portal Action protocol is now **30**.
+6. Confirm the Portal connection reports protocol 30 and open **Retainer Service** from Guild Services.
 
-1. Stop the Bot cleanly.
-2. Keep your existing persistent database, secrets, and hosted environment values.
-3. Replace the Bot source with the v1.6.0 production Bot or apply the RC2→v1.6.0 patch.
-4. Start the Bot and verify `!cgversion` reports `1.6.0-gold-saucer`.
-5. Deploy the matching v1.6.0 Web build.
-6. Confirm `/api/health` reports runtime/frontend `1.6.0-gold-saucer`, hosted sync **1**, and Portal protocol **29**.
-7. Open Gold Saucer and confirm the existing MGP balance, Triple Triad collection/deck, and active persistent state remain intact.
-
-No schema migration is required from RC2; schema remains **13**.
+No player reset, MGP conversion, or Gold Saucer balance change is required.

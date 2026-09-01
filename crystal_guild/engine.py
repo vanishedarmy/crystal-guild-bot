@@ -117,6 +117,10 @@ from .gold_saucer import (
     triple_triad_place as saucer_triad_place, triple_triad_score as saucer_triad_score,
     triple_triad_npc_move as saucer_triad_npc_move,
 )
+from .retainer import (
+    RETAINER_DEFAULT_NAME, RETAINER_ASSIGNMENTS, RETAINER_ASSIGNMENTS_BY_ID,
+    retainer_rank, roll_retainer_rewards,
+)
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
@@ -10562,6 +10566,297 @@ class CrystalGuildEngine:
                 )
                 result = GameResult.success(f"PRIZE COUNTER — {prize['name']} unlocked for {cost:,} MGP!", prize_id=prize_key, title_id=title_id)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    # ---------- v1.7.0 Alpha 1: Retainer Service ----------
+    @staticmethod
+    def _retainer_decode_reward(raw: Any) -> dict[str, Any]:
+        try:
+            payload = json.loads(str(raw or "{}"))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        items = []
+        for row in payload.get("items") or []:
+            if not isinstance(row, dict):
+                continue
+            item_id = str(row.get("item_id") or "").strip()
+            try:
+                quantity = max(0, int(row.get("quantity") or 0))
+            except (TypeError, ValueError):
+                quantity = 0
+            if item_id and quantity > 0:
+                items.append({"item_id": item_id, "quantity": quantity})
+        bonus = payload.get("bonus") if isinstance(payload.get("bonus"), dict) else None
+        if bonus:
+            bonus = {"item_id": str(bonus.get("item_id") or ""), "quantity": max(0, int(bonus.get("quantity") or 0))}
+            if not bonus["item_id"] or bonus["quantity"] < 1:
+                bonus = None
+        return {"items": items, "bonus": bonus}
+
+    def _ensure_retainer_sql(self, conn: Any, twitch_id: str) -> Any:
+        conn.execute(
+            "INSERT OR IGNORE INTO player_retainers(player_id,name) VALUES (?,?)",
+            (str(twitch_id), RETAINER_DEFAULT_NAME),
+        )
+        return conn.execute("SELECT * FROM player_retainers WHERE player_id=?", (str(twitch_id),)).fetchone()
+
+    def _retainer_state_sql(self, conn: Any, twitch_id: str, now: int | None = None) -> dict[str, Any]:
+        now = int(time.time()) if now is None else int(now)
+        player = conn.execute("SELECT gil,level FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+        if not player:
+            return {}
+        retainer = self._ensure_retainer_sql(conn, twitch_id)
+        assignment = conn.execute("SELECT * FROM retainer_assignments WHERE player_id=?", (str(twitch_id),)).fetchone()
+        if assignment and str(assignment["state"]) == "active" and int(assignment["ready_at"] or 0) <= now:
+            conn.execute(
+                "UPDATE retainer_assignments SET state='ready',updated_at=? WHERE player_id=? AND state='active'",
+                (now, str(twitch_id)),
+            )
+            assignment = conn.execute("SELECT * FROM retainer_assignments WHERE player_id=?", (str(twitch_id),)).fetchone()
+
+        rank = retainer_rank(int(retainer["xp"] or 0))
+        assignment_payload: dict[str, Any] | None = None
+        busy = False
+        if assignment:
+            assignment_type = str(assignment["assignment_type"] or "")
+            definition = RETAINER_ASSIGNMENTS_BY_ID.get(assignment_type, {})
+            state = str(assignment["state"] or "")
+            busy = state in {"active", "ready"}
+            reward = self._retainer_decode_reward(assignment["reward_json"])
+            reveal_reward = state in {"ready", "collected"}
+            reward_items = []
+            if reveal_reward:
+                for row in reward["items"]:
+                    item = self.data.items.get(str(row["item_id"]))
+                    reward_items.append({
+                        "item_id": str(row["item_id"]),
+                        "name": str(item.get("name") if item else row["item_id"]),
+                        "rarity": str(item.get("rarity") if item else "common"),
+                        "quantity": int(row["quantity"]),
+                    })
+            bonus = None
+            if reveal_reward and reward.get("bonus"):
+                bonus_item = self.data.items.get(str(reward["bonus"]["item_id"]))
+                bonus = {
+                    "item_id": str(reward["bonus"]["item_id"]),
+                    "name": str(bonus_item.get("name") if bonus_item else reward["bonus"]["item_id"]),
+                    "quantity": int(reward["bonus"]["quantity"]),
+                }
+            assignment_payload = {
+                "assignment_id": str(assignment["assignment_id"]),
+                "type": assignment_type,
+                "name": str(definition.get("name") or assignment_type.replace("_", " ").title()),
+                "state": state,
+                "cost_gil": max(0, int(assignment["cost_gil"] or 0)),
+                "dispatched_at": int(assignment["dispatched_at"] or 0),
+                "ready_at": int(assignment["ready_at"] or 0),
+                "remaining_seconds": max(0, int(assignment["ready_at"] or 0) - now) if state == "active" else 0,
+                "collected_at": int(assignment["collected_at"] or 0) if assignment["collected_at"] is not None else None,
+                "pool_label": str(definition.get("pool_label") or "Crafting materials"),
+                "rewards": reward_items,
+                "bonus": bonus,
+            }
+
+        options = []
+        for row in RETAINER_ASSIGNMENTS:
+            required_rank = max(1, int(row["rank_required"]))
+            unlocked = int(rank["rank"]) >= required_rank
+            cost = max(0, int(row["cost_gil"]))
+            options.append({
+                "id": str(row["id"]),
+                "name": str(row["name"]),
+                "description": str(row["description"]),
+                "rank_required": required_rank,
+                "unlocked": unlocked,
+                "duration_seconds": max(1, int(row["duration_seconds"])),
+                "cost_gil": cost,
+                "retainer_xp": max(0, int(row["xp"])),
+                "pool_label": str(row["pool_label"]),
+                "can_dispatch": bool(unlocked and not busy and int(player["gil"] or 0) >= cost),
+            })
+        return {
+            "gil": max(0, int(player["gil"] or 0)),
+            "retainer": {
+                "name": str(retainer["name"] or RETAINER_DEFAULT_NAME),
+                **rank,
+                "assignments_completed": max(0, int(retainer["assignments_completed"] or 0)),
+                "materials_found": max(0, int(retainer["materials_found"] or 0)),
+                "bonus_finds": max(0, int(retainer["bonus_finds"] or 0)),
+            },
+            "assignment": assignment_payload,
+            "assignments": options,
+            "busy": busy,
+            "can_dispatch": not busy,
+        }
+
+    def portal_retainer_state(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        with self.db.tx() as conn:
+            state = self._retainer_state_sql(conn, twitch_id)
+        return GameResult.success("Retainer Service ready.", retainer_state=state)
+
+    def portal_retainer_dispatch(self, twitch_id: str, assignment_type: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        assignment_key = str(assignment_type or "").strip().lower()
+        definition = RETAINER_ASSIGNMENTS_BY_ID.get(assignment_key)
+        if not definition:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Retainer assignment is unavailable."))
+        now = int(time.time())
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            player = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+            if not player:
+                result = self._need_recruit()
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            retainer = self._ensure_retainer_sql(conn, twitch_id)
+            rank = retainer_rank(int(retainer["xp"] or 0))
+            if int(rank["rank"]) < int(definition["rank_required"]):
+                result = GameResult.fail(
+                    f"{definition['name']} requires a Rank {int(definition['rank_required'])} Retainer."
+                )
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            current = conn.execute("SELECT state,ready_at FROM retainer_assignments WHERE player_id=?", (str(twitch_id),)).fetchone()
+            if current and str(current["state"]) in {"active", "ready"}:
+                # Normalize an elapsed assignment before rejecting a second dispatch.
+                if str(current["state"]) == "active" and int(current["ready_at"] or 0) <= now:
+                    conn.execute("UPDATE retainer_assignments SET state='ready',updated_at=? WHERE player_id=?", (now, str(twitch_id)))
+                result = GameResult.fail("Collect your Retainer's current assignment before dispatching another.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            cost = max(0, int(definition["cost_gil"]))
+            if int(player["gil"] or 0) < cost:
+                result = GameResult.fail(f"This assignment costs {cost:,} Gil, but you only have {int(player['gil'] or 0):,}.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+
+            reward = roll_retainer_rewards(definition, int(rank["rank"]), self.rng)
+            # Only persist item IDs/quantities; display data is always rebuilt from canonical item data.
+            encoded_reward = json.dumps({"items": reward["items"], "bonus": reward.get("bonus")}, separators=(",", ":"), sort_keys=True)
+            assignment_id = uuid.uuid4().hex
+            ready_at = now + max(1, int(definition["duration_seconds"]))
+            conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (cost, str(twitch_id)))
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,?)",
+                (str(twitch_id), -cost, f"retainer_dispatch:{assignment_key}"),
+            )
+            conn.execute(
+                "INSERT INTO retainer_assignments(player_id,assignment_id,assignment_type,state,cost_gil,reward_json,dispatched_at,ready_at,collected_at,updated_at) "
+                "VALUES (?,?,?,?,?,?,?,?,NULL,?) ON CONFLICT(player_id) DO UPDATE SET assignment_id=excluded.assignment_id,assignment_type=excluded.assignment_type,state=excluded.state,cost_gil=excluded.cost_gil,reward_json=excluded.reward_json,dispatched_at=excluded.dispatched_at,ready_at=excluded.ready_at,collected_at=NULL,updated_at=excluded.updated_at",
+                (str(twitch_id), assignment_id, assignment_key, "active", cost, encoded_reward, now, ready_at, now),
+            )
+            result = GameResult.success(
+                f"RETAINER DISPATCH — {definition['name']} underway for {format_duration(int(definition['duration_seconds']))}. Cost: {cost:,} Gil.",
+                assignment_id=assignment_id,
+            )
+            result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_retainer_collect(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        now = int(time.time())
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            player = conn.execute("SELECT twitch_id FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+            if not player:
+                result = self._need_recruit()
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            retainer = self._ensure_retainer_sql(conn, twitch_id)
+            assignment = conn.execute("SELECT * FROM retainer_assignments WHERE player_id=?", (str(twitch_id),)).fetchone()
+            if not assignment or str(assignment["state"] or "") == "collected":
+                result = GameResult.fail("Your Retainer has no completed assignment waiting to be collected.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            if int(assignment["ready_at"] or 0) > now:
+                remaining = max(1, int(assignment["ready_at"] or 0) - now)
+                result = GameResult.fail(f"Your Retainer is still away for {format_duration(remaining)}.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            assignment_type = str(assignment["assignment_type"] or "")
+            definition = RETAINER_ASSIGNMENTS_BY_ID.get(assignment_type)
+            if not definition:
+                result = GameResult.fail("The completed Retainer assignment could not be recognized. Nothing was collected.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            reward = self._retainer_decode_reward(assignment["reward_json"])
+            if not reward["items"]:
+                result = GameResult.fail("The completed Retainer assignment has no valid material haul. Nothing was collected.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+
+            rank_before = retainer_rank(int(retainer["xp"] or 0))
+            total_qty = 0
+            haul_labels = []
+            grant_rows = list(reward["items"])
+            if reward.get("bonus"):
+                grant_rows.append(dict(reward["bonus"]))
+            for row in grant_rows:
+                item_id = str(row["item_id"])
+                quantity = max(1, int(row["quantity"]))
+                item = self.data.items.get(item_id)
+                if not item or str(item.get("type") or "") != "material":
+                    continue
+                total_qty += quantity
+                if row is not grant_rows[-1] or not reward.get("bonus"):
+                    haul_labels.append(f"{item['name']} x{quantity}")
+                conn.execute(
+                    "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity",
+                    (str(twitch_id), item_id, quantity),
+                )
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,?)",
+                    (str(twitch_id), item_id, quantity, f"retainer:{assignment_type}"),
+                )
+            if total_qty < 1:
+                result = GameResult.fail("The completed Retainer assignment contained no collectable crafting materials.")
+                result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+
+            xp_gain = max(0, int(definition["xp"]))
+            bonus_count = 1 if reward.get("bonus") else 0
+            conn.execute(
+                "UPDATE player_retainers SET xp=xp+?,assignments_completed=assignments_completed+1,materials_found=materials_found+?,bonus_finds=bonus_finds+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                (xp_gain, total_qty, bonus_count, str(twitch_id)),
+            )
+            conn.execute(
+                "UPDATE retainer_assignments SET state='collected',collected_at=?,updated_at=? WHERE player_id=?",
+                (now, now, str(twitch_id)),
+            )
+            updated_retainer = conn.execute("SELECT xp FROM player_retainers WHERE player_id=?", (str(twitch_id),)).fetchone()
+            rank_after = retainer_rank(int(updated_retainer["xp"] or 0))
+            rank_note = f" Rank up: {rank_after['rank_name']}!" if int(rank_after["rank"]) > int(rank_before["rank"]) else ""
+            bonus_note = " Bonus find secured." if bonus_count else ""
+            result = GameResult.success(
+                f"RETAINER RETURN — {definition['name']}: {', '.join(haul_labels)}. +{xp_gain} Retainer EXP.{bonus_note}{rank_note}",
+                assignment_id=str(assignment["assignment_id"]),
+                materials_collected=total_qty,
+                retainer_xp=xp_gain,
+                rank_up=bool(int(rank_after["rank"]) > int(rank_before["rank"])),
+            )
+            result.data["retainer_state"] = self._retainer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
 

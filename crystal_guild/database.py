@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 13
+DATABASE_SCHEMA_VERSION = 14
 
 
 class Database:
@@ -897,6 +897,51 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_gold_saucer_triple_triad_state
                     ON gold_saucer_triple_triad(state, updated_at DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (13,'gold_saucer_triple_triad');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v14 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=14").fetchone()
+        )
+        if not already_v14:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(14)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_retainers (
+                        player_id TEXT PRIMARY KEY,
+                        name TEXT NOT NULL DEFAULT 'Guild Retainer',
+                        xp INTEGER NOT NULL DEFAULT 0 CHECK(xp >= 0),
+                        assignments_completed INTEGER NOT NULL DEFAULT 0 CHECK(assignments_completed >= 0),
+                        materials_found INTEGER NOT NULL DEFAULT 0 CHECK(materials_found >= 0),
+                        bonus_finds INTEGER NOT NULL DEFAULT 0 CHECK(bonus_finds >= 0),
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS retainer_assignments (
+                        player_id TEXT PRIMARY KEY,
+                        assignment_id TEXT NOT NULL,
+                        assignment_type TEXT NOT NULL,
+                        state TEXT NOT NULL,
+                        cost_gil INTEGER NOT NULL CHECK(cost_gil >= 0),
+                        reward_json TEXT NOT NULL DEFAULT '{}',
+                        dispatched_at INTEGER NOT NULL,
+                        ready_at INTEGER NOT NULL,
+                        collected_at INTEGER,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_retainer_assignments_state
+                    ON retainer_assignments(state, ready_at);
+                    INSERT INTO schema_migrations(version,name) VALUES (14,'retainer_service');
                     COMMIT;
                     """
                 )

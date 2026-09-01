@@ -1,3 +1,13 @@
+# v1.7.0 — Retainer Service Alpha 1
+
+- Adds one personal Retainer per player for Portal-only, Gil-funded crafting-material procurement.
+- Adds five timed assignments from 30-minute Field Gathering through 8-hour Specialist Acquisition.
+- Commits the material haul at dispatch so refresh/reconnect cannot reroll results; assignment state survives Bot restarts.
+- Adds Retainer Rank/EXP progression and a modest bonus-find chance while excluding Relic/Artifact material pools.
+- Adds exactly-once Retainer collection through Portal Action protocol 30.
+- Advances local DB schema 13→14 with the standard verified pre-migration backup; hosted sync remains 1.
+- Preserves all v1.6.0 Gold Saucer gameplay, MGP balance, and player progression.
+
 # v1.6.0 — Gold Saucer
 - Promotes the validated RC2 feature and balance set into the production release.
 - Keeps schema 13, hosted sync 1, Portal protocol 29, MGP balances, attraction economics, Triple Triad values, and player progression unchanged from RC2.

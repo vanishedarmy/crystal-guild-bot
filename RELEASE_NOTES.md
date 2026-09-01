@@ -1,24 +1,9 @@
-# Crystal Guild v1.6.0 — Gold Saucer
+# Crystal Guild v1.7.0 — Retainer Service Alpha 1
 
-## Production release
+Retainer Service adds a personal procurement agent to the Adventurer Portal. Pay Gil to dispatch one Retainer on timed material-gathering assignments, then collect the committed crafting-material haul when the Retainer returns.
 
-v1.6.0 promotes the validated RC2 Gold Saucer candidate into production. The complete attraction set is **Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Triple Triad**. MGP remains separate from Gil and remains the canonical Saucer currency.
+Alpha 1 includes five procurement assignments, Retainer Rank/EXP progression, small bonus-find chances, restart-safe persistent assignment state, and exactly-once reward collection. Retainers do not store equipment, enter combat, or replace the player's inventory.
 
-### Final release contents
+Database schema advances from 13 to **14** and Portal Action protocol advances from 29 to **30**. Existing player data is preserved in place with the normal verified pre-migration backup. Gold Saucer v1.6.0 systems and balance are unchanged.
 
-- Mini Cactpot retains the RC2 Crystal Guild-scaled 10 MGP daily table, including the 1,000 MGP Sum-6 jackpot and net win/draw/loss ledger accounting.
-- Crystal Slots, Monster Toss, Chocobo Racing, Triple Triad, Prize Counter pricing, MGP grants, daily limits, and card parameters are unchanged from RC2.
-- Monster Toss and Triple Triad daily-entry accounting remains bound to the UTC day on which the paid entry starts.
-- Triple Triad keeps the 15-card collection and the artwork-synced canonical Top/Right/Bottom/Left parameters.
-- All Gold Saucer actions remain Bot-authoritative and idempotent.
-
-### Release contract
-
-- Runtime: `1.6.0-gold-saucer`
-- Local DB schema: **13**
-- Hosted sync: **1**
-- Portal Action protocol: **29**
-- Command prefix: `!`
-- Currency: **MGP**
-
-There is no new database migration from RC2 and no player-data reset.
+Runtime identity: `1.7.0-retainer-a1`.
