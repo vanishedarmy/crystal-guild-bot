@@ -1,0 +1,17 @@
+{
+  "release": "v1.6.0 Gold Saucer Alpha 5 — Triple Triad",
+  "runtime": "1.6.0-gold-saucer-a5",
+  "local_db_schema": 13,
+  "hosted_sync_schema": 1,
+  "portal_action_protocol": 29,
+  "currency": "MGP",
+  "triple_triad": {
+    "daily_matches": 5,
+    "starter_cards": 5,
+    "catalog_cards": 15,
+    "opponents": 3,
+    "ruleset": "Open",
+    "persistent_match": true,
+    "tables": ["player_triple_triad", "gold_saucer_triple_triad"]
+  }
+}

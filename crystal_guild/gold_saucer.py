@@ -167,6 +167,152 @@ def chocobo_race_result(level: int, traits: set[str] | list[str] | tuple[str, ..
     }
 
 
+# Alpha 5 — Triple Triad. The first playable ruleset intentionally uses the
+# classic four-side comparison game without Same, Plus, elemental modifiers,
+# or regional rules. Matches are persistent and authoritative; a player move
+# and the responding NPC move are committed together so refresh/retry cannot
+# duplicate MGP or board actions.
+TRIPLE_TRIAD_DAILY_MATCHES = 5
+TRIPLE_TRIAD_STARTER_DECK = ("chocobo", "moogle", "cactuar", "bomb", "flan")
+TRIPLE_TRIAD_CARDS = (
+    {"id": "chocobo", "name": "Chocobo", "rarity": 1, "top": 3, "right": 4, "bottom": 2, "left": 2},
+    {"id": "moogle", "name": "Moogle", "rarity": 1, "top": 4, "right": 2, "bottom": 3, "left": 3},
+    {"id": "cactuar", "name": "Cactuar", "rarity": 1, "top": 2, "right": 5, "bottom": 3, "left": 2},
+    {"id": "bomb", "name": "Bomb", "rarity": 1, "top": 5, "right": 3, "bottom": 2, "left": 3},
+    {"id": "flan", "name": "Flan", "rarity": 1, "top": 3, "right": 3, "bottom": 5, "left": 2},
+    {"id": "tonberry", "name": "Tonberry", "rarity": 2, "top": 6, "right": 2, "bottom": 5, "left": 3},
+    {"id": "coeurl", "name": "Coeurl", "rarity": 2, "top": 4, "right": 6, "bottom": 3, "left": 5},
+    {"id": "ahriman", "name": "Ahriman", "rarity": 2, "top": 5, "right": 4, "bottom": 6, "left": 3},
+    {"id": "malboro", "name": "Malboro", "rarity": 3, "top": 6, "right": 5, "bottom": 5, "left": 4},
+    {"id": "ifrit", "name": "Ifrit", "rarity": 3, "top": 7, "right": 5, "bottom": 6, "left": 6},
+    {"id": "shiva", "name": "Shiva", "rarity": 3, "top": 6, "right": 7, "bottom": 5, "left": 6},
+    {"id": "ramuh", "name": "Ramuh", "rarity": 4, "top": 7, "right": 6, "bottom": 7, "left": 4},
+    {"id": "leviathan", "name": "Leviathan", "rarity": 4, "top": 8, "right": 7, "bottom": 5, "left": 6},
+    {"id": "bahamut", "name": "Bahamut", "rarity": 5, "top": 8, "right": 8, "bottom": 7, "left": 7},
+    {"id": "odin", "name": "Odin", "rarity": 5, "top": 9, "right": 7, "bottom": 8, "left": 6},
+)
+TRIPLE_TRIAD_CARDS_BY_ID = {row["id"]: row for row in TRIPLE_TRIAD_CARDS}
+TRIPLE_TRIAD_OPPONENTS = (
+    {
+        "id": "saucer_attendant",
+        "name": "Saucer Attendant",
+        "difficulty": "Novice",
+        "unlock_wins": 0,
+        "cost": 20,
+        "win_payout": 50,
+        "draw_payout": 20,
+        "deck": ("chocobo", "moogle", "cactuar", "tonberry", "coeurl"),
+        "rewards": ("tonberry", "coeurl", "ahriman"),
+        "description": "A friendly floor attendant who teaches clean corners and basic captures.",
+    },
+    {
+        "id": "card_shark",
+        "name": "Card Shark",
+        "difficulty": "Skilled",
+        "unlock_wins": 3,
+        "cost": 30,
+        "win_payout": 80,
+        "draw_payout": 30,
+        "deck": ("tonberry", "coeurl", "ahriman", "malboro", "ifrit"),
+        "rewards": ("malboro", "ifrit", "shiva"),
+        "description": "A sharper opponent who looks for immediate captures and stronger edges.",
+    },
+    {
+        "id": "crystal_master",
+        "name": "Crystal Master",
+        "difficulty": "Master",
+        "unlock_wins": 8,
+        "cost": 45,
+        "win_payout": 130,
+        "draw_payout": 45,
+        "deck": ("malboro", "ifrit", "shiva", "ramuh", "leviathan"),
+        "rewards": ("ramuh", "leviathan", "bahamut", "odin"),
+        "description": "The high-table challenge: powerful cards, deliberate placement, and premium rewards.",
+    },
+)
+TRIPLE_TRIAD_OPPONENTS_BY_ID = {row["id"]: row for row in TRIPLE_TRIAD_OPPONENTS}
+
+
+def triple_triad_card_payload(card_id: str) -> dict[str, Any]:
+    row = TRIPLE_TRIAD_CARDS_BY_ID[str(card_id)]
+    return {
+        "id": str(row["id"]), "name": str(row["name"]), "rarity": int(row["rarity"]),
+        "top": int(row["top"]), "right": int(row["right"]),
+        "bottom": int(row["bottom"]), "left": int(row["left"]),
+    }
+
+
+def triple_triad_capture(board: list[dict[str, Any] | None], cell: int) -> list[int]:
+    """Apply the basic Triple Triad capture rule for the card at ``cell``."""
+    placed = board[int(cell)]
+    if not isinstance(placed, dict):
+        return []
+    card = TRIPLE_TRIAD_CARDS_BY_ID[str(placed["card_id"])]
+    owner = str(placed["owner"])
+    row, col = divmod(int(cell), 3)
+    checks = []
+    if row > 0:
+        checks.append((cell - 3, "top", "bottom"))
+    if col < 2:
+        checks.append((cell + 1, "right", "left"))
+    if row < 2:
+        checks.append((cell + 3, "bottom", "top"))
+    if col > 0:
+        checks.append((cell - 1, "left", "right"))
+    captured: list[int] = []
+    for neighbor_index, attack_side, defend_side in checks:
+        neighbor = board[int(neighbor_index)]
+        if not isinstance(neighbor, dict) or str(neighbor.get("owner")) == owner:
+            continue
+        other = TRIPLE_TRIAD_CARDS_BY_ID.get(str(neighbor.get("card_id")))
+        if other and int(card[attack_side]) > int(other[defend_side]):
+            neighbor["owner"] = owner
+            captured.append(int(neighbor_index))
+    return captured
+
+
+def triple_triad_place(board: list[dict[str, Any] | None], cell: int, card_id: str, owner: str) -> list[int]:
+    if int(cell) < 0 or int(cell) > 8 or board[int(cell)] is not None:
+        raise ValueError("Triple Triad cell is unavailable.")
+    if str(card_id) not in TRIPLE_TRIAD_CARDS_BY_ID:
+        raise ValueError("Unknown Triple Triad card.")
+    board[int(cell)] = {"card_id": str(card_id), "owner": str(owner)}
+    return triple_triad_capture(board, int(cell))
+
+
+def triple_triad_score(board: list[dict[str, Any] | None]) -> tuple[int, int]:
+    player = sum(1 for row in board if isinstance(row, dict) and row.get("owner") == "player")
+    npc = sum(1 for row in board if isinstance(row, dict) and row.get("owner") == "npc")
+    return int(player), int(npc)
+
+
+def triple_triad_npc_move(board: list[dict[str, Any] | None], hand: list[str], difficulty: str = "Novice") -> tuple[str, int]:
+    """Choose a deterministic NPC move, making higher tiers more capture-aware."""
+    empty = [index for index, row in enumerate(board) if row is None]
+    if not empty or not hand:
+        raise ValueError("Triple Triad NPC has no legal move.")
+    level = str(difficulty or "Novice").lower()
+    ranked: list[tuple[float, str, int]] = []
+    for card_id in hand:
+        card = TRIPLE_TRIAD_CARDS_BY_ID[str(card_id)]
+        for cell in empty:
+            trial = [dict(row) if isinstance(row, dict) else None for row in board]
+            captures = len(triple_triad_place(trial, cell, card_id, "npc"))
+            side_sum = sum(int(card[key]) for key in ("top", "right", "bottom", "left"))
+            center = 1 if cell == 4 else 0
+            corner = 1 if cell in {0, 2, 6, 8} else 0
+            if level == "novice":
+                value = captures * 20 - side_sum * 0.05 + corner * 0.1
+            elif level == "skilled":
+                value = captures * 30 + side_sum * 0.15 + center * 0.6 + corner * 0.3
+            else:
+                value = captures * 40 + side_sum * 0.25 + center * 0.8 + corner * 0.5
+            ranked.append((float(value), str(card_id), int(cell)))
+    ranked.sort(key=lambda item: (-item[0], item[1], item[2]))
+    _score, card_id, cell = ranked[0]
+    return str(card_id), int(cell)
+
+
 # Alpha 1 Prize Counter is intentionally cosmetic-only. Rewards unlock
 # existing title functionality and never grant combat power, Gil, items,
 # or progression shortcuts.
@@ -219,6 +365,20 @@ PRIZES = (
         "name": "Circuit Champion",
         "cost": 5000,
         "description": "A prestige title for Gold Saucer riders with podium feathers to spare.",
+    },
+    {
+        "id": "triad_tactician",
+        "title_id": "triad_tactician",
+        "name": "Triad Tactician",
+        "cost": 2800,
+        "description": "For card players who can see a capture from four sides away.",
+    },
+    {
+        "id": "card_hall_master",
+        "title_id": "card_hall_master",
+        "name": "Card Hall Master",
+        "cost": 6000,
+        "description": "A prestige title for adventurers who have conquered the Gold Saucer card hall.",
     },
 )
 PRIZES_BY_ID = {str(row["id"]): row for row in PRIZES}

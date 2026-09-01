@@ -16,12 +16,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GuildExpansionFinalTests(unittest.TestCase):
     def test_final_identity_schema_and_protocol_are_release_values(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a4")
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 28)
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a5")
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 29)
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "final.db")
             try:
-                self.assertEqual(db.schema_version(), 12)
+                self.assertEqual(db.schema_version(), 13)
                 self.assertEqual(db.quick_check(), [])
             finally:
                 db.close()
@@ -58,7 +58,7 @@ class GuildExpansionFinalTests(unittest.TestCase):
     def test_control_panel_and_upgrade_helper_identify_final_release(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
         upgrade = (ROOT / "upgrade_crystal_guild.py").read_text(encoding="utf-8")
-        self.assertIn("GOLD SAUCER ALPHA 4", panel.upper())
+        self.assertIn("GOLD SAUCER ALPHA 5", panel.upper())
         self.assertIn("Relic Arsenal Complete", upgrade)
         self.assertNotIn("GUILD EXPANSION BETA 1", panel.upper())
 

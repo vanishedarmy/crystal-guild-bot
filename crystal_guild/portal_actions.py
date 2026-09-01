@@ -15,7 +15,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 28
+ACTION_PROTOCOL_VERSION = 29
 
 
 class PortalActionWorker:
@@ -503,6 +503,25 @@ class PortalActionWorker:
             if strategy not in {"steady", "balanced", "sprint"}:
                 return False, "Chocobo Racing strategy is invalid.", {}
             return self._game_result(self.game.portal_chocobo_race(twitch_id, course, strategy, str(action.get("id") or "")))
+        if action_type == "TRIAD_SET_DECK":
+            if set(payload) != {"cards"} or not isinstance(payload.get("cards"), list):
+                return False, "Triple Triad deck requires only a cards list.", {}
+            cards = [str(value or "").strip().lower() for value in payload.get("cards") or []]
+            return self._game_result(self.game.portal_triad_set_deck(twitch_id, cards, str(action.get("id") or "")))
+        if action_type == "TRIAD_START":
+            if set(payload) != {"opponent"}:
+                return False, "Triple Triad start requires only opponent.", {}
+            opponent = str(payload.get("opponent") or "").strip().lower()
+            return self._game_result(self.game.portal_triad_start(twitch_id, opponent, str(action.get("id") or "")))
+        if action_type == "TRIAD_PLAY":
+            if set(payload) != {"card", "cell"}:
+                return False, "Triple Triad play requires only card and cell.", {}
+            card = str(payload.get("card") or "").strip().lower()
+            try:
+                cell = int(payload.get("cell"))
+            except (TypeError, ValueError):
+                return False, "Triple Triad cell is invalid.", {}
+            return self._game_result(self.game.portal_triad_play(twitch_id, card, cell, str(action.get("id") or "")))
         if action_type == "SAUCER_BUY":
             if set(payload) != {"prize_id"}:
                 return False, "Gold Saucer prize purchase requires only prize_id.", {}

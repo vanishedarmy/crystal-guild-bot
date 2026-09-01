@@ -1,3 +1,14 @@
+## v1.6.0 — Gold Saucer Alpha 5 — Triple Triad
+- Opens persistent Triple Triad with a five-card starter deck, 15-card collection, three NPC tiers, five daily matches, MGP settlement, and collectible card rewards.
+- Adds local schema 13 for persistent Triad profile/deck/records and active match state; hosted sync remains 1.
+- Advances Portal Action protocol to 29 for `TRIAD_SET_DECK`, `TRIAD_START`, and `TRIAD_PLAY`.
+- Adds Triad Tactician and Card Hall Master cosmetic titles and expands the Saucer records contract.
+- Matching Web build makes all Gold Saucer content panels collapsible except Mini Cactpot and Crystal Slots.
+
+## v1.6.0 — Gold Saucer Alpha 4 — Chocobo Racing
+- Opens Chocobo Racing with the existing registered companion, three daily courses, three pace choices, MGP podium rewards, race records, and two cosmetic titles.
+- Runtime `1.6.0-gold-saucer-a4`; schema 12 / hosted sync 1 / Portal protocol 28.
+
 ## v1.5.1 — Relic Arsenal Complete
 - Completes Relic coverage for all 18 playable Jobs with 10 new three-stage questlines and 30 stage weapon items.
 - Adds matching Relic artwork and 18-Job collection progress in the Portal and Player Guide.

@@ -1,10 +1,10 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 4 — Bot Package
-Runtime: 1.6.0-gold-saucer-a4
-Local schema: 12
+Crystal Guild v1.6.0 — Gold Saucer Alpha 5 — Bot Package
+Runtime: 1.6.0-gold-saucer-a5
+Local schema: 13
 Hosted sync: 1
-Portal Action protocol: 28
+Portal Action protocol: 29
 Twitch prefix: !
-Baseline: v1.6.0 Gold Saucer Alpha 3 MGP canonical complete baseline
-Alpha 4: Chocobo Racing, racing ledger records, race titles, protocol-28 CHOCOBO_RACE action
-Database migration: none
+Baseline: v1.6.0 Gold Saucer Alpha 4 / Web H1 canonical baseline
+Alpha 5: Triple Triad, 15-card collection, saved deck, 3 NPC opponents, persistent match state, Triad records/titles
+Database migration: additive schema 12 -> 13 with verified pre_schema_13 backup
 MGP balance migration/rebalance: none

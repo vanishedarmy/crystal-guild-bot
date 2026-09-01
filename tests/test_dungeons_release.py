@@ -14,9 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a4")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 12)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 28)
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a5")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 29)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)
 
     def test_project_metadata_is_semver_151(self):
@@ -30,8 +30,8 @@ class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_production_package_surfaces_have_no_current_rc_label(self):
         for name in ("VERSION.txt", "README_FIRST.txt", "PACKAGE_MANIFEST.txt", "RELEASE_NOTES.md", "FINALIZATION_AUDIT.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
-            self.assertIn("Gold Saucer Alpha 4", text, name)
-            self.assertIn("1.6.0-gold-saucer-a4", text, name)
+            self.assertIn("Gold Saucer Alpha 5", text, name)
+            self.assertIn("1.6.0-gold-saucer-a5", text, name)
             self.assertNotIn("1.4.0-dungeons-rc1", text, name)
 
 

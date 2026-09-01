@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 12
+DATABASE_SCHEMA_VERSION = 13
 
 
 class Database:
@@ -846,6 +846,57 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_gold_saucer_monster_toss_state
                     ON gold_saucer_monster_toss(state, updated_at DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (12,'gold_saucer_monster_toss');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v13 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=13").fetchone()
+        )
+        if not already_v13:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(13)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_triple_triad (
+                        player_id TEXT PRIMARY KEY,
+                        collection_json TEXT NOT NULL DEFAULT '[]',
+                        deck_json TEXT NOT NULL DEFAULT '[]',
+                        matches INTEGER NOT NULL DEFAULT 0 CHECK(matches >= 0),
+                        wins INTEGER NOT NULL DEFAULT 0 CHECK(wins >= 0),
+                        draws INTEGER NOT NULL DEFAULT 0 CHECK(draws >= 0),
+                        losses INTEGER NOT NULL DEFAULT 0 CHECK(losses >= 0),
+                        cards_won INTEGER NOT NULL DEFAULT 0 CHECK(cards_won >= 0),
+                        current_streak INTEGER NOT NULL DEFAULT 0 CHECK(current_streak >= 0),
+                        best_streak INTEGER NOT NULL DEFAULT 0 CHECK(best_streak >= 0),
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS gold_saucer_triple_triad (
+                        player_id TEXT PRIMARY KEY,
+                        match_id TEXT NOT NULL,
+                        state TEXT NOT NULL,
+                        opponent_id TEXT NOT NULL,
+                        board_json TEXT NOT NULL DEFAULT '[null,null,null,null,null,null,null,null,null]',
+                        player_hand_json TEXT NOT NULL DEFAULT '[]',
+                        npc_hand_json TEXT NOT NULL DEFAULT '[]',
+                        turn TEXT NOT NULL DEFAULT 'player',
+                        result TEXT,
+                        started_at INTEGER NOT NULL,
+                        resolved_at INTEGER,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_gold_saucer_triple_triad_state
+                    ON gold_saucer_triple_triad(state, updated_at DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (13,'gold_saucer_triple_triad');
                     COMMIT;
                     """
                 )

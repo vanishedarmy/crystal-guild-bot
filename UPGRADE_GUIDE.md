@@ -1,17 +1,13 @@
-# Upgrade Guide — v1.6.0 Gold Saucer Alpha 4
+# Upgrade Guide — v1.6.0 Gold Saucer Alpha 5
 
-Supported baseline: **v1.6.0 Gold Saucer Alpha 3 — MGP**.
+Supported source: the canonical v1.6.0 Gold Saucer Alpha 4 / Web H1 baseline.
 
-1. Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secrets, and persistent-disk state.
-2. Deploy the matching Alpha 4 Bot and Web packages together because Portal Action protocol advances to **28**.
-3. Restart/redeploy both services.
-4. Verify `!cgversion` reports `1.6.0-gold-saucer-a4` and Portal Action protocol **28**.
-5. Verify local DB schema remains **12** and hosted sync remains **1**.
-6. Open Gold Saucer → Chocobo Racing. A player with no registered Chocobo should see the Stable requirement; a registered companion should show name, portrait, Bond level, course gates, and daily race entries.
-7. Run one race and confirm the MGP balance changes exactly by `-entry + payout`, the race appears once in Recent Activity, and the Saucer Ledger increments once.
+1. Preserve the live database, `.env`, Twitch token storage, hosted secrets, and persistent-disk state.
+2. Replace the Bot source with the Alpha 5 Bot package.
+3. Deploy the matching Alpha 5 Web package; protocol 29 is required for Triple Triad actions.
+4. Restart/redeploy the services. The Bot performs the additive schema **12 → 13** migration automatically and creates a verified `pre_schema_13_<timestamp>.db` backup before changing a legacy database.
+5. Verify `!cgversion` reports `1.6.0-gold-saucer-a5`.
+6. Verify the hosted health endpoint reports runtime/frontend `1.6.0-gold-saucer-a5`, hosted sync 1, and Portal protocol 29.
+7. Open Gold Saucer and confirm the existing MGP balance is unchanged, Triple Triad grants the starter deck, and existing attractions retain their prior balances and records.
 
-## Data safety
-Alpha 4 introduces **no database migration**. Races resolve immediately and use the existing `gold_saucer_history` ledger, so schema 12 remains sufficient. Existing MGP, Gil, inventory, Fellowship, Chocobo, Expedition, Dungeon, Trial/Raid, Relic, Title, Mini Cactpot, Crystal Slots, Monster Toss, and Prize Counter state is preserved.
-
-## Deployment note
-Alpha 3 Web/Bot protocol 27 does not understand `CHOCOBO_RACE`; deploy the Alpha 4 Bot and Web as a matched protocol-28 pair rather than leaving one side on Alpha 3.
+No player reset is required.

@@ -782,5 +782,21 @@
     "category": "Gold Saucer",
     "rarity": "epic",
     "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "triad_tactician",
+    "name": "Triad Tactician",
+    "description": "Can see a capture from four sides away.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "card_hall_master",
+    "name": "Card Hall Master",
+    "description": "The card hall has stopped pretending this is a casual visit.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Gold Saucer Prize Counter"
   }
 ]

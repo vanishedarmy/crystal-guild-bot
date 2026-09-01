@@ -1,30 +1,17 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 4 Validation Report
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Validation Report
 
 ## Result
 **PASS**
 
-## Regression suites
-- Bot: **623 / 623 PASS**.
-- Alpha 4 Chocobo Racing focused tests: **4 / 4 PASS**.
+## Regression
+- Bot: **631 / 631 PASS**.
+- Focused Alpha 5 Triple Triad: **8 / 8 PASS**.
 
-## Alpha 4 coverage
-- Runtime reports `1.6.0-gold-saucer-a4`.
-- Local DB schema remains **12**; no migration is required.
-- Hosted sync remains **1**.
-- Portal Action protocol is **28** with authoritative `CHOCOBO_RACE` handling.
-- Registration, Bond-level course gates, 3-races-per-UTC-day limit, MGP debit/payout settlement, and exactly-once replay are covered.
-- Existing registered Chocobo level and traits are consumed without creating a duplicate companion progression system.
-- Mini Cactpot, Crystal Slots, Monster Toss, Prize Counter, MGP balances, and prior gameplay regressions remain green.
+## Alpha 5 coverage
+- Runtime `1.6.0-gold-saucer-a5`, schema 13, hosted sync 1, Portal protocol 29.
+- Additive schema 12→13 migration and verified pre-schema backup behavior.
+- Starter collection/deck, owned/unique deck validation, opponent gates, daily match limit, persistent match resume, capture rules, standard ten-point scoring, MGP settlement, card rewards, exactly-once replay, worker validation, and streamer reset preservation.
+- Existing Gold Saucer, Dungeon, Expedition, Guild, Trial/Raid, combat, item, Chocobo, Fellowship, recovery, and migration regressions remain green.
 
 ## Source gate
-- Python parse across matched Bot + Web source: **119 / 119 PASS**.
-
-## Frozen contract
-- Runtime: `1.6.0-gold-saucer-a4`
-- Local DB schema: **12**
-- Hosted sync schema: **1**
-- Portal Action protocol: **28**
-- Twitch prefix: `!`
-- MGP remains canonical.
-
-No player reset, database migration, OAuth/environment change, new required variable, or existing-attraction economy rebalance is required.
+Matched Bot + Web Python source parse is **121 / 121 PASS**. See the Web validation report for frontend parser, CSS, asset, hosted API, and production-build gates.
