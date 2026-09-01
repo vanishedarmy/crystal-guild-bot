@@ -1,10 +1,7 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 5 — Bot Package
-Runtime: 1.6.0-gold-saucer-a5
-Local schema: 13
+Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
+Runtime: 1.6.0-gold-saucer-a5h5
+Schema: 13
 Hosted sync: 1
 Portal Action protocol: 29
-Twitch prefix: !
-Baseline: v1.6.0 Gold Saucer Alpha 4 / Web H1 canonical baseline
-Alpha 5: Triple Triad, 15-card collection, saved deck, 3 NPC opponents, persistent match state, Triad records/titles
-Database migration: additive schema 12 -> 13 with verified pre_schema_13 backup
-MGP balance migration/rebalance: none
+MGP: canonical
+Triple Triad: 15 full-face cards; five starter-card value definitions corrected to artwork

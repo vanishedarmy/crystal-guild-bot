@@ -1,0 +1,147 @@
+{
+  "release": "Crystal Guild v1.6.0 \u2014 Gold Saucer Alpha 5 Hotfix 5 \u2014 Triple Triad Full Card Face Sync",
+  "runtime": "1.6.0-gold-saucer-a5h5",
+  "frontend_asset_revision": "1.6.0-gold-saucer-a5h5",
+  "local_db_schema": 13,
+  "hosted_sync_schema": 1,
+  "portal_action_protocol": 29,
+  "currency": "MGP",
+  "prefix": "!",
+  "scope": {
+    "bot_changed": true,
+    "web_changed": true,
+    "schema_migration": false,
+    "protocol_change": false,
+    "mgp_change": false
+  },
+  "triple_triad": {
+    "visual_source": "full generated card faces",
+    "asset_root": "/gold-saucer/a5h5/triple-triad/",
+    "visible_stat_overlays": false,
+    "accessibility_values": true,
+    "card_face_ratio": "3:4",
+    "full_card_dimensions": "543x724 WebP",
+    "cards": {
+      "chocobo": {
+        "top": 3,
+        "right": 4,
+        "bottom": 2,
+        "left": 1
+      },
+      "moogle": {
+        "top": 2,
+        "right": 3,
+        "bottom": 4,
+        "left": 3
+      },
+      "cactuar": {
+        "top": 5,
+        "right": 2,
+        "bottom": 1,
+        "left": 5
+      },
+      "bomb": {
+        "top": 4,
+        "right": 2,
+        "bottom": 6,
+        "left": 2
+      },
+      "flan": {
+        "top": 1,
+        "right": 5,
+        "bottom": 4,
+        "left": 3
+      },
+      "tonberry": {
+        "top": 6,
+        "right": 2,
+        "bottom": 5,
+        "left": 3
+      },
+      "coeurl": {
+        "top": 4,
+        "right": 6,
+        "bottom": 3,
+        "left": 5
+      },
+      "ahriman": {
+        "top": 5,
+        "right": 4,
+        "bottom": 6,
+        "left": 3
+      },
+      "malboro": {
+        "top": 6,
+        "right": 5,
+        "bottom": 5,
+        "left": 4
+      },
+      "ifrit": {
+        "top": 7,
+        "right": 5,
+        "bottom": 6,
+        "left": 6
+      },
+      "shiva": {
+        "top": 6,
+        "right": 7,
+        "bottom": 5,
+        "left": 6
+      },
+      "ramuh": {
+        "top": 7,
+        "right": 6,
+        "bottom": 7,
+        "left": 4
+      },
+      "leviathan": {
+        "top": 8,
+        "right": 7,
+        "bottom": 5,
+        "left": 6
+      },
+      "bahamut": {
+        "top": 8,
+        "right": 8,
+        "bottom": 7,
+        "left": 7
+      },
+      "odin": {
+        "top": 9,
+        "right": 7,
+        "bottom": 8,
+        "left": 6
+      }
+    },
+    "changed_authoritative_cards": [
+      "chocobo",
+      "moogle",
+      "cactuar",
+      "bomb",
+      "flan"
+    ],
+    "unchanged_authoritative_cards": [
+      "tonberry",
+      "coeurl",
+      "ahriman",
+      "malboro",
+      "ifrit",
+      "shiva",
+      "ramuh",
+      "leviathan",
+      "bahamut",
+      "odin"
+    ]
+  },
+  "validation": {
+    "bot": "632/632 PASS",
+    "frontend": "516/516 PASS",
+    "hosted_web_api": "56/56 PASS",
+    "typescript_parser": "228/228 PASS",
+    "node_syntax": "186/186 PASS",
+    "python_parse": "122/122 PASS",
+    "css_parse": "8/8 PASS",
+    "webp_decode": "800/800 PASS",
+    "public_png": "0"
+  }
+}

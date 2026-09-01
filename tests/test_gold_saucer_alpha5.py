@@ -42,7 +42,7 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
         return self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
 
     def test_alpha5_contract_opens_triple_triad_with_schema_13_protocol_29(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a5")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-a5h5")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
         self.assertEqual(self.db.schema_version(), 13)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 29)
@@ -58,7 +58,7 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
     def test_basic_capture_rule_flips_adjacent_lower_side(self):
         board = [None] * 9
         triple_triad_place(board, 4, "flan", "npc")
-        captured = triple_triad_place(board, 3, "cactuar", "player")
+        captured = triple_triad_place(board, 3, "chocobo", "player")
         self.assertEqual(captured, [4])
         self.assertEqual(board[4]["owner"], "player")
 

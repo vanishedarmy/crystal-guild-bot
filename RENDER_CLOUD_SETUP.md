@@ -11,6 +11,6 @@ Typical persistent paths remain:
 
 Deploy the Alpha 5 Bot source and restart the worker. The additive local database migration advances schema **12 → 13** and creates a verified pre-schema backup. Hosted sync remains **1**, and Portal Action protocol advances to **29**.
 
-After deployment verify `!cgversion` reports `1.6.0-gold-saucer-a5`, then open Gold Saucer and confirm the existing MGP balance is unchanged. Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Prize Counter retain their prior numeric behavior.
+After deployment verify `!cgversion` reports `1.6.0-gold-saucer-a5h5`, then open Gold Saucer and confirm the existing MGP balance is unchanged. Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Prize Counter retain their prior numeric behavior.
 
 Deploy the matching Alpha 5 Web relay with this Bot because Triple Triad requires Portal protocol 29. Run `python run_cloud_preflight.py` before reconnecting a moved/restored worker. No player reset is required. The hosted raid overlay route remains `/overlay` on the matching Web service.

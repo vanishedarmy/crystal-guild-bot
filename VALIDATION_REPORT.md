@@ -1,17 +1,18 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Validation Report
+# Validation Report — Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
 
-## Result
 **PASS**
 
-## Regression
-- Bot: **631 / 631 PASS**.
-- Focused Alpha 5 Triple Triad: **8 / 8 PASS**.
+- Bot regression: **632 / 632 PASS**
+- Frontend regression: **516 / 516 PASS**
+- Hosted Web/API: **56 / 56 PASS**
+- Frontend TypeScript parser: **228 / 228 PASS**
+- Plain JS/MJS Node syntax: **186 / 186 PASS**
+- Matched Python parse: **122 / 122 PASS**
+- CSS parse: **8 / 8 PASS**
+- Public WebP decode: **800 / 800 PASS**
+- Public PNG count: **0**
+- H5 full card dimensions: **15 / 15 at 543×724**
 
-## Alpha 5 coverage
-- Runtime `1.6.0-gold-saucer-a5`, schema 13, hosted sync 1, Portal protocol 29.
-- Additive schema 12→13 migration and verified pre-schema backup behavior.
-- Starter collection/deck, owned/unique deck validation, opponent gates, daily match limit, persistent match resume, capture rules, standard ten-point scoring, MGP settlement, card rewards, exactly-once replay, worker validation, and streamer reset preservation.
-- Existing Gold Saucer, Dungeon, Expedition, Guild, Trial/Raid, combat, item, Chocobo, Fellowship, recovery, and migration regressions remain green.
+A dedicated regression test locks all 15 authoritative Top/Right/Bottom/Left values to the printed card faces.
 
-## Source gate
-Matched Bot + Web Python source parse is **121 / 121 PASS**. See the Web validation report for frontend parser, CSS, asset, hosted API, and production-build gates.
+Contract: runtime `1.6.0-gold-saucer-a5h5`, schema **13**, hosted sync **1**, Portal protocol **29**, prefix `!`, MGP canonical.

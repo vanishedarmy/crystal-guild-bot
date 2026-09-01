@@ -3,7 +3,7 @@
 1. Preserve `/var/data` and all Render environment variables.
 2. Stop any duplicate/local Bot instance.
 3. Deploy the Alpha 4 Bot source.
-4. Confirm `!cgversion` = `1.6.0-gold-saucer-a5` and `!health` is clean.
+4. Confirm `!cgversion` = `1.6.0-gold-saucer-a5h5` and `!health` is clean.
 5. Confirm local schema **12**, hosted sync **1**, Portal protocol **27**.
 6. Open Gold Saucer and confirm the existing balance is unchanged and now reported as **MGP**.
 

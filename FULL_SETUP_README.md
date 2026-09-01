@@ -16,7 +16,7 @@ Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secre
 - An existing Gold Saucer balance must be identical before and after upgrading.
 
 ## Release verification
-- `!cgversion` → `1.6.0-gold-saucer-a5`
+- `!cgversion` → `1.6.0-gold-saucer-a5h5`
 - Local DB schema → **12**
 - Hosted sync schema → **1**
 - Portal Action protocol → **27**

@@ -175,11 +175,11 @@ def chocobo_race_result(level: int, traits: set[str] | list[str] | tuple[str, ..
 TRIPLE_TRIAD_DAILY_MATCHES = 5
 TRIPLE_TRIAD_STARTER_DECK = ("chocobo", "moogle", "cactuar", "bomb", "flan")
 TRIPLE_TRIAD_CARDS = (
-    {"id": "chocobo", "name": "Chocobo", "rarity": 1, "top": 3, "right": 4, "bottom": 2, "left": 2},
-    {"id": "moogle", "name": "Moogle", "rarity": 1, "top": 4, "right": 2, "bottom": 3, "left": 3},
-    {"id": "cactuar", "name": "Cactuar", "rarity": 1, "top": 2, "right": 5, "bottom": 3, "left": 2},
-    {"id": "bomb", "name": "Bomb", "rarity": 1, "top": 5, "right": 3, "bottom": 2, "left": 3},
-    {"id": "flan", "name": "Flan", "rarity": 1, "top": 3, "right": 3, "bottom": 5, "left": 2},
+    {"id": "chocobo", "name": "Chocobo", "rarity": 1, "top": 3, "right": 4, "bottom": 2, "left": 1},
+    {"id": "moogle", "name": "Moogle", "rarity": 1, "top": 2, "right": 3, "bottom": 4, "left": 3},
+    {"id": "cactuar", "name": "Cactuar", "rarity": 1, "top": 5, "right": 2, "bottom": 1, "left": 5},
+    {"id": "bomb", "name": "Bomb", "rarity": 1, "top": 4, "right": 2, "bottom": 6, "left": 2},
+    {"id": "flan", "name": "Flan", "rarity": 1, "top": 1, "right": 5, "bottom": 4, "left": 3},
     {"id": "tonberry", "name": "Tonberry", "rarity": 2, "top": 6, "right": 2, "bottom": 5, "left": 3},
     {"id": "coeurl", "name": "Coeurl", "rarity": 2, "top": 4, "right": 6, "bottom": 3, "left": 5},
     {"id": "ahriman", "name": "Ahriman", "rarity": 2, "top": 5, "right": 4, "bottom": 6, "left": 3},

@@ -1,9 +1,5 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 5 — Triple Triad
-Runtime: 1.6.0-gold-saucer-a5
-Local DB schema: 13
-Hosted sync schema: 1
-Portal Action protocol: 29
-Twitch prefix: !
-Canonical Gold Saucer currency: MGP
+Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
+Runtime: 1.6.0-gold-saucer-a5h5
+Schema 13 · Hosted sync 1 · Portal protocol 29 · Prefix ! · MGP canonical
 
-Deploy the matching Alpha 5 Bot and Web packages together. Preserve your live database, Twitch token database, .env, hosted secrets, and persistent-disk state. The schema 12 -> 13 migration is additive and creates a verified pre_schema_13 backup. No player reset or MGP conversion is required.
+Hotfix 5 synchronizes Triple Triad gameplay values with the numbers printed on the finished card-face artwork. Deploy the matching Bot and Web together. No database migration is required.

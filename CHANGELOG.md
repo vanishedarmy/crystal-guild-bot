@@ -1,3 +1,8 @@
+# Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
+- Full Triple Triad card faces are now canonical presentation.
+- Removes duplicate Web stat overlays and synchronizes five starter-card values to the printed faces.
+- No schema, protocol, MGP, collection, or deck reset.
+
 ## v1.6.0 — Gold Saucer Alpha 5 — Triple Triad
 - Opens persistent Triple Triad with a five-card starter deck, 15-card collection, three NPC tiers, five daily matches, MGP settlement, and collectible card rewards.
 - Adds local schema 13 for persistent Triad profile/deck/records and active match state; hosted sync remains 1.

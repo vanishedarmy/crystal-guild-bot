@@ -1,16 +1,7 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Release Audit
+# Gold Saucer Alpha 5 Release Audit — Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
 
-## Alpha 5 scope
-- Opens persistent, authoritative Triple Triad with a 15-card collection, saved five-card deck, three NPC tiers, daily matches, MGP settlement, and card rewards.
-- Adds schema 13 using additive Triple Triad profile and match-state tables.
-- Advances Portal Action protocol to 29 for `TRIAD_SET_DECK`, `TRIAD_START`, and `TRIAD_PLAY`.
-- Adds Triple Triad records and two cosmetic Prize Counter titles.
-- Preserves all existing MGP balances and Alpha 1–4 attraction economics.
+Hotfix 5 is a matched Bot + Web release because five authoritative Triple Triad card definitions change to match the printed artwork. No persistent schema or protocol change is needed.
 
-## Frozen contract
-Runtime `1.6.0-gold-saucer-a5`; local DB schema **13**; hosted sync **1**; Portal Action protocol **29**; Twitch prefix `!`.
+Runtime `1.6.0-gold-saucer-a5h5`; local DB schema **13**; hosted sync **1**; Portal Action protocol **29**; prefix `!`; MGP canonical.
 
-No player reset, MGP conversion, OAuth/environment change, ordinary Gil economy change, Mini Cactpot payout change, Crystal Slots payout change, Monster Toss payout change, or Chocobo Racing balance change.
-
-## Release gate
-Validation results are recorded in `VALIDATION_REPORT.md` after the final full regression and source-integrity pass.
+Release gates: **632/632 Bot**, **516/516 frontend**, **56/56 hosted Web/API**, **800/800 WebP decode**. Packaging must exclude live databases, `.env` files, caches, and runtime overlay state.
