@@ -1,5 +1,9 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
-Runtime: 1.6.0-gold-saucer-a5h5
-Schema 13 · Hosted sync 1 · Portal protocol 29 · Prefix ! · MGP canonical
+Crystal Guild v1.6.0 — Gold Saucer RC1
+Runtime: 1.6.0-gold-saucer-rc1
+Local DB schema: 13
+Hosted sync schema: 1
+Portal Action protocol: 29
+Twitch prefix: !
+Canonical Gold Saucer currency: MGP
 
-Hotfix 5 synchronizes Triple Triad gameplay values with the numbers printed on the finished card-face artwork. Deploy the matching Bot and Web together. No database migration is required.
+RC1 freezes all five Gold Saucer attractions and hardens UTC daily-entry accounting for persistent Monster Toss and Triple Triad sessions.

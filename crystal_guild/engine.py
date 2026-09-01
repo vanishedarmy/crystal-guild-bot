@@ -9544,6 +9544,12 @@ class CrystalGuildEngine:
             (twitch_id, day_start),
         ).fetchone()
         matches_today = int(today_row["n"] or 0) if today_row else 0
+        # RC1: a daily Triple Triad entry belongs to the UTC day on which the
+        # challenge was started/paid for, not the day on which a persistent
+        # match happens to finish. Count an active same-day match immediately;
+        # resolved history is written with the original started_at timestamp.
+        if active and int(row["started_at"] or 0) >= day_start:
+            matches_today += 1
         wins = int(profile["wins"] or 0)
         opponents = []
         for opponent in TRIPLE_TRIAD_OPPONENTS:
@@ -9569,7 +9575,7 @@ class CrystalGuildEngine:
             "next_daily_reset_at": day_start + 86400,
             "rules": {
                 "name": "Open",
-                "description": "Higher adjacent side captures the lower side. No Same, Plus, elemental, or regional rules in Alpha 5.",
+                "description": "Higher adjacent side captures the lower side. Same, Plus, elemental, and regional modifiers are not enabled.",
             },
             "collection": [
                 {**saucer_triad_card_payload(str(row["id"])), "owned": str(row["id"]) in collection, "in_deck": str(row["id"]) in deck}
@@ -9648,9 +9654,10 @@ class CrystalGuildEngine:
             "card_reward": reward_card,
             "card_reward_name": str(TRIPLE_TRIAD_CARDS_BY_ID[reward_card]["name"]) if reward_card else None,
         }
+        entry_started_at = int(match_row["started_at"] or now)
         conn.execute(
             "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triple_triad',?,?,?,?,?)",
-            (twitch_id, cost, payout, outcome, json.dumps(details, separators=(",", ":")), now),
+            (twitch_id, cost, payout, outcome, json.dumps(details, separators=(",", ":")), entry_started_at),
         )
         suffix = f" Card won: {details['card_reward_name']}." if reward_card else ""
         result = GameResult.success(
@@ -9802,6 +9809,12 @@ class CrystalGuildEngine:
                 "throws": toss_throws[-MONSTER_TOSS_THROWS:],
                 "started_at": int(toss_row["started_at"] or 0),
             }
+        # RC1: consume the daily entry at game start so the Portal counter
+        # cannot temporarily overstate remaining plays while a game is active.
+        # Resolved history is also timestamped to started_at, keeping an entry
+        # attached to the same UTC day even when it crosses midnight.
+        if toss_active is not None and int(toss_row["started_at"] or 0) >= day_start:
+            toss_games_today += 1
         toss_aggregate = conn.execute(
             "SELECT COUNT(*) AS games, COALESCE(MAX(CAST(json_extract(details_json,'$.score') AS INTEGER)),0) AS best_score, "
             "COALESCE(MAX(payout),0) AS best_payout, "
@@ -10261,7 +10274,7 @@ class CrystalGuildEngine:
                         details = {"game_id": str(game["game_id"]), "score": next_score, "hits": hits, "throws": len(throws), "tier": tier, "throw_log": throws}
                         conn.execute(
                             "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'monster_toss',?,?,?,?,?)",
-                            (twitch_id, MONSTER_TOSS_COST, payout, tier, json.dumps(details, separators=(",", ":")), now),
+                            (twitch_id, MONSTER_TOSS_COST, payout, tier, json.dumps(details, separators=(",", ":")), int(game["started_at"] or now)),
                         )
                         result = GameResult.success(
                             f"MONSTER TOSS — final score {next_score:,}. {payout:,} MGP awarded.",

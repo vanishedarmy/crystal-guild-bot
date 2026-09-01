@@ -1,0 +1,25 @@
+{
+  "release": "Crystal Guild v1.6.0 \u2014 Gold Saucer RC1",
+  "runtime": "1.6.0-gold-saucer-rc1",
+  "schema": 13,
+  "hosted_sync": 1,
+  "portal_action_protocol": 29,
+  "prefix": "!",
+  "currency": "MGP",
+  "attractions": [
+    "mini_cactpot",
+    "crystal_slots",
+    "monster_toss",
+    "chocobo_racing",
+    "triple_triad"
+  ],
+  "feature_freeze": true,
+  "economy_rebalance": false,
+  "hardening": [
+    "monster_toss_daily_entry_bound_to_started_at",
+    "triple_triad_daily_entry_bound_to_started_at",
+    "active_same_day_entries_count_immediately",
+    "midnight_crossing_entries_remain_on_start_day"
+  ],
+  "triple_triad_asset_family": "/gold-saucer/a5h5/triple-triad/"
+}

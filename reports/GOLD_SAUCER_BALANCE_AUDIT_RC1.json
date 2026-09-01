@@ -1,0 +1,374 @@
+{
+  "release": "1.6.0-gold-saucer-rc1",
+  "currency": "MGP",
+  "welcome_mgp": 500,
+  "daily_allowance_mgp": 50,
+  "mini_cactpot": {
+    "cost": 10,
+    "random_line_average_payout": 360.3452380952381,
+    "random_line_average_net": 350.3452380952381,
+    "minimum_payout": 36,
+    "maximum_payout": 10000,
+    "note": "Random-line baseline only; the actual reveal-and-choose mechanic lets informed players select among available lines."
+  },
+  "crystal_slots": {
+    "cost": 15,
+    "exact_average_payout": 13.11795642374155,
+    "exact_return_pct": 87.45304282494367,
+    "outcome_probability_pct": {
+      "triple": 5.334335086401203,
+      "pair": 48.459804658151775,
+      "miss": 46.20586025544704
+    },
+    "configured_target_return_pct": 87.5
+  },
+  "monster_toss": {
+    "cost": 20,
+    "daily_games": 3,
+    "fixed_choice_profiles": [
+      {
+        "target": "small_pot",
+        "style": "safe",
+        "accuracy_pct": 95.0,
+        "score_per_hit": 19,
+        "average_payout": 0.0,
+        "average_net": -20.0
+      },
+      {
+        "target": "small_pot",
+        "style": "normal",
+        "accuracy_pct": 90.0,
+        "score_per_hit": 25,
+        "average_payout": 4.5927,
+        "average_net": -15.4073
+      },
+      {
+        "target": "small_pot",
+        "style": "power",
+        "accuracy_pct": 75.0,
+        "score_per_hit": 38,
+        "average_payout": 4.482421875,
+        "average_net": -15.517578125
+      },
+      {
+        "target": "medium_pot",
+        "style": "safe",
+        "accuracy_pct": 84.0,
+        "score_per_hit": 41,
+        "average_payout": 4.841206272000001,
+        "average_net": -15.158793728
+      },
+      {
+        "target": "medium_pot",
+        "style": "normal",
+        "accuracy_pct": 72.0,
+        "score_per_hit": 55,
+        "average_payout": 6.2351990784,
+        "average_net": -13.7648009216
+      },
+      {
+        "target": "medium_pot",
+        "style": "power",
+        "accuracy_pct": 56.99999999999999,
+        "score_per_hit": 82,
+        "average_payout": 7.0508712833999985,
+        "average_net": -12.9491287166
+      },
+      {
+        "target": "large_pot",
+        "style": "safe",
+        "accuracy_pct": 64.0,
+        "score_per_hit": 75,
+        "average_payout": 7.566576844799999,
+        "average_net": -12.4334231552
+      },
+      {
+        "target": "large_pot",
+        "style": "normal",
+        "accuracy_pct": 52.0,
+        "score_per_hit": 100,
+        "average_payout": 10.7698100224,
+        "average_net": -9.2301899776
+      },
+      {
+        "target": "large_pot",
+        "style": "power",
+        "accuracy_pct": 37.0,
+        "score_per_hit": 150,
+        "average_payout": 12.626658350500001,
+        "average_net": -7.373341649499999
+      },
+      {
+        "target": "golden_cactuar",
+        "style": "safe",
+        "accuracy_pct": 40.0,
+        "score_per_hit": 188,
+        "average_payout": 14.300800000000002,
+        "average_net": -5.699199999999998
+      },
+      {
+        "target": "golden_cactuar",
+        "style": "normal",
+        "accuracy_pct": 28.000000000000004,
+        "score_per_hit": 250,
+        "average_payout": 17.173961728000002,
+        "average_net": -2.826038271999998
+      },
+      {
+        "target": "golden_cactuar",
+        "style": "power",
+        "accuracy_pct": 13.000000000000004,
+        "score_per_hit": 375,
+        "average_payout": 10.173685444000004,
+        "average_net": -9.826314555999996
+      }
+    ],
+    "highest_average_payout_profile": {
+      "target": "golden_cactuar",
+      "style": "normal",
+      "accuracy_pct": 28.000000000000004,
+      "score_per_hit": 250,
+      "average_payout": 17.173961728000002,
+      "average_net": -2.826038271999998
+    }
+  },
+  "chocobo_racing": {
+    "daily_races": 3,
+    "monte_carlo": [
+      {
+        "course": "manderville_sprint",
+        "strategy": "steady",
+        "level": 1,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 22.8303,
+        "average_net": -2.169699999999999,
+        "win_pct": 14.802999999999999,
+        "podium_pct": 56.821999999999996
+      },
+      {
+        "course": "manderville_sprint",
+        "strategy": "steady",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 39.3181,
+        "average_net": 14.318100000000001,
+        "win_pct": 35.449000000000005,
+        "podium_pct": 80.879
+      },
+      {
+        "course": "manderville_sprint",
+        "strategy": "balanced",
+        "level": 1,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 22.7601,
+        "average_net": -2.2398999999999987,
+        "win_pct": 19.107,
+        "podium_pct": 50.136
+      },
+      {
+        "course": "manderville_sprint",
+        "strategy": "balanced",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 35.341,
+        "average_net": 10.341000000000001,
+        "win_pct": 34.936,
+        "podium_pct": 69.45599999999999
+      },
+      {
+        "course": "manderville_sprint",
+        "strategy": "sprint",
+        "level": 1,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 23.9376,
+        "average_net": -1.0624000000000002,
+        "win_pct": 23.318,
+        "podium_pct": 48.126999999999995
+      },
+      {
+        "course": "manderville_sprint",
+        "strategy": "sprint",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 33.9732,
+        "average_net": 8.973199999999999,
+        "win_pct": 36.358000000000004,
+        "podium_pct": 63.453
+      },
+      {
+        "course": "crystal_circuit",
+        "strategy": "steady",
+        "level": 5,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 31.63625,
+        "average_net": -3.3637499999999996,
+        "win_pct": 13.558,
+        "podium_pct": 56.035000000000004
+      },
+      {
+        "course": "crystal_circuit",
+        "strategy": "steady",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 56.3162,
+        "average_net": 21.316200000000002,
+        "win_pct": 32.591,
+        "podium_pct": 80.487
+      },
+      {
+        "course": "crystal_circuit",
+        "strategy": "balanced",
+        "level": 5,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 32.297,
+        "average_net": -2.703000000000003,
+        "win_pct": 17.612,
+        "podium_pct": 49.89
+      },
+      {
+        "course": "crystal_circuit",
+        "strategy": "balanced",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 51.6423,
+        "average_net": 16.6423,
+        "win_pct": 32.933,
+        "podium_pct": 69.433
+      },
+      {
+        "course": "crystal_circuit",
+        "strategy": "sprint",
+        "level": 5,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 34.83775,
+        "average_net": -0.16225000000000023,
+        "win_pct": 22.078999999999997,
+        "podium_pct": 47.954
+      },
+      {
+        "course": "crystal_circuit",
+        "strategy": "sprint",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 50.3654,
+        "average_net": 15.365400000000001,
+        "win_pct": 34.861,
+        "podium_pct": 63.456999999999994
+      },
+      {
+        "course": "golden_gauntlet",
+        "strategy": "steady",
+        "level": 10,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 43.58865,
+        "average_net": -6.411349999999999,
+        "win_pct": 12.638,
+        "podium_pct": 56.033
+      },
+      {
+        "course": "golden_gauntlet",
+        "strategy": "steady",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 69.92625,
+        "average_net": 19.926249999999996,
+        "win_pct": 26.073,
+        "podium_pct": 75.3
+      },
+      {
+        "course": "golden_gauntlet",
+        "strategy": "balanced",
+        "level": 10,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 44.7896,
+        "average_net": -5.2104,
+        "win_pct": 16.469,
+        "podium_pct": 49.836999999999996
+      },
+      {
+        "course": "golden_gauntlet",
+        "strategy": "balanced",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 65.14985,
+        "average_net": 15.14985,
+        "win_pct": 27.328000000000003,
+        "podium_pct": 65.003
+      },
+      {
+        "course": "golden_gauntlet",
+        "strategy": "sprint",
+        "level": 10,
+        "favored_trait": false,
+        "samples": 100000,
+        "average_payout": 49.08235,
+        "average_net": -0.9176500000000019,
+        "win_pct": 21.193,
+        "podium_pct": 48.33
+      },
+      {
+        "course": "golden_gauntlet",
+        "strategy": "sprint",
+        "level": 20,
+        "favored_trait": true,
+        "samples": 100000,
+        "average_payout": 65.52315,
+        "average_net": 15.523150000000001,
+        "win_pct": 30.391000000000002,
+        "podium_pct": 59.88
+      }
+    ],
+    "note": "100k deterministic samples per profile; race rewards intentionally improve with Bond level and favored traits."
+  },
+  "triple_triad": {
+    "daily_matches": 5,
+    "opponents": [
+      {
+        "opponent": "saucer_attendant",
+        "cost": 20,
+        "win_payout": 50,
+        "draw_payout": 20,
+        "win_rate_break_even_if_no_draws_pct": 40.0,
+        "draw_is_break_even": true
+      },
+      {
+        "opponent": "card_shark",
+        "cost": 30,
+        "win_payout": 80,
+        "draw_payout": 30,
+        "win_rate_break_even_if_no_draws_pct": 37.5,
+        "draw_is_break_even": true
+      },
+      {
+        "opponent": "crystal_master",
+        "cost": 45,
+        "win_payout": 130,
+        "draw_payout": 45,
+        "win_rate_break_even_if_no_draws_pct": 34.61538461538461,
+        "draw_is_break_even": true
+      }
+    ]
+  },
+  "freeze": {
+    "schema": 13,
+    "hosted_sync": 1,
+    "portal_protocol": 29,
+    "rebalance_in_rc1": false
+  }
+}

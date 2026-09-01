@@ -1,18 +1,21 @@
-# Validation Report — Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
+# Validation Report — Crystal Guild v1.6.0 — Gold Saucer RC1
 
 **PASS**
 
-- Bot regression: **632 / 632 PASS**
-- Frontend regression: **516 / 516 PASS**
-- Hosted Web/API: **56 / 56 PASS**
-- Frontend TypeScript parser: **228 / 228 PASS**
-- Plain JS/MJS Node syntax: **186 / 186 PASS**
-- Matched Python parse: **122 / 122 PASS**
-- CSS parse: **8 / 8 PASS**
-- Public WebP decode: **800 / 800 PASS**
-- Public PNG count: **0**
-- H5 full card dimensions: **15 / 15 at 543×724**
+## Regression suites
+- Bot: **636 / 636 PASS**
+- RC1-specific hardening: included in the Bot suite (same-day entry counting, midnight-crossing Toss/Triad accounting, five-attraction freeze).
 
-A dedicated regression test locks all 15 authoritative Top/Right/Bottom/Left values to the printed card faces.
+## Source / release gates
+- Bot Python parse: **111 / 111 PASS**
+- Database integrity / non-destructive recovery drill / synthetic stress guardrails: **PASS** through the release-readiness suite.
+- Balance freeze audit: **PASS** (`reports/GOLD_SAUCER_BALANCE_AUDIT_RC1.md`).
 
-Contract: runtime `1.6.0-gold-saucer-a5h5`, schema **13**, hosted sync **1**, Portal protocol **29**, prefix `!`, MGP canonical.
+## Focused RC1 checks
+- Monster Toss consumes its daily entry at start and writes settlement history against the original `started_at`.
+- Triple Triad consumes its daily entry at start and writes settlement history against the original `started_at`.
+- Sessions carried over 00:00 UTC remain attached to their original entry day.
+- All five planned Gold Saucer attractions report `open`.
+- MGP values/economy, Triple Triad card values, Chocobo Racing tuning, schema, sync, and Portal protocol are frozen from the validated H5/H6 baseline.
+
+Contract: runtime `1.6.0-gold-saucer-rc1`, schema **13**, hosted sync **1**, Portal protocol **29**, prefix `!`, MGP canonical.

@@ -1,3 +1,8 @@
+# v1.6.0 — Gold Saucer RC1
+- Freezes the five-attraction Gold Saucer feature/economy set for release-candidate validation.
+- Binds Monster Toss and Triple Triad daily entries to `started_at`, so active same-day sessions count immediately and midnight-crossing sessions remain charged to their entry day.
+- Preserves schema 13, hosted sync 1, Portal protocol 29, MGP balances/economics, full Triple Triad card faces/values, and all prior Gold Saucer functionality.
+
 # Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
 - Full Triple Triad card faces are now canonical presentation.
 - Removes duplicate Web stat overlays and synchronizes five starter-card values to the printed faces.

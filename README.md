@@ -1,5 +1,7 @@
-# Crystal Guild Bot — v1.6.0 Gold Saucer Alpha 5 — Chocobo Racing
+# Crystal Guild Bot — v1.6.0 Gold Saucer RC1
 
-Alpha 4 opens **Chocobo Racing** on top of the canonical MGP economy. Existing balances are preserved; local schema advances to **13**, hosted sync remains **1**, Portal Action protocol advances to **29**, and prefix `!` remains unchanged.
+Release-candidate Bot baseline for the complete Gold Saucer feature set. Runtime `1.6.0-gold-saucer-rc1`; local DB schema **13**; hosted sync **1**; Portal Action protocol **29**; command prefix `!`; MGP canonical.
 
-Mini Cactpot, Crystal Slots, Monster Toss, Prize Counter, daily allowance behavior, costs, and payout tables are unchanged. Legacy `points` state keys remain temporarily available as compatibility aliases for the Alpha 2 frontend.
+RC1 retains all Alpha 1–5 attractions and H5 card-face sync, while hardening Monster Toss and Triple Triad UTC daily-entry accounting across persistent sessions and midnight boundaries.
+
+See `RELEASE_NOTES.md`, `UPGRADE_GUIDE.md`, and `reports/GOLD_SAUCER_BALANCE_AUDIT_RC1.md`.

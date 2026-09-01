@@ -1,3 +1,20 @@
+# Crystal Guild v1.6.0 — Gold Saucer RC1 Manual Check
+
+- [ ] `!cgversion` reports `1.6.0-gold-saucer-rc1`.
+- [ ] Existing player MGP balance, Prize Counter ownership, Triple Triad collection/deck, and Gold Saucer records survive the upgrade unchanged.
+- [ ] Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Triple Triad are all playable from the Gold Saucer tab.
+- [ ] Starting Monster Toss immediately changes its daily counter from 0/3 to 1/3 before the fifth throw resolves.
+- [ ] Starting Triple Triad immediately changes its daily counter from 0/5 to 1/5 before the board resolves.
+- [ ] A Toss/Triad session started before 00:00 UTC and finished after midnight remains charged to the prior UTC entry day.
+- [ ] Triple Triad shows the complete printed 3:4 card faces with no duplicate stat/name overlay; captures use the values printed on the art.
+- [ ] Saucer Attendant, Card Shark, and Crystal Master use their compact opponent cards; the removed wide Choose Opponent banner does not return.
+- [ ] Mini Cactpot and Crystal Slots remain permanently open. Monster Toss, Chocobo Racing, Triple Triad, Prize Counter, Saucer Ledger, and Recent Activity use shared finger-pointer collapse controls.
+- [ ] Moogle Emporium Buy/Sell, Blacksmith quantity, and Fellowship Workshop quantity inputs allow typing `5` over the starter `1` on desktop and mobile.
+- [ ] Refresh/reconnect during active Monster Toss and Triple Triad restores the same authoritative session instead of rerolling/restarting it.
+- [ ] Retrying a completed Portal action cannot duplicate an MGP charge, payout, Triple Triad move/card reward, or Prize Counter purchase.
+
+## Legacy regression checklist
+
 # Crystal Guild v1.1.17 — Arsenal II Manual Check
 
 - [ ] `!cgversion` reports `1.1.19-retro-phase-iii-rc1`.

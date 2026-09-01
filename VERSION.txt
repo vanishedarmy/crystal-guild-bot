@@ -1,5 +1,5 @@
-Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
-Runtime: 1.6.0-gold-saucer-a5h5
+Crystal Guild v1.6.0 — Gold Saucer RC1
+Runtime: 1.6.0-gold-saucer-rc1
 Local DB schema: 13
 Hosted sync schema: 1
 Portal Action protocol: 29

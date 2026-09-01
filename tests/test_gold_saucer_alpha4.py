@@ -46,7 +46,7 @@ class GoldSaucerAlpha4ChocoboRacingTests(unittest.TestCase):
         self.db.execute("INSERT OR IGNORE INTO player_chocobo_traits(player_id,trait_id) VALUES (?,?)", ("100", trait))
 
     def test_alpha4_contract_opens_chocobo_racing_without_schema_migration(self):
-        self.assertEqual(__version__, "1.6.0-gold-saucer-a5h5")
+        self.assertEqual(__version__, "1.6.0-gold-saucer-rc1")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 13)
         self.assertEqual(self.db.schema_version(), 13)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 29)

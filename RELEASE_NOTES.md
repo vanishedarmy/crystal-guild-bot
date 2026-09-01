@@ -1,22 +1,26 @@
-# Crystal Guild v1.6.0 — Gold Saucer Alpha 5 Hotfix 5 — Triple Triad Full Card Face Sync
+# Crystal Guild v1.6.0 — Gold Saucer RC1
 
-Hotfix 5 makes the finished Triple Triad card faces authoritative both visually and numerically. The Web now shows the complete card face without duplicate UI stat overlays, and the Bot values are synchronized to the numbers printed on those cards.
+RC1 freezes the complete Gold Saucer feature set for release-candidate validation. Mini Cactpot, Crystal Slots, Monster Toss, Chocobo Racing, and Triple Triad are all open; no additional attraction is held back for v1.6.0.
 
-## Authoritative value corrections
-- Chocobo: **3 / 4 / 2 / 1** (Top / Right / Bottom / Left)
-- Moogle: **2 / 3 / 4 / 3**
-- Cactuar: **5 / 2 / 1 / 5**
-- Bomb: **4 / 2 / 6 / 2**
-- Flan: **1 / 5 / 4 / 3**
+## RC1 hardening
 
-The remaining ten cards already matched their artwork and are unchanged.
+- Monster Toss and Triple Triad daily entries are now consumed on the UTC day the game/match **starts**, not the day a persistent session happens to finish.
+- An active same-day Toss/Triad session immediately appears in the daily counter, so the Portal cannot overstate remaining entries.
+- A session carried across 00:00 UTC remains charged to its original start day.
+- The Triple Triad Open-rules description is release-neutral; gameplay rules are unchanged.
+- Exactly-once Portal settlement, restart persistence, MGP/Gil separation, full-card-face values, Chocobo Racing, and all prior Gold Saucer recovery/UI hotfixes carry forward.
+
+## Feature/economy freeze
+
+No MGP grant, entry cost, payout, Prize Counter price, Triple Triad card value, Chocobo Racing curve, or attraction limit is rebalanced in RC1. See `reports/GOLD_SAUCER_BALANCE_AUDIT_RC1.md` for the freeze audit.
 
 ## Contract
-- Runtime: `1.6.0-gold-saucer-a5h5`
+
+- Runtime: `1.6.0-gold-saucer-rc1`
 - Local DB schema: **13**
 - Hosted sync schema: **1**
 - Portal Action protocol: **29**
-- Prefix: `!`
-- Currency: **MGP**
+- Twitch prefix: `!`
+- Gold Saucer currency: **MGP**
 
-No schema migration, MGP rebalance, collection reset, deck reset, or action-contract change is required. Existing active matches resume with the corrected card definitions after deployment.
+There is no database migration or player reset from Alpha 5 H5/H6.
