@@ -20,7 +20,7 @@ Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secre
 - Ordinary Gil remains separate from MGP; Retainer dispatch uses Gil only.
 
 ## Release verification
-- `!cgversion` → `1.7.0-emporium-annex-a3h1`
+- `!cgversion` → `1.7.0-emporium-annex-a3h2`
 - Local DB schema → **15**
 - Hosted sync schema → **1**
 - Portal Action protocol → **31**

@@ -1,37 +1,42 @@
-# Finalization Audit — Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3 — Item Recovery Hotfix 1
+# Finalization Audit — Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3 — Item Usage Copy Hotfix 2
 
-**Decision: PASS — canonical Alpha 3 Hotfix 1 baseline.**
+**Decision: PASS — canonical Alpha 3 Hotfix 2 baseline.**
 
 ## Release contract
 
-- Runtime/frontend: `1.7.0-emporium-annex-a3h1`
+- Runtime/frontend: `1.7.0-emporium-annex-a3h2`
 - Local database schema: **15**
 - Hosted sync: **1**
 - Portal Action protocol: **31**
-- Prefix: `!`
-- Baseline: verified v1.7.0 Moogle Emporium Annex Alpha 3
+- Command prefix: `!`
+- Baseline: Item Recovery Integrity Hotfix 1
 
 ## Scope freeze
 
-Hotfix 1 makes **no restorative balance changes**. It verifies and regression-locks the existing restorative contract and fixes the misleading Recover & Equip presentation that could show only effective missing-HP recovery (for example +59 HP) without also showing a Mega-Potion’s 500-HP potency.
+Hotfix 2 is deliberately narrow:
 
-Field-use messages now explain capped recovery, and the Portal displays declared potency alongside **Effective now** recovery. The Moogle Emporium Annex, Retainer Service, Gold Saucer and all other gameplay remain unchanged.
+1. Recover & Equip shows only the declared restorative effect.
+2. “Effective now” and explanatory recovery jargon are removed from the item buttons.
+3. Field-use success messages report only the restored amount/effect.
+4. The trailing technical HP/MP/AP snapshot is removed from field-use success text.
+5. Regression coverage prevents the removed wording from returning.
 
-## Regression gates
+Restorative values, max-resource behavior, inventory consumption, battle item behavior, Moogle Emporium Annex, Retainer Service, Gold Saucer, Fellowship, Guild systems, and player progression are unchanged.
 
-- Bot: **663/663 PASS**
-- Frontend: **543/543 PASS**
+## Regression and source gates
+
+- Bot: **664/664 PASS**
+- Frontend: **544/544 PASS**
 - Hosted Web/API: **61/61 PASS**
-- Python parse: **131/131 PASS** (116 Bot + 15 Web)
-- JS/MJS syntax: **199/199 PASS**
+- Bot Python parse: **117/117 PASS**
+- Web Python parse: **15/15 PASS**
+- JS/MJS syntax: **200/200 PASS**
 - CSS structural checks: **8/8 PASS**
 - WebP decode: **843/843 PASS**
 - Public PNG count: **0**
 
-## Restorative contract
+The source-only Web package does not contain installed `node_modules`, so no local Vite production-build pass is claimed.
 
-Fixed HP potencies remain 50 / 200 / 500 / 1,000. MP and AP restorative tiers remain 40% / 65% / 100%. Phoenix Down remains 30% max-HP revival. Tent, Elixir and Megalixir retain their existing full-restoration behavior. Maximum-resource capping is intentional and is now explicit in player-facing output.
+## Compatibility
 
-## Upgrade safety
-
-Schema 15 and Portal protocol 31 are unchanged. No migration, reset, item conversion, inventory mutation or new persisted state is introduced.
+Schema **15**, hosted sync **1**, and Portal protocol **31** remain unchanged. Existing databases, player progression, inventories, Gil/MGP, Retainer state, Fellowship facilities, and Emporium Annex completion state are preserved.

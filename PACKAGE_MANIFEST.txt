@@ -1,12 +1,12 @@
-Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 — Item Recovery Hotfix 1
-Runtime: 1.7.0-emporium-annex-a3h1
+Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 — Item Usage Copy Hotfix 2
+Runtime: 1.7.0-emporium-annex-a3h2
 Local DB schema: 15
 Hosted sync schema: 1
 Portal Action protocol: 31
 Command prefix: !
-Baseline: v1.7.0 Moogle Emporium Annex Alpha 3
+Baseline: v1.7.0 Moogle Emporium Annex Alpha 3 — Item Recovery Integrity Hotfix 1
 Feature set: v1.6.0 Gold Saucer production + Retainer Service Alpha 2 + Moogle Emporium Annex Alpha 3
-Moogle Emporium Annex: one-time Fellowship facility; Fellowship LVL 3; 20,000 Gil + 12 Mythril Ore + 20 crafted items; expands personal rotations from 9 to 12 stock slots
-Restorative integrity: Potion ladder 50/200/500/1000 HP; MP and AP tiers 40/65/100%; Phoenix Down 30%; full-restoration items unchanged
-Recovery UI: shows nominal potency plus Effective now recovery; max-resource capping is explicit
+Restorative values: unchanged; Potion ladder 50/200/500/1000 HP; MP and AP tiers 40/65/100%; Phoenix Down 30%; full-restoration items unchanged
+Recovery UI: concise declared-effect text only; no Effective now/potency/cap explanation
+Field-use result: concise restored amount/effect only; no technical resource snapshot
 Compatibility: no DB schema migration; no Portal Action protocol change; existing player/Fellowship/Gold Saucer/Retainer/Annex data preserved

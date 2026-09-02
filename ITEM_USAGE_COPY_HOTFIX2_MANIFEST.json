@@ -1,0 +1,40 @@
+{
+  "release": "v1.7.0 Moogle Emporium Annex Alpha 3 \u2014 Item Usage Copy Hotfix 2",
+  "runtime": "1.7.0-emporium-annex-a3h2",
+  "frontend_revision": "1.7.0-emporium-annex-a3h2",
+  "local_db_schema": 15,
+  "hosted_sync_schema": 1,
+  "portal_action_protocol": 31,
+  "prefix": "!",
+  "baseline": "v1.7.0 Moogle Emporium Annex Alpha 3 \u2014 Item Recovery Integrity Hotfix 1",
+  "artwork_changes": false,
+  "gameplay_balance_changes": false,
+  "item_value_changes": false,
+  "copy_changes": {
+    "recovery_cards": "declared restorative effect only",
+    "removed_from_recovery_cards": [
+      "Effective now",
+      "potency/cap explanation"
+    ],
+    "field_use_results": "restored amount/effect only",
+    "removed_from_field_results": [
+      "potency/cap explanation",
+      "trailing HP/MP/AP snapshot"
+    ]
+  },
+  "migration": {
+    "schema_change": false,
+    "preserves_existing_progression": true
+  },
+  "validation": {
+    "bot": "664/664",
+    "frontend": "544/544",
+    "hosted": "61/61",
+    "bot_python": "117/117",
+    "web_python": "15/15",
+    "js_mjs": "200/200",
+    "css": "8/8",
+    "webp": "843/843",
+    "public_png_count": 0
+  }
+}

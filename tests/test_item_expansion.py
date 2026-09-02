@@ -122,8 +122,10 @@ class ItemExpansionTests(unittest.TestCase):
         capped = self.game.use_item("1", "mega_potion")
         self.assertTrue(capped.ok)
         self.assertEqual(int(self.game._player("1")["current_hp"]), 5000)
-        self.assertIn("59 HP from 500 HP potency", capped.messages[0])
-        self.assertIn("capped at maximum HP", capped.messages[0])
+        self.assertIn("restores 59 HP", capped.messages[0])
+        self.assertNotIn("potency", capped.messages[0].lower())
+        self.assertNotIn("capped", capped.messages[0].lower())
+        self.assertNotIn("HP 5000/5000", capped.messages[0])
 
     def test_fractional_restoratives_resolve_declared_percentages_in_active_battle(self):
         expected = {

@@ -1244,10 +1244,7 @@ class CrystalGuildEngine:
                 new_hp = min(max_hp, new_hp + max(0, amount))
                 restored = new_hp - before
                 if restored > 0:
-                    if restored < amount:
-                        effects_done.append(f"restores {restored} HP from {amount} HP potency (capped at maximum HP)")
-                    else:
-                        effects_done.append(f"restores {restored} HP")
+                    effects_done.append(f"restores {restored} HP")
             elif effect_type == "restore_mp" and max_mp > 0 and new_hp > 0:
                 amount = max(0, int(effect.get("amount", 0)))
                 if effect.get("fraction") is not None:
@@ -1256,10 +1253,7 @@ class CrystalGuildEngine:
                 new_mp = min(max_mp, new_mp + amount)
                 restored = new_mp - before
                 if restored > 0:
-                    if restored < amount:
-                        effects_done.append(f"restores {restored} MP from {amount} MP potency (capped at maximum MP)")
-                    else:
-                        effects_done.append(f"restores {restored} MP")
+                    effects_done.append(f"restores {restored} MP")
             elif effect_type == "restore_ap" and max_ap > 0 and new_hp > 0:
                 amount = max(0, int(effect.get("amount", 0)))
                 if effect.get("fraction") is not None:
@@ -1268,10 +1262,7 @@ class CrystalGuildEngine:
                 new_ap = min(max_ap, new_ap + amount)
                 restored = new_ap - before
                 if restored > 0:
-                    if restored < amount:
-                        effects_done.append(f"restores {restored} AP from {amount} AP potency (capped at maximum AP)")
-                    else:
-                        effects_done.append(f"restores {restored} AP")
+                    effects_done.append(f"restores {restored} AP")
             elif effect_type == "revive" and new_hp <= 0:
                 fraction = float(effect.get("fraction", 0.30))
                 new_hp = max(1, int(max_hp * fraction))
@@ -1307,13 +1298,10 @@ class CrystalGuildEngine:
         self.db.execute("UPDATE players SET current_hp=?, camp_until=0 WHERE twitch_id=?", (new_hp, target_id))
         resource_meta = {"mp": new_mp, "max_mp": max_mp, "ap": new_ap, "max_ap": max_ap}
         self._save_resources_from_meta(target_id, resource_meta)
-        summary = [f"HP {new_hp}/{max_hp}", *self._resource_text_parts(resource_meta)]
         actor_name = str(actor["display_name"] or actor["username"])
         target_name = str(target["display_name"] or target["username"])
         lead = f"{actor_name} uses {item['name']}" if target_id == str(twitch_id) else f"{actor_name} uses {item['name']} on {target_name}"
-        return GameResult.success(
-            f"{lead} and {'; '.join(effects_done)}. " + " | ".join(summary) + "."
-        )
+        return GameResult.success(f"{lead} and {'; '.join(effects_done)}.")
 
     # ---------- regions ----------
     def regions(self, twitch_id: str) -> GameResult:
