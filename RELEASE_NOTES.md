@@ -1,13 +1,13 @@
-# Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3
+# Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 — Item Recovery Integrity Hotfix 1
 
-Alpha 3 adds the **Moogle Emporium Annex**, a small one-time Fellowship construction project that permanently expands the personal Emporium for the whole Guild.
+This hotfix audits and locks the restorative item contract without changing item balance.
 
-The Annex unlocks at **Fellowship LVL 3** and requires **20,000 Gil**, **12 Mythril Ore**, and **20 crafted items** alongside the level requirement. When construction completes, every recruited adventurer's personalized Moogle Emporium rotation expands from **9 to 12 stock slots**.
+The underlying recovery values were confirmed correct: **Potion 50 HP**, **Hi-Potion 200 HP**, **Mega-Potion 500 HP**, and **X-Potion 1,000 HP**. Ether tiers restore **40% / 65% / 100% maximum MP**; Stamina Draught / Warrior’s Tonic / Hero’s Brew restore **40% / 65% / 100% maximum AP**; Phoenix Down revives at **30% maximum HP**; Tent and Elixir fully restore the applicable personal resources; Megalixir fully restores living party members in Active Battle.
 
-The original nine-slot shop composition remains the foundation of each rotation; the Annex adds three further weighted picks from the same level/job-eligible merchandise pool without duplicates. Prices, sell values, refresh timing, item definitions, and purchase rules do not change. Because there are three additional picks, players have more choice per rotation, which is the intended Annex benefit, but nothing is granted for free.
+The apparent Mega-Potion discrepancy in Recover & Equip was an **overheal presentation issue**, not a potency bug. Recovery always stops at the target’s maximum resource. A hero missing 59 HP therefore receives 59 HP from a 500-HP Mega-Potion, with the remaining 441 unable to exceed maximum HP.
 
-Existing nine-slot cached shop rotations detect the new Guild capacity and rebuild automatically after Annex completion, so the benefit is visible immediately on the next shop request rather than waiting for the prior rotation timer.
+Hotfix 1 makes that distinction explicit. Recover & Equip now displays both the item’s declared potency and its current effective recovery (for example, **Restores 500 HP · Effective now +59 HP**). Field-use result text also identifies when recovery was capped at the target’s maximum resource.
 
-The Fellowship public Guild Board now displays the Annex as a sixth facility card while the existing five-major-facility Legacy accomplishments remain unchanged. The Portal's Fellowship Services and Moogle Emporium panels both show Annex status and current stock capacity.
+Regression coverage now locks the fixed Potion ladder, fractional MP/AP restoratives, Portal effective-recovery previews, and capped-use messaging. Shared battle item resolution continues to cover Active Battle, Solo Venture, Expedition, Dungeon and timed Hunt combat; raid item resolution was separately audited.
 
-Runtime advances to `1.7.0-emporium-annex-a3`. Local database schema remains **15**, hosted sync remains **1**, Portal Action protocol remains **31**, and the Twitch command prefix remains `!`. Retainer Service Alpha 2, Gold Saucer v1.6.0, and all existing progression carry forward unchanged.
+Runtime/frontend revision: `1.7.0-emporium-annex-a3h1`. Local database schema remains **15**, hosted sync remains **1**, Portal Action protocol remains **31**, and Twitch prefix remains `!`. No database migration, inventory rewrite, item-value rebalance, or artwork change is required.

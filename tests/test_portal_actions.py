@@ -395,6 +395,19 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertTrue(potion["usable_now"])
         self.assertIn("HP", potion["preview"])
 
+    def test_phase_five_recovery_preview_reports_effective_cap_without_changing_item_potency(self):
+        self.game._max_hp = lambda _player: 5000
+        self.db.execute("UPDATE players SET current_hp=4941 WHERE twitch_id='100'")
+        self.game._change_item("100", "mega_potion", 1, "potency_preview_audit")
+        ok, message, data = self.worker._execute(self.action(id="pa_recovery_potency", type="RECOVERY_STATE", payload={}))
+        self.assertTrue(ok, message)
+        mega = next(item for item in data["recovery_state"]["items"] if item["id"] == "mega_potion")
+        self.assertEqual(mega["preview"], "+59 HP")
+        self.assertEqual(mega["effective"], 59)
+        self.assertEqual(mega["waste"], 441)
+        heal = next(effect for effect in self.game.data.items["mega_potion"]["use"]["effects"] if effect["type"] == "heal_hp")
+        self.assertEqual(heal["amount"], 500)
+
     def test_phase_five_field_item_use_is_replay_safe_and_refreshes_state(self):
         self.db.execute("UPDATE players SET current_hp=1 WHERE twitch_id='100'")
         self.game._change_item("100", "potion", 2, "test")

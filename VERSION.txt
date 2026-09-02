@@ -1,2 +1,2 @@
-Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3
-Runtime: 1.7.0-emporium-annex-a3
+Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 Hotfix 1
+Runtime: 1.7.0-emporium-annex-a3h1h1

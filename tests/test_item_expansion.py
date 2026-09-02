@@ -102,6 +102,52 @@ class ItemExpansionTests(unittest.TestCase):
             self.assertEqual(actor["healing"], min(500, actor["max_hp"] - before))
         self.assertEqual(self.game._inventory_qty("1", "mega_potion"), 0)
 
+    def test_fixed_potion_field_recovery_uses_full_potency_until_max_hp(self):
+        self.game._max_hp = lambda _player: 5000
+        expected = {
+            "potion": 50,
+            "hi_potion": 200,
+            "mega_potion": 500,
+            "x_potion": 1000,
+        }
+        for item_id, amount in expected.items():
+            self.db.execute("UPDATE players SET current_hp=1000 WHERE twitch_id='1'")
+            self.game._change_item("1", item_id, 1, "potency_audit")
+            result = self.game.use_item("1", item_id)
+            self.assertTrue(result.ok, item_id)
+            self.assertEqual(int(self.game._player("1")["current_hp"]), 1000 + amount, item_id)
+
+        self.db.execute("UPDATE players SET current_hp=4941 WHERE twitch_id='1'")
+        self.game._change_item("1", "mega_potion", 1, "potency_cap_audit")
+        capped = self.game.use_item("1", "mega_potion")
+        self.assertTrue(capped.ok)
+        self.assertEqual(int(self.game._player("1")["current_hp"]), 5000)
+        self.assertIn("59 HP from 500 HP potency", capped.messages[0])
+        self.assertIn("capped at maximum HP", capped.messages[0])
+
+    def test_fractional_restoratives_resolve_declared_percentages_in_active_battle(self):
+        expected = {
+            "ether": ("mp", 400),
+            "hi_ether": ("mp", 650),
+            "turbo_ether": ("mp", 1000),
+            "stamina_draught": ("ap", 400),
+            "warriors_tonic": ("ap", 650),
+            "heros_brew": ("ap", 1000),
+        }
+        for item_id, (resource, restored) in expected.items():
+            self.game._change_item("1", item_id, 1, "restorative_audit")
+            actor = {
+                "name": "Van", "hp": 1000, "max_hp": 5000,
+                "mp": 0, "max_mp": 1000, "ap": 0, "max_ap": 1000,
+                "damage": 0, "healing": 0, "best_hit": 0, "items_used": 0, "statuses": {},
+            }
+            self.game.encounter_roster = {"1": actor}
+            self.game.active_encounter = {"monster_id": next(iter(self.data.monsters)), "monster_hp": 5000}
+            log: list[str] = []
+            self.game._resolve_active_item("1", actor, {"item_id": item_id, "target_id": "1"}, log)
+            self.assertEqual(int(actor[resource]), restored, item_id)
+            self.assertEqual(self.game._inventory_qty("1", item_id), 0, item_id)
+
     def test_offensive_item_uses_data_driven_damage(self):
         self._start()
         self.game._change_item("1", "arctic_wind", 1, "test")

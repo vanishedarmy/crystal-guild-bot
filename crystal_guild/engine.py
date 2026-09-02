@@ -1242,24 +1242,36 @@ class CrystalGuildEngine:
                     amount = max(amount, int(max_hp * float(effect.get("fraction", 0))))
                 before = new_hp
                 new_hp = min(max_hp, new_hp + max(0, amount))
-                if new_hp > before:
-                    effects_done.append(f"restores {new_hp - before} HP")
+                restored = new_hp - before
+                if restored > 0:
+                    if restored < amount:
+                        effects_done.append(f"restores {restored} HP from {amount} HP potency (capped at maximum HP)")
+                    else:
+                        effects_done.append(f"restores {restored} HP")
             elif effect_type == "restore_mp" and max_mp > 0 and new_hp > 0:
                 amount = max(0, int(effect.get("amount", 0)))
                 if effect.get("fraction") is not None:
                     amount = max(amount, int(max_mp * float(effect.get("fraction", 0))))
                 before = new_mp
                 new_mp = min(max_mp, new_mp + amount)
-                if new_mp > before:
-                    effects_done.append(f"restores {new_mp - before} MP")
+                restored = new_mp - before
+                if restored > 0:
+                    if restored < amount:
+                        effects_done.append(f"restores {restored} MP from {amount} MP potency (capped at maximum MP)")
+                    else:
+                        effects_done.append(f"restores {restored} MP")
             elif effect_type == "restore_ap" and max_ap > 0 and new_hp > 0:
                 amount = max(0, int(effect.get("amount", 0)))
                 if effect.get("fraction") is not None:
                     amount = max(amount, int(max_ap * float(effect.get("fraction", 0))))
                 before = new_ap
                 new_ap = min(max_ap, new_ap + amount)
-                if new_ap > before:
-                    effects_done.append(f"restores {new_ap - before} AP")
+                restored = new_ap - before
+                if restored > 0:
+                    if restored < amount:
+                        effects_done.append(f"restores {restored} AP from {amount} AP potency (capped at maximum AP)")
+                    else:
+                        effects_done.append(f"restores {restored} AP")
             elif effect_type == "revive" and new_hp <= 0:
                 fraction = float(effect.get("fraction", 0.30))
                 new_hp = max(1, int(max_hp * fraction))
