@@ -116,7 +116,7 @@ class Settings:
         cloud = runtime_mode == "cloud"
         default_database = "/var/data/crystal_guild.db" if cloud else "crystal_guild.db"
         default_overlay = "/var/data/overlay/state.json" if cloud else "overlay/state.json"
-        default_logs = "/var/data/logs" if cloud else "logs"
+        default_logs = "/tmp/crystal-guild-logs" if cloud else "logs"
         default_token_db = "/var/data/twitch_tokens.db" if cloud else ""
 
         return cls(

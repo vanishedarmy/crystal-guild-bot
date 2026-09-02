@@ -8,7 +8,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from crystal_guild.cloud_runtime import cloud_bootstrap_ready, copy_database_for_migration
+from crystal_guild.cloud_runtime import (
+    cloud_bootstrap_ready,
+    copy_database_for_migration,
+    create_startup_backup,
+    prepare_cloud_storage,
+)
 from crystal_guild.config import Settings
 from crystal_guild.database import Database
 from crystal_guild.portal_sync import PortalSyncWorker
@@ -45,7 +50,7 @@ class CloudRuntimeTests(unittest.TestCase):
         self.assertTrue(settings.cloud_runtime)
         self.assertEqual(settings.database_path, "/var/data/crystal_guild.db")
         self.assertEqual(settings.twitch_token_db, "/var/data/twitch_tokens.db")
-        self.assertEqual(settings.log_dir, "/var/data/logs")
+        self.assertEqual(settings.log_dir, "/tmp/crystal-guild-logs")
         self.assertTrue(settings.portal_sync_in_process)
         self.assertTrue(settings.cloud_require_existing_database)
 
@@ -154,6 +159,75 @@ class CloudRuntimeTests(unittest.TestCase):
             ready, missing = cloud_bootstrap_ready(settings)
             self.assertTrue(ready, missing)
 
+    def test_cloud_storage_prunes_before_new_backup_and_removes_stale_partials(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            db_path = root / "guild.db"
+            db = Database(db_path)
+            db.close()
+            backup_dir = root / "backups"
+            backup_dir.mkdir()
+            old = []
+            for idx in range(5):
+                path = backup_dir / f"crystal_guild-startup-20260101-00000{idx}.db"
+                path.write_bytes(b"old")
+                os.utime(path, (idx + 1, idx + 1))
+                old.append(path)
+            partial = backup_dir / ".crystal_guild-startup-stale.partial"
+            partial.write_bytes(b"partial")
+            settings = self.settings(
+                CRYSTAL_GUILD_RUNTIME_MODE="cloud",
+                DATABASE_PATH=str(db_path),
+                TWITCH_TOKEN_DB=str(root / "tokens.db"),
+            )
+            removed = prepare_cloud_storage(settings, keep=2)
+            self.assertFalse(partial.exists())
+            self.assertEqual(len(list(backup_dir.glob("crystal_guild-startup-*.db"))), 1)
+            self.assertGreaterEqual(len(removed), 5)
+
+    def test_cloud_startup_backup_skips_when_disk_cannot_fit_safe_copy(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            db_path = root / "guild.db"
+            db = Database(db_path)
+            db.close()
+            settings = self.settings(
+                CRYSTAL_GUILD_RUNTIME_MODE="cloud",
+                DATABASE_PATH=str(db_path),
+                TWITCH_TOKEN_DB=str(root / "tokens.db"),
+            )
+            fake_usage = type("Usage", (), {"total": 1, "used": 1, "free": 0})()
+            with patch("crystal_guild.cloud_runtime.shutil.disk_usage", return_value=fake_usage):
+                target = create_startup_backup(settings)
+            self.assertIsNone(target)
+            self.assertEqual(list((root / "backups").glob("*.partial")), [])
+
+    def test_cloud_startup_backup_creates_consistent_copy_and_caps_history(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            db_path = root / "guild.db"
+            db = Database(db_path)
+            db.execute("INSERT INTO players(twitch_id,username,display_name) VALUES ('1','van','Van')")
+            db.close()
+            backup_dir = root / "backups"
+            backup_dir.mkdir()
+            for idx in range(3):
+                old = backup_dir / f"crystal_guild-startup-20260101-00000{idx}.db"
+                old.write_bytes(b"old")
+                os.utime(old, (idx + 1, idx + 1))
+            settings = self.settings(
+                CRYSTAL_GUILD_RUNTIME_MODE="cloud",
+                DATABASE_PATH=str(db_path),
+                TWITCH_TOKEN_DB=str(root / "tokens.db"),
+            )
+            target = create_startup_backup(settings, keep=2, reserve_bytes=0)
+            self.assertIsNotNone(target)
+            assert target is not None
+            with sqlite3.connect(target) as conn:
+                self.assertEqual(conn.execute("PRAGMA quick_check").fetchone()[0], "ok")
+                self.assertEqual(conn.execute("SELECT COUNT(*) FROM players").fetchone()[0], 1)
+            self.assertLessEqual(len(list(backup_dir.glob("crystal_guild-startup-*.db"))), 2)
+
     def test_database_migration_copy_is_sqlite_consistent(self):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "source.db"
@@ -165,19 +239,25 @@ class CloudRuntimeTests(unittest.TestCase):
                 self.assertEqual(conn.execute("PRAGMA quick_check").fetchone()[0], "ok")
                 self.assertEqual(conn.execute("SELECT COUNT(*) FROM players").fetchone()[0], 1)
 
+    def test_cloud_storage_reclaim_runs_before_file_logging(self):
+        source = (ROOT / "crystal_guild" / "twitch_bot.py").read_text(encoding="utf-8")
+        self.assertLess(source.index("prepare_cloud_storage(settings)"), source.index("twitchio.utils.setup_logging"))
+
     def test_render_blueprint_defines_one_disk_backed_worker_without_secret_values(self):
         source = (ROOT / "render.yaml").read_text(encoding="utf-8")
         self.assertIn("type: worker", source)
         self.assertIn("mountPath: /var/data", source)
         self.assertIn("startCommand: python run_bot.py", source)
         self.assertIn("CRYSTAL_GUILD_RUNTIME_MODE", source)
+        self.assertIn("/tmp/crystal-guild-logs", source)
+        self.assertNotIn("value: /var/data/logs", source)
         self.assertIn("sync: false", source)
         self.assertNotIn("TWITCH_CLIENT_SECRET=", source)
 
     def test_cloud_setup_docs_preserve_existing_database_and_explain_matching_web(self):
         source = (ROOT / "RENDER_CLOUD_SETUP.md").read_text(encoding="utf-8")
-        self.assertIn("v1.7.0 Alpha 2 Web relay", source)
-        self.assertIn("No player reset", source)
+        self.assertIn("Item Usage Copy Hotfix 2 Web build", source)
+        self.assertIn("No database migration", (ROOT / "UPGRADE_GUIDE.md").read_text(encoding="utf-8"))
         self.assertIn("/var/data/crystal_guild.db", source)
         self.assertIn("/var/data/twitch_tokens.db", source)
         self.assertIn("run_cloud_preflight.py", source)

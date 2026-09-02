@@ -21,7 +21,7 @@ services:
       - key: DATA_DIR
         value: data
       - key: LOG_DIR
-        value: /var/data/logs
+        value: /tmp/crystal-guild-logs
       - key: OVERLAY_STATE_PATH
         value: /var/data/overlay/state.json
       - key: TWITCH_TOKEN_DB

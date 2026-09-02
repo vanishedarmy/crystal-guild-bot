@@ -1,3 +1,11 @@
+# v1.7.0 Alpha 3 — Cloud Storage Hotfix 3
+
+- Fixed Render startup crash loops caused by pruning startup backups only after a new full copy completed.
+- Startup backup retention now prunes before copy and keeps at most two copies.
+- Added 64 MiB free-space reserve, partial-backup cleanup, SQLite backup quick-check, and fail-soft skip behavior.
+- Render file logging now uses `/tmp/crystal-guild-logs` instead of the persistent `/var/data` disk.
+- No gameplay, schema, Portal protocol, or Web frontend change.
+
 # v1.7.0 — Retainer Service Alpha 1
 
 - Adds one personal Retainer per player for Portal-only, Gil-funded crafting-material procurement.

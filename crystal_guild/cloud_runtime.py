@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
 import sqlite3
 import time
@@ -87,29 +88,162 @@ def wait_for_cloud_bootstrap(settings: Settings) -> None:
         time.sleep(settings.cloud_bootstrap_wait_seconds)
 
 
-def create_startup_backup(settings: Settings, keep: int = 5) -> Path | None:
-    """Create a SQLite-consistent startup backup on the persistent disk in cloud mode."""
+STARTUP_BACKUP_DEFAULT_KEEP = 2
+STARTUP_BACKUP_FREE_RESERVE_BYTES = 64 * 1024 * 1024
+
+
+def _startup_backups(backup_dir: Path) -> list[Path]:
+    backups: list[tuple[float, Path]] = []
+    try:
+        candidates = list(backup_dir.glob("crystal_guild-startup-*.db"))
+    except OSError:
+        return []
+    for path in candidates:
+        try:
+            mtime = path.stat().st_mtime
+        except OSError:
+            continue
+        backups.append((mtime, path))
+    backups.sort(key=lambda item: item[0], reverse=True)
+    return [path for _, path in backups]
+
+
+def _unlink_quietly(path: Path) -> bool:
+    try:
+        path.unlink(missing_ok=True)
+        return True
+    except OSError:
+        return False
+
+
+def prepare_cloud_storage(settings: Settings, keep: int = STARTUP_BACKUP_DEFAULT_KEEP) -> list[Path]:
+    """Reclaim predictable cloud disk usage before logging or a new startup backup.
+
+    The old startup-backup path pruned *after* creating a new copy. On a small
+    persistent disk that eventually deadlocked: five valid backups could leave
+    too little space to create the sixth copy, so the cleanup code was never
+    reached. Keep only the number of historical copies that can coexist with
+    the backup we are about to create, and remove abandoned partial copies.
+    """
+    if not settings.cloud_runtime:
+        return []
+    source = Path(settings.database_path).expanduser().resolve()
+    backup_dir = source.parent / "backups"
+    try:
+        backup_dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        return []
+
+    removed: list[Path] = []
+    for partial in backup_dir.glob(".crystal_guild-startup-*.partial"):
+        if _unlink_quietly(partial):
+            removed.append(partial)
+
+    # Reserve one slot for the backup this boot is about to create.
+    precreate_keep = max(0, int(keep) - 1)
+    for old in _startup_backups(backup_dir)[precreate_keep:]:
+        if _unlink_quietly(old):
+            removed.append(old)
+    return removed
+
+
+def create_startup_backup(
+    settings: Settings,
+    keep: int = STARTUP_BACKUP_DEFAULT_KEEP,
+    reserve_bytes: int = STARTUP_BACKUP_FREE_RESERVE_BYTES,
+) -> Path | None:
+    """Create a SQLite-consistent cloud startup backup without bricking startup.
+
+    Old backups are pruned before copying. If the persistent disk still cannot
+    safely fit a full database copy plus a small reserve, the backup is skipped
+    and startup continues. A failed copy is always removed so it cannot consume
+    the last bytes on the disk.
+    """
     if not settings.cloud_runtime:
         return None
     source = Path(settings.database_path).expanduser().resolve()
     if not source.exists():
         return None
     backup_dir = source.parent / "backups"
-    backup_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        backup_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        LOGGER.warning("Cloud startup backup skipped: backup directory is unavailable (%s).", exc)
+        return None
+
+    prepare_cloud_storage(settings, keep=keep)
+
+    try:
+        source_bytes = max(0, source.stat().st_size)
+        required_free = source_bytes + max(0, int(reserve_bytes))
+        free_bytes = shutil.disk_usage(backup_dir).free
+    except OSError as exc:
+        LOGGER.warning("Cloud startup backup skipped: could not inspect persistent disk space (%s).", exc)
+        return None
+
+    # If the retained previous copy prevents a safe new copy, release it too.
+    if free_bytes < required_free:
+        for old in reversed(_startup_backups(backup_dir)):
+            if not _unlink_quietly(old):
+                continue
+            try:
+                free_bytes = shutil.disk_usage(backup_dir).free
+            except OSError:
+                break
+            if free_bytes >= required_free:
+                break
+
+    if free_bytes < required_free:
+        LOGGER.warning(
+            "Cloud startup backup skipped: persistent disk has %.1f MiB free; %.1f MiB is required for a safe copy. "
+            "Crystal Guild will continue without creating a new startup backup.",
+            free_bytes / (1024 * 1024),
+            required_free / (1024 * 1024),
+        )
+        return None
+
     stamp = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
     target = backup_dir / f"crystal_guild-startup-{stamp}.db"
-    src = sqlite3.connect(source)
-    dst = sqlite3.connect(target)
+    partial = backup_dir / f".crystal_guild-startup-{stamp}-{os.getpid()}-{time.time_ns()}.partial"
+    src: sqlite3.Connection | None = None
+    dst: sqlite3.Connection | None = None
     try:
+        src = sqlite3.connect(source)
+        dst = sqlite3.connect(partial)
         src.backup(dst)
-    finally:
+        row = dst.execute("PRAGMA quick_check").fetchone()
+        if not row or str(row[0]).lower() != "ok":
+            raise sqlite3.DatabaseError(f"startup backup quick_check failed: {row}")
         dst.close()
+        dst = None
         src.close()
-    backups = sorted(backup_dir.glob("crystal_guild-startup-*.db"), key=lambda p: p.stat().st_mtime, reverse=True)
-    for old in backups[max(1, int(keep)):]:
-        try:
-            old.unlink()
-        except OSError:
+        src = None
+        partial.replace(target)
+    except (OSError, sqlite3.Error) as exc:
+        if dst is not None:
+            try:
+                dst.close()
+            except sqlite3.Error:
+                pass
+        if src is not None:
+            try:
+                src.close()
+            except sqlite3.Error:
+                pass
+        _unlink_quietly(partial)
+        LOGGER.warning(
+            "Cloud startup backup failed and was cleaned up (%s). Crystal Guild will continue using the authoritative database.",
+            exc,
+        )
+        return None
+    finally:
+        if dst is not None:
+            dst.close()
+        if src is not None:
+            src.close()
+
+    for old in _startup_backups(backup_dir)[max(1, int(keep)):]:
+        if not _unlink_quietly(old):
             LOGGER.warning("Could not remove old startup backup: %s", old)
     LOGGER.info("Cloud startup backup created: %s", target)
     return target

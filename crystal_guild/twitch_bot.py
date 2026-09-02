@@ -24,7 +24,7 @@ from .token_store import TwitchTokenStore
 from .stream_status import TwitchStreamStatus
 from .subscription_status import TwitchSubscriptionStatus
 from .daily_provisions import subscriber_perk
-from .cloud_runtime import ensure_runtime_directories, wait_for_cloud_bootstrap, create_startup_backup
+from .cloud_runtime import ensure_runtime_directories, wait_for_cloud_bootstrap, prepare_cloud_storage, create_startup_backup
 from .chat_ux import FeedbackGate, format_command_error, should_silence_command_error
 from .time_format import format_duration
 from .encounter_daemon import EncounterDaemon, NotificationDispatcher, TwitchRESTChatSender, _packed_messages
@@ -972,6 +972,11 @@ def main() -> None:
     settings = Settings.from_env()
     ensure_runtime_directories(settings)
     wait_for_cloud_bootstrap(settings)
+    if settings.cloud_runtime:
+        # Reclaim old startup backups before the first file-log write. This is
+        # intentionally earlier than create_startup_backup so a full Render
+        # disk can recover instead of entering a restart loop.
+        prepare_cloud_storage(settings)
     twitchio.utils.setup_logging(level=logging.INFO)
     _configure_file_logging(settings.log_dir)
     LOGGER.info("Starting Crystal Guild v%s | runtime_mode=%s", APP_VERSION, settings.runtime_mode)

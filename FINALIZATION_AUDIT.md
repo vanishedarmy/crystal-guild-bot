@@ -1,42 +1,34 @@
-# Finalization Audit — Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3 — Item Usage Copy Hotfix 2
+# Finalization Audit — Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3 — Cloud Storage Hotfix 3
 
-**Decision: PASS — canonical Alpha 3 Hotfix 2 baseline.**
+**Decision: PASS — operational recovery hotfix.**
 
 ## Release contract
 
-- Runtime/frontend: `1.7.0-emporium-annex-a3h2`
+- Bot runtime: `1.7.0-emporium-annex-a3h3`
+- Compatible Web frontend: `1.7.0-emporium-annex-a3h2` (unchanged)
 - Local database schema: **15**
 - Hosted sync: **1**
 - Portal Action protocol: **31**
 - Command prefix: `!`
-- Baseline: Item Recovery Integrity Hotfix 1
+- Baseline: Item Usage Copy Hotfix 2
+
+## Root cause fixed
+
+The old startup-backup implementation created a full SQLite copy first and pruned backup history afterward. With five retained startup backups on the 1 GB Render disk, the next copy could fail with `sqlite3.OperationalError: database or disk is full` before cleanup ran. File logging then also reported `Errno 28` because the same persistent disk had no free blocks.
+
+Hotfix 3 performs retention cleanup before the copy, reserves room for the database copy plus 64 MiB, keeps at most two startup backups, removes partial failed copies, verifies successful copies, and skips backup creation rather than terminating the Bot when safe space is unavailable. Render file logs are moved off `/var/data` to `/tmp`.
+
+## Safety
+
+The authoritative database is never deleted by this cleanup. `pre_schema_*.db` migration backups are not touched. Existing schema-15 player, Guild, Retainer, Gold Saucer, inventory, Gil/MGP, Annex, Twitch-token, and overlay state are preserved.
 
 ## Scope freeze
 
-Hotfix 2 is deliberately narrow:
+No gameplay values, item effects, shop behavior, Retainer behavior, Annex behavior, Portal payloads, database schema, or hosted sync format changed.
 
-1. Recover & Equip shows only the declared restorative effect.
-2. “Effective now” and explanatory recovery jargon are removed from the item buttons.
-3. Field-use success messages report only the restored amount/effect.
-4. The trailing technical HP/MP/AP snapshot is removed from field-use success text.
-5. Regression coverage prevents the removed wording from returning.
+## Validation
 
-Restorative values, max-resource behavior, inventory consumption, battle item behavior, Moogle Emporium Annex, Retainer Service, Gold Saucer, Fellowship, Guild systems, and player progression are unchanged.
-
-## Regression and source gates
-
-- Bot: **664/664 PASS**
-- Frontend: **544/544 PASS**
-- Hosted Web/API: **61/61 PASS**
+- Bot: **668/668 PASS**
 - Bot Python parse: **117/117 PASS**
-- Web Python parse: **15/15 PASS**
-- JS/MJS syntax: **200/200 PASS**
-- CSS structural checks: **8/8 PASS**
-- WebP decode: **843/843 PASS**
-- Public PNG count: **0**
-
-The source-only Web package does not contain installed `node_modules`, so no local Vite production-build pass is claimed.
-
-## Compatibility
-
-Schema **15**, hosted sync **1**, and Portal protocol **31** remain unchanged. Existing databases, player progression, inventories, Gil/MGP, Retainer state, Fellowship facilities, and Emporium Annex completion state are preserved.
+- Compatible Web tree: byte-identical to Item Usage Copy Hotfix 2, whose **544/544 frontend** and **61/61 hosted Web/API** gates remain valid.
+- Patch reconstruction, Complete Bot/Web tree comparison, ZIP integrity, and package safety scan: **PASS**.

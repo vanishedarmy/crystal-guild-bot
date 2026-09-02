@@ -1,6 +1,6 @@
 # Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 Manual Check
 
-- [ ] `!cgversion` reports `1.7.0-emporium-annex-a3h2`.
+- [ ] `!cgversion` reports `1.7.0-emporium-annex-a3h3`.
 - [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 14→15.
 - [ ] A verified `backups/pre_schema_14_*.db` exists after upgrading an existing schema-13 database.
 - [ ] Retainer Service appears under Guild Services on the player's own Portal.
@@ -12,3 +12,7 @@
 - [ ] Repeating the same collect request does not duplicate materials or EXP.
 - [ ] Routine Retainer activity does not post to Twitch chat.
 - [ ] Gold Saucer remains fully playable with the v1.6.0 production balance.
+
+- [ ] Cloud restart prunes startup backup history to a safe bounded set before copying.
+- [ ] A simulated insufficient-space startup skips the backup without terminating the Bot.
+- [ ] Render file logs are not written under `/var/data/logs` by the shipping blueprint.

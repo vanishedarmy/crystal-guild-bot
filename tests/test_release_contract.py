@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_final_guild_expansion_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.7.0-emporium-annex-a3h2")
+        self.assertEqual(__version__, "1.7.0-emporium-annex-a3h3")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -100,7 +100,7 @@ class ReleaseReadinessTests(unittest.TestCase):
         audit = (ROOT / "FINALIZATION_AUDIT.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
         self.assertIn("v1.7.0 Moogle Emporium Annex Alpha 3", audit)
-        self.assertIn("1.7.0-emporium-annex-a3h2", audit)
+        self.assertIn("1.7.0-emporium-annex-a3h3", audit)
         self.assertIn("Gold Saucer", manifest)
         self.assertNotIn("v1.1.19 — Retro Phase III RC1 Finalization Audit", audit)
         self.assertNotIn("Expeditions Alpha 2 Hotfix 1 Finalization", audit)
