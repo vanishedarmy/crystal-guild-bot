@@ -58,8 +58,8 @@ class GuildExpansionFinalTests(unittest.TestCase):
     def test_control_panel_and_upgrade_helper_identify_final_release(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
         upgrade = (ROOT / "upgrade_crystal_guild.py").read_text(encoding="utf-8")
-        self.assertIn("MOOGLE EMPORIUM ANNEX ALPHA 3", panel.upper())
-        self.assertIn("Moogle Emporium Annex Alpha 3", upgrade)
+        self.assertIn("MOOGLE RETAINER", panel.upper())
+        self.assertIn("Moogle Retainer", upgrade)
         self.assertNotIn("GUILD EXPANSION BETA 1", panel.upper())
 
 

@@ -1,4 +1,4 @@
-# Portal Actions — v1.7.0 Moogle Emporium Annex Alpha 3
+# Portal Actions — Crystal Guild v1.7.0 Moogle Retainer
 
 Portal Action protocol is **31**.
 

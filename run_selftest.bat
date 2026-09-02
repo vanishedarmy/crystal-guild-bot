@@ -7,7 +7,7 @@ if not exist .venv\Scripts\activate (
   exit /b 1
 )
 call .venv\Scripts\activate
-echo Running Crystal Guild v1.7.0 - Moogle Emporium Annex Alpha 3 bot integrity checks...
+echo Running Crystal Guild v1.7.0 - Moogle Retainer bot integrity checks...
 python -m compileall -q crystal_guild tests
 if errorlevel 1 goto :failed
 python -m unittest discover -s tests -v

@@ -258,7 +258,7 @@ def run_matrix(runs: int, seed: int) -> dict[str, Any]:
 
 def markdown(report: dict[str, Any]) -> str:
     lines = [
-        "# Crystal Guild v1.2 Beta 1 — Expedition Balance Simulation",
+        "# Crystal Guild — Expedition Balance Simulation",
         "",
         f"Fixed seed: `{report['seed']}`  ",
         f"Runs per scenario: **{report['runs_per_scenario']}**  ",

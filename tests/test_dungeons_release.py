@@ -21,7 +21,7 @@ class DungeonsProductionReleaseTests(unittest.TestCase):
 
     def test_project_metadata_is_semver_151(self):
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual(pyproject["project"]["version"], "1.7.0a3")
+        self.assertEqual(pyproject["project"]["version"], "1.7.0")
 
     def test_shipping_contract_keeps_runtime_state_out(self):
         self.assertIn("overlay/state.json", (ROOT / ".gitignore").read_text(encoding="utf-8"))
@@ -30,7 +30,7 @@ class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_production_package_surfaces_have_no_current_rc_label(self):
         for name in ("VERSION.txt", "README_FIRST.txt", "PACKAGE_MANIFEST.txt", "RELEASE_NOTES.md", "FINALIZATION_AUDIT.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
-            self.assertIn("Moogle Emporium Annex", text, name)
+            self.assertIn("Moogle Retainer", text, name)
             self.assertIn("1.7.0", text, name)
             self.assertNotIn("1.4.0-dungeons-rc1", text, name)
 

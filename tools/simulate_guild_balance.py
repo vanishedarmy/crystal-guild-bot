@@ -474,7 +474,7 @@ def run_matrix(runs_per_profile: int, seed: int) -> dict[str, Any]:
 
 def markdown(report: dict[str, Any]) -> str:
     lines = [
-        "# Crystal Guild v1.3 Beta 1 — Guild Economy & Progression Simulation",
+        "# Crystal Guild — Guild Economy & Progression Simulation",
         "",
         f"Fixed seed: `{report['seed']}`  ",
         f"Runs per Guild profile: **{report['runs_per_profile']}**  ",
@@ -498,9 +498,9 @@ def markdown(report: dict[str, Any]) -> str:
         )
     lines += [
         "",
-        "## Beta 1 tuning applied",
+        "## Current tuning",
         "",
-        "- Airship Dock construction remains a major commitment, but its Gil, Ancient Coin, and raid-clear requirements are lower than the Alpha curve.",
+        "- Airship Dock construction remains a major commitment, but its Gil, Ancient Coin, and raid-clear requirements are lower than the earlier tuning curve.",
         "- Crystal Guild Airship construction has a modestly lower launch cost so the feature arrives before the upgrade grind dominates the season.",
         "- Airship upgrades now use material curves based on rarity: Adamantite and Dark Matter no longer require the same quantities as Mythril Ore or Elemental Crystals.",
         "- Airship upgrade Gil and raid-clear requirements are reduced while remaining substantial enough to make Tier III a long-term Guild goal.",

@@ -72,7 +72,7 @@ def main() -> int:
     _upgrade_combat_timing_defaults()
     load_dotenv()
     db_path = Path(os.getenv("DATABASE_PATH", "crystal_guild.db"))
-    print("Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3 — In-place Upgrade Check")
+    print("Crystal Guild v1.7.0 Moogle Retainer — In-place Upgrade Check")
     print(f"Database: {db_path}")
     if not db_path.exists():
         print("INFO — no existing Guild database found; nothing to migrate.")

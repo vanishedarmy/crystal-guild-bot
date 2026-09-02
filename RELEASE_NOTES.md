@@ -1,4 +1,4 @@
-# Crystal Guild v1.7.0 — Production Final
+# Crystal Guild v1.7.0 — Moogle Retainer
 
 v1.7.0 promotes the completed Retainer Service and Moogle Emporium Annex work to the production release line and freezes the feature set after the final hardening, mobile/UI, item-copy, and hosted performance passes.
 
@@ -22,4 +22,8 @@ v1.7.0 promotes the completed Retainer Service and Moogle Emporium Annex work to
 - Portal Action protocol: **31**
 - Twitch command prefix: `!`
 
-There is no database migration from the final v1.7 Alpha 3/Hotfix baseline. Preserve the existing database, token database, persistent files, and environment secrets when deploying.
+There is no database migration from the immediately prior schema-15 v1.7.0 candidate baseline. Preserve the existing database, token database, persistent files, and environment secrets when deploying.
+
+## Production package cleanup
+
+The final production package omits superseded development-phase manifests, duplicate historical audit files, generated balance-report folders, and stale setup naming. Active source, regression tests, deployment helpers, current release documentation, and technical asset manifests required for validation remain included. Runtime, schema, protocol, gameplay, and player data are unchanged.

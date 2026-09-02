@@ -9967,7 +9967,7 @@ class CrystalGuildEngine:
                 "slots_theoretical_return_pct": float(SLOTS_THEORETICAL_RETURN_PCT),
                 "slots_cost": int(SLOTS_COST),
                 "cactpot_cost": int(CACTPOT_COST),
-                "note": "Alpha 1 H2 keeps the validated payout table; this panel reports realized results rather than changing odds mid-alpha.",
+                "note": "The validated payout table is fixed; this panel reports realized results without changing the underlying odds.",
             },
             "prizes": prizes,
             "cactpot": cactpot,

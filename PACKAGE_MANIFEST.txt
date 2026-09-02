@@ -1,4 +1,4 @@
-Crystal Guild v1.7.0 — Production Final
+Crystal Guild v1.7.0 — Moogle Retainer
 Bot runtime: 1.7.0
 Local DB schema: 15
 Hosted sync schema: 1
@@ -7,3 +7,4 @@ Command prefix: !
 Feature set: Gold Saucer production + Retainer Service + Moogle Emporium Annex
 Cloud storage: startup backups pre-pruned; max 2 retained; 64 MiB free-space reserve; failed partial backups removed; insufficient-space backup skipped without aborting startup
 Persistent authoritative state: preserve live database and tokens during upgrade
+Package hygiene: pre-release manifests/reports and generated report directories are excluded; active source, tests, setup tools, and required asset manifests are retained.

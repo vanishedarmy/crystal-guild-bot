@@ -26,7 +26,7 @@ class DungeonsRC1Tests(unittest.TestCase):
 
     def test_project_metadata_and_deployment_docs_are_current(self):
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual(pyproject["project"]["version"], "1.7.0a3")
+        self.assertEqual(pyproject["project"]["version"], "1.7.0")
         for name in ("FULL_SETUP_README.md", "RENDER_CLOUD_SETUP.md", "SIMPLE_RENDER_SETUP.md", "WEB_SYNC_SETUP.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
             self.assertIn("1.7.0", text, name)

@@ -1,4 +1,4 @@
-# Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 Manual Check
+# Crystal Guild v1.7.0 — Moogle Retainer Manual Check
 
 - [ ] `!cgversion` reports `1.7.0`.
 - [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 14→15.

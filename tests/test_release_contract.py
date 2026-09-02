@@ -90,7 +90,7 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.7.0 - MOOGLE EMPORIUM ANNEX ALPHA 3", panel)
+        self.assertIn("v1.7.0 - MOOGLE RETAINER", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
@@ -99,7 +99,7 @@ class ReleaseReadinessTests(unittest.TestCase):
     def test_current_finalization_audit_matches_final_package_identity(self):
         audit = (ROOT / "FINALIZATION_AUDIT.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
-        self.assertIn("Crystal Guild v1.7.0 Production Final", audit)
+        self.assertIn("Crystal Guild v1.7.0 Moogle Retainer", audit)
         self.assertIn("1.7.0", audit)
         self.assertIn("Gold Saucer", manifest)
         self.assertNotIn("v1.1.19 — Retro Phase III RC1 Finalization Audit", audit)

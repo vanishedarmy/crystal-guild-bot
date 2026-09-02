@@ -1,4 +1,4 @@
-Crystal Guild v1.7.0 — Production Final — Retainer Service & Moogle Emporium Annex
+Crystal Guild v1.7.0 — Moogle Retainer
 Bot runtime: 1.7.0
 Local DB schema: 15
 Hosted sync schema: 1

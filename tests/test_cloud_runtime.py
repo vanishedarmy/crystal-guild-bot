@@ -256,7 +256,7 @@ class CloudRuntimeTests(unittest.TestCase):
 
     def test_cloud_setup_docs_preserve_existing_database_and_explain_matching_web(self):
         source = (ROOT / "RENDER_CLOUD_SETUP.md").read_text(encoding="utf-8")
-        self.assertIn("Item Usage Copy Hotfix 2 Web build", source)
+        self.assertIn("v1.7.0 Moogle Retainer Web build", source)
         self.assertIn("No database migration", (ROOT / "UPGRADE_GUIDE.md").read_text(encoding="utf-8"))
         self.assertIn("/var/data/crystal_guild.db", source)
         self.assertIn("/var/data/twitch_tokens.db", source)

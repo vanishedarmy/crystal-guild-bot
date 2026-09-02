@@ -1,4 +1,4 @@
-# Finalization Audit — Crystal Guild v1.7.0 Production Final
+# Finalization Audit — Crystal Guild v1.7.0 Moogle Retainer
 
 **Decision: PASS — production release baseline.**
 
@@ -27,3 +27,7 @@ No schema change is introduced by the production promotion. Existing schema-15 d
 Bot **668/668**, frontend **554/554**, hosted Web/API **63/63**, Python parse **132/132**, JS/MJS **202/202**, CSS **8/8**, WebP **843/843**, public PNG **0**.
 
 The production package is feature-frozen. Future feature work should branch from this v1.7.0 baseline.
+
+## Package hygiene
+
+Superseded development release manifests, duplicate historical audit notes, and generated report folders are excluded from the production archives. Current deployment/setup documents use the v1.7.0 Moogle Retainer identity. Regression tests and active technical asset manifests remain available for the next development branch.
