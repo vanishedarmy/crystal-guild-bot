@@ -1,3 +1,6 @@
-Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 — Cloud Storage Hotfix 3
-Bot runtime: 1.7.0-emporium-annex-a3h3
-Compatible Web frontend: 1.7.0-emporium-annex-a3h2
+Crystal Guild v1.7.0 — Production Final — Retainer Service & Moogle Emporium Annex
+Bot runtime: 1.7.0
+Local DB schema: 15
+Hosted sync schema: 1
+Portal Action protocol: 31
+Command prefix: !

@@ -1,13 +1,9 @@
-Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 — Cloud Storage Hotfix 3
-Bot runtime: 1.7.0-emporium-annex-a3h3
-Compatible Web frontend: 1.7.0-emporium-annex-a3h2
+Crystal Guild v1.7.0 — Production Final
+Bot runtime: 1.7.0
 Local DB schema: 15
 Hosted sync schema: 1
 Portal Action protocol: 31
 Command prefix: !
-Baseline: v1.7.0 Moogle Emporium Annex Alpha 3 — Item Usage Copy Hotfix 2
-Feature set: v1.6.0 Gold Saucer production + Retainer Service Alpha 2 + Moogle Emporium Annex Alpha 3
-Cloud storage: startup backups pre-pruned; max 2 retained; 64 MiB free-space reserve; failed partial backups removed; insufficient-space backup is skipped without aborting startup
-Render file logs: /tmp/crystal-guild-logs (non-persistent)
-Persistent authoritative state: /var/data/crystal_guild.db + /var/data/twitch_tokens.db + overlay state
-Compatibility: no DB schema migration; no Portal Action protocol change; Web Hotfix 2 remains compatible; gameplay unchanged
+Feature set: Gold Saucer production + Retainer Service + Moogle Emporium Annex
+Cloud storage: startup backups pre-pruned; max 2 retained; 64 MiB free-space reserve; failed partial backups removed; insufficient-space backup skipped without aborting startup
+Persistent authoritative state: preserve live database and tokens during upgrade

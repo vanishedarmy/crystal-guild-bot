@@ -1,16 +1,11 @@
-# Upgrade to v1.7.0 Alpha 3 — Cloud Storage Hotfix 3
+# Upgrade to Crystal Guild v1.7.0 Production Final
 
-This is a **Bot-only operational hotfix** from Item Usage Copy Hotfix 2.
+1. Back up the live deployment and preserve the existing database, Twitch token database, persistent files, and environment secrets.
+2. Deploy the v1.7.0 Final Bot and Web together.
+3. Do **not** replace the live database with any packaged/example database.
+4. No database migration or schema migration is required from the final v1.7 Alpha 3/Hotfix baseline; schema remains **15**.
+5. Confirm the Bot reports runtime `1.7.0`, schema **15**, and Portal protocol **31**.
+6. Confirm the Web reports runtime `1.7.0` and frontend asset revision `1.7.0-final`.
+7. Verify Retainer dispatch/collection, Moogle Emporium Annex stock capacity, Portal sign-in, and one normal startup/restart cycle.
 
-- Bot runtime: `1.7.0-emporium-annex-a3h3`
-- Compatible Web frontend: `1.7.0-emporium-annex-a3h2` (unchanged)
-- Local DB schema: **15** (unchanged)
-- Hosted sync: **1** (unchanged)
-- Portal Action protocol: **31** (unchanged)
-- Prefix: `!`
-
-Preserve `/var/data/crystal_guild.db`, `/var/data/twitch_tokens.db`, overlay state, and all live secrets. No database migration or player reset is required.
-
-Deploy the Hotfix 3 Bot and restart the worker. During startup it automatically removes excess `crystal_guild-startup-*.db` copies before attempting the new backup. If those old startup copies caused the full disk, the worker should recover on this deployment without manually deleting the authoritative database.
-
-Do **not** delete `crystal_guild.db`. Migration backups named `pre_schema_*.db` are also left untouched by automatic retention.
+Render deployments should leave database storage on the persistent disk. Routine file logs remain on temporary storage, and startup backup pruning runs before a new backup copy is attempted.

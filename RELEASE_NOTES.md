@@ -1,11 +1,25 @@
-# Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 — Cloud Storage Hotfix 3
+# Crystal Guild v1.7.0 — Production Final
 
-Hotfix 3 hardens the Render cloud worker against persistent-disk exhaustion during startup backup creation.
+v1.7.0 promotes the completed Retainer Service and Moogle Emporium Annex work to the production release line and freezes the feature set after the final hardening, mobile/UI, item-copy, and hosted performance passes.
 
-The previous cloud path retained five startup database copies and removed old copies only after a new backup completed. On a small persistent disk this could deadlock startup: the existing database plus retained backups could leave too little free space for the next copy, so the backup failed before retention cleanup was reached.
+## Included feature work
 
-Hotfix 3 now prunes startup-backup history before the new copy begins, retains at most two startup backups, reserves 64 MiB of free disk space, removes abandoned partial copies, and verifies each completed backup with SQLite `PRAGMA quick_check`. If a safe copy cannot fit, Crystal Guild logs a warning and continues startup without creating a new startup backup rather than entering a crash/restart loop.
+- Retainer Service with timed material procurement, rank/EXP progression, priority procurement, recent-haul history, and final Retainer artwork.
+- Moogle Emporium Annex as a shared Fellowship construction unlock, expanding each personal Emporium rotation from 9 to 12 stock slots.
+- Gold Saucer v1.6.0 production content carried forward unchanged.
+- Restorative-item values verified and locked; item-use copy kept concise.
+- Render startup-backup hardening so low disk space cannot trap the Bot in a restart loop.
+- Final responsive-layout, compactness, mobile-overflow, and text-spacing cleanup.
+- Hosted Web static-art streaming, ETag revalidation, and lazy loading for heavy optional modules.
 
-Render file logging is moved to `/tmp/crystal-guild-logs` so routine rotating logs do not consume the authoritative `/var/data` disk. The database, Twitch token database, overlay state, migration backups, and all player progression remain on the persistent disk.
+## Release contract
 
-Bot runtime: `1.7.0-emporium-annex-a3h3`. The Web frontend is unchanged and remains `1.7.0-emporium-annex-a3h2`; it is fully compatible because local DB schema remains **15**, hosted sync remains **1**, Portal Action protocol remains **31**, and no Portal payload or gameplay contract changes.
+- Bot runtime: `1.7.0`
+- Web runtime: `1.7.0`
+- Frontend asset revision: `1.7.0-final`
+- Local database schema: **15**
+- Hosted sync schema: **1**
+- Portal Action protocol: **31**
+- Twitch command prefix: `!`
+
+There is no database migration from the final v1.7 Alpha 3/Hotfix baseline. Preserve the existing database, token database, persistent files, and environment secrets when deploying.

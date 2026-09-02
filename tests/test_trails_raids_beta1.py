@@ -46,7 +46,7 @@ class TrailsRaidsBeta1Tests(unittest.TestCase):
         return self.game.active_boss
 
     def test_beta1_identity_keeps_schema10_protocol25(self):
-        self.assertEqual(__version__, "1.7.0-emporium-annex-a3h3")
+        self.assertEqual(__version__, "1.7.0")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(self.db.schema_version(), 15)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 31)

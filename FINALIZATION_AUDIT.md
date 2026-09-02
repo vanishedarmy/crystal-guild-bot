@@ -1,34 +1,29 @@
-# Finalization Audit — Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3 — Cloud Storage Hotfix 3
+# Finalization Audit — Crystal Guild v1.7.0 Production Final
 
-**Decision: PASS — operational recovery hotfix.**
+**Decision: PASS — production release baseline.**
 
-## Release contract
+## Frozen release contract
 
-- Bot runtime: `1.7.0-emporium-annex-a3h3`
-- Compatible Web frontend: `1.7.0-emporium-annex-a3h2` (unchanged)
+- Bot runtime: `1.7.0`
+- Web runtime: `1.7.0`
+- Frontend asset revision: `1.7.0-final`
 - Local database schema: **15**
-- Hosted sync: **1**
+- Hosted sync schema: **1**
 - Portal Action protocol: **31**
-- Command prefix: `!`
-- Baseline: Item Usage Copy Hotfix 2
+- Twitch prefix: `!`
 
-## Root cause fixed
+## Feature freeze
 
-The old startup-backup implementation created a full SQLite copy first and pruned backup history afterward. With five retained startup backups on the 1 GB Render disk, the next copy could fail with `sqlite3.OperationalError: database or disk is full` before cleanup ran. File logging then also reported `Errno 28` because the same persistent disk had no free blocks.
+v1.7.0 closes with the complete Retainer Service and Moogle Emporium Annex feature set. Retainers provide personal timed material procurement with priority targeting and recent-haul history. The shared Moogle Emporium Annex expands personal shop rotations from 9 to 12 stock slots after construction. Gold Saucer production content carries forward unchanged.
 
-Hotfix 3 performs retention cleanup before the copy, reserves room for the database copy plus 64 MiB, keeps at most two startup backups, removes partial failed copies, verifies successful copies, and skips backup creation rather than terminating the Bot when safe space is unavailable. Render file logs are moved off `/var/data` to `/tmp`.
+The release also includes the final Render storage hardening, item-recovery verification and concise copy, Retainer artwork/UI, mobile/compactness fixes, text-spacing consistency, lazy loading, bounded static-art streaming, and browser ETag revalidation.
 
-## Safety
+## Upgrade safety
 
-The authoritative database is never deleted by this cleanup. `pre_schema_*.db` migration backups are not touched. Existing schema-15 player, Guild, Retainer, Gold Saucer, inventory, Gil/MGP, Annex, Twitch-token, and overlay state are preserved.
-
-## Scope freeze
-
-No gameplay values, item effects, shop behavior, Retainer behavior, Annex behavior, Portal payloads, database schema, or hosted sync format changed.
+No schema change is introduced by the production promotion. Existing schema-15 databases, player progression, inventories, Gil/MGP, Fellowship state, facilities, Retainer assignments/history, Gold Saucer records, Chocobo state, and raid/dungeon records are preserved. Keep the live database and secrets in place.
 
 ## Validation
 
-- Bot: **668/668 PASS**
-- Bot Python parse: **117/117 PASS**
-- Compatible Web tree: byte-identical to Item Usage Copy Hotfix 2, whose **544/544 frontend** and **61/61 hosted Web/API** gates remain valid.
-- Patch reconstruction, Complete Bot/Web tree comparison, ZIP integrity, and package safety scan: **PASS**.
+Bot **668/668**, frontend **554/554**, hosted Web/API **63/63**, Python parse **132/132**, JS/MJS **202/202**, CSS **8/8**, WebP **843/843**, public PNG **0**.
+
+The production package is feature-frozen. Future feature work should branch from this v1.7.0 baseline.

@@ -20,7 +20,7 @@ Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secre
 - Ordinary Gil remains separate from MGP; Retainer dispatch uses Gil only.
 
 ## Release verification
-- `!cgversion` → `1.7.0-emporium-annex-a3h3`
+- `!cgversion` → `1.7.0`
 - Local DB schema → **15**
 - Hosted sync schema → **1**
 - Portal Action protocol → **31**
@@ -45,5 +45,5 @@ https://dashboard.render.com
 Keep `PORTAL_PUBLIC_URL` and `PORTAL_SYNC_KEY` in the appropriate environment configuration. Never put `crystal_guild.db`, Twitch token databases, `.env`, OAuth secrets, or live player state into public Web assets or source-control releases.
 
 
-## Cloud Storage Hotfix 3
-The Bot prunes startup-backup history before making a new Render backup, retains at most two startup copies, reserves 64 MiB of free disk, removes failed partial copies, and skips an unsafe backup rather than aborting startup. The compatible Web frontend remains `1.7.0-emporium-annex-a3h2`.
+## v1.7.0 Production Final
+The Bot prunes startup-backup history before making a new Render backup, retains at most two startup copies, reserves 64 MiB of free disk, removes failed partial copies, and skips an unsafe backup rather than aborting startup. The compatible Web frontend remains `1.7.0-final`.

@@ -1,38 +1,36 @@
-# Validation Report — Crystal Guild v1.7.0 — Cloud Storage Hotfix 3
+# Validation Report — Crystal Guild v1.7.0 Production Final
 
 **Result: PASS**
 
 ## Release contract
 
-- Bot runtime: `1.7.0-emporium-annex-a3h3`
-- Compatible Web frontend: `1.7.0-emporium-annex-a3h2` (unchanged)
-- Local DB schema: **15**
+- Bot runtime: `1.7.0`
+- Web runtime: `1.7.0`
+- Frontend asset revision: `1.7.0-final`
+- Local database schema: **15**
 - Hosted sync schema: **1**
 - Portal Action protocol: **31**
 - Twitch command prefix: `!`
-- Baseline: Item Usage Copy Hotfix 2
-- Gameplay changes: **none**
 
 ## Automated regression
 
 - Bot: **668 / 668 PASS**
+- Frontend: **554 / 554 PASS**
+- Hosted Web/API: **63 / 63 PASS**
 - Bot Python parse: **117 / 117 PASS**
-- Compatible Web H2 baseline remains byte-identical and previously passed **544 / 544 frontend**, **61 / 61 hosted Web/API**, **15 / 15 Web Python**, **200 / 200 JS/MJS**, **8 / 8 CSS**, **843 / 843 WebP decode**, and **0 public PNGs**.
+- Web Python parse: **15 / 15 PASS**
+- JS/MJS syntax: **202 / 202 PASS**
+- CSS structural checks: **8 / 8 PASS**
+- WebP decode: **843 / 843 PASS**
+- Public PNG count: **0**
 
-## Cloud-storage checks
+## Final release checks
 
-**PASS.** Five retained startup-backup files are pruned before a new backup is attempted, preventing the previous create-first/prune-after deadlock.
+- Production identity is centralized and no active runtime/frontend identity uses an Alpha or Hotfix suffix.
+- The non-destructive database backup/restore recovery drill passes under schema 15.
+- Existing Retainer Service, Moogle Emporium Annex, Gold Saucer, raids, dungeons, expeditions, Fellowship, inventory, item-use, and Portal action regression suites remain green.
+- Render startup-backup low-space protection remains enabled.
+- Hosted artwork remains streamed without unbounded in-process byte caching and supports ETag revalidation.
+- The source-only Web archive does not include installed `node_modules`; no local Vite production build is claimed.
 
-**PASS.** Startup backup retention is capped at two completed copies.
-
-**PASS.** A forced zero-free-space condition returns cleanly without raising `sqlite3.OperationalError`; the Bot continues startup without a new backup.
-
-**PASS.** Abandoned partial backup files are removed.
-
-**PASS.** Completed startup backups pass SQLite `PRAGMA quick_check` before becoming the retained backup.
-
-**PASS.** Cloud-storage reclamation runs before Twitch/file logging initialization, allowing an already-full Render disk to free old startup backups before the first file-log write.
-
-**PASS.** Shipping Render configuration writes rotating file logs to `/tmp/crystal-guild-logs`, not `/var/data/logs`.
-
-The authoritative database, token database, `pre_schema_*.db` migration backups, schema, protocol, and player progression are not modified by this cleanup.
+No database migration or player reset is required from the final v1.7 Alpha 3/Hotfix baseline.
