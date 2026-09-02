@@ -1,4 +1,4 @@
-# Web Sync — Crystal Guild v1.7.0 Retainer Service Alpha 2
+# Web Sync — Crystal Guild v1.7.0 Moogle Emporium Annex Alpha 3
 
 Hosted sync schema remains **1**. Portal Action protocol advances to **31** for targeted Retainer procurement.
 

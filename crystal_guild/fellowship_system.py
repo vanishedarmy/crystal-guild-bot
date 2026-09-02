@@ -12,6 +12,7 @@ from .fellowship import (
     GUILD_RANKS,
     LEGACY_ACCOMPLISHMENTS,
     GUILD_EXPANSION_FACILITY_IDS,
+    PUBLIC_GUILD_FACILITY_IDS,
     PROJECTS,
     WEEKLY_ORDER_SET_REWARD,
     WORKSHOP_EXCHANGES,
@@ -98,6 +99,12 @@ class FellowshipSystem:
     def effective_forge_gil(self, base_gil: int) -> int:
         discount = self.effects()["forge_discount"]
         return max(0, int(round(int(base_gil) * (1.0 - discount))))
+
+    def emporium_annex_level(self) -> int:
+        return max(0, min(1, int(self.facility_tiers().get("emporium_annex", 0))))
+
+    def emporium_stock_slots(self) -> int:
+        return 12 if self.emporium_annex_level() >= 1 else 9
 
     def major_facility_level(self, facility_id: str) -> int:
         config = FACILITIES.get(str(facility_id), {})
@@ -425,6 +432,7 @@ class FellowshipSystem:
         workshop_level = self.major_facility_level("workshop")
         stable_level = self.major_facility_level("chocobo_stable")
         archive_level = self.major_facility_level("archives")
+        annex_level = self.emporium_annex_level()
         player = self.db.one("SELECT gil FROM players WHERE twitch_id=?", (str(player_id),)) if player_id else None
         gil = max(0, int(player["gil"] or 0)) if player else 0
         exchanges: list[dict[str, Any]] = []
@@ -458,6 +466,13 @@ class FellowshipSystem:
             "workshop": {"level": workshop_level, "forge_discount": float(self.effects().get("forge_discount", 0.0)), "exchanges": exchanges},
             "chocobo_stable": {"level": stable_level, "xp_bonus": float(self.effects().get("chocobo_xp_bonus", 0.0))},
             "archive": {"level": archive_level, "rare_event_bonus": self.archive_rare_event_bonus()},
+            "emporium_annex": {
+                "level": annex_level,
+                "unlocked": annex_level >= 1,
+                "base_stock_slots": 9,
+                "bonus_stock_slots": 3 if annex_level >= 1 else 0,
+                "stock_slots": self.emporium_stock_slots(),
+            },
         }
 
     def workshop_exchange(self, player_id: str, exchange_id: str, batches: int = 1) -> tuple[bool, str]:
@@ -687,9 +702,9 @@ class FellowshipSystem:
         airship_built = bool(airship_state and int(airship_state["built"] or 0))
         airship_upgrades = self.airship_upgrades()
         for project in PROJECTS.values():
-            # v1.3 Guild Expansion keeps legacy projects readable/completable if
-            # already active, but only the five major Guild facilities appear as
-            # new construction choices on the public Guild Board.
+            # Legacy facilities remain readable/completable if already active,
+            # while the public construction board exposes current major facilities
+            # plus the smaller one-time Emporium Annex service building.
             if project.get("legacy"):
                 continue
             if project.get("project_type") == "airship_construction":
@@ -1309,7 +1324,10 @@ class FellowshipSystem:
                 conn.execute("UPDATE fellowship_facilities SET tier=?,updated_at=CURRENT_TIMESTAMP WHERE facility_id=?", (int(project["tier"]), project["facility_id"]))
                 conn.execute("UPDATE fellowship_state SET active_project_id=NULL,renown=renown+?,updated_at=CURRENT_TIMESTAMP WHERE singleton_id=1", (bonus,))
                 benefit = FACILITIES[project["facility_id"]]["benefits"][int(project["tier"]) - 1]
-                notes.append(f"{FACILITIES[project['facility_id']]['name']} Tier {project['tier']} unlocked — {benefit}.")
+                if project["facility_id"] == "emporium_annex":
+                    notes.append(f"Moogle Emporium Annex constructed — {benefit}.")
+                else:
+                    notes.append(f"{FACILITIES[project['facility_id']]['name']} Tier {project['tier']} unlocked — {benefit}.")
             conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'project_complete',?,?)", (project["name"], bonus))
             participants = conn.execute("SELECT player_id FROM fellowship_project_members WHERE project_id=?", (project_id,)).fetchall()
             for row in participants:
@@ -1326,7 +1344,7 @@ class FellowshipSystem:
         level_progress = fellowship_level_progress(renown)
         tiers = self.facility_tiers()
         facilities = []
-        for facility_id in GUILD_EXPANSION_FACILITY_IDS:
+        for facility_id in PUBLIC_GUILD_FACILITY_IDS:
             config = FACILITIES[facility_id]
             raw_tier = int(tiers.get(facility_id, 0))
             max_level = int(config.get("max_level", 3))

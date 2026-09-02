@@ -1,0 +1,47 @@
+{
+  "release": "v1.7.0 Moogle Emporium Annex Alpha 3",
+  "runtime": "1.7.0-emporium-annex-a3",
+  "frontend_revision": "1.7.0-emporium-annex-a3",
+  "local_db_schema": 15,
+  "hosted_sync_schema": 1,
+  "portal_action_protocol": 31,
+  "prefix": "!",
+  "baseline": "v1.7.0 Retainer Service Alpha 2 Mobile Visual Hotfix 3",
+  "artwork_changes": false,
+  "emporium_annex": {
+    "facility_id": "emporium_annex",
+    "shared": true,
+    "max_level": 1,
+    "required_fellowship_level": 3,
+    "requirements": {
+      "gil": 20000,
+      "mythril_ore": 12,
+      "crafted_items": 20
+    },
+    "base_stock_slots": 9,
+    "unlocked_stock_slots": 12,
+    "bonus_stock_slots": 3,
+    "prices_changed": false,
+    "sell_values_changed": false,
+    "refresh_timing_changed": false,
+    "per_pick_weight_model_changed": false,
+    "level_job_eligibility_changed": false,
+    "cached_rotation_reconciles_on_capacity_change": true
+  },
+  "migration": {
+    "schema_change": false,
+    "facility_static_row_seeded_idempotently": true,
+    "preserves_existing_progression": true
+  },
+  "validation": {
+    "bot": "660/660",
+    "frontend": "543/543",
+    "hosted": "61/61",
+    "bot_python": "116/116",
+    "web_python": "15/15",
+    "js_mjs": "199/199",
+    "css": "8/8",
+    "webp": "843/843",
+    "public_png_count": 0
+  }
+}

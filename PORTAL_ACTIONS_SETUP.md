@@ -1,4 +1,4 @@
-# Portal Actions — v1.7.0 Retainer Service Alpha 2
+# Portal Actions — v1.7.0 Moogle Emporium Annex Alpha 3
 
 Portal Action protocol is **31**.
 

@@ -1,6 +1,6 @@
-# Crystal Guild v1.7.0 — Retainer Service Alpha 2 Manual Check
+# Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 Manual Check
 
-- [ ] `!cgversion` reports `1.7.0-retainer-a2`.
+- [ ] `!cgversion` reports `1.7.0-emporium-annex-a3`.
 - [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 14→15.
 - [ ] A verified `backups/pre_schema_14_*.db` exists after upgrading an existing schema-13 database.
 - [ ] Retainer Service appears under Guild Services on the player's own Portal.

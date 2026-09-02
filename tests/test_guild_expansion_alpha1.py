@@ -30,11 +30,13 @@ class GuildExpansionAlpha1Tests(unittest.TestCase):
         self.db.close()
         self.tmp.cleanup()
 
-    def test_public_guild_board_exposes_five_major_facilities(self):
+    def test_public_guild_board_exposes_major_facilities_plus_annex(self):
         guild = self.game.fellowship_system.public_snapshot()
         ids = [facility["id"] for facility in guild["facilities"]]
-        self.assertEqual(ids, ["guild_hall", "workshop", "chocobo_stable", "archives", "airship_dock"])
-        self.assertTrue(all(int(facility["max_level"]) == 3 for facility in guild["facilities"]))
+        self.assertEqual(ids, ["guild_hall", "workshop", "emporium_annex", "chocobo_stable", "archives", "airship_dock"])
+        self.assertTrue(all(int(facility["max_level"]) == 3 for facility in guild["facilities"] if facility["id"] != "emporium_annex"))
+        annex = next(facility for facility in guild["facilities"] if facility["id"] == "emporium_annex")
+        self.assertEqual(int(annex["max_level"]), 1)
         dock = next(facility for facility in guild["facilities"] if facility["id"] == "airship_dock")
         self.assertFalse(dock["locked"])
         self.assertIn(dock["status"], {"Buildable", "Complete"})

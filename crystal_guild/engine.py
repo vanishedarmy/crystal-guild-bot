@@ -5343,6 +5343,7 @@ class CrystalGuildEngine:
         """Build one personalized Moogle Emporium rotation for a player."""
         job_id = p["current_job"]
         level = int(p["level"])
+        stock_limit = self.fellowship_system.emporium_stock_slots()
         eligible: list[dict[str, Any]] = []
         for item in self.data.items.values():
             if not item.get("shop"):
@@ -5369,12 +5370,13 @@ class CrystalGuildEngine:
             remaining = [i for i in by_type[kind] if i not in stock]
             stock.extend(self._weighted_shop_sample(remaining, count, level, job_id))
 
-        # Fill any empty slots from other eligible goods without duplicates.
-        if len(stock) < 9:
+        # The Guild-funded Annex adds three additional choices without changing
+        # the original nine-slot composition, prices, rarity weights, or refresh timer.
+        if len(stock) < stock_limit:
             remaining = [i for i in eligible if i not in stock]
-            stock.extend(self._weighted_shop_sample(remaining, 9 - len(stock), level, job_id))
+            stock.extend(self._weighted_shop_sample(remaining, stock_limit - len(stock), level, job_id))
 
-        return [item["id"] for item in stock[:9]]
+        return [item["id"] for item in stock[:stock_limit]]
 
     def _shop_stock(self, twitch_id: str, force_refresh: bool = False) -> tuple[list[dict[str, Any]], int]:
         p = self._player(twitch_id)
@@ -5382,6 +5384,7 @@ class CrystalGuildEngine:
             return [], 0
         now = int(time.time())
         row = self.db.one("SELECT * FROM player_shops WHERE player_id=?", (twitch_id,))
+        stock_limit = self.fellowship_system.emporium_stock_slots()
         valid = False
         ids: list[str] = []
         if row and not force_refresh:
@@ -5393,7 +5396,7 @@ class CrystalGuildEngine:
                 int(row["expires_at"]) > now
                 and row["job_id"] == p["current_job"]
                 and int(row["level_at_roll"]) == int(p["level"])
-                and ids
+                and len(ids) == stock_limit
                 and all(item_id in self.data.items for item_id in ids)
             )
         if not valid:
@@ -5434,7 +5437,8 @@ class CrystalGuildEngine:
         groups: dict[str, list[str]] = {"weapon": [], "armor": [], "accessory": [], "consumable": []}
         for slot, item in enumerate(stock, start=1):
             groups.setdefault(item["type"], []).append(f"#{slot} {item['name']} {item['price']:,}g")
-        messages = [f"Moogle Emporium — {job} stock for Lv.{p['level']} | refresh {self._format_seconds(remaining)} | Buy with !buy <# or item> [qty]"]
+        annex = self.fellowship_system.emporium_annex_level() >= 1
+        messages = [f"Moogle Emporium — {job} stock for Lv.{p['level']} | {len(stock)} slots{' · Annex OPEN' if annex else ''} | refresh {self._format_seconds(remaining)} | Buy with !buy <# or item> [qty]"]
         gear_parts: list[str] = []
         if groups["weapon"]:
             gear_parts.append("Weapons — " + " | ".join(groups["weapon"]))
@@ -11126,6 +11130,9 @@ class CrystalGuildEngine:
             job_name=str(job.get("name", "Adventurer")),
             expires_at=int(expires),
             stock=[item_payload(item) for item in stock],
+            stock_slots=self.fellowship_system.emporium_stock_slots(),
+            annex_unlocked=self.fellowship_system.emporium_annex_level() >= 1,
+            annex_bonus_slots=3 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
             combat_locked=combat_locked,
         )
 
@@ -11440,7 +11447,7 @@ class CrystalGuildEngine:
         effects = guild["effects"]
         return GameResult.success(
             "FELLOWSHIP FACILITIES — " + " | ".join(parts),
-            f"Current benefits: Forge -{int(effects['forge_discount']*100)}% Gil | Chocobo XP +{int(effects.get('chocobo_xp_bonus',0)*100)}% | Archive rare events +{effects.get('archive_rare_event_bonus',0)*100:.1f}% | Camp -{int(effects['camp_reduction']*100)}% | Shop refresh -{int(effects['shop_refresh_reduction']*100)}%.",
+            f"Current benefits: Forge -{int(effects['forge_discount']*100)}% Gil | Emporium {self.fellowship_system.emporium_stock_slots()} slots | Chocobo XP +{int(effects.get('chocobo_xp_bonus',0)*100)}% | Archive rare events +{effects.get('archive_rare_event_bonus',0)*100:.1f}% | Camp -{int(effects['camp_reduction']*100)}% | Shop refresh -{int(effects['shop_refresh_reduction']*100)}%.",
         )
 
     def fellowship_contributions(self, twitch_id: str) -> GameResult:

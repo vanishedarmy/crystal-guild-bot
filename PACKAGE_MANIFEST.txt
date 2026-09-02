@@ -1,9 +1,11 @@
-Crystal Guild v1.7.0 — Retainer Service Alpha 2
-Runtime: 1.7.0-retainer-a2
+Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3
+Runtime: 1.7.0-emporium-annex-a3
 Local DB schema: 15
 Hosted sync schema: 1
 Portal Action protocol: 31
-Currency: MGP
-Feature set: v1.6.0 Gold Saucer production baseline + Retainer Service Alpha 2
-Retainer: one personal procurement agent; one active assignment; general or priority-targeted Gil-funded material hauls; Rank/EXP; bonus finds; eight-entry collection history; restart-safe exactly-once collection
-Moogle Emporium Annex: planned for a later v1.7.0 phase; not included in Alpha 2
+Command prefix: !
+Baseline: v1.7.0 Retainer Service Alpha 2 Mobile Visual Hotfix 3
+Feature set: v1.6.0 Gold Saucer production + Retainer Service Alpha 2 + Moogle Emporium Annex Alpha 3
+Moogle Emporium Annex: one-time Fellowship facility; Fellowship LVL 3; 20,000 Gil + 12 Mythril Ore + 20 crafted items; expands personal rotations from 9 to 12 stock slots
+Retainer Service: one personal procurement Retainer; optional priority procurement; Rank/EXP; eight-entry collection history; restart-safe exactly-once collection
+Compatibility: no DB schema migration; no Portal Action protocol change; existing player/Fellowship/Gold Saucer/Retainer data preserved

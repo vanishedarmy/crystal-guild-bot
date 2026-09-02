@@ -1,4 +1,4 @@
-# Crystal Guild v1.7.0 — Retainer Service Alpha 2 Setup
+# Crystal Guild v1.7.0 — Moogle Emporium Annex Alpha 3 Setup
 
 Alpha 2 is an in-place upgrade from the verified **v1.7.0 Retainer Service Alpha 1** baseline. It adds targeted material procurement and recent-haul history, advances local schema 14→15, and advances Portal Action protocol 30→31.
 
@@ -20,7 +20,7 @@ Preserve the live `crystal_guild.db`, `.env`, Twitch token storage, hosted secre
 - Ordinary Gil remains separate from MGP; Retainer dispatch uses Gil only.
 
 ## Release verification
-- `!cgversion` → `1.7.0-retainer-a2`
+- `!cgversion` → `1.7.0-emporium-annex-a3`
 - Local DB schema → **15**
 - Hosted sync schema → **1**
 - Portal Action protocol → **31**
@@ -35,7 +35,7 @@ https://dev.twitch.tv/console/apps
 
 Redirect URL: `http://localhost:4343/oauth/callback`
 
-The dedicated Bot authorization uses `user:read:chat`, `user:write:chat`, and `user:bot`. The broadcaster authorization includes `channel:bot` and the established subscription scope. Existing v1.6.0 installs do not need to reauthorize for Retainer Service Alpha 2.
+The dedicated Bot authorization uses `user:read:chat`, `user:write:chat`, and `user:bot`. The broadcaster authorization includes `channel:bot` and the established subscription scope. Existing v1.6.0 installs do not need to reauthorize for Moogle Emporium Annex Alpha 3.
 
 ## Hosted Web and secret separation
 Manage the hosted services from:

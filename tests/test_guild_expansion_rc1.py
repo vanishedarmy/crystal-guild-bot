@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GuildExpansionFinalTests(unittest.TestCase):
     def test_final_identity_schema_and_protocol_are_release_values(self):
-        self.assertEqual(__version__, "1.7.0-retainer-a2")
+        self.assertEqual(__version__, "1.7.0-emporium-annex-a3")
         self.assertEqual(ACTION_PROTOCOL_VERSION, 31)
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "final.db")
@@ -58,8 +58,8 @@ class GuildExpansionFinalTests(unittest.TestCase):
     def test_control_panel_and_upgrade_helper_identify_final_release(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
         upgrade = (ROOT / "upgrade_crystal_guild.py").read_text(encoding="utf-8")
-        self.assertIn("RETAINER SERVICE ALPHA 2", panel.upper())
-        self.assertIn("Retainer Service Alpha 2", upgrade)
+        self.assertIn("MOOGLE EMPORIUM ANNEX ALPHA 3", panel.upper())
+        self.assertIn("Moogle Emporium Annex Alpha 3", upgrade)
         self.assertNotIn("GUILD EXPANSION BETA 1", panel.upper())
 
 
