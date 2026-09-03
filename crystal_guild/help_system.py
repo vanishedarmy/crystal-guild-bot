@@ -40,7 +40,7 @@ HELP_TOPICS = {
     ),
     "crafting": (
         "CRAFTING — !blacksmith opens the forge overview. !recipes lists discoveries; !recipe <name> inspects one; !craft <recipe> [qty] crafts it.",
-        "Use !upgrade <item> to forge equipment toward +5. Recipe discoveries and materials come from adventuring, Hunts, raids and the Seal shop.",
+        "Use !upgrade <item> to forge equipment toward +5. Use !resynthesize <weapon or armor> to break down unwanted gear into crafting materials. Relic and Artifact gear is protected.",
     ),
     "relics": (
         "RELICS — !relics shows your Relic lines; !relic <name> shows stage requirements; !awaken <name> advances a completed stage.",
@@ -86,7 +86,7 @@ ALIASES = {
     "buy": "shop", "sell": "shop",
     "hunt": "hunts", "huntboard": "hunts", "marks": "hunts", "sealshop": "hunts", "sealbuy": "hunts",
     "quest": "quests",
-    "blacksmith": "crafting", "forge": "crafting", "recipes": "crafting", "recipe": "crafting", "craft": "crafting", "upgrade": "crafting",
+    "blacksmith": "crafting", "forge": "crafting", "recipes": "crafting", "recipe": "crafting", "craft": "crafting", "upgrade": "crafting", "resynthesize": "crafting", "desynth": "crafting", "dismantle": "crafting",
     "relic": "relics", "awaken": "relics",
     "raid": "raids", "boss": "raids", "bosses": "raids", "bossinfo": "raids", "limit": "raids", "summon": "raids", "revive": "raids",
     "monster": "bestiary", "monsters": "bestiary",

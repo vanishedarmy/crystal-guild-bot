@@ -1,12 +1,12 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title Crystal Guild v1.7.0 - Moogle Retainer
+title Crystal Guild v1.7.1 - Resynthesis Alpha 1
 
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.7.0 - MOOGLE RETAINER
+echo              CRYSTAL GUILD v1.7.1 - RESYNTHESIS ALPHA 1
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

@@ -1,29 +1,25 @@
-# Crystal Guild v1.7.0 — Moogle Retainer
+# Crystal Guild v1.7.1 — Resynthesis Alpha 1
 
-v1.7.0 promotes the completed Retainer Service and Moogle Emporium Annex work to the production release line and freezes the feature set after the final hardening, mobile/UI, item-copy, and hosted performance passes.
+Resynthesis adds a third Guild Blacksmith service for permanently breaking down unwanted **weapons and armor** into useful crafting materials. The service is available through the Adventurer Portal and `!resynthesize <gear>`.
 
-## Included feature work
+## Alpha 1 scope
 
-- Retainer Service with timed material procurement, rank/EXP progression, priority procurement, recent-haul history, and final Retainer artwork.
-- Moogle Emporium Annex as a shared Fellowship construction unlock, expanding each personal Emporium rotation from 9 to 12 stock slots.
-- Gold Saucer v1.6.0 production content carried forward unchanged.
-- Restorative-item values verified and locked; item-use copy kept concise.
-- Render startup-backup hardening so low disk space cannot trap the Bot in a restart loop.
-- Final responsive-layout, compactness, mobile-overflow, and text-spacing cleanup.
-- Hosted Web static-art streaming, ETag revalidation, and lazy loading for heavy optional modules.
+- Weapons and armor can be resynthesized; accessories are excluded.
+- Relic, Artifact, unique/protected, and otherwise unsellable equipment cannot be resynthesized.
+- The last equipped copy must be unequipped before it can be destroyed.
+- Recovery is deterministic and displayed before confirmation.
+- Base recovery is deliberately worth less in immediate resale Gil than selling the original equipment, preserving **Sell → Gil** and **Resynthesize → materials** as distinct choices.
+- Forged equipment receives a modest material bonus only when the final owned copy is destroyed. This matches the current per-player/per-item forge-level model and prevents duplicate-copy forge-refund loops.
+- Final-copy resynthesis clears that item's forge-level row so reacquired gear begins at +0.
+- Rift Crystal, Dark Matter, Relic materials, and Artifact materials are not refunded through forge bonuses.
 
 ## Release contract
 
-- Bot runtime: `1.7.0`
-- Web runtime: `1.7.0`
-- Frontend asset revision: `1.7.0-final`
-- Local database schema: **15**
-- Hosted sync schema: **1**
-- Portal Action protocol: **31**
-- Twitch command prefix: `!`
+- Runtime/frontend: `1.7.1-resynthesis-a1`
+- Local DB schema: **15**
+- Hosted sync: **1**
+- Portal Action protocol: **32**
+- Twitch prefix: `!`
+- Baseline: **v1.7.0 — Moogle Retainer UI Hotfix 3**
 
-There is no database migration from the immediately prior schema-15 v1.7.0 candidate baseline. Preserve the existing database, token database, persistent files, and environment secrets when deploying.
-
-## Production package cleanup
-
-The final production package omits superseded development-phase manifests, duplicate historical audit files, generated balance-report folders, and stale setup naming. Active source, regression tests, deployment helpers, current release documentation, and technical asset manifests required for validation remain included. Runtime, schema, protocol, gameplay, and player data are unchanged.
+There is no database migration or player reset. Existing Guild, Retainer, Gold Saucer, Blacksmith, inventory, forge, and progression state carries forward.

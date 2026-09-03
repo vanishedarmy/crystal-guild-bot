@@ -42,10 +42,10 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
         return self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
 
     def test_alpha5_contract_opens_triple_triad_with_schema_13_protocol_29(self):
-        self.assertEqual(__version__, "1.7.0")
+        self.assertEqual(__version__, "1.7.1-resynthesis-a1")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(self.db.schema_version(), 15)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 31)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
         state = self.state()
         attraction = next(row for row in state["attractions"] if row["id"] == "triple_triad")
         self.assertEqual(attraction["status"], "open")

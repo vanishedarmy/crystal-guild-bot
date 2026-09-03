@@ -9185,6 +9185,118 @@ class CrystalGuildEngine:
             return GameResult.fail("Refining batches must be a whole number from 1 to 20.")
         return self.workshop_refine(twitch_id, exchange_id, batches)
 
+    _RESYNTHESIS_RARITY_RATIO = {
+        "common": 0.35,
+        "uncommon": 0.40,
+        "rare": 0.45,
+        "epic": 0.50,
+        "legendary": 0.55,
+    }
+    _RESYNTHESIS_MAX_BASE_QTY = {
+        "common": 1,
+        "uncommon": 2,
+        "rare": 3,
+        "epic": 3,
+        "legendary": 4,
+    }
+    _RESYNTHESIS_LADDERS = {
+        "metal": ((1, "iron_ore"), (12, "mythril_ore"), (28, "crystal_shard")),
+        "arcane": ((1, "bomb_fragment"), (12, "magitek_scrap"), (28, "crystal_shard")),
+        "natural": ((1, "wolf_fang"), (12, "coeurl_whisker"), (30, "behemoth_hide")),
+        "textile": ((1, "imp_wing"), (12, "ochu_vine"), (30, "ancient_cloth")),
+    }
+    _RESYNTHESIS_FORGE_BONUSES = (
+        (1, "iron_ore", 1),
+        (2, "mythril_ore", 1),
+        (3, "crystal_shard", 1),
+        (4, "crystal_shard", 1),
+        (5, "crystal_shard", 1),
+    )
+
+    def _resynthesis_block_reason(self, item: dict[str, Any] | None) -> str:
+        if not item or str(item.get("type") or "").lower() not in {"weapon", "armor"}:
+            return "Only weapons and armor can be resynthesized."
+        rarity = str(item.get("rarity") or "common").lower()
+        if bool(item.get("unsellable")) or bool(item.get("relic_id")) or rarity in {"relic", "artifact"}:
+            return "Relic, Artifact, and protected equipment cannot be resynthesized."
+        return ""
+
+    @staticmethod
+    def _resynthesis_family(item: dict[str, Any]) -> str:
+        family = str(item.get("gear_family") or "").lower()
+        if str(item.get("type") or "").lower() == "armor":
+            if family == "robe":
+                return "textile"
+            if family == "light":
+                return "natural"
+            return "metal"
+        if family in {"staff", "wand", "tome", "instrument"}:
+            return "arcane"
+        if family in {"bow"}:
+            return "natural"
+        return "metal"
+
+    def _resynthesis_recovery(self, item: dict[str, Any], upgrade_level: int = 0, owned: int = 1) -> list[dict[str, Any]]:
+        """Return the deterministic salvage payload for one equipment copy.
+
+        Base salvage is deliberately worth less when immediately sold than the
+        original gear's normal sale value. Forge recovery is only added when the
+        final owned copy is destroyed because forge level is stored per item ID,
+        not per physical copy. This prevents duplicate-copy forge-refund loops.
+        """
+        if self._resynthesis_block_reason(item):
+            return []
+        rarity = str(item.get("rarity") or "common").lower()
+        ratio = float(self._RESYNTHESIS_RARITY_RATIO.get(rarity, 0.40))
+        max_qty = int(self._RESYNTHESIS_MAX_BASE_QTY.get(rarity, 2))
+        gear_sale = max(1, int(sell_value(item.get("price", 0), item.get("type", "weapon"))))
+        budget = max(1, int(math.floor(gear_sale * ratio)))
+        level = max(1, int(item.get("min_level", item.get("shop_level", 1)) or 1))
+        ladder = self._RESYNTHESIS_LADDERS[self._resynthesis_family(item)]
+        selected_id = str(ladder[0][1])
+        selected_unit = max(1, int(sell_value(self.data.items[selected_id].get("price", 0), "material")))
+        for min_level, material_id in ladder:
+            if level < int(min_level):
+                continue
+            material = self.data.items.get(str(material_id))
+            if not material:
+                continue
+            unit = max(1, int(sell_value(material.get("price", 0), "material")))
+            if unit <= budget:
+                selected_id = str(material_id)
+                selected_unit = unit
+        base_qty = max(1, min(max_qty, budget // max(1, selected_unit)))
+        rewards: dict[str, int] = {selected_id: int(base_qty)}
+
+        # The current upgrade model stores one forge level per player/item ID.
+        # Only the final owned copy carries the refundable forge-state teardown.
+        if int(owned) <= 1 and int(upgrade_level) > 0:
+            for threshold, material_id, quantity in self._RESYNTHESIS_FORGE_BONUSES:
+                if int(upgrade_level) >= int(threshold) and material_id in self.data.items:
+                    rewards[material_id] = rewards.get(material_id, 0) + int(quantity)
+
+        payload: list[dict[str, Any]] = []
+        for material_id, quantity in rewards.items():
+            material = self.data.items.get(material_id, {})
+            payload.append({
+                "item_id": material_id,
+                "name": str(material.get("name") or material_id),
+                "quantity": max(1, int(quantity)),
+                "rarity": str(material.get("rarity") or "common"),
+            })
+        return payload
+
+    def _resynthesis_lock_reason(self, twitch_id: str) -> str:
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return "Resynthesis is locked while you are committed to an active encounter or raid."
+        if self._dungeon_load(twitch_id):
+            return "Finish or retreat from your Dungeon before resynthesizing equipment."
+        if self._solo_expedition_load(twitch_id):
+            return "Return or retreat from your Solo Venture before resynthesizing equipment."
+        if self._expedition_load(twitch_id):
+            return "Return from your Expedition before resynthesizing equipment."
+        return ""
+
     def _portal_crafting_state_data(self, twitch_id: str) -> dict[str, Any]:
         """Return live Blacksmith recipe, material, and forge readiness state."""
         p = self._player(twitch_id)
@@ -9201,6 +9313,65 @@ class CrystalGuildEngine:
         gil = max(0, int(p["gil"] or 0))
         seals = max(0, int(p["hunt_seals"] or 0))
         combat_locked = twitch_id in self.encounter_roster or twitch_id in self.raid_roster
+        resynthesis_lock = self._resynthesis_lock_reason(twitch_id)
+        equipment_row = self.db.one(
+            "SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?",
+            (twitch_id,),
+        )
+        equipped_ids = {
+            str(value)
+            for value in (
+                equipment_row["weapon_id"] if equipment_row else None,
+                equipment_row["armor_id"] if equipment_row else None,
+                equipment_row["accessory_id"] if equipment_row else None,
+            )
+            if value
+        }
+        upgrade_rows = self.db.all(
+            "SELECT item_id,upgrade_level FROM item_upgrades WHERE player_id=?",
+            (twitch_id,),
+        )
+        upgrade_map = {str(row["item_id"]): max(0, int(row["upgrade_level"] or 0)) for row in upgrade_rows}
+        resynthesis_items: list[dict[str, Any]] = []
+        for item_id, owned in inventory.items():
+            item = self.data.items.get(item_id)
+            if not item or str(item.get("type") or "").lower() not in {"weapon", "armor"}:
+                continue
+            block_reason = self._resynthesis_block_reason(item)
+            if block_reason:
+                continue
+            equipped = item_id in equipped_ids
+            available_copies = max(0, int(owned) - (1 if equipped else 0))
+            upgrade_level = int(upgrade_map.get(item_id, 0))
+            recovery = self._resynthesis_recovery(item, upgrade_level=upgrade_level, owned=int(owned))
+            reason = resynthesis_lock
+            if not reason and available_copies <= 0:
+                reason = f"Unequip {item.get('name', item_id)} before resynthesizing your last copy."
+            resynthesis_items.append({
+                "item_id": item_id,
+                "name": str(item.get("name") or item_id),
+                "type": str(item.get("type") or "equipment"),
+                "rarity": str(item.get("rarity") or "common"),
+                "min_level": max(1, int(item.get("min_level", item.get("shop_level", 1)) or 1)),
+                "owned": int(owned),
+                "equipped": bool(equipped),
+                "available_copies": available_copies,
+                "upgrade_level": upgrade_level,
+                "recovery": recovery,
+                "resynthesizable": bool(not reason and available_copies > 0 and recovery),
+                "reason": reason,
+            })
+        resynthesis_items.sort(key=lambda entry: (
+            0 if entry["type"] == "weapon" else 1,
+            int(entry["min_level"]),
+            -int(entry["upgrade_level"]),
+            str(entry["name"]),
+        ))
+        resynthesis_count_row = self.db.one(
+            "SELECT COUNT(*) AS total FROM transactions WHERE player_id=? AND kind='item' AND amount<0 AND source LIKE 'resynthesis:%'",
+            (twitch_id,),
+        )
+        resynthesis_count = max(0, int(resynthesis_count_row["total"] or 0)) if resynthesis_count_row else 0
 
         recipes: list[dict[str, Any]] = []
         known_recipes = [recipe for recipe in self.data.recipes.values() if self._recipe_known(twitch_id, recipe)]
@@ -9284,6 +9455,10 @@ class CrystalGuildEngine:
             "recipes": recipes,
             "forge_rules": forge_rules,
             "forge_max": len(self.data.forge),
+            "resynthesis_items": resynthesis_items,
+            "resynthesis_count": resynthesis_count,
+            "resynthesis_locked": bool(resynthesis_lock),
+            "resynthesis_lock_reason": resynthesis_lock,
         }
 
     def portal_crafting_state(self, twitch_id: str) -> GameResult:
@@ -9438,6 +9613,91 @@ class CrystalGuildEngine:
         if unlocked:
             result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
         result.messages.extend(fellowship_notes[:2])
+        return self._portal_crafting_result(action_id, result, twitch_id)
+
+    def portal_resynthesize_item(self, twitch_id: str, item_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        item_id = str(item_id or "").strip()
+        item = self.data.items.get(item_id)
+        block_reason = self._resynthesis_block_reason(item)
+        if block_reason:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail(block_reason))
+        if not self._player(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, self._need_recruit())
+        lock_reason = self._resynthesis_lock_reason(twitch_id)
+        if lock_reason:
+            return self._portal_crafting_result(action_id, GameResult.fail(lock_reason), twitch_id)
+
+        with self.db.tx() as conn:
+            inventory_row = conn.execute(
+                "SELECT quantity FROM inventory WHERE player_id=? AND item_id=?",
+                (twitch_id, item_id),
+            ).fetchone()
+            owned = max(0, int(inventory_row["quantity"] or 0)) if inventory_row else 0
+            if owned <= 0:
+                result = GameResult.fail(f"You do not own {item['name']}.")
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            equipment = conn.execute(
+                "SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?",
+                (twitch_id,),
+            ).fetchone()
+            equipped = bool(equipment and item_id in {equipment["weapon_id"], equipment["armor_id"], equipment["accessory_id"]})
+            if equipped and owned <= 1:
+                result = GameResult.fail(f"Unequip {item['name']} before resynthesizing your last copy.")
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            upgrade_row = conn.execute(
+                "SELECT upgrade_level FROM item_upgrades WHERE player_id=? AND item_id=?",
+                (twitch_id, item_id),
+            ).fetchone()
+            upgrade_level = max(0, int(upgrade_row["upgrade_level"] or 0)) if upgrade_row else 0
+            recovery = self._resynthesis_recovery(item, upgrade_level=upgrade_level, owned=owned)
+            if not recovery:
+                result = GameResult.fail("That equipment cannot be resynthesized.")
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+
+            source = f"resynthesis:{item_id}"
+            conn.execute(
+                "UPDATE inventory SET quantity=quantity-1 WHERE player_id=? AND item_id=?",
+                (twitch_id, item_id),
+            )
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, -1, ?)",
+                (twitch_id, item_id, source),
+            )
+            for reward in recovery:
+                material_id = str(reward["item_id"])
+                quantity = max(1, int(reward["quantity"]))
+                conn.execute(
+                    "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
+                    "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity",
+                    (twitch_id, material_id, quantity),
+                )
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, ?)",
+                    (twitch_id, material_id, quantity, source),
+                )
+            remaining = owned - 1
+            if remaining <= 0:
+                conn.execute(
+                    "DELETE FROM item_upgrades WHERE player_id=? AND item_id=?",
+                    (twitch_id, item_id),
+                )
+            recovered_text = ", ".join(f"{entry['name']} × {int(entry['quantity'])}" for entry in recovery)
+            result = GameResult.success(
+                f"RESYNTHESIS COMPLETE — {item['name']} was broken down. Recovered {recovered_text}.",
+                item_id=item_id,
+                destroyed=1,
+                remaining=max(0, remaining),
+                recovery=recovery,
+                forge_level=upgrade_level,
+            )
+            self._portal_action_store_sql(conn, action_id, result)
+
         return self._portal_crafting_result(action_id, result, twitch_id)
 
     @staticmethod
@@ -11742,7 +12002,7 @@ class CrystalGuildEngine:
         relic_done = int(p["relics_completed"])
         return GameResult.success(
             f"Guild Blacksmith — Recipes {known}/{len(self.data.recipes)} | Crafts {p['crafts']} | Forge upgrades {p['forge_upgrades']} | Zenith Relics {relic_done}",
-            "Use !recipes, !recipe <name>, !craft <recipe> [qty], !upgrade <gear>, !relics, and !relic <name>.",
+            "Use !recipes, !recipe <name>, !craft <recipe> [qty], !upgrade <gear>, !resynthesize <weapon or armor>, !relics, and !relic <name>.",
         )
 
     def recipes(self, twitch_id: str) -> GameResult:
@@ -11873,6 +12133,64 @@ class CrystalGuildEngine:
             messages.append("Achievement unlocked: " + " | ".join(unlocked))
         messages.extend(fellowship_notes[:2])
         return GameResult.success(*messages)
+
+    def resynthesize(self, twitch_id: str, item_query: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        lock_reason = self._resynthesis_lock_reason(twitch_id)
+        if lock_reason:
+            return GameResult.fail(lock_reason)
+        item = self._find_by_name_or_id(self.data.items, item_query)
+        block_reason = self._resynthesis_block_reason(item)
+        if block_reason:
+            return GameResult.fail(block_reason)
+        item_id = str(item["id"])
+        with self.db.tx() as conn:
+            inventory_row = conn.execute(
+                "SELECT quantity FROM inventory WHERE player_id=? AND item_id=?",
+                (twitch_id, item_id),
+            ).fetchone()
+            owned = max(0, int(inventory_row["quantity"] or 0)) if inventory_row else 0
+            if owned <= 0:
+                return GameResult.fail(f"You do not own {item['name']}.")
+            equipment = conn.execute(
+                "SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?",
+                (twitch_id,),
+            ).fetchone()
+            equipped = bool(equipment and item_id in {equipment["weapon_id"], equipment["armor_id"], equipment["accessory_id"]})
+            if equipped and owned <= 1:
+                return GameResult.fail(f"Unequip {item['name']} before resynthesizing your last copy.")
+            upgrade_row = conn.execute(
+                "SELECT upgrade_level FROM item_upgrades WHERE player_id=? AND item_id=?",
+                (twitch_id, item_id),
+            ).fetchone()
+            upgrade_level = max(0, int(upgrade_row["upgrade_level"] or 0)) if upgrade_row else 0
+            recovery = self._resynthesis_recovery(item, upgrade_level=upgrade_level, owned=owned)
+            if not recovery:
+                return GameResult.fail("That equipment cannot be resynthesized.")
+            source = f"resynthesis:{item_id}"
+            conn.execute("UPDATE inventory SET quantity=quantity-1 WHERE player_id=? AND item_id=?", (twitch_id, item_id))
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, -1, ?)",
+                (twitch_id, item_id, source),
+            )
+            for reward in recovery:
+                material_id = str(reward["item_id"])
+                quantity = max(1, int(reward["quantity"]))
+                conn.execute(
+                    "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
+                    "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity",
+                    (twitch_id, material_id, quantity),
+                )
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, ?)",
+                    (twitch_id, material_id, quantity, source),
+                )
+            if owned - 1 <= 0:
+                conn.execute("DELETE FROM item_upgrades WHERE player_id=? AND item_id=?", (twitch_id, item_id))
+        recovered_text = ", ".join(f"{entry['name']} × {int(entry['quantity'])}" for entry in recovery)
+        return GameResult.success(f"RESYNTHESIS COMPLETE — {item['name']} was broken down. Recovered {recovered_text}.")
 
     def sealshop(self, twitch_id: str) -> GameResult:
         p = self._player(twitch_id)

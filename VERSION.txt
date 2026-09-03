@@ -1,6 +1,6 @@
-Crystal Guild v1.7.0 — Moogle Retainer
-Bot runtime: 1.7.0
+Crystal Guild v1.7.1 — Resynthesis Alpha 1
+Bot runtime: 1.7.1-resynthesis-a1
 Local DB schema: 15
 Hosted sync schema: 1
-Portal Action protocol: 31
+Portal Action protocol: 32
 Command prefix: !

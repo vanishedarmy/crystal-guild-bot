@@ -1,6 +1,6 @@
-# Portal Actions — Crystal Guild v1.7.0 Moogle Retainer
+# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 1
 
-Portal Action protocol is **31**.
+Portal Action protocol is **32**.
 
 Retainer actions:
 - `RETAINER_STATE` with `{}`

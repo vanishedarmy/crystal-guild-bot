@@ -465,6 +465,11 @@ class RPGCommands(commands.Component):
         uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.upgrade(uid, item_name))
 
+    @commands.command(aliases=["desynth", "dismantle"])
+    async def resynthesize(self, ctx: commands.Context, *, item_name: str) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.resynthesize(uid, item_name))
+
     @commands.command(aliases=["quartermaster"])
     async def sealshop(self, ctx: commands.Context) -> None:
         uid, _, _ = self._identity(ctx)

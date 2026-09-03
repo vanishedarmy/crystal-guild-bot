@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.7.1 — Resynthesis Alpha 1
+- Added Blacksmith Resynthesize Gear for weapons and armor.
+- Added deterministic recovery previews and replay-safe Portal mutation.
+- Protected accessories, Relic/Artifact gear, and last equipped copies.
+- Added bounded final-copy forge recovery and forge-state cleanup.
+- Portal Action protocol advances to 32; schema remains 15.
+
+
 ## v1.7.0 — Moogle Retainer
 
 - Adds the complete Retainer Service with timed crafting-material procurement, rank/EXP progression, priority targeting, recent-haul history, and final artwork/UI.

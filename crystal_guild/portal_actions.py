@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 31
+ACTION_PROTOCOL_VERSION = 32
 
 
 class PortalActionWorker:
@@ -455,6 +455,12 @@ class PortalActionWorker:
             if not item_id:
                 return False, "Forge request is missing an equipment item.", {}
             result = self.game.portal_forge_item(twitch_id, item_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "RESYNTHESIZE_ITEM":
+            item_id = str(payload.get("item_id") or "").strip()
+            if not item_id:
+                return False, "Resynthesis request is missing an equipment item.", {}
+            result = self.game.portal_resynthesize_item(twitch_id, item_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "GOLD_SAUCER_STATE":
             if payload:

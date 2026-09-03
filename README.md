@@ -1,7 +1,7 @@
-# Crystal Guild v1.7.0 — Moogle Retainer
+# Crystal Guild v1.7.1 — Resynthesis Alpha 1
 
-Production Bot runtime: **1.7.0**. Local database schema **15**, hosted sync **1**, Portal Action protocol **31**, Twitch prefix `!`.
+Bot package for the v1.7.1 Resynthesis Alpha 1 candidate. Runtime/frontend identity: `1.7.1-resynthesis-a1`; local database schema **15**; hosted sync **1**; Portal Action protocol **32**; command prefix `!`.
 
-v1.7.0 includes the complete Retainer Service, Moogle Emporium Annex, verified item-restoration behavior, final UI/performance hardening, and Render startup-backup protections.
+This update adds the Blacksmith **Resynthesize Gear** service for deterministic weapon/armor material recovery while preserving all v1.7.0 Moogle Retainer progression and systems. Upgrade Bot and Web together and preserve the existing database, persistent storage, and secrets.
 
-Preserve the existing live database, token database, persistent state, and secrets when upgrading. Existing schema-15 v1.7.0 candidate deployments require no schema migration.
+See `RELEASE_NOTES.md`, `UPGRADE_GUIDE.md`, and `VALIDATION_REPORT.md`.
