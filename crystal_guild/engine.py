@@ -925,6 +925,7 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        self._reconcile_job_quests(twitch_id)
         if not job_id:
             owned = self.db.all("SELECT job_id, level FROM player_jobs WHERE player_id=? ORDER BY level DESC, job_id", (twitch_id,))
             owned_text = ", ".join(f"{self.data.jobs[r['job_id']]['name']} {r['level']}" for r in owned) or "none yet"
@@ -979,6 +980,7 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        self._reconcile_job_quests(twitch_id)
         job = self.data.jobs.get(p["current_job"]) if not job_query else self._find_by_name_or_id(self.data.jobs, job_query)
         if not job:
             return GameResult.fail("Job not found.")
@@ -5188,10 +5190,76 @@ class CrystalGuildEngine:
         levelups = self._process_levels(player_id, p["current_job"])
         return {"xp": xp, "jp": jp, "gil": gil, "seals": seals, "loot": loot, "first_clear": first_clear, "first_rewards": first_rewards, "levelups": levelups}
 
+    def _complete_job_quest_if_ready(self, player_id: str, quest: dict[str, Any]) -> dict[str, Any] | None:
+        """Complete one ready Job quest exactly once, including its rewards.
+
+        Job-quest requirements are progression milestones, so completion is
+        intentionally retroactive: players who met them before this repair are
+        reconciled the next time Jobs/quests are inspected.
+        """
+        if self.db.one("SELECT 1 FROM player_quests WHERE player_id=? AND quest_id=?", (player_id, quest["id"])):
+            return None
+        met, _ = self._requirements_met(player_id, quest.get("requirements", []))
+        if not met:
+            return None
+        rewards = dict(quest.get("rewards") or {})
+        gil = max(0, int(rewards.get("gil", 0) or 0))
+        title_id = str(rewards.get("title") or "").strip()
+        job_id = str(rewards.get("job") or "").strip()
+        title_unlocked = False
+        with self.db.tx(immediate=True) as conn:
+            already = conn.execute(
+                "SELECT 1 FROM player_quests WHERE player_id=? AND quest_id=?",
+                (player_id, quest["id"]),
+            ).fetchone()
+            if already:
+                return None
+            # Re-check inside the authoritative write transaction so a stale
+            # state read can never award a quest that is not actually ready.
+            met_now, _ = self._requirements_met(player_id, quest.get("requirements", []))
+            if not met_now:
+                return None
+            conn.execute(
+                "INSERT INTO player_quests(player_id,quest_id) VALUES (?,?)",
+                (player_id, quest["id"]),
+            )
+            if gil:
+                conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil, player_id))
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)",
+                    (player_id, gil, f"quest:{quest['id']}"),
+                )
+            if title_id and title_id in self.data.titles:
+                cursor = conn.execute(
+                    "INSERT OR IGNORE INTO player_titles(player_id,title_id) VALUES (?,?)",
+                    (player_id, title_id),
+                )
+                title_unlocked = int(cursor.rowcount or 0) > 0
+        achievements = self._check_achievements(player_id)
+        return {
+            "quest_id": quest["id"],
+            "quest_name": quest["name"],
+            "job_id": job_id,
+            "job_name": self.data.jobs.get(job_id, {}).get("name", job_id),
+            "gil": gil,
+            "title_id": title_id if title_unlocked else "",
+            "title_name": self.data.titles.get(title_id, {}).get("name", "") if title_unlocked else "",
+            "achievements": achievements,
+        }
+
+    def _reconcile_job_quests(self, player_id: str) -> list[dict[str, Any]]:
+        completed: list[dict[str, Any]] = []
+        for quest in self.data.quests.values():
+            result = self._complete_job_quest_if_ready(player_id, quest)
+            if result:
+                completed.append(result)
+        return completed
+
     def quests(self, twitch_id: str) -> GameResult:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        auto_completed = self._reconcile_job_quests(twitch_id)
         parts = []
         for quest in self.data.quests.values():
             done = self.db.one("SELECT 1 FROM player_quests WHERE player_id=? AND quest_id=?", (twitch_id, quest["id"]))
@@ -5208,7 +5276,10 @@ class CrystalGuildEngine:
         companion_ready = self._requirements_met(twitch_id, CHOCOBO_QUEST_REQUIREMENTS)[0]
         companion_state = "DONE" if companion_done else "READY" if companion_ready else "IN PROGRESS"
         messages.append(f"Companion Quest — {CHOCOBO_QUEST_NAME} [{companion_state}] · use !chocoboquest")
-        messages.append("Inspect/claim Job quests with !quest <name>.")
+        if auto_completed:
+            unlocked = ", ".join(f"{entry['quest_name']} → {entry['job_name']}" for entry in auto_completed)
+            messages.append("AUTO-COMPLETE — " + unlocked)
+        messages.append("Job quests complete automatically once every listed requirement is met. Use !quest <name> to inspect one.")
         return GameResult.success(*messages)
 
     def quest(self, twitch_id: str, quest_query: str) -> GameResult:
@@ -5223,21 +5294,14 @@ class CrystalGuildEngine:
         met, missing = self._requirements_met(twitch_id, quest["requirements"])
         if not met:
             return GameResult.fail(f"{quest['name']} — {quest['description']} | Still needed: " + "; ".join(missing[:6]))
-        rewards = quest["rewards"]
-        gil = rewards.get("gil", 0)
-        with self.db.tx() as conn:
-            conn.execute("INSERT INTO player_quests(player_id,quest_id) VALUES (?,?)", (twitch_id, quest["id"]))
-            if gil:
-                conn.execute("UPDATE players SET gil=gil+? WHERE twitch_id=?", (gil, twitch_id))
-                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)", (twitch_id, gil, f"quest:{quest['id']}"))
-        title_id = rewards.get("title")
-        title_text = ""
-        if title_id and self._unlock_title(twitch_id, title_id):
-            title_text = f" | Title: {self.data.titles[title_id]['name']}"
-        job_name = self.data.jobs[rewards["job"]]["name"]
-        unlocked = self._check_achievements(twitch_id)
-        suffix = (" | Achievement: " + " | ".join(unlocked)) if unlocked else ""
-        return GameResult.success(f"QUEST COMPLETE — {quest['name']} | {job_name} is now eligible via !job {rewards['job']} | +{gil:,} gil{title_text}{suffix}")
+        completion = self._complete_job_quest_if_ready(twitch_id, quest)
+        if not completion:
+            return GameResult.success(f"{quest['name']} is already complete. The paperwork, tragically, remains filed.")
+        title_text = f" | Title: {completion['title_name']}" if completion.get("title_name") else ""
+        suffix = (" | Achievement: " + " | ".join(completion.get("achievements") or [])) if completion.get("achievements") else ""
+        return GameResult.success(
+            f"QUEST COMPLETE — {quest['name']} | {completion['job_name']} unlocked — use !job {completion['job_id']} | +{completion['gil']:,} gil{title_text}{suffix}"
+        )
 
     # ---------- titles ----------
     def titles(self, twitch_id: str, filter_query: str | None = None) -> GameResult:
@@ -11450,7 +11514,13 @@ class CrystalGuildEngine:
     def portal_character_state(self, twitch_id: str) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
-        return GameResult.success("Character options ready.", **self._portal_character_state_data(twitch_id))
+        completed = self._reconcile_job_quests(twitch_id)
+        state = self._portal_character_state_data(twitch_id)
+        if completed:
+            state["job_quests_completed"] = completed
+            names = ", ".join(f"{entry['job_name']}" for entry in completed)
+            return GameResult.success(f"Character options ready. Job Quest unlocks reconciled: {names}.", **state)
+        return GameResult.success("Character options ready.", **state)
 
     def _portal_character_mutation(self, twitch_id: str, action_id: str, operation) -> GameResult:
         replay = self._portal_action_replay(action_id)

@@ -1,4 +1,6 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 1 Setup
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2 Setup
+
+**Hotfix 2 note:** ready Job-unlock quests now reconcile automatically and retroactively when their recorded requirements are already satisfied. Existing Alpha 2 Web remains compatible.
 
 ## Existing installation
 Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Replace the Bot source and restart the worker. Existing schema-15 v1.7.0 candidate deployments do not require a schema migration or player reset.

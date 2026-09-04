@@ -1,6 +1,6 @@
-Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 1 — Encounter Variety
-Bot runtime: 1.7.1-resynthesis-a2h1
-Paired Web: 1.7.1-resynthesis-a2
-Schema: 15 | Hosted sync: 1 | Portal protocol: 32 | Prefix: !
+Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2 — Job Quest Unlock Repair
+Bot runtime: 1.7.1-resynthesis-a2h2
+Paired Web frontend: 1.7.1-resynthesis-a2
+Schema 15 · Hosted sync 1 · Portal protocol 32 · Prefix !
 
-Bot-only hotfix. Preserve the live database, token database, persistent state, and all secrets/environment variables. No database migration is required from Resynthesis Alpha 2.
+Deploy this Bot over Alpha 2 Hotfix 1. Existing player data is preserved; no migration is required. Job-unlock quests now reconcile automatically and retroactively when their requirements are already met.

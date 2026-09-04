@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsRC1Tests(unittest.TestCase):
     def test_rc1_identity_and_feature_freeze(self):
-        self.assertEqual(__version__, "1.7.1-resynthesis-a2h1")
+        self.assertEqual(__version__, "1.7.1-resynthesis-a2h2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
         data = GameData(ROOT / "data")
@@ -26,7 +26,7 @@ class DungeonsRC1Tests(unittest.TestCase):
 
     def test_project_metadata_and_deployment_docs_are_current(self):
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual(pyproject["project"]["version"], "1.7.1a2.post1")
+        self.assertEqual(pyproject["project"]["version"], "1.7.1a2.post2")
         for name in ("FULL_SETUP_README.md", "RENDER_CLOUD_SETUP.md", "SIMPLE_RENDER_SETUP.md", "WEB_SYNC_SETUP.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
             self.assertIn("1.7.1", text, name)

@@ -1,10 +1,3 @@
-# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 1
+# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 2
 
-Portal Action protocol is **32**.
-
-Retainer actions:
-- `RETAINER_STATE` with `{}`
-- `RETAINER_DISPATCH` with `{ "assignment": "<assignment_id>", "priority": "<optional_material_id>" }`
-- `RETAINER_COLLECT` with `{}`
-
-Valid assignment IDs are `field_gathering`, `monster_salvage`, `mineral_survey`, `regional_procurement`, and `specialist_acquisition`. The optional `priority` must be empty/omitted or match a material offered by the selected route. Hosted validation rejects unknown fields, malformed material IDs, and unknown assignment IDs. The local Bot performs all authoritative Gil, timer, reward, inventory, Retainer EXP, history, and exactly-once settlement work.
+Portal Action protocol remains **32**. No hosted Web action type changes are required. Existing `CHARACTER_STATE` requests now reconcile any ready unclaimed Job Quests on the authoritative Bot before returning the Jobs list, so the current Alpha 2 Web immediately sees the corrected unlock state.

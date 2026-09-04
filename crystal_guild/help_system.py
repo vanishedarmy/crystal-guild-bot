@@ -35,7 +35,7 @@ HELP_TOPICS = {
         "Hunts return automatically after their rank timer: C 15m, B 30m, A 2h, S 5h. No round commands are needed; your hero conserves supplies, uses learned abilities/Defend when useful, and only spends limited survival items when warranted. Rewards and first-clear prizes are committed when the Hunt resolves.",
     ),
     "quests": (
-        "QUESTS — !quests lists available Job-unlock quests. !quest <name> attempts one after its requirements are met.",
+        "QUESTS — !quests lists Job-unlock quests. Ready Job quests complete automatically and retroactively; !quest <name> inspects a specific quest.",
         "Use !jobinfo <job> to see what an advanced Job still needs. Many unlocks combine Character Level, Job Levels, Hunts and quests.",
     ),
     "crafting": (

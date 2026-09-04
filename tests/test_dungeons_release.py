@@ -14,14 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.7.1-resynthesis-a2h1")
+        self.assertEqual(__version__, "1.7.1-resynthesis-a2h2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)
 
     def test_project_metadata_is_semver_151(self):
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual(pyproject["project"]["version"], "1.7.1a2.post1")
+        self.assertEqual(pyproject["project"]["version"], "1.7.1a2.post2")
 
     def test_shipping_contract_keeps_runtime_state_out(self):
         self.assertIn("overlay/state.json", (ROOT / ".gitignore").read_text(encoding="utf-8"))

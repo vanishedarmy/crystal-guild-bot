@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.7.1 — Resynthesis Alpha 2 Hotfix 2 — Job Quest Unlock Repair
+
+- Job-unlock quests self-reconcile automatically when all existing requirements are met.
+- Retroactive progress is honored; no requirement must be repeated.
+- Quest Gil/title/achievement rewards are exactly-once across repeated refreshes.
+- Portal Jobs state, `!job`, `!jobinfo`, and `!quests` all trigger reconciliation.
+- Runtime `1.7.1-resynthesis-a2h2`; schema 15 and Portal protocol 32 unchanged.
+
 ## v1.7.1 — Resynthesis Alpha 2 Hotfix 1 — Encounter Variety
 
 - Fixes narrow Solo Venture/Expedition level bands that could collapse to a single monster.

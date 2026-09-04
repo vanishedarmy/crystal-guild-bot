@@ -377,6 +377,28 @@ class EngineTests(unittest.TestCase):
         self.assertTrue(paladin.ok)
         self.assertEqual(self.db.one("SELECT current_job FROM players WHERE twitch_id='1'")["current_job"], "paladin")
 
+    def test_job_quest_requirements_reconcile_retroactively_on_job_change(self):
+        self.game.choose_job("1", "warrior")
+        self.db.execute("UPDATE player_jobs SET level=20 WHERE player_id='1' AND job_id='warrior'")
+        self.db.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES ('1','skeleton',10)")
+        self.db.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES ('1','tonberry',1)")
+        before_gil = int(self.game._player("1")["gil"])
+
+        result = self.game.choose_job("1", "darkknight")
+
+        self.assertTrue(result.ok, result.messages)
+        self.assertEqual(self.game._player("1")["current_job"], "darkknight")
+        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_quests WHERE player_id='1' AND quest_id='abyssal_oath'"))
+        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_titles WHERE player_id='1' AND title_id='abyss_walker'"))
+        self.assertEqual(int(self.game._player("1")["gil"]), before_gil + 1200)
+
+        # Re-checking the same Job must not duplicate quest rewards.
+        self.game.choose_job("1", "warrior")
+        self.game.choose_job("1", "darkknight")
+        self.assertEqual(int(self.game._player("1")["gil"]), before_gil + 1200)
+        tx = self.db.one("SELECT COUNT(*) AS n FROM transactions WHERE player_id='1' AND source='quest:abyssal_oath' AND kind='gil'")
+        self.assertEqual(int(tx["n"]), 1)
+
     def test_locked_job_reports_requirements(self):
         result = self.game.choose_job("1", "dragoon")
         self.assertFalse(result.ok)

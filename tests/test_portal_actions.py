@@ -316,6 +316,31 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertEqual(self.game._player("100")["current_job"], "monk")
         self.assertEqual(changed["character_state"]["current_job_id"], "monk")
 
+    def test_phase_four_character_state_reconciles_ready_job_quests_once(self):
+        self.db.execute("UPDATE player_jobs SET level=20 WHERE player_id='100' AND job_id='warrior'")
+        self.game.choose_job("100", "whitemage")
+        self.db.execute("UPDATE player_jobs SET level=10 WHERE player_id='100' AND job_id='whitemage'")
+        self.db.execute("UPDATE players SET level=30 WHERE twitch_id='100'")
+        self.db.execute(
+            "INSERT INTO player_hunts(player_id,hunt_id,clears,first_cleared_at,last_cleared_at) "
+            "VALUES ('100','prince_of_the_tide',1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
+        )
+        before_gil = int(self.game._player("100")["gil"])
+
+        ok, message, state = self.worker._execute(self.action(id="pa_quest_reconcile", type="CHARACTER_STATE", payload={}))
+
+        self.assertTrue(ok, message)
+        paladin = next(job for job in state["jobs"] if job["id"] == "paladin")
+        self.assertTrue(paladin["unlocked"])
+        self.assertTrue(any(entry["quest_id"] == "oath_of_light" for entry in state.get("job_quests_completed", [])))
+        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_quests WHERE player_id='100' AND quest_id='oath_of_light'"))
+        self.assertEqual(int(self.game._player("100")["gil"]), before_gil + 1200)
+
+        ok, _, second = self.worker._execute(self.action(id="pa_quest_reconcile_2", type="CHARACTER_STATE", payload={}))
+        self.assertTrue(ok)
+        self.assertNotIn("job_quests_completed", second)
+        self.assertEqual(int(self.game._player("100")["gil"]), before_gil + 1200)
+
     def test_phase_four_character_state_stays_within_hosted_result_limit(self):
         for job_id in self.game.data.jobs:
             self.db.execute(

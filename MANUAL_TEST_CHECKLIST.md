@@ -1,18 +1,9 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 1 Manual Check
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2 Manual Check
 
-- [ ] `!cgversion` reports `1.7.0`.
-- [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 14→15.
-- [ ] A verified `backups/pre_schema_14_*.db` exists after upgrading an existing schema-13 database.
-- [ ] Retainer Service appears under Guild Services on the player's own Portal.
-- [ ] Rank 1 shows Field Gathering and Monster Salvage unlocked; higher routes are visibly rank-gated.
-- [ ] Dispatch deducts the listed Gil once and immediately blocks a second assignment.
-- [ ] Refresh/reconnect does not change the active assignment or committed return time.
-- [ ] The pending haul is hidden until the assignment returns.
-- [ ] Collection grants the returned crafting materials and Retainer EXP once.
-- [ ] Repeating the same collect request does not duplicate materials or EXP.
-- [ ] Routine Retainer activity does not post to Twitch chat.
-- [ ] Gold Saucer remains fully playable with the v1.6.0 production balance.
-
-- [ ] Cloud restart prunes startup backup history to a safe bounded set before copying.
-- [ ] A simulated insufficient-space startup skips the backup without terminating the Bot.
-- [ ] Render file logs are not written under `/var/data/logs` by the shipping blueprint.
+1. Start with a player who has met every prerequisite for a Job Quest but does not yet have that quest row recorded.
+2. Open Portal → Jobs or use `!job` / `!quests`.
+3. Confirm the quest becomes complete and the related advanced Job is available.
+4. Confirm the quest's Gil/title reward is granted once.
+5. Refresh/reopen Jobs repeatedly and confirm no duplicate Gil/title/transaction is created.
+6. Switch into the newly unlocked Job and confirm its independent JLv. starts/continues normally.
+7. Verify Encounter Variety behavior from Hotfix 1 remains intact.
