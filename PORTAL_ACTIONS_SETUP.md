@@ -1,3 +1,5 @@
-# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 2
+# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 3
 
-Portal Action protocol remains **32**. No hosted Web action type changes are required. Existing `CHARACTER_STATE` requests now reconcile any ready unclaimed Job Quests on the authoritative Bot before returning the Jobs list, so the current Alpha 2 Web immediately sees the corrected unlock state.
+Portal Action protocol remains **32**. Hotfix 3 changes Bot-side MP/AP persistence only and adds no new Portal action type. The existing v1.7.1 Resynthesis Alpha 2 Web build (`1.7.1-resynthesis-a2`) remains compatible.
+
+After a Job-switch action completes, the normal CHARACTER_STATE refresh should show the preserved/current resource family immediately. No hosted queue, OAuth, sync-key, or environment change is required.

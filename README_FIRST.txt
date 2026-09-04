@@ -1,6 +1,9 @@
-Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2 — Job Quest Unlock Repair
-Bot runtime: 1.7.1-resynthesis-a2h2
+Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 3 — Job Resource Persistence
+Bot runtime: 1.7.1-resynthesis-a2h3
 Paired Web frontend: 1.7.1-resynthesis-a2
-Schema 15 · Hosted sync 1 · Portal protocol 32 · Prefix !
+Local DB schema: 15
+Hosted sync schema: 1
+Portal Action protocol: 32
+Command prefix: !
 
-Deploy this Bot over Alpha 2 Hotfix 1. Existing player data is preserved; no migration is required. Job-unlock quests now reconcile automatically and retroactively when their requirements are already met.
+Deploy the Hotfix 3 Bot over Hotfix 2 and keep the existing Alpha 2 Web build. Preserve the live database, token database, persistent storage, and environment secrets.

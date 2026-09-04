@@ -1,7 +1,9 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 3
 
-Bot hotfix for **Job Quest Unlock Repair**. Runtime: `1.7.1-resynthesis-a2h2`; paired Web remains `1.7.1-resynthesis-a2`; local database schema **15**; hosted sync **1**; Portal Action protocol **32**; command prefix `!`.
+Bot hotfix for **Job Resource Persistence**. Runtime: `1.7.1-resynthesis-a2h3`; paired Web remains `1.7.1-resynthesis-a2`; local database schema **15**; hosted sync **1**; Portal Action protocol **32**; command prefix `!`.
 
-Job-unlock quests now self-reconcile. If a player has already satisfied every requirement for an unclaimed Job Quest, opening Jobs in the Portal, using `!job`, `!jobinfo`, or `!quests` completes the quest exactly once, awards its Gil/title rewards exactly once, and immediately makes the associated Job available.
+Hotfix 3 fixes MP/AP state being erased when a player changed to a Job that uses the other resource family. Stream/Long Rest refreshes and equipment normalization now restore or clamp only the resource family used by the active Job and leave the inactive family untouched.
 
-The Encounter Variety safeguards from Hotfix 1 remain fully intact. No database migration or player reset is required.
+A one-time startup compatibility repair converts inactive zero values that older builds could have written back to an uninitialized state. That repair is receipt-protected and cannot be repeated to refill resources by Job swapping. Legitimately depleted resource pools continue to persist at zero after the repair has run.
+
+Job Quest unlock repair from Hotfix 2, Encounter Variety from Hotfix 1, Resynthesis, and the Alpha 2 Gold Saucer rebalance remain intact. No database migration or player reset is required.

@@ -1,17 +1,21 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 3
 
-## Job Quest Unlock Repair
+## Job Resource Persistence
 
-Hotfix 2 fixes advanced Jobs remaining locked even after their Job Quest prerequisites had already been satisfied.
+Hotfix 3 fixes MP/AP meters dropping to zero after switching between Jobs that use different resource families.
 
-- Ready Job Quests now **complete automatically and retroactively**.
-- Reconciliation runs when players open live Jobs state in the Portal, use `!job`, inspect `!jobinfo`, or view `!quests`.
-- Existing progress counts: players do **not** need to repeat old Job levels, Hunt clears, monster kills, Ventures, Bestiary progress, or Masteries.
-- Quest completion is exactly-once. Gil, titles, transactions, and quest-count achievements cannot be duplicated by repeated refreshes or Job switches.
-- The associated advanced Job becomes immediately available after reconciliation; selecting it still creates/uses that Job's normal independent JLv. progression.
-- `!quest <name>` remains supported for direct quest inspection/completion.
-- Portal Action protocol does not change because the existing `CHARACTER_STATE` request now performs the reconciliation server-side.
+### Root cause
+Older refresh and equipment-normalization paths wrote the inactive resource family as zero. For example, refreshing while an MP-only Job was active could overwrite the player's stored AP with `0`; switching to an AP Job then correctly loaded that corrupted zero, while switching back restored the untouched MP value.
 
-Hotfix 1 Encounter Variety protections remain unchanged. Resynthesis and the Alpha 2 Gold Saucer MGP rebalance remain unchanged.
+### Fix
+- Stream-live and Long Rest refreshes restore the **active Job's** HP/resource pool without overwriting the inactive MP/AP family.
+- Equipment changes clamp only the active Job's applicable resource pool and preserve the inactive family unchanged.
+- MP and AP therefore continue to persist independently across Job changes.
+- Legitimately depleted pools remain depleted; switching Jobs is not a resource-refill mechanic.
 
-Bot runtime advances to `1.7.1-resynthesis-a2h2`. Paired Web remains `1.7.1-resynthesis-a2`. Local schema **15**, hosted sync **1**, Portal protocol **32**, prefix `!`. No migration or player reset.
+### Existing-player compatibility
+A one-time startup repair checks existing players for an inactive MP/AP value of zero that may have been written by the old bug. Those inactive zeros are returned to `NULL`/uninitialized once, allowing the next Job that actually uses that resource family to initialize normally. A runtime-state receipt prevents the repair from running again, so it cannot be exploited for repeat refills.
+
+Hotfix 2 Job Quest reconciliation and Hotfix 1 Encounter Variety remain carried forward unchanged.
+
+Bot runtime advances to `1.7.1-resynthesis-a2h3`. Paired Web remains `1.7.1-resynthesis-a2`. Local schema **15**, hosted sync **1**, Portal protocol **32**, prefix `!`. No database migration or player reset.

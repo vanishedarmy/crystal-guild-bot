@@ -170,6 +170,7 @@ RAID_SETTLEMENT_RECEIPT_LIMIT = 64
 LONG_REST_SECONDS = 8 * 60 * 60
 PLAYER_ACTIVITY_STATE_PREFIX = "player_activity:"
 STREAM_REFRESH_STATE_KEY = "stream_live_refresh"
+RESOURCE_POOL_REPAIR_STATE_KEY = "resource_pool_switch_h3_repair"
 CAMP_REST_ONLINE_SECONDS = 15 * 60
 CAMP_REST_OFFLINE_SECONDS = 60 * 60
 
@@ -278,6 +279,7 @@ class CrystalGuildEngine:
         self._runtime_recovery_error: str | None = None
         self._runtime_recovered_at: str | None = None
         self._restore_runtime_state()
+        self._repair_inactive_resource_pool_zeros_once()
         if self.active_boss:
             self._update_raid_overlay()
         else:
@@ -563,6 +565,13 @@ class CrystalGuildEngine:
         )
 
     def _full_refresh_player_row(self, player: Any, *, clear_camp: bool = True) -> dict[str, int]:
+        """Fully restore the active Job without erasing the inactive resource family.
+
+        MP and AP are persistent resource families shared across Job changes.  A
+        refresh while an MP-only Job is active must not write AP=0 (or vice
+        versa), because that destroys the value that should be waiting when the
+        player later switches resource families.
+        """
         player_id = str(player["twitch_id"])
         current_job = str(player["current_job"] or "adventurer")
         max_hp = 100
@@ -576,11 +585,96 @@ class CrystalGuildEngine:
             max_mp = max(0, int(pools.get("max_mp") or 0))
             max_ap = max(0, int(pools.get("max_ap") or 0))
         camp_until = 0 if clear_camp else int(player["camp_until"] or 0)
+        updates = ["current_hp=?", "camp_until=?", "updated_at=CURRENT_TIMESTAMP"]
+        params: list[int | str] = [max_hp, camp_until]
+        if max_mp > 0:
+            updates.append("current_mp=?")
+            params.append(max_mp)
+        if max_ap > 0:
+            updates.append("current_ap=?")
+            params.append(max_ap)
+        params.append(player_id)
         self.db.execute(
-            "UPDATE players SET current_hp=?, current_mp=?, current_ap=?, camp_until=?, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
-            (max_hp, max_mp, max_ap, camp_until, player_id),
+            f"UPDATE players SET {', '.join(updates)} WHERE twitch_id=?",
+            tuple(params),
         )
         return {"hp": max_hp, "mp": max_mp, "ap": max_ap}
+
+    def _repair_inactive_resource_pool_zeros_once(self) -> dict[str, int]:
+        """Repair resource-family zeros written by the pre-H3 clobber bug once.
+
+        Older builds could store ``0`` in the resource family that the current
+        Job did not use during a stream/Long Rest refresh or equipment
+        normalization.  There is no historical bit that can distinguish those
+        synthetic zeros from a genuinely depleted inactive pool, so H3 performs
+        one conservative startup repair: only a *currently inactive* zero is
+        returned to NULL/uninitialized.  The next Job that actually uses that
+        family initializes it normally.  A runtime-state receipt makes the
+        repair non-repeatable, preventing Job swapping from becoming a refill
+        exploit.
+        """
+        if self.db.runtime_state(RESOURCE_POOL_REPAIR_STATE_KEY):
+            return {"players_repaired": 0, "mp_reset": 0, "ap_reset": 0}
+
+        repaired = 0
+        mp_reset = 0
+        ap_reset = 0
+        with self.db.tx(immediate=True) as conn:
+            marker = conn.execute(
+                "SELECT 1 FROM runtime_state WHERE state_key=?",
+                (RESOURCE_POOL_REPAIR_STATE_KEY,),
+            ).fetchone()
+            if marker:
+                return {"players_repaired": 0, "mp_reset": 0, "ap_reset": 0}
+            rows = conn.execute(
+                "SELECT twitch_id,current_job,current_mp,current_ap FROM players ORDER BY twitch_id"
+            ).fetchall()
+            for row in rows:
+                job = self.data.jobs.get(str(row["current_job"] or ""))
+                mode = job_resource_mode(job) if job else "none"
+                reset_mp = mode not in {"mp", "dual"} and row["current_mp"] is not None and int(row["current_mp"]) == 0
+                reset_ap = mode not in {"ap", "dual"} and row["current_ap"] is not None and int(row["current_ap"]) == 0
+                if not reset_mp and not reset_ap:
+                    continue
+                assignments: list[str] = []
+                if reset_mp:
+                    assignments.append("current_mp=NULL")
+                    mp_reset += 1
+                if reset_ap:
+                    assignments.append("current_ap=NULL")
+                    ap_reset += 1
+                conn.execute(
+                    f"UPDATE players SET {', '.join(assignments)}, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                    (str(row["twitch_id"]),),
+                )
+                repaired += 1
+            conn.execute(
+                """
+                INSERT INTO runtime_state(state_key,value_json,updated_at)
+                VALUES (?,?,CURRENT_TIMESTAMP)
+                ON CONFLICT(state_key) DO NOTHING
+                """,
+                (
+                    RESOURCE_POOL_REPAIR_STATE_KEY,
+                    json.dumps(
+                        {
+                            "version": "1.7.1-resynthesis-a2h3",
+                            "players_repaired": repaired,
+                            "mp_reset": mp_reset,
+                            "ap_reset": ap_reset,
+                            "repaired_at": int(time.time()),
+                        },
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    ),
+                ),
+            )
+        if repaired:
+            LOGGER.info(
+                "Resource-switch H3 repaired %s player(s): %s inactive MP zero(s), %s inactive AP zero(s)",
+                repaired, mp_reset, ap_reset,
+            )
+        return {"players_repaired": repaired, "mp_reset": mp_reset, "ap_reset": ap_reset}
 
     def _persistent_run_blocks_passive_refresh(self, player_id: str) -> bool:
         """Return True while a player-paced run owns HP/MP/AP continuity.
@@ -5469,7 +5563,7 @@ class CrystalGuildEngine:
         return GameResult.success(f"Unequipped {item_name} from {slot_id}.", slot=slot_id, item_id=item_id, changed=True)
 
     def _normalize_after_equipment_change(self, twitch_id: str) -> None:
-        """Clamp persistent vitals after an equipment swap changes maximum pools."""
+        """Clamp active vitals after equipment changes without erasing inactive MP/AP."""
         p = self._player(twitch_id)
         if not p:
             return
@@ -5483,13 +5577,22 @@ class CrystalGuildEngine:
         max_mp = int(pools["max_mp"])
         max_ap = int(pools["max_ap"])
         current_hp = max(0, min(max_hp, int(p["current_hp"] or 0)))
-        raw_mp = p["current_mp"]
-        raw_ap = p["current_ap"]
-        current_mp = None if raw_mp is None and max_mp <= 0 else max(0, min(max_mp, max_mp if raw_mp is None else int(raw_mp)))
-        current_ap = None if raw_ap is None and max_ap <= 0 else max(0, min(max_ap, max_ap if raw_ap is None else int(raw_ap)))
+        updates = ["current_hp=?", "updated_at=CURRENT_TIMESTAMP"]
+        params: list[int | str] = [current_hp]
+        if max_mp > 0:
+            raw_mp = p["current_mp"]
+            current_mp = max_mp if raw_mp is None else max(0, min(max_mp, int(raw_mp)))
+            updates.append("current_mp=?")
+            params.append(current_mp)
+        if max_ap > 0:
+            raw_ap = p["current_ap"]
+            current_ap = max_ap if raw_ap is None else max(0, min(max_ap, int(raw_ap)))
+            updates.append("current_ap=?")
+            params.append(current_ap)
+        params.append(twitch_id)
         self.db.execute(
-            "UPDATE players SET current_hp=?, current_mp=?, current_ap=?, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
-            (current_hp, current_mp, current_ap, twitch_id),
+            f"UPDATE players SET {', '.join(updates)} WHERE twitch_id=?",
+            tuple(params),
         )
 
     def _weighted_shop_sample(self, candidates: list[dict[str, Any]], count: int, player_level: int, job_id: str) -> list[dict[str, Any]]:

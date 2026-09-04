@@ -1,7 +1,13 @@
-# Upgrade to v1.7.1 Resynthesis Alpha 2 Hotfix 2
+# Upgrade to v1.7.1 Resynthesis Alpha 2 Hotfix 3
 
-This is a **Bot-only Job Quest unlock repair**. Deploy the Hotfix 2 Bot over v1.7.1 Resynthesis Alpha 2 Hotfix 1. The existing Alpha 2 Web build remains compatible and does not need to change.
+This is a **Bot-only Job Resource Persistence repair**. Deploy the Hotfix 3 Bot over v1.7.1 Resynthesis Alpha 2 Hotfix 2. The existing Alpha 2 Web build remains compatible and does not need to change.
 
-Preserve the live database, Twitch token database, persistent storage, and environment secrets. No database migration is required; schema remains **15** and Portal protocol remains **32**.
+Preserve the live `crystal_guild.db`, Twitch token database, persistent storage, and environment secrets. No database migration is required; schema remains **15** and Portal protocol remains **32**.
 
-After restart, confirm `!cgversion` reports `1.7.1-resynthesis-a2h2`. Open the Jobs tab or use `!job` / `!quests` on a player who already satisfies a Job Quest. The quest should reconcile once and the associated Job should become available without repeating prior milestones.
+On the first Hotfix 3 startup, the Bot performs a one-time compatibility repair for inactive MP/AP zeros written by the old refresh/normalization bug. It does not reset active resource pools, player progression, inventory, Jobs, Gold Saucer state, Retainers, or Resynthesis data.
+
+After restart:
+1. Confirm `!cgversion` reports `1.7.1-resynthesis-a2h3`.
+2. Switch from an MP Job to an AP Job (and vice versa) and confirm the destination resource meter is preserved/initialized rather than being erased by the switch.
+3. Switch back and confirm the original resource pool still has its prior value, subject only to the destination Job's normal maximum clamp.
+4. Confirm a legitimately depleted `0` resource remains `0` after switching away and back; Job swapping must not refill it.

@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.7.1 — Resynthesis Alpha 2 Hotfix 3 — Job Resource Persistence
+
+- Fixes inactive MP/AP pools being overwritten with zero during refresh or equipment normalization.
+- Preserves MP and AP independently across Job-family switches.
+- Adds a one-time receipt-protected compatibility repair for inactive zeros written by older builds.
+- Legitimately depleted zero pools remain zero after the repair receipt exists, preventing swap-refill exploits.
+- Runtime `1.7.1-resynthesis-a2h3`; schema 15 and Portal protocol 32 unchanged.
+
 ## v1.7.1 — Resynthesis Alpha 2 Hotfix 2 — Job Quest Unlock Repair
 
 - Job-unlock quests self-reconcile automatically when all existing requirements are met.

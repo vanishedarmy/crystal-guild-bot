@@ -1,5 +1,5 @@
-Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 2 — Job Quest Unlock Repair
-Bot runtime: 1.7.1-resynthesis-a2h2
+Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 3 — Job Resource Persistence
+Bot runtime: 1.7.1-resynthesis-a2h3
 Paired Web frontend: 1.7.1-resynthesis-a2
 Local DB schema: 15
 Hosted sync schema: 1
