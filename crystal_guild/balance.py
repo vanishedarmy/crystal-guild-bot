@@ -72,6 +72,16 @@ ENEMY_ACTIONS_PER_ROUND = 1
 # A random Venture may roll at most this many levels above the initiating hero.
 VENTURE_MAX_LEVEL_ABOVE_PLAYER = 10
 
+# Random encounter variety guardrails. Region data still defines the base rarity
+# curve; these constants only prevent a narrow level band or an unlucky RNG
+# streak from making one monster dominate repeated Ventures.
+RANDOM_ENCOUNTER_MIN_VARIETY = 5
+RANDOM_ENCOUNTER_RECENT_WINDOW = 5
+RANDOM_ENCOUNTER_REPEAT_WEIGHT = 0.10
+RANDOM_ENCOUNTER_RECENT_WEIGHT = 0.65
+RANDOM_ENCOUNTER_HARD_REPEAT_LIMIT = 2
+RANDOM_ENCOUNTER_MAX_WEIGHT_SHARE = 0.45
+
 # Portal-only Solo Venture remains lower-risk and more frequent than the shared
 # rally Venture. It has its own cooldown and a 50/50 encounter/treasure split.
 # Regular Venture accepts substantially higher encounter risk for live-stream

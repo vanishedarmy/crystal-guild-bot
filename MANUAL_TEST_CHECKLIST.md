@@ -1,4 +1,4 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 1 Manual Check
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 1 Manual Check
 
 - [ ] `!cgversion` reports `1.7.0`.
 - [ ] Existing player profile, inventory, Gil, MGP, Fellowship/Guild, and Gold Saucer state are unchanged after schema 14→15.

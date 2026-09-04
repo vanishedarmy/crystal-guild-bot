@@ -7,7 +7,7 @@ if not exist .venv\Scripts\activate (
   exit /b 1
 )
 call .venv\Scripts\activate
-echo Running Crystal Guild v1.7.1 - Resynthesis Alpha 1 bot integrity checks...
+echo Running Crystal Guild v1.7.1 - Resynthesis Alpha 2 Hotfix 1 bot integrity checks...
 python -m compileall -q crystal_guild tests
 if errorlevel 1 goto :failed
 python -m unittest discover -s tests -v

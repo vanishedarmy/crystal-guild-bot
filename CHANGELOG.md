@@ -1,6 +1,14 @@
 # Crystal Guild Changelog
 
-## v1.7.1 — Resynthesis Alpha 1
+## v1.7.1 — Resynthesis Alpha 2 Hotfix 1 — Encounter Variety
+
+- Fixes narrow Solo Venture/Expedition level bands that could collapse to a single monster.
+- Widens eligible pools to five candidates when available.
+- Suppresses immediate repeats and blocks a third identical encounter when alternatives exist.
+- Caps one monster at ~45% effective weight when 3+ choices exist.
+- No reward, drop, schema, protocol, or Web changes.
+
+## v1.7.1 — Resynthesis Alpha 2
 - Added Blacksmith Resynthesize Gear for weapons and armor.
 - Added deterministic recovery previews and replay-safe Portal mutation.
 - Protected accessories, Relic/Artifact gear, and last equipped copies.

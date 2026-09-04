@@ -9,7 +9,7 @@ from crystal_guild import __version__
 from crystal_guild.data import GameData
 from crystal_guild.database import DATABASE_SCHEMA_VERSION, Database
 from crystal_guild.engine import CrystalGuildEngine
-from crystal_guild.gold_saucer import CACTPOT_COST, DAILY_ALLOWANCE_POINTS, SLOTS_COST, WELCOME_POINTS
+from crystal_guild.gold_saucer import CACTPOT_COST, DAILY_ALLOWANCE_POINTS, DAILY_REWARD_MGP, SLOTS_COST, WELCOME_POINTS
 from crystal_guild.portal_actions import ACTION_PROTOCOL_VERSION, PortalActionWorker
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,7 +33,7 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_advances_only_local_schema_and_portal_protocol(self):
-        self.assertEqual(__version__, "1.7.1-resynthesis-a1")
+        self.assertEqual(__version__, "1.7.1-resynthesis-a2h1")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(self.db.schema_version(), 15)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
@@ -44,36 +44,36 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         first = self.game.portal_gold_saucer_state("100")
         second = self.game.portal_gold_saucer_state("100")
         self.assertTrue(first.ok and second.ok)
-        self.assertEqual(first.data["gold_saucer_state"]["points"], WELCOME_POINTS)
-        self.assertEqual(second.data["gold_saucer_state"]["points"], WELCOME_POINTS)
+        self.assertEqual(first.data["gold_saucer_state"]["points"], WELCOME_POINTS + DAILY_REWARD_MGP)
+        self.assertEqual(second.data["gold_saucer_state"]["points"], WELCOME_POINTS + DAILY_REWARD_MGP)
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id='100' AND game='welcome'")["n"], 1)
 
 
     def test_daily_allowance_prevents_permanent_lockout_and_is_exactly_once(self):
         first = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
-        self.assertEqual(first["points"], WELCOME_POINTS)
+        self.assertEqual(first["points"], WELCOME_POINTS + DAILY_REWARD_MGP)
         welcome = int(self.db.one("SELECT created_at FROM gold_saucer_history WHERE player_id='100' AND game='welcome'")["created_at"])
         future = welcome + 86401
         with self.db.tx(immediate=True) as conn:
             next_day = self.game._gold_saucer_state_sql(conn, "100", future)
             again = self.game._gold_saucer_state_sql(conn, "100", future + 60)
-        self.assertEqual(next_day["points"], WELCOME_POINTS + DAILY_ALLOWANCE_POINTS)
-        self.assertEqual(again["points"], WELCOME_POINTS + DAILY_ALLOWANCE_POINTS)
+        self.assertEqual(next_day["points"], WELCOME_POINTS + DAILY_REWARD_MGP * 2 + DAILY_ALLOWANCE_POINTS)
+        self.assertEqual(again["points"], WELCOME_POINTS + DAILY_REWARD_MGP * 2 + DAILY_ALLOWANCE_POINTS)
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id='100' AND game='daily_allowance'")["n"], 1)
 
     def test_prize_counter_is_cosmetic_atomic_and_replay_safe(self):
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
         prize = next(row for row in state["prizes"] if row["id"] == "saucer_regular")
-        self.assertEqual(prize["cost"], 400)
+        self.assertEqual(prize["cost"], 500)
         self.assertFalse(prize["owned"])
         bought = self.game.portal_saucer_buy("100", "saucer_regular", "prize-1")
         self.assertTrue(bought.ok)
-        self.assertEqual(bought.data["gold_saucer_state"]["points"], WELCOME_POINTS - 400)
+        self.assertEqual(bought.data["gold_saucer_state"]["points"], WELCOME_POINTS + DAILY_REWARD_MGP - 500)
         self.assertIsNotNone(self.db.one("SELECT 1 FROM player_titles WHERE player_id='100' AND title_id='saucer_regular'"))
         self.assertEqual(int(self.db.one("SELECT gil FROM players WHERE twitch_id='100'")["gil"]), 250)
         replay = self.game.portal_saucer_buy("100", "saucer_regular", "prize-1")
         self.assertTrue(replay.ok)
-        self.assertEqual(replay.data["gold_saucer_state"]["points"], WELCOME_POINTS - 400)
+        self.assertEqual(replay.data["gold_saucer_state"]["points"], WELCOME_POINTS + DAILY_REWARD_MGP - 500)
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id='100' AND game='prize'")["n"], 1)
         owned = next(row for row in replay.data["gold_saucer_state"]["prizes"] if row["id"] == "saucer_regular")
         self.assertTrue(owned["owned"])
@@ -82,7 +82,7 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         started = self.game.portal_cactpot_start("100", "cactpot-start")
         self.assertTrue(started.ok)
         state = started.data["gold_saucer_state"]
-        self.assertEqual(state["points"], WELCOME_POINTS - CACTPOT_COST)
+        self.assertEqual(state["points"], WELCOME_POINTS + DAILY_REWARD_MGP - CACTPOT_COST)
         ticket = state["cactpot"]["ticket"]
         self.assertEqual(ticket["state"], "reveal")
         self.assertEqual(len(ticket["revealed"]), 1)
@@ -122,7 +122,7 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         first_state = result.data["gold_saucer_state"]
         self.assertEqual(first_state["account"]["slots_spins"], 1)
         self.assertGreater(first_state["slots"]["remaining_seconds"], 0)
-        expected_points = WELCOME_POINTS - SLOTS_COST + int(result.data["payout"])
+        expected_points = WELCOME_POINTS + DAILY_REWARD_MGP - SLOTS_COST + int(result.data["payout"])
         self.assertEqual(first_state["points"], expected_points)
 
         replay = self.game.portal_slots_spin("100", "slots-1")
@@ -137,9 +137,9 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         before_gil = int(self.db.one("SELECT gil FROM players WHERE twitch_id='100'")["gil"])
         grant = self.game.streamer_saucer_grant("van | 250", action_id="grant-1")
         self.assertTrue(grant.ok)
-        self.assertEqual(grant.data["points"], WELCOME_POINTS + 250)
+        self.assertEqual(grant.data["points"], WELCOME_POINTS + DAILY_REWARD_MGP + 250)
         replay = self.game.streamer_saucer_grant("van | 250", action_id="grant-1")
-        self.assertEqual(replay.data["points"], WELCOME_POINTS + 250)
+        self.assertEqual(replay.data["points"], WELCOME_POINTS + DAILY_REWARD_MGP + 250)
         self.assertEqual(int(self.db.one("SELECT gil FROM players WHERE twitch_id='100'")["gil"]), before_gil)
 
         self.assertTrue(self.game.portal_cactpot_start("100", "ticket-reset-test").ok)
@@ -156,7 +156,7 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         action = {**base, "id": "state-1", "type": "GOLD_SAUCER_STATE"}
         ok, _message, data = worker._execute(action)
         self.assertTrue(ok)
-        self.assertEqual(data["gold_saucer_state"]["points"], WELCOME_POINTS)
+        self.assertEqual(data["gold_saucer_state"]["points"], WELCOME_POINTS + DAILY_REWARD_MGP)
         action = {**base, "id": "slot-worker", "type": "SLOTS_SPIN"}
         ok, _message, data = worker._execute(action)
         self.assertTrue(ok)

@@ -8,7 +8,7 @@ from crystal_guild import __version__
 from crystal_guild.data import GameData
 from crystal_guild.database import DATABASE_SCHEMA_VERSION, Database
 from crystal_guild.engine import CrystalGuildEngine
-from crystal_guild.gold_saucer import DAILY_ALLOWANCE_MGP, WELCOME_MGP
+from crystal_guild.gold_saucer import DAILY_ALLOWANCE_MGP, DAILY_REWARD_MGP, WELCOME_MGP
 from crystal_guild.portal_actions import ACTION_PROTOCOL_VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,7 +31,7 @@ class GoldSaucerAlpha3MGPTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_alpha3_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.7.1-resynthesis-a1")
+        self.assertEqual(__version__, "1.7.1-resynthesis-a2h1")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(self.db.schema_version(), 15)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
@@ -40,9 +40,10 @@ class GoldSaucerAlpha3MGPTests(unittest.TestCase):
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
         self.assertEqual(state["currency_name"], "MGP")
         self.assertEqual(state["currency_code"], "MGP")
-        self.assertEqual(state["mgp"], WELCOME_MGP)
+        self.assertEqual(state["mgp"], WELCOME_MGP + DAILY_REWARD_MGP)
         self.assertEqual(state["welcome_mgp"], WELCOME_MGP)
         self.assertEqual(state["daily_allowance_mgp"], DAILY_ALLOWANCE_MGP)
+        self.assertEqual(state["daily_reward_mgp"], DAILY_REWARD_MGP)
         # Alpha 2 keys remain additive compatibility aliases.
         self.assertEqual(state["points"], state["mgp"])
         self.assertEqual(state["account"]["points"], state["account"]["mgp"])
@@ -67,7 +68,7 @@ class GoldSaucerAlpha3MGPTests(unittest.TestCase):
     def test_streamer_grant_returns_canonical_mgp_and_legacy_alias(self):
         result = self.game.streamer_saucer_grant("van | 250", action_id="a3-grant")
         self.assertTrue(result.ok)
-        self.assertEqual(result.data["mgp"], WELCOME_MGP + 250)
+        self.assertEqual(result.data["mgp"], WELCOME_MGP + DAILY_REWARD_MGP + 250)
         self.assertEqual(result.data["points"], result.data["mgp"])
         self.assertIn("MGP", " ".join(result.messages))
 

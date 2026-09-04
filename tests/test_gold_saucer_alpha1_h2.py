@@ -33,7 +33,7 @@ class GoldSaucerAlpha1H2Tests(unittest.TestCase):
         self.assertTrue(result.ok)
         row = self.db.one("SELECT available_at FROM cooldowns WHERE player_id='100' AND action='gold_saucer_cactpot'")
         self.assertEqual(int(row["available_at"]), (now - now % 86400) + 86400)
-        self.assertEqual(result.data["gold_saucer_state"]["points"], 500 - CACTPOT_COST)
+        self.assertEqual(result.data["gold_saucer_state"]["points"], 550 - CACTPOT_COST)
 
     def test_records_are_derived_without_schema_change(self):
         now = int(time.time())

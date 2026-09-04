@@ -14,7 +14,7 @@ Routine file logs use `/tmp/crystal-guild-logs`; Render's service log stream rem
 
 The Bot prunes old `crystal_guild-startup-*.db` files **before** creating the next startup backup, retains at most two startup copies, and leaves migration backups such as `pre_schema_15_*.db` untouched. If the persistent disk cannot safely fit another backup, startup continues with a warning instead of crashing.
 
-Deploy the v1.7.0 Bot and restart the worker. Verify `!cgversion` reports `1.7.0`, schema **15**, Portal protocol **32**, and `!health` is clean. Pair it with the v1.7.1 Resynthesis Alpha 1 Web build (`1.7.0-final`).
+Deploy the v1.7.1 Resynthesis Alpha 2 Hotfix 1 Bot and restart the worker. Verify `!cgversion` reports `1.7.1-resynthesis-a2h1`, schema **15**, Portal protocol **32**, and `!health` is clean. Pair it with the unchanged v1.7.1 Resynthesis Alpha 2 Web build (`1.7.1-resynthesis-a2`).
 
 If the worker later reports SQLite write failures, inspect other non-authoritative files consuming `/var/data` or increase the Render disk size. Do not delete `crystal_guild.db`.
 

@@ -1,4 +1,4 @@
-# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 1
+# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 1
 
 Portal Action protocol is **32**.
 

@@ -1,24 +1,13 @@
-# Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 1
+# Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 1
 
-**Decision: PASS — Alpha 1 candidate.**
+**Decision: PASS — Encounter Variety hotfix.**
 
-## Contract
+The audit identified a selector-pool collapse rather than an incorrect Magic Pot base rarity. Across eight normal Venture regions and 101 encounter-table entries, Magic Pot remains base weight 1. The old Solo Venture near-level filter produced 14 player-level/region states where a region with alternatives collapsed to exactly one preferred monster; Whispering Caverns Lv.24–27 collapsed to Magic Pot.
 
-- Runtime/frontend: `1.7.1-resynthesis-a1`
-- Database schema: **15**
-- Hosted sync: **1**
-- Portal Action protocol: **32**
-- Prefix: `!`
-- Baseline: v1.7.0 Moogle Retainer UI Hotfix 3
+Hotfix 1 preserves the region rarity tables and instead hardens the selector: minimum candidate variety, a ~45% maximum effective share with 3+ candidates, recent-monster suppression, and a hard stop on a third identical encounter when an alternative exists. Rally Venture, Solo Venture, and Expeditions all participate in the anti-streak weighting; Solo Venture and Expeditions also receive the minimum-pool widening.
 
-## Scope freeze
+Bot runtime `1.7.1-resynthesis-a2h1`; paired Web `1.7.1-resynthesis-a2`; schema **15**; hosted sync **1**; Portal protocol **32**; prefix `!`. No migration or player reset.
 
-Alpha 1 adds Blacksmith **Resynthesize Gear** for weapons and armor, deterministic material previews/recovery, protected-item safeguards, final-copy forged recovery, a typed Portal action, `!resynthesize`/`!desynth`/`!dismantle`, and Guide/What's New coverage. No unrelated gameplay or economy behavior is changed.
+Validation: **681/681 Bot**, **562/562 frontend**, **65/65 hosted Web/API**, **120/120 Bot Python**, **16/16 Web Python**, **205/205 JS/MJS**, **843/843 WebP**, **0 public PNG**.
 
-## Upgrade safety
-
-No schema migration is required. Resynthesis history is derived from the existing transactions table, so current schema-15 databases carry forward without data rewrites. Existing player, Guild, Retainer, Gold Saucer, inventory, equipment, and forge state is preserved.
-
-## Regression decision
-
-Bot, hosted Web/API, frontend, syntax, CSS, and artwork decode gates all pass. See the Validation and Balance audits for exact totals and economy safeguards.
+See `ENCOUNTER_VARIETY_AUDIT.md` and `VALIDATION_REPORT.md`.

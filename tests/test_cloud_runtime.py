@@ -256,7 +256,7 @@ class CloudRuntimeTests(unittest.TestCase):
 
     def test_cloud_setup_docs_preserve_existing_database_and_explain_matching_web(self):
         source = (ROOT / "RENDER_CLOUD_SETUP.md").read_text(encoding="utf-8")
-        self.assertIn("v1.7.1 Resynthesis Alpha 1 Web build", source)
+        self.assertIn("v1.7.1 Resynthesis Alpha 2 Web build", source)
         self.assertIn("No database migration", (ROOT / "UPGRADE_GUIDE.md").read_text(encoding="utf-8"))
         self.assertIn("/var/data/crystal_guild.db", source)
         self.assertIn("/var/data/twitch_tokens.db", source)

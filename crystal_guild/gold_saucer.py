@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import Any
 
 WELCOME_MGP = 500
-DAILY_ALLOWANCE_MGP = 50
+DAILY_ALLOWANCE_MGP = 125
+DAILY_REWARD_MGP = 50
 # Compatibility aliases for pre-Alpha-3 callers/tests. New code should use MGP names.
 WELCOME_POINTS = WELCOME_MGP
 DAILY_ALLOWANCE_POINTS = DAILY_ALLOWANCE_MGP
@@ -11,7 +12,7 @@ CACTPOT_COST = 10
 CACTPOT_COOLDOWN_SECONDS = 24 * 60 * 60
 SLOTS_COST = 15
 SLOTS_COOLDOWN_SECONDS = 5
-SLOTS_THEORETICAL_RETURN_PCT = 87.5
+SLOTS_THEORETICAL_RETURN_PCT = 97.1
 
 CACTPOT_LINES = (
     (0, 1, 2), (3, 4, 5), (6, 7, 8),
@@ -23,11 +24,11 @@ CACTPOT_LINES = (
 # MGP. The currency cannot be purchased for Gil or real money.
 # RC2 balance pass: Crystal Guild uses a much smaller MGP prize economy than
 # the source inspiration for this table. These payouts preserve the familiar
-# high/low sum shape while scaling the daily ticket to Crystal Guild's 400–
-# 6,000 MGP Prize Counter. A 10 MGP ticket can now net-win, break even, or
-# net-lose; the 6-sum remains a meaningful 1,000 MGP jackpot.
+# high/low sum shape while scaling the daily ticket to Crystal Guild's broader
+# Prize Counter economy. Alpha 2 lifts the 6-sum headline jackpot to 1,250 MGP
+# while keeping the 10 MGP ticket and the rest of the familiar table shape.
 CACTPOT_PAYOUTS = {
-    6: 1000, 7: 5, 8: 75, 9: 40, 10: 10, 11: 25,
+    6: 1250, 7: 5, 8: 75, 9: 40, 10: 10, 11: 25,
     12: 10, 13: 5, 14: 5, 15: 20, 16: 5, 17: 20,
     18: 10, 19: 5, 20: 30, 21: 110, 22: 15, 23: 180, 24: 360,
 }
@@ -48,7 +49,7 @@ SLOT_TRIPLE_PAYOUTS = {
     "bomb": 60,
     "potion": 40,
 }
-SLOT_PAIR_PAYOUT = 20
+SLOT_PAIR_PAYOUT = 23
 
 
 # Alpha 2 — Monster Toss. A game is five authoritative throws. Players choose
@@ -70,11 +71,11 @@ MONSTER_TOSS_STYLES = (
     {"id": "power", "name": "Power Throw", "accuracy_mod": -0.15, "score_mult": 1.5, "description": "Harder to land, but scores much more."},
 )
 MONSTER_TOSS_PAYOUTS = (
-    (900, 70, "jackpot"),
-    (600, 40, "gold"),
-    (400, 22, "silver"),
-    (250, 12, "bronze"),
-    (100, 5, "participation"),
+    (900, 90, "jackpot"),
+    (600, 60, "gold"),
+    (400, 35, "silver"),
+    (250, 18, "bronze"),
+    (100, 8, "participation"),
     (0, 0, "miss"),
 )
 MONSTER_TOSS_TARGETS_BY_ID = {row["id"]: row for row in MONSTER_TOSS_TARGETS}
@@ -110,7 +111,7 @@ CHOCOBO_RACING_COURSES = (
         "field_variance": 7.0,
         "favored_traits": ("steady_strider", "forager"),
         "description": "A welcoming short course with a tight final turn.",
-        "payouts": {1: 70, 2: 40, 3: 20},
+        "payouts": {1: 120, 2: 70, 3: 35},
     },
     {
         "id": "crystal_circuit",
@@ -121,7 +122,7 @@ CHOCOBO_RACING_COURSES = (
         "field_variance": 7.5,
         "favored_traits": ("keen_eye", "fleet_feet"),
         "description": "A faster technical circuit where clean lines matter.",
-        "payouts": {1: 110, 2: 55, 3: 25},
+        "payouts": {1: 190, 2: 105, 3: 50},
     },
     {
         "id": "golden_gauntlet",
@@ -132,7 +133,7 @@ CHOCOBO_RACING_COURSES = (
         "field_variance": 8.0,
         "favored_traits": ("lucky_plume",),
         "description": "The headline race: a demanding field with the richest podium purse.",
-        "payouts": {1: 160, 2: 75, 3: 35},
+        "payouts": {1: 300, 2: 160, 3: 75},
     },
 )
 CHOCOBO_RACING_STRATEGIES = (
@@ -204,7 +205,7 @@ TRIPLE_TRIAD_OPPONENTS = (
         "difficulty": "Novice",
         "unlock_wins": 0,
         "cost": 20,
-        "win_payout": 50,
+        "win_payout": 100,
         "draw_payout": 20,
         "deck": ("chocobo", "moogle", "cactuar", "tonberry", "coeurl"),
         "rewards": ("tonberry", "coeurl", "ahriman"),
@@ -216,7 +217,7 @@ TRIPLE_TRIAD_OPPONENTS = (
         "difficulty": "Skilled",
         "unlock_wins": 3,
         "cost": 30,
-        "win_payout": 80,
+        "win_payout": 150,
         "draw_payout": 30,
         "deck": ("tonberry", "coeurl", "ahriman", "malboro", "ifrit"),
         "rewards": ("malboro", "ifrit", "shiva"),
@@ -228,7 +229,7 @@ TRIPLE_TRIAD_OPPONENTS = (
         "difficulty": "Master",
         "unlock_wins": 8,
         "cost": 45,
-        "win_payout": 130,
+        "win_payout": 240,
         "draw_payout": 45,
         "deck": ("malboro", "ifrit", "shiva", "ramuh", "leviathan"),
         "rewards": ("ramuh", "leviathan", "bahamut", "odin"),
@@ -326,63 +327,63 @@ PRIZES = (
         "id": "saucer_regular",
         "title_id": "saucer_regular",
         "name": "Saucer Regular",
-        "cost": 400,
+        "cost": 500,
         "description": "A simple Gold Saucer title for adventurers who keep coming back.",
     },
     {
         "id": "cactpot_connoisseur",
         "title_id": "cactpot_connoisseur",
         "name": "Cactpot Connoisseur",
-        "cost": 1200,
+        "cost": 1750,
         "description": "A cosmetic title for the Guild's dedicated scratch-card optimists.",
     },
     {
         "id": "jackpot_chaser",
         "title_id": "jackpot_chaser",
         "name": "Jackpot Chaser",
-        "cost": 2500,
+        "cost": 3500,
         "description": "A prestige title for adventurers who have spent far too long watching reels spin.",
     },
     {
         "id": "toss_tactician",
         "title_id": "toss_tactician",
         "name": "Toss Tactician",
-        "cost": 1800,
+        "cost": 2500,
         "description": "For players who know when to play safe and when to aim at the Golden Cactuar.",
     },
     {
         "id": "pot_shot_pro",
         "title_id": "pot_shot_pro",
         "name": "Pot Shot Pro",
-        "cost": 3200,
+        "cost": 4500,
         "description": "A prestige Monster Toss title for suspiciously accurate carnival heroes.",
     },
     {
         "id": "feathered_finisher",
         "title_id": "feathered_finisher",
         "name": "Feathered Finisher",
-        "cost": 2200,
+        "cost": 3000,
         "description": "For riders who discovered that every straightaway is an invitation.",
     },
     {
         "id": "circuit_champion",
         "title_id": "circuit_champion",
         "name": "Circuit Champion",
-        "cost": 5000,
+        "cost": 7500,
         "description": "A prestige title for Gold Saucer riders with podium feathers to spare.",
     },
     {
         "id": "triad_tactician",
         "title_id": "triad_tactician",
         "name": "Triad Tactician",
-        "cost": 2800,
+        "cost": 4000,
         "description": "For card players who can see a capture from four sides away.",
     },
     {
         "id": "card_hall_master",
         "title_id": "card_hall_master",
         "name": "Card Hall Master",
-        "cost": 6000,
+        "cost": 9000,
         "description": "A prestige title for adventurers who have conquered the Gold Saucer card hall.",
     },
 )

@@ -61,6 +61,12 @@ from .balance import (
     xp_to_next,
     STUN_RESIST_ROUNDS_AFTER_SUCCESS,
     VENTURE_MAX_LEVEL_ABOVE_PLAYER,
+    RANDOM_ENCOUNTER_MIN_VARIETY,
+    RANDOM_ENCOUNTER_RECENT_WINDOW,
+    RANDOM_ENCOUNTER_REPEAT_WEIGHT,
+    RANDOM_ENCOUNTER_RECENT_WEIGHT,
+    RANDOM_ENCOUNTER_HARD_REPEAT_LIMIT,
+    RANDOM_ENCOUNTER_MAX_WEIGHT_SHARE,
     SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER,
     SOLO_VENTURE_COOLDOWN_SECONDS,
     SOLO_VENTURE_TREASURE_CHANCE,
@@ -102,7 +108,7 @@ from .enemy_combat import (
 from .database import Database
 from .fellowship_system import FellowshipSystem
 from .gold_saucer import (
-    WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP,
+    WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP, DAILY_REWARD_MGP as SAUCER_DAILY_REWARD_MGP,
     CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
     SLOTS_COST, SLOTS_COOLDOWN_SECONDS, SLOTS_THEORETICAL_RETURN_PCT, SLOT_SYMBOLS, PRIZES as SAUCER_PRIZES, PRIZES_BY_ID as SAUCER_PRIZES_BY_ID,
     MONSTER_TOSS_COST, MONSTER_TOSS_THROWS, MONSTER_TOSS_DAILY_GAMES, MONSTER_TOSS_TARGETS, MONSTER_TOSS_STYLES, MONSTER_TOSS_PAYOUTS,
@@ -262,6 +268,10 @@ class CrystalGuildEngine:
         # activities. This is intentionally ephemeral and does not alter the
         # authoritative database/schema.
         self._last_adventure_result: dict[str, Any] | None = None
+        # Short rolling encounter memory used only to shape future random
+        # monster weights. It is intentionally ephemeral and never changes
+        # progression, rewards, or the database schema.
+        self._recent_random_monsters: dict[str, list[str]] = {}
         self.active_boss: dict[str, Any] | None = None
         self.raid_roster: dict[str, dict[str, Any]] = {}
         self._runtime_recovered = False
@@ -1790,32 +1800,130 @@ class CrystalGuildEngine:
         damage = self._apply_enemy_hit(monster, target, profile, scaling="physical", power=1.0)
         log.append(f"{target['name']} evades {monster['name']}'s attack." if damage == 0 else f"{monster['name']} attacks {target['name']} for {damage}.")
 
+    def _encounter_variety_key(self, twitch_id: str, region_id: str) -> str:
+        return f"{str(twitch_id)}:{str(region_id)}"
+
+    def _cap_encounter_weight_share(self, weights: list[float]) -> list[float]:
+        capped = [max(0.0, float(value)) for value in weights]
+        if len([value for value in capped if value > 0]) < 3:
+            return capped
+        max_share = max(0.05, min(0.95, float(RANDOM_ENCOUNTER_MAX_WEIGHT_SHARE)))
+        # Recalculate the limit as the dominant weight is reduced. A handful
+        # of iterations converges to the requested share without flattening the
+        # rest of the region's rarity curve.
+        for _ in range(12):
+            total = sum(capped)
+            if total <= 0:
+                break
+            limit = total * max_share
+            changed = False
+            for index, value in enumerate(capped):
+                if value > limit + 1e-9:
+                    capped[index] = limit
+                    changed = True
+            if not changed:
+                break
+        return capped
+
+    def _encounter_variety_weights(
+        self,
+        twitch_id: str,
+        region_id: str,
+        candidates: list[dict[str, Any]],
+        weights: list[float],
+    ) -> list[float]:
+        """Apply a small anti-streak bias without changing base rarity tiers.
+
+        A repeated monster is still possible, but its next-roll weight is heavily
+        reduced. If the same monster has already appeared twice consecutively,
+        a third copy is blocked whenever any alternative candidate exists.
+        """
+        adjusted = self._cap_encounter_weight_share([max(0.01, float(value)) for value in weights])
+        if len(candidates) <= 1:
+            return adjusted
+        key = self._encounter_variety_key(twitch_id, region_id)
+        recent = list(self._recent_random_monsters.get(key, []))[-RANDOM_ENCOUNTER_RECENT_WINDOW:]
+        if not recent:
+            return adjusted
+        ids = [str(monster.get("id") or "") for monster in candidates]
+        last = recent[-1]
+        consecutive = 0
+        for monster_id in reversed(recent):
+            if monster_id != last:
+                break
+            consecutive += 1
+        has_alternative = any(monster_id != last for monster_id in ids)
+        for index, monster_id in enumerate(ids):
+            if monster_id == last:
+                if has_alternative and consecutive >= RANDOM_ENCOUNTER_HARD_REPEAT_LIMIT:
+                    adjusted[index] = 0.0
+                else:
+                    adjusted[index] *= RANDOM_ENCOUNTER_REPEAT_WEIGHT
+                continue
+            prior_count = recent[:-1].count(monster_id)
+            if prior_count:
+                adjusted[index] *= RANDOM_ENCOUNTER_RECENT_WEIGHT ** min(2, prior_count)
+        if sum(adjusted) <= 0:
+            return self._cap_encounter_weight_share([max(0.01, float(value)) for value in weights])
+        return self._cap_encounter_weight_share(adjusted)
+
+    def _remember_random_monster(self, twitch_id: str, region_id: str, monster_id: str) -> None:
+        key = self._encounter_variety_key(twitch_id, region_id)
+        recent = list(self._recent_random_monsters.get(key, []))
+        recent.append(str(monster_id))
+        self._recent_random_monsters[key] = recent[-RANDOM_ENCOUNTER_RECENT_WINDOW:]
+
+    def _solo_stage_level_bias(self, stage: int, delta: int) -> float:
+        table = {
+            1: {-2: 0.85, -1: 1.20, 0: 1.45, 1: 1.15, 2: 0.75, 3: 0.40, 4: 0.22, 5: 0.12},
+            2: {-2: 0.45, -1: 0.85, 0: 1.25, 1: 1.45, 2: 1.10, 3: 0.70, 4: 0.45, 5: 0.25},
+            3: {-2: 0.20, -1: 0.55, 0: 0.95, 1: 1.35, 2: 1.55, 3: 1.25, 4: 0.90, 5: 0.60},
+        }.get(int(stage), {})
+        if delta in table:
+            return float(table[delta])
+        if delta < -2:
+            floor = {1: 0.12, 2: 0.08, 3: 0.05}.get(int(stage), 0.08)
+            anchor = float(table.get(-2, 0.45))
+            return max(floor, anchor * (0.75 ** max(1, -delta - 2)))
+        return 1.0
+
     def _solo_select_monster(self, p: Any, region: dict[str, Any], stage: int) -> dict[str, Any] | None:
         level = int(p["level"])
         minimum = max(1, level - 2)
         maximum = level + SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER
-        candidates = []
-        weights = []
+        all_eligible: list[tuple[dict[str, Any], float]] = []
+        preferred: list[tuple[dict[str, Any], float]] = []
         for encounter in region.get("encounters", []):
             monster = self.data.monsters.get(encounter.get("monster_id"))
             if not monster:
                 continue
             monster_level = int(monster.get("level", 1))
+            if monster_level > maximum:
+                continue
+            delta = monster_level - level
+            weight = max(0.01, float(encounter.get("weight", 1.0)) * self._solo_stage_level_bias(stage, delta))
+            row = (monster, weight)
+            all_eligible.append(row)
             if minimum <= monster_level <= maximum:
-                delta = monster_level - level
-                stage_bias = {
-                    1: {-2: 0.85, -1: 1.20, 0: 1.45, 1: 1.15, 2: 0.75, 3: 0.40, 4: 0.22, 5: 0.12},
-                    2: {-2: 0.45, -1: 0.85, 0: 1.25, 1: 1.45, 2: 1.10, 3: 0.70, 4: 0.45, 5: 0.25},
-                    3: {-2: 0.20, -1: 0.55, 0: 0.95, 1: 1.35, 2: 1.55, 3: 1.25, 4: 0.90, 5: 0.60},
-                }.get(int(stage), {})
-                candidates.append(monster)
-                weights.append(max(0.01, float(encounter.get("weight", 1.0)) * float(stage_bias.get(delta, 1.0))))
-        if not candidates:
-            for encounter in region.get("encounters", []):
-                monster = self.data.monsters.get(encounter.get("monster_id"))
-                if monster and int(monster.get("level", 1)) <= maximum:
-                    candidates.append(monster)
-                    weights.append(max(0.01, float(encounter.get("weight", 1.0))))
+                preferred.append(row)
+        if not all_eligible:
+            return None
+
+        # The former hard Lv.-2 floor could collapse a high-level player's old
+        # region to one monster (for example Magic Pot in Whispering Caverns at
+        # Lv.25-27). Keep the intended near-level bias, but widen the pool to a
+        # minimum number of closest valid monsters whenever the preferred band
+        # becomes too narrow.
+        selected = list(preferred)
+        if len(selected) < min(RANDOM_ENCOUNTER_MIN_VARIETY, len(all_eligible)):
+            selected_ids = {str(monster.get("id")) for monster, _ in selected}
+            extras = [row for row in all_eligible if str(row[0].get("id")) not in selected_ids]
+            extras.sort(key=lambda row: (abs(int(row[0].get("level", 1)) - level), -float(row[1]), str(row[0].get("id"))))
+            needed = min(RANDOM_ENCOUNTER_MIN_VARIETY, len(all_eligible)) - len(selected)
+            selected.extend(extras[:needed])
+        candidates = [monster for monster, _ in selected]
+        weights = [weight for _, weight in selected]
+        weights = self._encounter_variety_weights(str(p["twitch_id"]), str(region.get("id") or "region"), candidates, weights)
         return self.rng.choices(candidates, weights=weights, k=1)[0] if candidates else None
 
     def _solo_begin_stage(self, twitch_id: str, expedition: dict[str, Any]) -> GameResult:
@@ -1879,6 +1987,7 @@ class CrystalGuildEngine:
             expedition["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(roster)}
         finally:
             self.active_encounter, self.encounter_roster = old_encounter, old_roster
+        self._remember_random_monster(twitch_id, str(region.get("id") or "region"), str(monster["id"]))
         expedition["event"] = {"type": "encounter", "monster_id": str(monster["id"])}
         expedition["status"] = "combat"
         expedition.setdefault("history", []).append({"stage": stage, "type": "encounter", "label": f"Encountered {monster['name']}"})
@@ -2308,9 +2417,15 @@ class CrystalGuildEngine:
                 f"No level-appropriate monsters are available in {region['name']} right now. "
                 "Try another region or gain a level first."
             )
+        encounter_weights = self._encounter_variety_weights(
+            twitch_id,
+            str(region.get("id") or "region"),
+            [self.data.monsters[e["monster_id"]] for e in eligible_encounters],
+            [float(e["weight"]) for e in eligible_encounters],
+        )
         encounter = self.rng.choices(
             eligible_encounters,
-            weights=[e["weight"] for e in eligible_encounters],
+            weights=encounter_weights,
             k=1,
         )[0]
         monster = self.data.monsters[encounter["monster_id"]]
@@ -2336,6 +2451,7 @@ class CrystalGuildEngine:
             "updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
             (twitch_id,),
         )
+        self._remember_random_monster(twitch_id, str(region.get("id") or "region"), str(monster["id"]))
         return GameResult.success(
             f"ENCOUNTER — {p['display_name']} finds {monster['name']} (Lv.{monster['level']}) in {region['name']}!",
             f"RALLY OPEN {self._format_seconds(self.encounter_join_seconds)} — !join to enter. "
@@ -6055,8 +6171,6 @@ class CrystalGuildEngine:
         region_max = int(region.get("recommended_max_level", 99))
         minimum = max(region_min, level - 3)
         maximum = min(region_max, level + cap_above) if region_max < 99 else level + cap_above
-        candidates: list[dict[str, Any]] = []
-        weights: list[float] = []
         entries: list[tuple[dict[str, Any], bool]] = [(dict(entry), False) for entry in region.get("encounters", [])]
         progress = self._expedition_progress(twitch_id, str(region.get("id") or state.get("region_id") or ""))
         if progress.get("boss_unlocked"):
@@ -6068,23 +6182,39 @@ class CrystalGuildEngine:
             rare_mult *= 1.15
         if "lucky_plume" in traits:
             rare_mult *= 1.10
+
+        all_eligible: list[tuple[dict[str, Any], float]] = []
+        preferred: list[tuple[dict[str, Any], float]] = []
         for entry, is_rare in entries:
             monster = self.data.monsters.get(str(entry.get("monster_id") or ""))
             if not monster:
                 continue
             monster_level = int(monster.get("level", 1))
+            if monster_level > maximum:
+                continue
+            delta = monster_level - level
+            danger_bias = 1.0 + max(0, delta) * (0.12 if route == "deep" else 0.04)
+            rarity_bias = rare_mult if is_rare else 1.0
+            weight = max(0.01, float(entry.get("weight", 1)) * danger_bias * rarity_bias)
+            row = (monster, weight)
+            all_eligible.append(row)
             if minimum <= monster_level <= maximum:
-                candidates.append(monster)
-                delta = monster_level - level
-                danger_bias = 1.0 + max(0, delta) * (0.12 if route == "deep" else 0.04)
-                rarity_bias = rare_mult if is_rare else 1.0
-                weights.append(max(0.01, float(entry.get("weight", 1)) * danger_bias * rarity_bias))
-        if not candidates:
-            for entry, is_rare in entries:
-                monster = self.data.monsters.get(str(entry.get("monster_id") or ""))
-                if monster and int(monster.get("level", 1)) <= maximum:
-                    candidates.append(monster)
-                    weights.append(max(0.01, float(entry.get("weight", 1)) * (rare_mult if is_rare else 1.0)))
+                preferred.append(row)
+        if not all_eligible:
+            return None
+
+        selected = list(preferred)
+        if len(selected) < min(RANDOM_ENCOUNTER_MIN_VARIETY, len(all_eligible)):
+            selected_ids = {str(monster.get("id")) for monster, _ in selected}
+            extras = [row for row in all_eligible if str(row[0].get("id")) not in selected_ids]
+            extras.sort(key=lambda row: (abs(int(row[0].get("level", 1)) - level), -float(row[1]), str(row[0].get("id"))))
+            needed = min(RANDOM_ENCOUNTER_MIN_VARIETY, len(all_eligible)) - len(selected)
+            selected.extend(extras[:needed])
+        candidates = [monster for monster, _ in selected]
+        weights = [weight for _, weight in selected]
+        weights = self._encounter_variety_weights(
+            twitch_id, str(region.get("id") or state.get("region_id") or "expedition"), candidates, weights
+        )
         return self.rng.choices(candidates, weights=weights, k=1)[0] if candidates else None
 
     def _expedition_roll_treasure(self, twitch_id: str) -> dict[str, Any] | None:
@@ -6614,6 +6744,7 @@ class CrystalGuildEngine:
         if event_type == "combat":
             monster = self._expedition_select_monster(twitch_id, state, region)
             if monster:
+                self._remember_random_monster(twitch_id, str(region.get("id") or state.get("region_id") or "expedition"), str(monster["id"]))
                 return self._expedition_initialize_combat(twitch_id, state, monster)
             event_type = "discovery"
 
@@ -9739,6 +9870,20 @@ class CrystalGuildEngine:
                 "VALUES (?,'daily_allowance',0,?,'daily_allowance',?,?)",
                 (twitch_id, SAUCER_DAILY_ALLOWANCE_MGP, json.dumps({"daily_allowance": SAUCER_DAILY_ALLOWANCE_MGP}, separators=(",", ":")), now),
             )
+        daily_reward = conn.execute(
+            "SELECT 1 FROM gold_saucer_history WHERE player_id=? AND game='daily_reward' AND created_at>=? LIMIT 1",
+            (twitch_id, day_start),
+        ).fetchone()
+        if not daily_reward:
+            conn.execute(
+                "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                (SAUCER_DAILY_REWARD_MGP, SAUCER_DAILY_REWARD_MGP, twitch_id),
+            )
+            conn.execute(
+                "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) "
+                "VALUES (?,'daily_reward',0,?,'daily_reward',?,?)",
+                (twitch_id, SAUCER_DAILY_REWARD_MGP, json.dumps({"daily_reward": SAUCER_DAILY_REWARD_MGP}, separators=(",", ":")), now),
+            )
         return conn.execute("SELECT * FROM player_gold_saucer WHERE player_id=?", (twitch_id,)).fetchone()
 
     def _triple_triad_ensure_profile_sql(self, conn: Any, twitch_id: str) -> Any:
@@ -10203,12 +10348,15 @@ class CrystalGuildEngine:
             "mgp": points,
             "welcome_mgp": SAUCER_WELCOME_MGP,
             "daily_allowance_mgp": SAUCER_DAILY_ALLOWANCE_MGP,
+            "daily_reward_mgp": SAUCER_DAILY_REWARD_MGP,
             "currency_name": "MGP",
             "currency_code": "MGP",
             "points": points,
             "welcome_points": SAUCER_WELCOME_MGP,
             "daily_allowance_points": SAUCER_DAILY_ALLOWANCE_MGP,
+            "daily_reward_points": SAUCER_DAILY_REWARD_MGP,
             "next_daily_allowance_at": day_start + 86400,
+            "next_daily_reward_at": day_start + 86400,
             "account": {
                 "mgp": points,
                 "points": points,
@@ -10227,7 +10375,7 @@ class CrystalGuildEngine:
                 "slots_theoretical_return_pct": float(SLOTS_THEORETICAL_RETURN_PCT),
                 "slots_cost": int(SLOTS_COST),
                 "cactpot_cost": int(CACTPOT_COST),
-                "note": "The validated payout table is fixed; this panel reports realized results without changing the underlying odds.",
+                "note": "Alpha 2 raises Gold Saucer earnings and Prize Counter goals while keeping all attraction entry costs unchanged.",
             },
             "prizes": prizes,
             "cactpot": cactpot,

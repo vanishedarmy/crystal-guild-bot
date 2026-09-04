@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class GoldSaucerRC2BalanceTests(unittest.TestCase):
     def test_cactpot_is_scaled_to_crystal_guild_economy_and_has_net_wdl(self):
         self.assertEqual(CACTPOT_COST, 10)
-        self.assertEqual(CACTPOT_PAYOUTS[6], 1000)
+        self.assertEqual(CACTPOT_PAYOUTS[6], 1250)
         self.assertEqual(CACTPOT_PAYOUTS[24], 360)
         self.assertTrue(any(value < CACTPOT_COST for value in CACTPOT_PAYOUTS.values()))
         self.assertTrue(any(value == CACTPOT_COST for value in CACTPOT_PAYOUTS.values()))
@@ -44,8 +44,8 @@ class GoldSaucerRC2BalanceTests(unittest.TestCase):
         totals = Counter(sum(values) for values in itertools.combinations(range(1, 10), 3))
         samples = sum(totals.values())
         expected = sum(totals[total] * CACTPOT_PAYOUTS[total] for total in totals) / samples
-        self.assertGreater(expected, 35.0)
-        self.assertLess(expected, 37.0)
+        self.assertGreater(expected, 39.0)
+        self.assertLess(expected, 39.3)
 
     def test_slots_return_and_outcome_mix_remain_bounded(self):
         weights = {symbol: int(weight) for symbol, _label, weight in SLOT_SYMBOLS}
@@ -61,11 +61,11 @@ class GoldSaucerRC2BalanceTests(unittest.TestCase):
                 net_wins += probability
             elif payout < SLOTS_COST:
                 net_losses += probability
-        self.assertAlmostEqual(payout_ev / SLOTS_COST, 0.8745304282, places=6)
+        self.assertAlmostEqual(payout_ev / SLOTS_COST, 0.9714500376, places=6)
         self.assertGreater(net_wins, 0.53)
         self.assertGreater(net_losses, 0.46)
 
-    def test_monster_toss_best_fixed_profile_stays_below_break_even(self):
+    def test_monster_toss_best_fixed_profile_is_rewarding_but_bounded(self):
         best = 0.0
         for target in MONSTER_TOSS_TARGETS:
             for style in MONSTER_TOSS_STYLES:
@@ -76,15 +76,15 @@ class GoldSaucerRC2BalanceTests(unittest.TestCase):
                     payout, _tier = monster_toss_payout(hits * hit_score)
                     ev += chance * payout
                 best = max(best, ev)
-        self.assertGreater(best / MONSTER_TOSS_COST, 0.84)
-        self.assertLess(best / MONSTER_TOSS_COST, 0.90)
+        self.assertGreater(best / MONSTER_TOSS_COST, 1.28)
+        self.assertLess(best / MONSTER_TOSS_COST, 1.31)
 
     def test_racing_and_triad_preserve_clear_win_draw_loss_stakes(self):
         for course in CHOCOBO_RACING_COURSES:
             cost = int(course["cost"])
             self.assertGreater(int(course["payouts"][1]), cost)
             self.assertGreater(int(course["payouts"][2]), cost)
-            self.assertLess(int(course["payouts"][3]), cost)
+            self.assertGreater(int(course["payouts"][3]), cost)
         for opponent in TRIPLE_TRIAD_OPPONENTS:
             cost = int(opponent["cost"])
             self.assertGreater(int(opponent["win_payout"]), cost)
