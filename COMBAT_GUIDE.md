@@ -12,8 +12,8 @@ Solo Venture state is persisted per player and does not occupy the shared Rally/
 
 `!venture` now rolls one of two adventure outcomes:
 
-- **70% ENCOUNTER** — opens the normal joinable rally. The initiating hero joins automatically and the rally stays open for `ENCOUNTER_JOIN_SECONDS` (60 seconds by default). The monster roll is filtered so it can never be more than **10 levels above the initiating hero**. Other eligible heroes join with `!join` or `!venture`.
-- **30% TREASURE CHEST** — immediately awards one level-appropriate item and ends the Venture without starting combat. Chest items are selected from roughly **5 levels below through 2 levels above** the venturing hero. Consumables, weapons, armor and accessories are eligible; Relic-progression weapons and explicitly unsellable progression pieces are excluded.
+- **100% ENCOUNTER** — every Stream/Rally Venture opens the normal joinable rally. The initiating hero joins automatically and the rally stays open for `ENCOUNTER_JOIN_SECONDS` (60 seconds by default). The monster roll is filtered so it can never be more than **10 levels above the initiating hero**. Other eligible heroes join with `!join` or `!venture`.
+- **No Rally treasure branch** — treasure remains exclusive to the separate Portal Solo Venture stage roll; live Stream Ventures always enter an encounter.
 
 Treasure Ventures consume the normal Venture cooldown and increment the player's Venture total, but they do **not** create a party encounter or rally.
 

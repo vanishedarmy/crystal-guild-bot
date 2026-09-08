@@ -97,7 +97,7 @@ SOLO_EXPEDITION_DEFEAT_GIL_KEEP = 0.50
 # Ventures are now event-driven rather than guaranteed combat. Combat remains
 # the primary result, but treasure discoveries are common enough to make
 # exploration feel meaningfully different from simply opening a battle.
-VENTURE_TREASURE_CHANCE = 0.30
+VENTURE_TREASURE_CHANCE = 0.0
 
 # Treasure is level-aware. A chest may contain a slightly aspirational item,
 # but it should never hand a low-level player an endgame reward or waste a roll

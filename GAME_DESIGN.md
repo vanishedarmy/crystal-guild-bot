@@ -22,9 +22,9 @@ Crystal Guild is a persistent Final Fantasy-inspired Twitch chat RPG. Viewers re
 - Enemy actions/statuses are data-driven.
 - Field battles intentionally focus on one primary enemy; support abilities may target allies/party.
 - Field enemies use soft targeting: one ordinary enemy action per round selects one living hero, weighted toward tanks/Taunt; only explicit party skills may hit multiple heroes.
-- Ventures resolve as weighted adventure events: 70% ENCOUNTER and 30% TREASURE CHEST.
+- Stream/Rally Ventures resolve as 100% ENCOUNTER events; the Rally treasure branch is removed. Portal Solo Venture retains its separate 80% ENCOUNTER / 20% TREASURE stage roll.
 - Venture ENCOUNTER monster rolls are capped at 10 levels above the initiating hero.
-- Venture TREASURE CHEST loot is level-banded from 5 levels below through 2 levels above the initiating hero and excludes Relic-progression weapons.
+- Treasure outcomes are reserved for Portal Solo Venture; Stream/Rally Ventures always open a shared encounter.
 - Raids use timed community participation and role-aware contribution/reward rules.
 
 ## Economy

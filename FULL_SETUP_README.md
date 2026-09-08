@@ -1,4 +1,4 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 3 Setup
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 Setup
 
 **Hotfix 3 note:** MP/AP resource families now persist correctly across Job switches. Refreshes and equipment normalization no longer erase the inactive resource family. Existing Alpha 2 Web remains compatible.
 
@@ -6,8 +6,8 @@
 Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Replace the Bot source and restart the worker. No schema migration or player reset is required.
 
 ## Release verification
-- Bot runtime → `1.7.1-resynthesis-a2h3`
-- Paired Web → `1.7.1-resynthesis-a2`
+- Bot runtime → `1.7.1-resynthesis-a2h5`
+- Paired Web → `1.7.1-resynthesis-a2h5`
 - Local DB schema → **15**
 - Hosted sync schema → **1**
 - Portal Action protocol → **32**

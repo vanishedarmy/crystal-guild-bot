@@ -33,7 +33,7 @@ class RetainerServiceAlpha2Tests(unittest.TestCase):
         return self.game.portal_retainer_state("100").data["retainer_state"]
 
     def test_alpha2_contract_and_history_schema(self):
-        self.assertEqual(__version__, "1.7.1-resynthesis-a2h3")
+        self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
         self.assertEqual(self.db.schema_version(), 15)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 32)

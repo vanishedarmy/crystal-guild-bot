@@ -47,43 +47,15 @@ class EngineTests(unittest.TestCase):
         row = self.db.one("SELECT ventures FROM players WHERE twitch_id='1'")
         self.assertEqual(row["ventures"], 1)
 
-    def test_venture_can_find_level_appropriate_treasure_without_starting_combat(self):
+    def test_stream_venture_is_always_an_encounter_even_with_legacy_treasure_override(self):
         self.assertTrue(self.game.choose_job("1", "warrior").ok)
-        self.db.execute("UPDATE players SET level=20 WHERE twitch_id='1'")
         self.game.venture_treasure_chance = 1.0
-
-        before = self.db.one(
-            "SELECT ventures, party_encounters FROM players WHERE twitch_id='1'"
-        )
         result = self.game.venture("1", bypass_cooldown=True)
-
-        self.assertTrue(result.ok, result.messages)
-        self.assertEqual(result.data.get("venture_event"), "treasure")
-        self.assertTrue(result.messages[0].startswith("TREASURE CHEST —"))
-        self.assertIsNone(self.game.active_encounter)
-
-        item = self.game.data.items[result.data["treasure_item_id"]]
-        item_level = int(result.data["treasure_item_level"])
-        self.assertIn(item["type"], {"consumable", "armor", "weapon", "accessory"})
-        self.assertFalse(item.get("relic_id"))
-        self.assertFalse(item.get("unsellable"))
-        self.assertGreaterEqual(item_level, 15)
-        self.assertLessEqual(item_level, 22)
-        self.assertGreaterEqual(self.game._inventory_qty("1", item["id"]), 1)
-
-        after = self.db.one(
-            "SELECT ventures, party_encounters FROM players WHERE twitch_id='1'"
-        )
-        self.assertEqual(after["ventures"], before["ventures"] + 1)
-        self.assertEqual(after["party_encounters"], before["party_encounters"])
-        tx = self.db.one(
-            "SELECT source, amount FROM transactions WHERE player_id='1' AND asset_id=? "
-            "ORDER BY id DESC LIMIT 1",
-            (item["id"],),
-        )
-        self.assertIsNotNone(tx)
-        self.assertEqual(tx["source"], "venture_treasure")
-        self.assertEqual(tx["amount"], 1)
+        self.assertTrue(result.ok)
+        self.assertIsNotNone(self.game.active_encounter)
+        self.assertEqual(self.game.active_encounter.get("kind"), "venture")
+        self.assertEqual(self.game.active_encounter.get("state"), "rally")
+        self.assertNotEqual(result.data.get("venture_event"), "treasure")
 
     def test_venture_treasure_candidates_use_minus_five_plus_two_level_band(self):
         min_level, max_level, candidates = self.game._venture_treasure_candidates(1)

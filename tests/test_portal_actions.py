@@ -830,8 +830,8 @@ class PortalActionWorkerTests(unittest.TestCase):
         venture = data["adventure_state"]["venture"]
         self.assertFalse(venture["portal_start_enabled"])
         self.assertFalse(venture["portal_join_enabled"])
-        self.assertEqual(venture["encounter_chance_percent"], 70)
-        self.assertEqual(venture["treasure_chance_percent"], 30)
+        self.assertEqual(venture["encounter_chance_percent"], 100)
+        self.assertEqual(venture["treasure_chance_percent"], 0)
         self.assertEqual(venture["max_enemy_levels_above_player"], 10)
         self.assertEqual(venture["rally_reward_bonus_per_level_percent"], 5)
         self.assertEqual(venture["rally_reward_bonus_max_percent"], 50)

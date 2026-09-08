@@ -2490,17 +2490,9 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         region = self.data.regions[p["current_region"]]
 
-        # Resolve the Venture event before rolling a monster. A 0% test/debug
-        # override deliberately avoids consuming RNG state, preserving existing
-        # deterministic combat regressions.
-        treasure_roll = self.venture_treasure_chance >= 1.0 or (
-            self.venture_treasure_chance > 0.0
-            and self.rng.random() < self.venture_treasure_chance
-        )
-        if treasure_roll:
-            treasure = self._resolve_venture_treasure(twitch_id, p, region)
-            if treasure is not None:
-                return treasure
+        # Stream/Rally Ventures are encounter-only. Treasure remains a separate
+        # Portal Solo Venture outcome; legacy venture_treasure_chance overrides
+        # are intentionally ignored here so live Rally Ventures always battle.
 
         max_monster_level = int(p["level"]) + VENTURE_MAX_LEVEL_ABOVE_PLAYER
         eligible_encounters = [
@@ -8635,9 +8627,9 @@ class CrystalGuildEngine:
                 "reason": venture_reason,
                 "available_at": venture_available_at if venture_remaining > 0 else 0,
                 "remaining_seconds": venture_remaining,
-                "treasure_possible": True,
-                "encounter_chance_percent": int(round((1.0 - VENTURE_TREASURE_CHANCE) * 100)),
-                "treasure_chance_percent": int(round(VENTURE_TREASURE_CHANCE * 100)),
+                "treasure_possible": False,
+                "encounter_chance_percent": 100,
+                "treasure_chance_percent": 0,
                 "max_enemy_levels_above_player": int(VENTURE_MAX_LEVEL_ABOVE_PLAYER),
                 "rally_reward_bonus_per_level_percent": 5,
                 "rally_reward_bonus_max_percent": 50,

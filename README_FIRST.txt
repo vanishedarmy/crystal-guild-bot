@@ -1,5 +1,5 @@
-Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 3 — Job Resource Persistence
-Bot runtime: 1.7.1-resynthesis-a2h3
+Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Job Resource Persistence
+Bot runtime: 1.7.1-resynthesis-a2h5
 Paired Web frontend: 1.7.1-resynthesis-a2
 Local DB schema: 15
 Hosted sync schema: 1

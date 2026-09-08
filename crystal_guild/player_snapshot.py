@@ -616,7 +616,16 @@ class PortalRepository:
                         "sell_value": int(sell_value(item.get("price", 0), item.get("type", "item"))) if not (item.get("unsellable") or item.get("relic_id")) else 0,
                     }
                 )
-            items.sort(key=lambda i: (i["type"], i["rarity"], i["name"].lower()))
+            type_order = {"weapon": 0, "armor": 1, "accessory": 2, "item": 3, "consumable": 3, "material": 4}
+
+            def inventory_sort_key(entry: dict[str, Any]) -> tuple[Any, ...]:
+                item_type = str(entry.get("type") or "item").lower()
+                group = type_order.get(item_type, 3)
+                if item_type in {"weapon", "armor", "accessory"}:
+                    return (group, -int(entry.get("min_level", 1) or 1), str(entry.get("name") or "").lower())
+                return (group, 0, str(entry.get("name") or "").lower())
+
+            items.sort(key=inventory_sort_key)
             return {"player": self._public_identity(player), "items": items}
 
     def hunts(self, key: str) -> dict[str, Any] | None:
@@ -1362,6 +1371,9 @@ class PortalRepository:
                     "bonuses": raw_bonuses,
                     "effective_bonuses": effective_bonuses,
                     "upgrade_level": upgrade,
+                    "min_level": int(item.get("min_level", 1) or 1) if item else 1,
+                    "allowed_job_ids": [j for j in item.get("allowed_jobs", []) if j in self.data.jobs] if item else [],
+                    "allowed_jobs": [self.data.jobs[j]["name"] for j in item.get("allowed_jobs", []) if j in self.data.jobs] if item else [],
                     "compatible": not item
                     or not item.get("allowed_jobs")
                     or (job is not None and job["id"] in item.get("allowed_jobs", [])),
