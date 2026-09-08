@@ -1,5 +1,13 @@
 # Crystal Guild Changelog
 
+## v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Treasure Seekers Solo Progress
+
+- Solo Venture treasure discoveries now emit canonical Fellowship `treasure` activity.
+- Treasure Seekers weekly-order progress and Treasure Hunters deed progress now include Solo treasure chests.
+- Run/stage-scoped event keys make the correction replay-safe and prevent double counting.
+- Rally remains 100% Encounter / 0% Treasure Chest; Solo remains 80% Encounter / 20% Treasure.
+- No schema, hosted sync, Portal protocol, or player-data migration changes.
+
 ## v1.7.1 — Resynthesis Alpha 2 Hotfix 3 — Job Resource Persistence
 
 - Fixes inactive MP/AP pools being overwritten with zero during refresh or equipment normalization.

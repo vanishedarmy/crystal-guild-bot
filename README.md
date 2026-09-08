@@ -1,5 +1,5 @@
 # Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5
 
-Combined Bot/Web hotfix for **Venture & Equipment UX**. Runtime/frontend: `1.7.1-resynthesis-a2h5`; schema **15**; hosted sync **1**; Portal Action protocol **32**; prefix `!`.
+Current Bot correction: **Treasure Seekers Solo Progress**. Runtime/frontend: `1.7.1-resynthesis-a2h5`; schema **15**; hosted sync **1**; Portal Action protocol **32**; prefix `!`.
 
-Stream/Rally Ventures are now 100% encounters. Portal equipment adds item levels, highest-to-lowest gear sorting, browser-local Favorites, best-first weapon Job recommendations, no named replacement copy, and collapsible Recent Activity. Previous v1.7.1 fixes remain intact. No migration or reset.
+Solo Venture treasure discoveries now count toward Fellowship `treasure` activity, including the active **Treasure Seekers** weekly order and **Treasure Hunters** deed. The paired Web remains the finalized Armor Best Use & UI Corrections build with Rally **100/0**, Solo **80/20**, compact equipment cards, ☆/★ Favorites, best-first Weapon/Armor Job use, level-descending gear, and no `Replaces X` copy. No migration or reset.

@@ -1,7 +1,9 @@
 # Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 5
 
-**Decision: PASS — Venture & Equipment UX.**
+**Decision: PASS — Treasure Seekers Solo Progress.**
 
-Hotfix 5 makes Stream/Rally Ventures encounter-only and adds Portal equipment organization: level-first gear sorting, item levels, browser-local Favorites, best-first weapon Job recommendations, removal of named replacement copy, and collapsible Recent Activity.
+The missing link was isolated to the Solo treasure branch: it incremented `solo_venture_treasures` but did not call Fellowship `record_activity(..., "treasure")`. The branch now records one stage-scoped `treasure` event at chest discovery, using `solo_treasure:<player>:<run>:<stage>` for idempotency.
 
-Bot runtime `1.7.1-resynthesis-a2h5`; paired Web `1.7.1-resynthesis-a2h5`; schema **15**; hosted sync **1**; Portal protocol **32**; prefix `!`. No database migration or player reset. Hotfixes 1–4, Resynthesis, and the Alpha 2 Gold Saucer rebalance are carried forward.
+This advances weekly **Treasure Seekers**, the long-term **Treasure Hunters** deed, and any future Fellowship consumer of the same canonical `treasure` activity. Stream/Rally treasure handling remains compatible, while the current Hotfix 5 Rally rule stays **100% Encounter / 0% Treasure Chest** and Solo stays **80% / 20%**.
+
+Bot runtime `1.7.1-resynthesis-a2h5`; paired Web `1.7.1-resynthesis-a2h5`; schema **15**; hosted sync **1**; Portal protocol **32**; prefix `!`. No database migration or player reset.

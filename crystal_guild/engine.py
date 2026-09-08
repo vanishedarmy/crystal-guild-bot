@@ -2047,10 +2047,23 @@ class CrystalGuildEngine:
                 }
                 expedition["status"] = "choice"
                 self.db.update_record_stats(twitch_id, {"solo_venture_treasures": 1})
+                solo_treasure_notes = self.fellowship_system.record_activity(
+                    twitch_id,
+                    "treasure",
+                    renown=0,
+                    event_key=f"solo_treasure:{twitch_id}:{int(expedition.get('started_at', 0))}:{stage}",
+                )
                 self._solo_expedition_save(twitch_id, expedition)
                 if stage >= SOLO_EXPEDITION_MAX_STAGES:
-                    return self._solo_bank_spoils(twitch_id, expedition, outcome="complete")
-                return GameResult.success(f"SOLO VENTURE · STAGE {stage} — Treasure found: {item['name']}.", solo_expedition_stage_complete=True)
+                    result = self._solo_bank_spoils(twitch_id, expedition, outcome="complete")
+                    if solo_treasure_notes:
+                        result.messages = [*solo_treasure_notes[:2], *result.messages]
+                    return result
+                return GameResult.success(
+                    f"SOLO VENTURE · STAGE {stage} — Treasure found: {item['name']}.",
+                    *solo_treasure_notes[:2],
+                    solo_expedition_stage_complete=True,
+                )
 
         monster = self._solo_select_monster(p, region, stage)
         if not monster:

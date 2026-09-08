@@ -998,6 +998,44 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertGreater(self.game._cooldown_remaining("100", "solo_venture"), 0)
         self.assertEqual(self.game._cooldown_remaining("100", "venture"), 0)
 
+    def test_hotfix5_solo_treasure_advances_treasure_seekers_once(self):
+        self.db.execute("UPDATE players SET level=20 WHERE twitch_id='100'")
+        treasure_order = {
+            "id": "treasure_seekers",
+            "name": "Treasure Seekers",
+            "activity": "treasure",
+            "target": 25,
+            "renown": 300,
+            "personal_gil": 500,
+            "personal_renown": 25,
+            "description": "Discover Venture treasure chests.",
+        }
+        action = self.action(id="pa_solo_treasure_progress", type="SOLO_VENTURE", payload={})
+        with patch("crystal_guild.fellowship_system.weekly_orders", return_value=[treasure_order]), \
+             patch("crystal_guild.engine.SOLO_VENTURE_TREASURE_CHANCE", 1.0):
+            first = self.worker._execute(action)
+            replay = self.worker._execute(action)
+
+        self.assertTrue(first[0])
+        self.assertEqual(first[2], replay[2])
+        event = self.db.one(
+            "SELECT activity,renown,amount FROM fellowship_events WHERE event_key LIKE 'solo_treasure:100:%'"
+        )
+        self.assertIsNotNone(event)
+        self.assertEqual(str(event["activity"]), "treasure")
+        self.assertEqual(int(event["renown"]), 0)
+        self.assertEqual(int(event["amount"]), 1)
+        order = self.db.one(
+            "SELECT progress,target FROM fellowship_orders WHERE order_id='treasure_seekers' ORDER BY period_key DESC LIMIT 1"
+        )
+        self.assertIsNotNone(order)
+        self.assertEqual(int(order["progress"]), 1)
+        self.assertEqual(int(order["target"]), 25)
+        deed = self.db.one("SELECT progress,target FROM fellowship_deeds WHERE deed_id='treasure_hunters'")
+        self.assertIsNotNone(deed)
+        self.assertEqual(int(deed["progress"]), 1)
+        self.assertEqual(int(deed["target"]), 250)
+
     def test_v115_solo_encounter_is_player_paced_and_action_replay_safe(self):
         self.db.execute("UPDATE players SET level=20 WHERE twitch_id='100'")
         refreshed = self.game._player("100")

@@ -1,13 +1,16 @@
-# Upgrade to v1.7.1 Resynthesis Alpha 2 Hotfix 5
+# Upgrade — Hotfix 5 Treasure Seekers Solo Progress
 
-This is a **Bot-only Job Resource Persistence repair**. Deploy the Hotfix 3 Bot over v1.7.1 Resynthesis Alpha 2 Hotfix 2. The existing Alpha 2 Web build remains compatible and does not need to change.
+This is a **Bot-only logic correction** on top of the finalized Hotfix 5 Armor Best Use & UI Corrections package. The paired Web package does not change.
 
-Preserve the live `crystal_guild.db`, Twitch token database, persistent storage, and environment secrets. No database migration is required; schema remains **15** and Portal protocol remains **32**.
+Preserve the live `crystal_guild.db`, token database, persistent storage, and environment secrets. **No database migration** is required; schema remains **15** and Portal protocol remains **32**.
 
-On the first Hotfix 3 startup, the Bot performs a one-time compatibility repair for inactive MP/AP zeros written by the old refresh/normalization bug. It does not reset active resource pools, player progression, inventory, Jobs, Gold Saucer state, Retainers, or Resynthesis data.
+Deploy either the full Bot archive or the Bot incremental patch, then restart the Bot. Existing player progression, Fellowship state, current weekly-order progress, Gold Saucer state, Retainers, inventory, Jobs, Resynthesis, and all other persistent systems remain intact.
 
-After restart:
+Verification after restart:
 1. Confirm `!cgversion` reports `1.7.1-resynthesis-a2h5`.
-2. Switch from an MP Job to an AP Job (and vice versa) and confirm the destination resource meter is preserved/initialized rather than being erased by the switch.
-3. Switch back and confirm the original resource pool still has its prior value, subject only to the destination Job's normal maximum clamp.
-4. Confirm a legitimately depleted `0` resource remains `0` after switching away and back; Job swapping must not refill it.
+2. Find a treasure chest through Solo Venture.
+3. Reopen Fellowship Orders and confirm **Treasure Seekers** advances by exactly **1**.
+4. Repeating/retrying the same Portal action must not advance it a second time.
+5. Rally information remains **100% Encounter / 0% Treasure Chest** and Solo Venture remains **80% / 20%**.
+
+Historical Solo treasure discoveries are not retroactively assigned to the current weekly order because the pre-fix aggregate statistic cannot establish which order week each chest belonged to.
