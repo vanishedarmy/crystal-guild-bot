@@ -1,16 +1,14 @@
-# Upgrade — Hotfix 5 Treasure Seekers Solo Progress
+# Upgrade — Hotfix 5 Gear Favorites Authority Fix
 
-This is a **Bot-only logic correction** on top of the finalized Hotfix 5 Armor Best Use & UI Corrections package. The paired Web package does not change.
+**Deploy Bot and Web together.** This update advances local schema **15 → 16** and Portal Action protocol **32 → 33**. A mismatched Bot/Web pair will intentionally reject Portal actions.
 
-Preserve the live `crystal_guild.db`, token database, persistent storage, and environment secrets. **No database migration** is required; schema remains **15** and Portal protocol remains **32**.
+Preserve the live `crystal_guild.db`, token database, persistent storage, and environment secrets. On first Bot startup, Crystal Guild creates and verifies a `backups/pre_schema_16_*.db` backup before applying the additive `player_gear_favorites` migration. Existing players, inventory, progression, Retainers, Fellowship, Gold Saucer, Resynthesis, Ventures, Hunts, Trials/Raids, and Treasure Seekers progress remain intact.
 
-Deploy either the full Bot archive or the Bot incremental patch, then restart the Bot. Existing player progression, Fellowship state, current weekly-order progress, Gold Saucer state, Retainers, inventory, Jobs, Resynthesis, and all other persistent systems remain intact.
+After both components are deployed:
+1. Confirm `!cgversion` reports schema **16** and Portal protocol **33**.
+2. Open Equipment on a browser that previously held local Favorites; any legacy list is offered for authoritative migration automatically.
+3. Favorite or unfavorite one item and allow the Bot to process the queued preference action.
+4. Open/return to Equipment on mobile; the same Favorites should appear.
+5. Clearing all Favorites on one device must also propagate as an authoritative empty list.
 
-Verification after restart:
-1. Confirm `!cgversion` reports `1.7.1-resynthesis-a2h5`.
-2. Find a treasure chest through Solo Venture.
-3. Reopen Fellowship Orders and confirm **Treasure Seekers** advances by exactly **1**.
-4. Repeating/retrying the same Portal action must not advance it a second time.
-5. Rally information remains **100% Encounter / 0% Treasure Chest** and Solo Venture remains **80% / 20%**.
-
-Historical Solo treasure discoveries are not retroactively assigned to the current weekly order because the pre-fix aggregate statistic cannot establish which order week each chest belonged to.
+Hosted sync schema remains **1**. No new environment variables or sync keys are required.

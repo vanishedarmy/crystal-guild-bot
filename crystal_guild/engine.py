@@ -5499,6 +5499,55 @@ class CrystalGuildEngine:
         messages.append("Equip with !equip <item>. Inspect gear with !item <name>. Filter owned gear with !inventory equipment.")
         return GameResult.success(*messages)
 
+    def gear_favorites(self, twitch_id: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        rows = self.db.all(
+            "SELECT item_id FROM player_gear_favorites WHERE player_id=? ORDER BY created_at ASC, item_id ASC",
+            (twitch_id,),
+        )
+        favorites = [str(row["item_id"]) for row in rows]
+        return GameResult.success("Equipment Favorites ready.", favorite_item_ids=favorites)
+
+    def _normalize_gear_favorite_ids(self, item_ids: Any) -> tuple[list[str], str | None]:
+        if not isinstance(item_ids, list):
+            return [], "Favorites must be a list of equipment item IDs."
+        if len(item_ids) > 256:
+            return [], "Too many favorite equipment items."
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for raw in item_ids:
+            item_id = str(raw or "").strip()
+            if not item_id:
+                return [], "Favorite equipment item ID is missing."
+            item = self.data.items.get(item_id)
+            if not item or str(item.get("type") or "").lower() not in {"weapon", "armor", "accessory"}:
+                return [], f"Unknown equippable item: {item_id}."
+            if item_id in seen:
+                continue
+            seen.add(item_id)
+            normalized.append(item_id)
+        return normalized, None
+
+    def set_gear_favorites(self, twitch_id: str, item_ids: Any) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        normalized, error = self._normalize_gear_favorite_ids(item_ids)
+        if error:
+            return GameResult.fail(error)
+        with self.db.tx() as conn:
+            conn.execute("DELETE FROM player_gear_favorites WHERE player_id=?", (twitch_id,))
+            conn.executemany(
+                "INSERT INTO player_gear_favorites(player_id,item_id) VALUES (?,?)",
+                [(twitch_id, item_id) for item_id in normalized],
+            )
+            conn.execute("UPDATE players SET updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (twitch_id,))
+        return GameResult.success(
+            f"Saved {len(normalized)} equipment Favorite{'s' if len(normalized) != 1 else ''}.",
+            favorite_item_ids=normalized,
+        )
+
     def equip(self, twitch_id: str, item_query: str) -> GameResult:
         p = self._player(twitch_id)
         if not p:
@@ -11638,6 +11687,29 @@ class CrystalGuildEngine:
             result = operation()
             if self._player(twitch_id):
                 result.data["character_state"] = self._portal_character_state_data(twitch_id)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_set_gear_favorites(self, twitch_id: str, item_ids: Any, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        with self.db.tx() as conn:
+            normalized, error = self._normalize_gear_favorite_ids(item_ids)
+            if error:
+                result = GameResult.fail(error)
+                self._portal_action_store_sql(conn, action_id, result)
+                return result
+            conn.execute("DELETE FROM player_gear_favorites WHERE player_id=?", (twitch_id,))
+            conn.executemany(
+                "INSERT INTO player_gear_favorites(player_id,item_id) VALUES (?,?)",
+                [(twitch_id, item_id) for item_id in normalized],
+            )
+            conn.execute("UPDATE players SET updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (twitch_id,))
+            result = GameResult.success(
+                f"Saved {len(normalized)} equipment Favorite{'s' if len(normalized) != 1 else ''}.",
+                favorite_item_ids=normalized,
+            )
             self._portal_action_store_sql(conn, action_id, result)
             return result
 

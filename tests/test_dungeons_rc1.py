@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 class DungeonsRC1Tests(unittest.TestCase):
     def test_rc1_identity_and_feature_freeze(self):
         self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
         data = GameData(ROOT / "data")
         self.assertEqual(len(data.dungeons), 4)
 

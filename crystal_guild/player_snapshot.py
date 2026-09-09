@@ -626,7 +626,18 @@ class PortalRepository:
                 return (group, 0, str(entry.get("name") or "").lower())
 
             items.sort(key=inventory_sort_key)
-            return {"player": self._public_identity(player), "items": items}
+            favorite_item_ids = [
+                str(row["item_id"])
+                for row in conn.execute(
+                    "SELECT item_id FROM player_gear_favorites WHERE player_id=? ORDER BY created_at ASC, item_id ASC",
+                    (player_id,),
+                ).fetchall()
+            ]
+            return {
+                "player": self._public_identity(player),
+                "items": items,
+                "favorite_item_ids": favorite_item_ids,
+            }
 
     def hunts(self, key: str) -> dict[str, Any] | None:
         with self.connect() as conn:

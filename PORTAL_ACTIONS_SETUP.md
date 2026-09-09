@@ -1,5 +1,5 @@
-# Portal Actions — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 3
+# Portal Actions — Hotfix 5 Gear Favorites Authority Fix
 
-Portal Action protocol remains **32**. Hotfix 3 changes Bot-side MP/AP persistence only and adds no new Portal action type. The existing v1.7.1 Resynthesis Alpha 2 Web build (`1.7.1-resynthesis-a2`) remains compatible.
+Portal Action protocol is **33**. The new `SET_GEAR_FAVORITES` action persists the signed-in player's complete equipment Favorite set in the authoritative Bot database. It is preference-only: it does not reset Long Rest inactivity, does not affect combat, and uses normal action idempotency/replay receipts.
 
-After a Job-switch action completes, the normal CHARACTER_STATE refresh should show the preserved/current resource family immediately. No hosted queue, OAuth, sync-key, or environment change is required.
+Deploy the protocol-33 Bot and Web together. Existing OAuth, sync key, and environment configuration remain unchanged.

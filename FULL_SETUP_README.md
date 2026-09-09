@@ -1,16 +1,16 @@
 # Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 Setup
 
-**Hotfix 3 note:** MP/AP resource families now persist correctly across Job switches. Refreshes and equipment normalization no longer erase the inactive resource family. Existing Alpha 2 Web remains compatible.
+**Current Hotfix 5 note:** Gear Favorites now persist in the authoritative Crystal Guild player database. Deploy the matching Bot and Web together; the Bot performs an automatic schema **15 → 16** migration after creating a verified `pre_schema_16_*.db` backup. No player reset occurs.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Replace the Bot source and restart the worker. No schema migration or player reset is required.
+Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. The additive schema 15 → 16 migration is automatic and does not reset players.
 
 ## Release verification
 - Bot runtime → `1.7.1-resynthesis-a2h5`
 - Paired Web → `1.7.1-resynthesis-a2h5`
-- Local DB schema → **15**
+- Local DB schema → **16**
 - Hosted sync schema → **1**
-- Portal Action protocol → **32**
+- Portal Action protocol → **33**
 - Twitch prefix → `!`
 
 ## Hotfix verification

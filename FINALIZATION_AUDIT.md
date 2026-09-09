@@ -1,9 +1,9 @@
-# Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 5
+# Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 5 — Gear Favorites Authority Fix
 
-**Decision: PASS — Treasure Seekers Solo Progress.**
+**Decision: PASS — Favorites now use Crystal Guild's authoritative player-state model.**
 
-The missing link was isolated to the Solo treasure branch: it incremented `solo_venture_treasures` but did not call Fellowship `record_activity(..., "treasure")`. The branch now records one stage-scoped `treasure` event at chest discovery, using `solo_treasure:<player>:<run>:<stage>` for idempotency.
+The previous hosted-only implementation could leave different devices observing different preference copies. This Resynthesis Hotfix 5 correction moves persistence into the local player database, adds a replay-safe Portal action, carries the private favorite list through normal player sync, and keeps the hosted preference row only as an in-flight/migration bridge.
 
-This advances weekly **Treasure Seekers**, the long-term **Treasure Hunters** deed, and any future Fellowship consumer of the same canonical `treasure` activity. Stream/Rally treasure handling remains compatible, while the current Hotfix 5 Rally rule stays **100% Encounter / 0% Treasure Chest** and Solo stays **80% / 20%**.
+The authoritative empty-list case, cross-session hosted visibility, public-data privacy, retry safety, rapid last-write behavior, and schema-15 migration backup were all covered.
 
-Bot runtime `1.7.1-resynthesis-a2h5`; paired Web `1.7.1-resynthesis-a2h5`; schema **15**; hosted sync **1**; Portal protocol **32**; prefix `!`. No database migration or player reset.
+Contract: runtime/frontend `1.7.1-resynthesis-a2h5`; local schema **16**; hosted sync **1**; Portal protocol **33**; prefix `!`. Bot and Web must be deployed together. No player reset.

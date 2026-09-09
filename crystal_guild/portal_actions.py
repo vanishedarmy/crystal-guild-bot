@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 32
+ACTION_PROTOCOL_VERSION = 33
 
 
 class PortalActionWorker:
@@ -130,7 +130,7 @@ class PortalActionWorker:
                 continue
             action_type = str(action.get("type") or "").strip().upper()
             twitch_id = str(action.get("twitch_id") or "").strip()
-            track_titles = action_type not in {"RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT"}
+            track_titles = action_type not in {"RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT", "SET_GEAR_FAVORITES"}
             title_before = self._player_title_ids(twitch_id) if track_titles else set()
             ok, message, data = self._execute(action)
             if ok:
@@ -300,6 +300,7 @@ class PortalActionWorker:
         passive_state_actions = {
             "CHARACTER_STATE", "SHOP_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
             "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE",
+            "SET_GEAR_FAVORITES",
         }
         if action_type not in passive_state_actions:
             # Only intentional Portal mutations reset the Long Rest inactivity
@@ -317,6 +318,12 @@ class PortalActionWorker:
             if slot not in {"weapon", "armor", "accessory"}:
                 return False, "Portal unequip request has an invalid equipment slot.", {}
             result = self.game.unequip(twitch_id, slot)
+            return self._game_result(result)
+        if action_type == "SET_GEAR_FAVORITES":
+            if set(payload) != {"favorites"} or not isinstance(payload.get("favorites"), list):
+                return False, "Portal Favorites request is invalid.", {}
+            action_id = str(action.get("id") or "")
+            result = self.game.portal_set_gear_favorites(twitch_id, payload.get("favorites"), action_id)
             return self._game_result(result)
         if action_type == "SET_TITLE":
             if set(payload) != {"title_id"}:

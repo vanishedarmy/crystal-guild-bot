@@ -47,9 +47,9 @@ class TrailsRaidsBeta2Tests(unittest.TestCase):
 
     def test_beta2_identity_keeps_schema10_protocol25(self):
         self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
-        self.assertEqual(self.db.schema_version(), 15)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
+        self.assertEqual(self.db.schema_version(), 16)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
 
     def test_overlay_reports_action_readiness_without_private_ids(self):
         self._start("ifrit")

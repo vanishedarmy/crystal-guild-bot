@@ -41,9 +41,9 @@ class TrailsRaidsBeta3Tests(unittest.TestCase):
 
     def test_beta3_identity_keeps_schema10_protocol25(self):
         self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
-        self.assertEqual(self.db.schema_version(), 15)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
+        self.assertEqual(self.db.schema_version(), 16)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
 
     def test_cross_connection_action_queues_merge_instead_of_clobbering(self):
         self._start()

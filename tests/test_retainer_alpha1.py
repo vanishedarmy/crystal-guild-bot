@@ -39,9 +39,9 @@ class RetainerServiceAlpha1Tests(unittest.TestCase):
 
     def test_alpha1_contract_schema_protocol_and_default_retainer(self):
         self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
-        self.assertEqual(self.db.schema_version(), 15)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
+        self.assertEqual(self.db.schema_version(), 16)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
         state = self.state()
         self.assertEqual(state["retainer"]["name"], "Guild Retainer")
         self.assertEqual(state["retainer"]["rank"], 1)

@@ -43,9 +43,9 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
 
     def test_alpha5_contract_opens_triple_triad_with_schema_13_protocol_29(self):
         self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 15)
-        self.assertEqual(self.db.schema_version(), 15)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 32)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
+        self.assertEqual(self.db.schema_version(), 16)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
         state = self.state()
         attraction = next(row for row in state["attractions"] if row["id"] == "triple_triad")
         self.assertEqual(attraction["status"], "open")
