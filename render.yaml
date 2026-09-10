@@ -35,7 +35,7 @@ services:
       - key: PORTAL_SYNC_SECONDS
         value: "5"
       - key: PORTAL_SYNC_HEARTBEAT_SECONDS
-        value: "30"
+        value: "60"
       - key: PORTAL_SYNC_TIMEOUT_SECONDS
         value: "10"
       - key: PORTAL_SYNC_VERIFY_TLS

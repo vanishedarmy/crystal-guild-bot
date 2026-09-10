@@ -1,13 +1,9 @@
-# Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 5 — Full Rest & Combat Continuity
+# Finalization Audit — Crystal Guild v1.7.1 Resynthesis Alpha 2 Hotfix 5 — HTTP Response Efficiency
 
-**Decision: PASS — full-character recovery and combat termination now follow one consistent rule set.**
+**Decision: PASS — response reduction is event-first and preserves gameplay responsiveness.**
 
-Rest is character-wide: HP and both persistent MP/AP families become fully refreshed, with the selected Job resolving that full state at its own resource maximum. This prevents stale or zero inactive resources without introducing a Job-switch refill exploit.
+The optimization reduces both idle response count and repeated response bytes rather than simply slowing every request. Live SSE revisions and exact gameplay deadlines remain the fast path; HTTP timers are recovery paths. Bot action delivery uses long polling, hosted sync heartbeats avoid redundant shared snapshot uploads, and unchanged dynamic JSON can terminate as 304 with no body.
 
-Combat is outcome-driven: round count cannot create a defeat. Living fights persist through Rally/normal encounters, Solo Ventures, Expeditions, Dungeons, Hunts, and administrative encounter/Raid resolution until a KO, enemy defeat, or deliberate supported retreat/withdrawal occurs. Technical resolver watchdogs preserve rather than terminate active combat.
+No gameplay, economy, progression, combat outcome, visual design, database schema, hosted sync schema, or Portal action protocol semantics are changed.
 
-The paired Web removes obsolete Dungeon round-limit presentation and updates Guide/What's New copy. Existing UI Revert & Button Fit styling and schema-16/protocol-33 Favorites authority remain unchanged.
-
-Source regression: **704/704 Bot**, **588/588 frontend**, **71/71 hosted Web/API**. No migration or player reset.
-
-Release contract: runtime/frontend `1.7.1-resynthesis-a2h5`; local schema **16**; hosted sync **1**; Portal protocol **33**.
+Runtime/frontend contract: `1.7.1-resynthesis-a2h5`.

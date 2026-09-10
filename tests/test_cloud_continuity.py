@@ -11,7 +11,7 @@ from crystal_guild.portal_sync import PortalSyncClient
 
 
 class CloudContinuitySyncTests(unittest.TestCase):
-    def make_client(self, root: Path):
+    def make_client(self, root: Path, *, missing_snapshots: bool = False):
         db_path = root / "guild.db"
         db_path.write_bytes(b"db")
         overlay_path = root / "state.json"
@@ -41,12 +41,12 @@ class CloudContinuitySyncTests(unittest.TestCase):
             def _post(self, path, payload):
                 self.posts.append((path, payload))
                 if path == "/api/sync/manifest":
-                    return {"ok": True, "removed": 0, "missing": []}
+                    return {"ok": True, "removed": 0, "missing": [], "needs_fellowship": missing_snapshots, "needs_overlay": missing_snapshots}
                 return {"ok": True}
 
         return Client(), overlay_path
 
-    def test_heartbeat_republishes_fellowship_and_overlay_for_web_restart_recovery(self):
+    def test_idle_heartbeat_uses_manifest_only_when_hosted_snapshots_exist(self):
         with tempfile.TemporaryDirectory() as tmp:
             client, _ = self.make_client(Path(tmp))
             client.sync_once()
@@ -54,9 +54,19 @@ class CloudContinuitySyncTests(unittest.TestCase):
             client._last_heartbeat = time.monotonic() - 10
             client.sync_once()
             paths = [path for path, _ in client.posts]
+            self.assertEqual(paths, ["/api/sync/manifest"])
+
+    def test_manifest_recovers_missing_fellowship_and_overlay_after_web_restart(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            client, _ = self.make_client(Path(tmp), missing_snapshots=True)
+            client.sync_once()
+            client.posts.clear()
+            client._last_heartbeat = time.monotonic() - 10
+            client.sync_once()
+            paths = [path for path, _ in client.posts]
+            self.assertIn("/api/sync/manifest", paths)
             self.assertIn("/api/sync/fellowship", paths)
             self.assertIn("/api/sync/overlay", paths)
-            self.assertIn("/api/sync/manifest", paths)
 
     def test_overlay_file_change_syncs_without_database_change(self):
         with tempfile.TemporaryDirectory() as tmp:

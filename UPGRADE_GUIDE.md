@@ -1,13 +1,11 @@
-# Upgrade Guide — Full Rest & Combat Continuity
+# Upgrade — HTTP Response Efficiency
 
-Deploy **Bot and Web together** for this correction. The Bot contains the Rest/resource and encounter-continuity fixes; the Web removes obsolete Dungeon round-limit presentation and updates player-facing Guide copy.
+**Deploy Bot and Web together.** The transport changes are coordinated even though runtime, database schema, and Portal protocol numbers remain unchanged.
 
-Preserve the live player database, token database, environment secrets, and persistent runtime files. Local schema remains **16**, hosted sync remains **1**, and Portal Action protocol remains **33**. No migration or player reset is performed by this correction. If upgrading from a pre-Favorites-authority installation, complete the existing **15 → 16** migration first using its verified `backups/pre_schema_16_*.db` backup path before applying this package.
+Current contract: runtime `1.7.1-resynthesis-a2h5`, schema **16**, hosted sync **1**, Portal Action protocol **33**, Twitch command prefix `!`.
 
-After deployment, verify:
+If you are currently running **Full Rest & Combat Continuity**, apply both incremental patches. For a clean replacement, use the Complete archive. Preserve `crystal_guild.db`, backups, Twitch/token data, environment secrets, and other persistent runtime files.
 
-1. Complete a Camp/Rest while on an MP Job, switch to an AP Job, and confirm AP is at that Job's full maximum. Repeat in the opposite direction.
-2. Switch between two Jobs with different maxima for the same resource family after Rest and confirm each resolves at its own maximum.
-3. Let a living encounter advance beyond round 12; it must continue while both sides remain alive.
-4. Dungeon combat displays `Round N` without a `/ 12` or other defeat-limit denominator.
-5. An explicit retreat still resolves through its normal retreat path.
+No database migration or player reset is performed. `PORTAL_SYNC_HEARTBEAT_SECONDS` now defaults to **60** and the hosted Web stale threshold defaults to **150** seconds; existing explicit environment overrides may be reviewed if you want the packaged defaults.
+
+Existing installations that previously completed the schema **15 → 16** Gear Favorites migration retain that state and its verified `backups/pre_schema_16_*.db` backup; this HTTP-efficiency release adds no further migration.

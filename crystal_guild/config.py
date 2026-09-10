@@ -68,7 +68,7 @@ class Settings:
     portal_public_url: str = ""
     portal_sync_key: str = ""
     portal_sync_seconds: float = 5.0
-    portal_sync_heartbeat_seconds: float = 30.0
+    portal_sync_heartbeat_seconds: float = 60.0
     portal_sync_timeout_seconds: float = 10.0
     portal_sync_verify_tls: bool = True
     portal_sync_in_process: bool = False
@@ -138,7 +138,7 @@ class Settings:
             portal_public_url=os.getenv("PORTAL_PUBLIC_URL", "").strip(),
             portal_sync_key=os.getenv("PORTAL_SYNC_KEY", "").strip(),
             portal_sync_seconds=_env_float("PORTAL_SYNC_SECONDS", 5.0, 2.0),
-            portal_sync_heartbeat_seconds=_env_float("PORTAL_SYNC_HEARTBEAT_SECONDS", 30.0, 5.0),
+            portal_sync_heartbeat_seconds=_env_float("PORTAL_SYNC_HEARTBEAT_SECONDS", 60.0, 5.0),
             portal_sync_timeout_seconds=_env_float("PORTAL_SYNC_TIMEOUT_SECONDS", 10.0, 2.0),
             portal_sync_verify_tls=_env_bool("PORTAL_SYNC_VERIFY_TLS", True),
             portal_sync_in_process=_env_bool("PORTAL_SYNC_IN_PROCESS", cloud),

@@ -41,7 +41,7 @@ class PortalSyncClient:
         interval: float = 5.0,
         timeout: float = 10.0,
         verify_tls: bool = True,
-        heartbeat_seconds: float = 30.0,
+        heartbeat_seconds: float = 60.0,
         overlay_state_path: str | Path | None = None,
         owner_twitch_id: str | None = None,
         fellowship_prepare: Callable[[], Any] | None = None,
@@ -234,25 +234,26 @@ class PortalSyncClient:
         uploaded: set[str] = set()
         overlay_uploaded = 0
 
-        # Heartbeat refreshes are intentionally authoritative, not hash-only. This
-        # lets an ephemeral hosted Web service rebuild Fellowship and Overlay state
-        # after a restart even when the local Guild database has not changed.
-        if source_changed or heartbeat_due:
+        fellowship_payload = None
+        fellowship_digest = None
+        if source_changed:
             if stopping():
                 self._force_full = True
                 return {"players": len(usernames), "changed": changed, "removed": 0, "overlay": 0}
             fellowship_payload = self.build_fellowship_snapshot()
             if fellowship_payload is not None:
                 fellowship_digest = self.snapshot_hash(fellowship_payload)
-                if force or heartbeat_due or self._fellowship_hash != fellowship_digest:
+                if force or self._fellowship_hash != fellowship_digest:
                     self._post("/api/sync/fellowship", fellowship_payload)
                     self._fellowship_hash = fellowship_digest
 
-        if overlay_changed or heartbeat_due:
+        overlay_payload = None
+        overlay_digest = None
+        if overlay_changed:
             overlay_payload = self.build_overlay_snapshot()
             if overlay_payload is not None:
                 overlay_digest = self.snapshot_hash(overlay_payload)
-                if force or heartbeat_due or self._overlay_hash != overlay_digest:
+                if force or self._overlay_hash != overlay_digest:
                     self._post("/api/sync/overlay", overlay_payload)
                     self._overlay_hash = overlay_digest
                     overlay_uploaded = 1
@@ -291,6 +292,19 @@ class PortalSyncClient:
                 },
             )
             removed = int(response.get("removed", 0))
+            if response.get("needs_fellowship"):
+                if fellowship_payload is None:
+                    fellowship_payload = self.build_fellowship_snapshot()
+                if fellowship_payload is not None:
+                    self._post("/api/sync/fellowship", fellowship_payload)
+                    self._fellowship_hash = self.snapshot_hash(fellowship_payload)
+            if response.get("needs_overlay"):
+                if overlay_payload is None:
+                    overlay_payload = self.build_overlay_snapshot()
+                if overlay_payload is not None:
+                    self._post("/api/sync/overlay", overlay_payload)
+                    self._overlay_hash = self.snapshot_hash(overlay_payload)
+                    overlay_uploaded = 1
             missing = [str(name).lower() for name in response.get("missing", [])]
             for username in missing:
                 if stopping():
@@ -483,7 +497,7 @@ def main() -> None:
         interval=float(os.getenv("PORTAL_SYNC_SECONDS", "5")),
         timeout=float(os.getenv("PORTAL_SYNC_TIMEOUT_SECONDS", "10")),
         verify_tls=env_bool("PORTAL_SYNC_VERIFY_TLS", True),
-        heartbeat_seconds=float(os.getenv("PORTAL_SYNC_HEARTBEAT_SECONDS", "30")),
+        heartbeat_seconds=float(os.getenv("PORTAL_SYNC_HEARTBEAT_SECONDS", "60")),
         overlay_state_path=os.getenv("OVERLAY_STATE_PATH", "overlay/state.json"),
         owner_twitch_id=os.getenv("TWITCH_OWNER_ID", ""),
     )

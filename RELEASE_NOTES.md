@@ -1,19 +1,21 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Full Rest & Combat Continuity
+# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — HTTP Response Efficiency
 
-This correction fixes two core combat-state rules.
+This hotfix reduces unnecessary HTTP response volume and repeated payload transfer while preserving live Portal behavior.
 
-## Full-character Rest
-
-Camp completion, Long Rest, Tent, stream-start recovery, and full-recovery administration now restore the character as a whole. HP is restored to maximum and both persistent Job-resource families are marked fully refreshed. Because MP/AP maxima can differ between Jobs, the database stores an explicit full-resource state rather than one Job's concrete number. Selecting any MP- or AP-based Job after the Rest therefore resolves that family at that Job's own maximum. Ordinary Job switching does not refill a legitimately depleted resource.
-
-## Combat continuity
-
-Round count is telemetry, not a defeat condition. Rally/normal encounters, Solo Ventures, Expeditions, Dungeons, Hunts, and admin-assisted encounter/Raid resolution no longer manufacture a loss after a fixed number of rounds. Combat ends only when the enemy is defeated, the hero/participating party is KO'd, or a supported retreat/withdrawal is deliberately initiated. Technical auto-resolution watchdogs may pause an automated resolver, but preserve the living battle instead of converting it into defeat.
-
-Dungeon pressure encounters retain opening statuses/resource strain, but their former round-count loss mechanics and UI denominator are removed. Player Guide/What's New copy now documents the same rule.
+## Response-efficiency changes
+- Bot Portal action claims use server long polling (up to 20 seconds) instead of repeated empty 3-second responses.
+- Browser action completion waits use a single-action long-poll endpoint instead of repeatedly downloading action history.
+- Idle Bot sync heartbeat is manifest-first: unchanged Fellowship and Overlay snapshots are not retransmitted unless the hosted mirror reports them missing.
+- Sync heartbeat moves to 60 seconds; hosted stale tolerance moves to 150 seconds so one delayed heartbeat does not falsely mark the Bot offline.
+- Dynamic JSON reads use ETags and return HTTP 304 with an empty body when unchanged.
+- SSE is the primary live update signal. Health, Favorites, Raid, Adventure Board, and authentication HTTP timers are fallback/recovery paths.
+- SSE keepalive moves to 20 seconds with a 50-second client freshness window.
+- Auth fallback is 120 seconds while visible, with focus/page-return throttling.
+- Equipment Favorites fallback is 120 seconds while live revisions/focus remain immediate.
+- Raid Board fallback is 60 seconds for overlay state and 120 seconds for records.
+- The standalone Raid Overlay stops recurring JSON polling while SSE is healthy and uses a 60-second recovery fallback only when the stream is stale.
+- Adventure Board fallback is 30 seconds for active encounter/Expedition/Dungeon paths and 60 seconds for timed Hunts; exact gameplay deadlines still trigger immediate refreshes.
+- Unclaimable orphan actions do not cause rapid long-poll response loops.
 
 ## Compatibility
-
-The UI Revert & Button Fit presentation remains intact. Authoritative cross-device Gear Favorites remain under schema **16** / Portal protocol **33**. Treasure Seekers Solo progress, Rally 100% Encounter / 0% Treasure, Solo 80% / 20%, Weapon + Armor Best use, mobile Guide/Retainer cleanup, ☆/★ controls, level-descending gear, and removal of `Replaces X` remain intact.
-
-Runtime/frontend remains `1.7.1-resynthesis-a2h5`; hosted sync remains **1**. This correction requires no database migration and no player reset.
+Full Rest & Combat Continuity, authoritative cross-device Gear Favorites, Treasure Seekers Solo progress, Rally 100/0, Solo 80/20, Weapon + Armor Best Use, the reverted visual design, and button-fit corrections remain intact. Runtime stays `1.7.1-resynthesis-a2h5`; local schema **16**, hosted sync **1**, Portal protocol **33**. No migration or player reset.

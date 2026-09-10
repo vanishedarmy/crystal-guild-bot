@@ -1,24 +1,10 @@
-# Validation Report — Full Rest & Combat Continuity
+# Validation Report — HTTP Response Efficiency
 
-**PASS**
+**PASS — source regression complete before packaging.**
 
-## Release contract
-- Runtime/frontend: `1.7.1-resynthesis-a2h5`
-- Local DB schema: **16**
-- Hosted sync schema: **1**
-- Portal Action protocol: **33**
-- New database migration: **none**
-- Player reset: **none**
+- Bot: **705 / 705 PASS**
+- Frontend: **595 / 595 PASS**
+- Hosted Web/API: **76 / 76 PASS**
+- Focused coverage includes Bot long-poll transport, manifest-only idle heartbeat/recovery, dynamic ETag → 304/no-body behavior, single-action browser long polling, action wake-up, orphan-action protection, SSE-first fallback policy, and reduced high-frequency timers.
 
-## Source regression
-- Bot: **704 / 704 PASS**
-- Frontend: **588 / 588 PASS**
-- Hosted Web/API: **71 / 71 PASS**
-
-## Focused behavior
-- Full Rest restores HP and both MP/AP families across Job switches.
-- Same-family Jobs with different resource maxima resolve fully after Rest.
-- Portal snapshots interpret the full-resource state at the selected Job's maximum.
-- Rally/normal encounter, Solo Venture, Expedition, Dungeon, Hunt, admin encounter, and admin Raid paths no longer use round count as a defeat condition.
-- Technical auto-resolution watchdogs preserve living combat instead of forcing defeat.
-- Dungeon public/UI state uses unlimited round telemetry and no obsolete denominator.
+Release contract remains schema **16**, hosted sync **1**, Portal protocol **33**. No migration/reset. Final packaging and extracted-archive gates are recorded in the external packaging report.

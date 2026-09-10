@@ -47,6 +47,8 @@ class PortalActionWorker:
         self.sync_key = str(sync_key or "")
         self.poll_seconds = max(1.0, float(poll_seconds))
         self.timeout_seconds = max(2.0, float(timeout_seconds))
+        self.long_poll_seconds = 20.0
+        self._server_long_poll = False
         self.verify_tls = bool(verify_tls)
         self.notify_result = notify_result
         self.wake_encounter = wake_encounter
@@ -85,7 +87,7 @@ class PortalActionWorker:
         self._stop.set()
         self._wake.set()
         thread = self._thread
-        wait = max(5.0, self.timeout_seconds + 2.0) if timeout is None else max(0.0, float(timeout))
+        wait = max(5.0, self.long_poll_seconds + self.timeout_seconds + 2.0) if timeout is None else max(0.0, float(timeout))
         if thread and thread.is_alive():
             thread.join(timeout=wait)
         with self._state_lock:
@@ -111,8 +113,14 @@ class PortalActionWorker:
             return 0
         response = self._post(
             "/api/actions/claim",
-            {"worker_id": self.worker_id, "limit": 8, "protocol_version": ACTION_PROTOCOL_VERSION},
+            {
+                "worker_id": self.worker_id,
+                "limit": 8,
+                "protocol_version": ACTION_PROTOCOL_VERSION,
+                "wait_seconds": int(self.long_poll_seconds),
+            },
         )
+        self._server_long_poll = bool(response.get("long_poll"))
         protocol = int(response.get("protocol_version") or 0)
         if protocol != ACTION_PROTOCOL_VERSION:
             raise RuntimeError(f"Hosted Portal action protocol mismatch: {protocol} != {ACTION_PROTOCOL_VERSION}")
@@ -852,7 +860,7 @@ class PortalActionWorker:
                     self._last_success = int(time.time())
                     self._last_error = ""
                     self._processed += processed
-                delay = 0.4 if processed else self.poll_seconds
+                delay = 0.4 if processed else (0.05 if self._server_long_poll else self.poll_seconds)
             except Exception as exc:
                 failures += 1
                 delay = min(60.0, self.poll_seconds * (2 ** min(failures, 4)))
@@ -881,8 +889,15 @@ class PortalActionWorker:
         context = None
         if self.public_url.lower().startswith("https://") and not self.verify_tls:
             context = ssl._create_unverified_context()  # noqa: SLF001 - explicit local-testing opt-out.
+        request_timeout = self.timeout_seconds
+        if path == "/api/actions/claim":
+            try:
+                wait_seconds = max(0.0, float(payload.get("wait_seconds") or 0.0))
+            except (TypeError, ValueError):
+                wait_seconds = 0.0
+            request_timeout = max(request_timeout, wait_seconds + self.timeout_seconds)
         try:
-            with urlopen(request, timeout=self.timeout_seconds, context=context) as response:
+            with urlopen(request, timeout=max(2.0, float(request_timeout)), context=context) as response:
                 data = json.loads(response.read().decode("utf-8"))
         except HTTPError as exc:
             text = exc.read().decode("utf-8", errors="replace")
