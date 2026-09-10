@@ -1,17 +1,24 @@
-# Validation Report — Hotfix 5 Gear Favorites Authority Fix
+# Validation Report — Full Rest & Combat Continuity
 
 **PASS**
 
+## Release contract
 - Runtime/frontend: `1.7.1-resynthesis-a2h5`
 - Local DB schema: **16**
 - Hosted sync schema: **1**
 - Portal Action protocol: **33**
-- Bot regression: **696 / 696 PASS**
-- Hosted Web/API regression: **71 / 71 PASS**
-- Frontend regression: **582 / 582 PASS**
-- Focused authoritative Favorites persistence/replay/clear tests: **PASS**
-- Simulated schema 15 → 16 migration + verified `pre_schema_16` backup: **PASS**
-- Public inventory privacy check for `favorite_item_ids`: **PASS**
-- Prior hosted/browser Favorites migration path: **PASS**
+- New database migration: **none**
+- Player reset: **none**
 
-No player reset is required. The schema migration is additive and automatically backed up before application.
+## Source regression
+- Bot: **704 / 704 PASS**
+- Frontend: **588 / 588 PASS**
+- Hosted Web/API: **71 / 71 PASS**
+
+## Focused behavior
+- Full Rest restores HP and both MP/AP families across Job switches.
+- Same-family Jobs with different resource maxima resolve fully after Rest.
+- Portal snapshots interpret the full-resource state at the selected Job's maximum.
+- Rally/normal encounter, Solo Venture, Expedition, Dungeon, Hunt, admin encounter, and admin Raid paths no longer use round count as a defeat condition.
+- Technical auto-resolution watchdogs preserve living combat instead of forcing defeat.
+- Dungeon public/UI state uses unlimited round telemetry and no obsolete denominator.

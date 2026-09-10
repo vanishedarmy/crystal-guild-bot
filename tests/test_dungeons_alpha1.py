@@ -127,6 +127,27 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         player = self.db.one("SELECT current_hp FROM players WHERE twitch_id='140'")
         self.assertGreater(int(player["current_hp"]), 0)
 
+    def test_dungeon_battle_continues_past_legacy_round_limit_while_both_sides_live(self):
+        self.assertTrue(self.game.dungeon_start("140", "forgotten_ossuary").ok)
+        self.assertTrue(self.game.dungeon_continue("140").ok)
+        state = self.game._dungeon_load("140")
+        state["combat"]["encounter"]["round"] = 12
+        state["combat"]["encounter"]["max_rounds"] = 0
+        state["combat"]["encounter"]["monster_hp"] = 99999
+        state["combat"]["encounter"]["monster_max_hp"] = 99999
+        state["combat"]["roster"]["140"]["hp"] = max(1, int(state["combat"]["roster"]["140"]["hp"]))
+        self.game._dungeon_save("140", state)
+        from unittest.mock import patch
+        with patch.object(self.game, "_resolve_active_attack", return_value=None), patch.object(self.game, "_solo_resolve_enemy_intent", return_value=None):
+            result = self.game.dungeon_action("140", "attack")
+        self.assertTrue(result.ok, result.messages)
+        after = self.game._dungeon_load("140")
+        self.assertIsNotNone(after)
+        self.assertEqual(after["status"], "combat")
+        self.assertEqual(int(after["combat"]["encounter"]["round"]), 13)
+        self.assertGreater(int(after["combat"]["roster"]["140"]["hp"]), 0)
+        self.assertGreater(int(after["combat"]["encounter"]["monster_hp"]), 0)
+
     def test_retreat_banks_half_cache_and_clears_run(self):
         self.assertTrue(self.game.dungeon_start("140", "forgotten_ossuary").ok)
         state = self.game._dungeon_load("140")

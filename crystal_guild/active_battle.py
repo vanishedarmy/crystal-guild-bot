@@ -13,6 +13,13 @@ from typing import Any, Iterable
 from .balance import battle_ap_pool, battle_mp_pool
 
 
+
+# Persistent resource sentinel used by full-character Rest.  A concrete MP/AP
+# amount is shared across Jobs, whose maxima can differ.  -1 means the family
+# is fully refreshed regardless of which Job is selected next; consumers must
+# present it as that Job's current maximum.
+FULL_RESOURCE_SENTINEL = -1
+
 # ---------------------------------------------------------------------------
 # Battle vocabulary
 # ---------------------------------------------------------------------------

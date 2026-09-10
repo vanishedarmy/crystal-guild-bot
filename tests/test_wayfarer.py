@@ -242,15 +242,19 @@ class WayfarerSoloVentureTests(unittest.TestCase):
         self.assertEqual(self.game._inventory_qty("1", "potion"), before_potion)
         self.assertEqual(lost.data["solo_result"]["lost_spoils"]["items"], ["Potion"])
 
-    def test_round_safety_limit_ends_run_without_counting_a_character_death(self):
+    def test_solo_venture_continues_past_legacy_round_limit_while_both_sides_live(self):
         state = self.keep_monster_alive(self.begin_encounter())
         encounter = state["combat"]["encounter"]
-        encounter["round"] = int(encounter.get("max_rounds", 12))
+        encounter["round"] = 12
+        state["combat"]["roster"]["1"]["hp"] = max(1, int(state["combat"]["roster"]["1"]["hp"]))
         self.game._solo_expedition_save("1", state)
         before_deaths = int(self.game._player("1")["deaths"])
-        with patch.object(self.game, "_solo_resolve_enemy_intent", return_value=None):
+        with patch.object(self.game, "_resolve_active_attack", return_value=None), patch.object(self.game, "_solo_resolve_enemy_intent", return_value=None):
             result = self.game.solo_expedition_action("1", "attack")
-        self.assertTrue(result.ok)
+        self.assertTrue(result.ok, result.messages)
+        after = self.game._solo_expedition_load("1")
+        self.assertIsNotNone(after)
+        self.assertEqual(int(after["combat"]["encounter"]["round"]), 13)
         self.assertEqual(int(self.game._player("1")["deaths"]), before_deaths)
         self.assertGreater(int(self.game._player("1")["current_hp"]), 0)
 

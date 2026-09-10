@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from crystal_guild.active_battle import FULL_RESOURCE_SENTINEL
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine, LONG_REST_SECONDS
@@ -49,12 +50,40 @@ class PassiveRecoveryTests(unittest.TestCase):
 
         result = self.game.record_player_action("1", now=start + LONG_REST_SECONDS)
         self.assertTrue(result["refreshed"])
-        row = self.db.one("SELECT current_hp,current_mp,current_ap,camp_until FROM players WHERE twitch_id='1'")
+        row = self.db.one("SELECT * FROM players WHERE twitch_id='1'")
         max_hp, max_mp, max_ap = self._max_resources()
         self.assertEqual(int(row["current_hp"]), max_hp)
-        self.assertEqual(int(row["current_mp"] or 0), max_mp)
-        self.assertEqual(int(row["current_ap"] or 0), max_ap)
+        self.assertEqual(int(row["current_mp"]), FULL_RESOURCE_SENTINEL)
+        self.assertEqual(int(row["current_ap"]), FULL_RESOURCE_SENTINEL)
+        resources = self.game._resource_state_for(row, initialize=False)
+        self.assertEqual(int(resources["mp"]), max_mp)
+        self.assertEqual(int(resources["ap"]), max_ap)
         self.assertEqual(int(row["camp_until"]), 0)
+
+    def test_long_rest_restores_inactive_resource_family_before_job_switch(self):
+        self.assertTrue(self.game.choose_job("1", "warrior").ok)
+        warrior = self.game._resource_state_for(self.game._player("1"))
+        self.db.execute("UPDATE players SET current_ap=1 WHERE twitch_id='1'")
+        self.assertTrue(self.game.choose_job("1", "blackmage").ok)
+        blackmage = self.game._resource_state_for(self.game._player("1"))
+        self.db.execute("UPDATE players SET current_mp=1 WHERE twitch_id='1'")
+
+        start = 1_500_000
+        self.game.record_player_action("1", now=start)
+        result = self.game.record_player_action("1", now=start + LONG_REST_SECONDS)
+        self.assertTrue(result["refreshed"])
+
+        after_rest = self.game._player("1")
+        self.assertEqual(int(after_rest["current_mp"]), FULL_RESOURCE_SENTINEL)
+        self.assertEqual(int(after_rest["current_ap"]), FULL_RESOURCE_SENTINEL)
+        current = self.game._resource_state_for(after_rest, initialize=False)
+        self.assertEqual(int(current["mp"]), int(blackmage["max_mp"]))
+
+        switched = self.game.choose_job("1", "warrior")
+        self.assertTrue(switched.ok, switched.messages)
+        restored = self.game._resource_state_for(self.game._player("1"), initialize=False)
+        self.assertEqual(int(restored["ap"]), int(restored["max_ap"]))
+        self.assertGreaterEqual(int(restored["ap"]), int(warrior["max_ap"]))
 
     def test_long_rest_does_not_fire_before_eight_hours(self):
         start = 2_000_000

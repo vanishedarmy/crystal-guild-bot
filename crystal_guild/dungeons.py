@@ -4,7 +4,6 @@ from typing import Any
 
 DUNGEON_CACHE_RETREAT_RATIO = 0.50
 DUNGEON_CACHE_DEFEAT_RATIO = 0.25
-DUNGEON_MAX_COMBAT_ROUNDS = 12
 
 
 def room_kind_label(room: dict[str, Any]) -> str:

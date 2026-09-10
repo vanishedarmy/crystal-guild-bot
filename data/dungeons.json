@@ -767,7 +767,6 @@
         "monster_id": "death_machine",
         "hp_multiplier": 1.18,
         "reward_multiplier": 1.32,
-        "max_rounds": 10,
         "enemy_statuses": [
           {
             "id": "protect",
@@ -776,8 +775,7 @@
           }
         ],
         "mechanics": [
-          "Armored aperture: Protect for the opening 2 rounds",
-          "Pressure clock: defeat it within 10 rounds"
+          "Armored aperture: Protect for the opening 2 rounds"
         ],
         "description": "A Death Machine unfolds from the observatory's shutter mechanism, shielding its core behind rotating plates."
       },
@@ -846,7 +844,6 @@
         "monster_id": "crystal_wolf",
         "hp_multiplier": 1.42,
         "reward_multiplier": 1.68,
-        "max_rounds": 9,
         "opening_resource_drain_percent": 12,
         "enemy_statuses": [
           {
@@ -863,8 +860,7 @@
         "mechanics": [
           "Rift acceleration: Haste for 3 rounds",
           "Crystal renewal: brief opening Regen",
-          "Aperture drain: lose 12% max MP/AP on entry",
-          "Collapse window: 9 rounds"
+          "Aperture drain: lose 12% max MP/AP on entry"
         ],
         "description": "A Crystal Wolf steps from the broken lens crown, its body splitting into prismatic afterimages as the observatory begins to collapse."
       }

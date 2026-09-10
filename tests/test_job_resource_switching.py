@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from crystal_guild.active_battle import FULL_RESOURCE_SENTINEL
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine, RESOURCE_POOL_REPAIR_STATE_KEY
@@ -22,7 +23,7 @@ class JobResourceSwitchingHotfixTests(unittest.TestCase):
             rng=random.Random(seed),
         )
 
-    def test_inactive_resource_survives_refresh_and_equipment_normalization(self):
+    def test_full_refresh_restores_inactive_family_and_equipment_preserves_full_pending_state(self):
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "guild.db")
             try:
@@ -35,18 +36,20 @@ class JobResourceSwitchingHotfixTests(unittest.TestCase):
                 before = game._player("1")
                 self.assertEqual(int(before["current_ap"]), 7)
 
+                # A true full refresh is character-wide: the inactive AP family
+                # becomes full-pending instead of retaining a stale amount.
                 game._full_refresh_player_row(before)
                 after_refresh = game._player("1")
-                self.assertEqual(int(after_refresh["current_ap"]), 7)
+                self.assertEqual(int(after_refresh["current_ap"]), FULL_RESOURCE_SENTINEL)
 
                 game._normalize_after_equipment_change("1")
                 after_equipment = game._player("1")
-                self.assertEqual(int(after_equipment["current_ap"]), 7)
+                self.assertEqual(int(after_equipment["current_ap"]), FULL_RESOURCE_SENTINEL)
 
                 switched = game.choose_job("1", "warrior")
                 self.assertTrue(switched.ok, switched.messages)
                 resources = game._resource_state_for(game._player("1"), initialize=False)
-                self.assertEqual(int(resources["ap"]), 7)
+                self.assertEqual(int(resources["ap"]), int(resources["max_ap"]))
             finally:
                 db.close()
 
@@ -89,7 +92,8 @@ class JobResourceSwitchingHotfixTests(unittest.TestCase):
                 db.execute("UPDATE players SET current_ap=0 WHERE twitch_id='1'")
 
                 self.assertTrue(game.choose_job("1", "blackmage").ok)
-                game._full_refresh_player_row(game._player("1"))
+                # Ordinary Job changes and equipment normalization must not refill
+                # a genuinely depleted pool; only a real Rest/full refresh does.
                 game._normalize_after_equipment_change("1")
                 self.assertEqual(int(game._player("1")["current_ap"]), 0)
 

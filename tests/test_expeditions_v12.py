@@ -261,6 +261,36 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertEqual(public["depth"]["id"], "legendary")
         self.assertTrue(public["legendary_contract"])
 
+    def test_expedition_battle_continues_past_legacy_round_12_while_both_sides_live(self):
+        self.unlock()
+        self.db.execute(
+            "INSERT INTO player_region_exploration(player_id,region_id,progress) VALUES ('100','emerald_wilds',75) "
+            "ON CONFLICT(player_id,region_id) DO UPDATE SET progress=75"
+        )
+        self.assertTrue(self.game.expedition_start("100", "emerald_wilds", "boss").ok)
+        state = self.game._expedition_load("100")
+        state["stage"] = 4
+        state["status"] = "travel"
+        state["travel_ready_at"] = 0
+        self.game._expedition_save("100", state)
+        self.assertTrue(self.game.expedition_resolve_stage("100").ok)
+        state = self.game._expedition_load("100")
+        state["combat"]["encounter"]["round"] = 12
+        state["combat"]["encounter"]["max_rounds"] = 0
+        state["combat"]["encounter"]["monster_hp"] = 99999
+        state["combat"]["encounter"]["monster_max_hp"] = 99999
+        state["combat"]["roster"]["100"]["hp"] = max(1, int(state["combat"]["roster"]["100"]["hp"]))
+        self.game._expedition_save("100", state)
+        with patch.object(self.game, "_resolve_active_attack", return_value=None), patch.object(self.game, "_solo_resolve_enemy_intent", return_value=None):
+            result = self.game.expedition_combat_action("100", "attack")
+        self.assertTrue(result.ok, result.messages)
+        after = self.game._expedition_load("100")
+        self.assertIsNotNone(after)
+        self.assertEqual(after["status"], "combat")
+        self.assertEqual(int(after["combat"]["encounter"]["round"]), 13)
+        self.assertGreater(int(after["combat"]["roster"]["100"]["hp"]), 0)
+        self.assertGreater(int(after["combat"]["encounter"]["monster_hp"]), 0)
+
     def test_alpha3_legendary_final_boss_is_stronger_and_doubles_guaranteed_materials(self):
         self.unlock()
         self.db.execute(

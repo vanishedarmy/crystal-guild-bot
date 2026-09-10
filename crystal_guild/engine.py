@@ -16,6 +16,7 @@ from typing import Any
 
 from .active_battle import (
     action_priority,
+    FULL_RESOURCE_SENTINEL,
     STATUS_LABELS,
     ability_cost,
     ability_resource,
@@ -42,7 +43,6 @@ from .battle_presentation import (
 from .balance import (
     active_hunt_hp,
     active_hunt_pressure,
-    active_hunt_round_limit,
     active_hunt_status_chance,
     critical_chance,
     daily_gil_range,
@@ -87,7 +87,7 @@ from .daily_provisions import (
     subscriber_perk,
 )
 from .data import GameData
-from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, DUNGEON_MAX_COMBAT_ROUNDS, room_kind_label as dungeon_room_kind_label
+from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, room_kind_label as dungeon_room_kind_label
 from .expeditions import (
     BONUS_STAGES as EXPEDITION_BONUS_STAGES,
     DEPTHS as EXPEDITION_DEPTHS,
@@ -153,6 +153,8 @@ STANCES = {"balanced", "aggressive", "defensive", "magical", "cautious"}
 HUNT_RANKS = {"C": 1, "B": 2, "A": 3, "S": 4, "S+": 5}
 HUNT_DURATION_SECONDS = {"C": 15 * 60, "B": 30 * 60, "A": 2 * 60 * 60, "S": 5 * 60 * 60, "S+": 5 * 60 * 60}
 HUNT_AUTO_ITEM_CAP = {"C": 1, "B": 1, "A": 2, "S": 2, "S+": 3}
+HUNT_AUTOSIM_WATCHDOG_ROUNDS = 1000
+ADMIN_AUTOSIM_WATCHDOG_ROUNDS = 1000
 TANK_JOBS = {"warrior", "paladin", "darkknight"}
 HEALER_JOBS = {"whitemage", "sage"}
 SUPPORT_JOBS = {"bard", "timemage"}
@@ -565,12 +567,15 @@ class CrystalGuildEngine:
         )
 
     def _full_refresh_player_row(self, player: Any, *, clear_camp: bool = True) -> dict[str, int]:
-        """Fully restore the active Job without erasing the inactive resource family.
+        """Fully restore HP and both persistent Job-resource families.
 
-        MP and AP are persistent resource families shared across Job changes.  A
-        refresh while an MP-only Job is active must not write AP=0 (or vice
-        versa), because that destroys the value that should be waiting when the
-        player later switches resource families.
+        Rest is character-wide, not Job-local.  ``current_mp`` and ``current_ap``
+        are shared persistence slots whose maximum can differ from one Job to
+        another.  A concrete integer therefore cannot represent "full for every
+        Job".  ``FULL_RESOURCE_SENTINEL`` is the persisted full-family state: it
+        resolves to whichever maximum the selected Job has, and remains intact
+        across Job/equipment changes until that resource family is actually
+        below full.
         """
         player_id = str(player["twitch_id"])
         current_job = str(player["current_job"] or "adventurer")
@@ -585,18 +590,9 @@ class CrystalGuildEngine:
             max_mp = max(0, int(pools.get("max_mp") or 0))
             max_ap = max(0, int(pools.get("max_ap") or 0))
         camp_until = 0 if clear_camp else int(player["camp_until"] or 0)
-        updates = ["current_hp=?", "camp_until=?", "updated_at=CURRENT_TIMESTAMP"]
-        params: list[int | str] = [max_hp, camp_until]
-        if max_mp > 0:
-            updates.append("current_mp=?")
-            params.append(max_mp)
-        if max_ap > 0:
-            updates.append("current_ap=?")
-            params.append(max_ap)
-        params.append(player_id)
         self.db.execute(
-            f"UPDATE players SET {', '.join(updates)} WHERE twitch_id=?",
-            tuple(params),
+            "UPDATE players SET current_hp=?, current_mp=?, current_ap=?, camp_until=?, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+            (max_hp, FULL_RESOURCE_SENTINEL, FULL_RESOURCE_SENTINEL, camp_until, player_id),
         )
         return {"hp": max_hp, "mp": max_mp, "ap": max_ap}
 
@@ -932,7 +928,7 @@ class CrystalGuildEngine:
             resource_suffix = " | " + " | ".join(resource_parts)
         rest_remaining = self._camp_remaining(twitch_id)
         status = f"RESTING {self._format_seconds(rest_remaining)}" if rest_remaining else ("KO — !rest" if p["current_hp"] <= 0 and p["current_job"] != "adventurer" else "READY")
-        notice = " Camp rest complete: HP fully restored." if healed else ""
+        notice = " Camp rest complete: HP/MP/AP fully restored." if healed else ""
         next_hint = "Choose a starter Job with !job <name>." if p["current_job"] == "adventurer" else "Use !next for a contextual objective."
         return GameResult.success(
             f"{p['display_name']} — {p['title']} | Lv.{p['level']} {job_text} | HP {p['current_hp']}/{max_hp}{resource_suffix} [{status}] | XP {p['xp']}/{xp_to_next(p['level'])} | {p['gil']:,} gil | {p['hunt_seals']:,} seals{notice}",
@@ -1401,9 +1397,16 @@ class CrystalGuildEngine:
             return GameResult.fail(f"{item['name']} has no useful field effect on {target['display_name']} right now.")
 
         self._change_item(twitch_id, item["id"], -1, "field_use")
-        self.db.execute("UPDATE players SET current_hp=?, camp_until=0 WHERE twitch_id=?", (new_hp, target_id))
-        resource_meta = {"mp": new_mp, "max_mp": max_mp, "ap": new_ap, "max_ap": max_ap}
-        self._save_resources_from_meta(target_id, resource_meta)
+        if item["id"] == "tent":
+            # Tent is an immediate full Rest, so it refreshes both persistent
+            # resource families using the same cross-Job full sentinel.
+            refreshed_target = self._player(target_id)
+            if refreshed_target is not None:
+                self._full_refresh_player_row(refreshed_target, clear_camp=True)
+        else:
+            self.db.execute("UPDATE players SET current_hp=?, camp_until=0 WHERE twitch_id=?", (new_hp, target_id))
+            resource_meta = {"mp": new_mp, "max_mp": max_mp, "ap": new_ap, "max_ap": max_ap}
+            self._save_resources_from_meta(target_id, resource_meta)
         actor_name = str(actor["display_name"] or actor["username"])
         target_name = str(target["display_name"] or target["username"])
         lead = f"{actor_name} uses {item['name']}" if target_id == str(twitch_id) else f"{actor_name} uses {item['name']} on {target_name}"
@@ -2275,8 +2278,6 @@ class CrystalGuildEngine:
         expedition.setdefault("round_history", []).append(copy.deepcopy(expedition["last_round"])); expedition["round_history"] = expedition["round_history"][-4:]
         if int(meta.get("hp", 0)) <= 0:
             return self._solo_finish_defeat(twitch_id, expedition, monster, meta, round_no, log)
-        if round_no >= int(encounter.get("max_rounds", 12)):
-            return self._solo_finish_defeat(twitch_id, expedition, monster, meta, round_no, log + ["The battle reaches the round safety limit."])
         encounter["round"] = round_no + 1
         encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
         combat["encounter"] = copy.deepcopy(encounter); combat["roster"] = copy.deepcopy(self.encounter_roster)
@@ -2688,10 +2689,12 @@ class CrystalGuildEngine:
         if kind == "hunt":
             hunt = self.data.hunts[encounter["hunt_id"]]
             monster_max = active_hunt_hp(int(monster["hp"]), hunt["rank"])
-            max_rounds = active_hunt_round_limit(hunt["rank"])
         else:
             monster_max = party_monster_hp(int(monster["hp"]), combatants)
-            max_rounds = 12
+        # ``max_rounds`` remains in the payload for protocol compatibility, but
+        # zero now explicitly means unlimited.  Round count is telemetry only;
+        # it is never a defeat condition.
+        max_rounds = 0
 
         now = time.time()
         encounter.update({
@@ -4224,15 +4227,6 @@ class CrystalGuildEngine:
                 round_log=log,
                 round_no=round_no,
             )
-        max_rounds = int(self.active_encounter.get("max_rounds", 12))
-        if round_no >= max_rounds:
-            return self._finish_active_encounter(
-                False,
-                reason=f"The battle reaches the {max_rounds}-round safety limit.",
-                round_log=log,
-                round_no=round_no,
-            )
-
         self._remember_round(round_no, log)
         self.active_encounter["round"] = round_no + 1
         self.active_encounter["next_round_at"] = time.time() + self.encounter_round_seconds
@@ -4560,16 +4554,23 @@ class CrystalGuildEngine:
             if not started.ok or started.data.get("encounter_finished"):
                 return started
         messages: list[str] = []
-        for _ in range(12):
-            if not self.active_encounter:
-                break
+        simulation_steps = 0
+        while self.active_encounter:
             result = self.advance_encounter_round(encounter_id)
             messages.extend(result.messages)
-            if result.data.get("encounter_finished"):
+            simulation_steps += 1
+            if result.data.get("encounter_finished") or not self.active_encounter:
                 return GameResult.success(*messages[-6:], **result.data)
-        if self.active_encounter:
-            final = self._finish_active_encounter(False, reason="Admin resolver reached the safety cap.")
-            messages.extend(final.messages)
+            if simulation_steps >= ADMIN_AUTOSIM_WATCHDOG_ROUNDS:
+                # A technical watchdog may stop an admin auto-play pass, but it
+                # must never convert a living battle into a defeat.  The live
+                # encounter remains authoritative and can continue normally.
+                return GameResult.success(
+                    *messages[-6:],
+                    encounter_finished=False,
+                    combat_continues=True,
+                    technical_watchdog=True,
+                )
         return GameResult.success(*messages[-6:], encounter_finished=True)
 
 
@@ -5164,11 +5165,13 @@ class CrystalGuildEngine:
             monster = self.data.monsters[self.active_encounter["monster_id"]]
             hunt = self.data.hunts[self.active_encounter["hunt_id"]]
             rank = str(hunt.get("rank", "C")).upper()
-            safety = max(1, int(self.active_encounter.get("max_rounds", active_hunt_round_limit(rank))))
             last_meta: dict[str, Any] | None = None
-            for _ in range(safety + 1):
-                if not self.active_encounter:
-                    break
+            simulation_steps = 0
+            # Timed Hunts are resolved autonomously, but the former rank-based
+            # round cap must never manufacture a defeat while both combatants
+            # are still standing.  A very high technical watchdog may pause the
+            # simulation, but it preserves the Hunt state instead of ending it.
+            while self.active_encounter:
                 meta = self.encounter_roster.get(twitch_id)
                 if not meta or int(meta.get("hp", 0)) <= 0:
                     result = self._finish_active_encounter(False, reason=f"{monster['name']} defeats the hunter.")
@@ -5176,10 +5179,20 @@ class CrystalGuildEngine:
                 last_meta = meta
                 meta["action"] = self._hunt_auto_action(twitch_id, meta, monster, rank)
                 result = self.advance_encounter_round(encounter_id)
-                if result.data.get("hunt_finished"):
+                simulation_steps += 1
+                if result.data.get("hunt_finished") or not self.active_encounter:
                     break
-            if self.active_encounter:
-                result = self._finish_active_encounter(False, reason="The Hunt reaches its combat safety limit.")
+                if simulation_steps >= HUNT_AUTOSIM_WATCHDOG_ROUNDS:
+                    assignment["encounter"] = copy.deepcopy(self.active_encounter)
+                    assignment["roster"] = copy.deepcopy(self.encounter_roster)
+                    assignment["resolves_at"] = time.time() + 1
+                    return GameResult.success(
+                        "HUNT — The fight is still underway; neither combatant has been defeated.",
+                        timed_hunt=True,
+                        hunt_run_id=int(assignment.get("id") or 0),
+                        hunt_finished=False,
+                        combat_continues=True,
+                    )
             if result is None:
                 result = GameResult.fail("The Hunt could not be resolved.")
             self.active_hunts.pop(twitch_id, None)
@@ -5635,14 +5648,20 @@ class CrystalGuildEngine:
         params: list[int | str] = [current_hp]
         if max_mp > 0:
             raw_mp = p["current_mp"]
-            current_mp = max_mp if raw_mp is None else max(0, min(max_mp, int(raw_mp)))
-            updates.append("current_mp=?")
-            params.append(current_mp)
+            if raw_mp is None:
+                updates.append("current_mp=?")
+                params.append(max_mp)
+            elif int(raw_mp) != FULL_RESOURCE_SENTINEL:
+                updates.append("current_mp=?")
+                params.append(max(0, min(max_mp, int(raw_mp))))
         if max_ap > 0:
             raw_ap = p["current_ap"]
-            current_ap = max_ap if raw_ap is None else max(0, min(max_ap, int(raw_ap)))
-            updates.append("current_ap=?")
-            params.append(current_ap)
+            if raw_ap is None:
+                updates.append("current_ap=?")
+                params.append(max_ap)
+            elif int(raw_ap) != FULL_RESOURCE_SENTINEL:
+                updates.append("current_ap=?")
+                params.append(max(0, min(max_ap, int(raw_ap))))
         params.append(twitch_id)
         self.db.execute(
             f"UPDATE players SET {', '.join(updates)} WHERE twitch_id=?",
@@ -7058,7 +7077,7 @@ class CrystalGuildEngine:
             return None
         return {
             "round": int(encounter.get("round", 1)),
-            "max_rounds": int(encounter.get("max_rounds", 12)),
+            "max_rounds": max(0, int(encounter.get("max_rounds", 0) or 0)),
             "boss": bool(state.get("boss_encounter")),
             "enemy": {
                 "id": str(monster["id"]),
@@ -7322,15 +7341,6 @@ class CrystalGuildEngine:
             state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
             if int(actor.get("hp", 0)) <= 0:
                 return self._finish_expedition_combat_defeat(twitch_id, state, monster, actor, round_no, log)
-            if round_no >= int(encounter.get("max_rounds", 12)):
-                return self._finish_expedition_combat_defeat(
-                    twitch_id,
-                    state,
-                    monster,
-                    actor,
-                    round_no,
-                    log + ["The encounter reaches its round safety limit."],
-                )
             encounter["round"] = round_no + 1
             encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
             state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
@@ -7831,7 +7841,7 @@ class CrystalGuildEngine:
             scaled_hp = max(1, int(round(int(encounter.get("monster_max_hp", monster["hp"])) * hp_mult)))
             encounter["monster_hp"] = scaled_hp
             encounter["monster_max_hp"] = scaled_hp
-            encounter["max_rounds"] = max(4, min(20, int(room.get("max_rounds", DUNGEON_MAX_COMBAT_ROUNDS) or DUNGEON_MAX_COMBAT_ROUNDS)))
+            encounter["max_rounds"] = 0
             room_mechanics = [str(value) for value in list(room.get("mechanics") or []) if str(value).strip()]
             opening_effects: list[str] = []
             actor = self.encounter_roster.get(str(twitch_id))
@@ -8011,7 +8021,7 @@ class CrystalGuildEngine:
                 "route_effects": copy.deepcopy(list(combat.get("route_effects") or [])),
                 "mechanics": copy.deepcopy(list(combat.get("mechanics") or [])),
                 "opening_effects": copy.deepcopy(list(combat.get("opening_effects") or [])),
-                "max_rounds": int(encounter.get("max_rounds", DUNGEON_MAX_COMBAT_ROUNDS) or DUNGEON_MAX_COMBAT_ROUNDS),
+                "max_rounds": max(0, int(encounter.get("max_rounds", 0) or 0)),
             }
         return payload
 
@@ -8219,7 +8229,7 @@ class CrystalGuildEngine:
             if int(encounter["monster_hp"]) > before: log.append(f"{monster['name']} regenerates {int(encounter['monster_hp'])-before} HP.")
         tick_statuses(monster_statuses)
         state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
-        if int(meta.get("hp", 0)) <= 0 or round_no >= int(encounter.get("max_rounds", DUNGEON_MAX_COMBAT_ROUNDS)):
+        if int(meta.get("hp", 0)) <= 0:
             return self._dungeon_finish(twitch_id, state, outcome="defeat")
         encounter["round"] = round_no + 1
         encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
@@ -12186,29 +12196,16 @@ class CrystalGuildEngine:
             if int(p["camp_until"] or 0) > now:
                 resting_count += 1
 
-            max_hp = self._max_hp(p)
-            updates = ["current_hp=?", "camp_until=0", "updated_at=CURRENT_TIMESTAMP"]
-            params: list[int | str] = [max_hp]
             job = self.data.jobs.get(p["current_job"])
             if job:
                 stats = self._stats(p, job)
                 pools = battle_resource_pools(stats, job)
-                if int(pools["max_mp"]) > 0:
-                    updates.append("current_mp=?")
-                    params.append(int(pools["max_mp"]))
-                if int(pools["max_ap"]) > 0:
-                    updates.append("current_ap=?")
-                    params.append(int(pools["max_ap"]))
                 if int(pools["max_mp"]) > 0 or int(pools["max_ap"]) > 0:
                     resource_users += 1
-            params.append(player_id)
-            self.db.execute(
-                f"UPDATE players SET {', '.join(updates)} WHERE twitch_id=?",
-                tuple(params),
-            )
+            self._full_refresh_player_row(p, clear_camp=True)
 
         return GameResult.success(
-            f"READY ALL — {len(players)} players restored to full HP and applicable MP/AP; "
+            f"READY ALL — {len(players)} players restored to full HP and both MP/AP resource families; "
             f"{resting_count} camp timer(s) cleared and {ko_count} KO hero(es) revived.",
             players_reset=len(players),
             camps_cleared=resting_count,
@@ -14682,18 +14679,27 @@ class CrystalGuildEngine:
             if not started.ok:
                 return started
         messages=[]
-        for _ in range(30):
-            if not self.active_boss:
-                break
+        simulation_steps = 0
+        while self.active_boss:
             result=self.raid_round()
+            simulation_steps += 1
             if result.messages:
                 messages.extend(result.messages[:1])
                 if result.data.get("raid_finished"):
                     messages.extend(result.messages[1:])
                     break
-        if self.active_boss:
-            final=self._finish_raid(False,reason="Admin resolution reached the 30-round safety cap.")
-            messages.extend(final.messages)
+            if not self.active_boss:
+                break
+            if simulation_steps >= ADMIN_AUTOSIM_WATCHDOG_ROUNDS:
+                # Do not manufacture a Raid defeat just because an admin
+                # auto-play pass reached its technical work budget.  Preserve
+                # the Raid exactly where it is so the next real round can run.
+                return GameResult.success(
+                    *messages[-5:],
+                    raid_finished=False,
+                    combat_continues=True,
+                    technical_watchdog=True,
+                )
         return GameResult.success(*messages[-5:])
 
     def _record_trial_result(self, boss: dict[str, Any], *, won: bool) -> None:
@@ -15598,8 +15604,10 @@ class CrystalGuildEngine:
         """Return persistent current/max MP/AP for the supplied player's Job.
 
         ``NULL`` current values mean that resource has never been initialized for
-        this character. The first Job that uses it starts full; after that the
-        absolute remaining amount persists across battles and Job changes.
+        this character. The first Job that uses it starts full.  The explicit
+        ``FULL_RESOURCE_SENTINEL`` means a completed full-character recovery has
+        made that resource family full for *any* Job maximum; a concrete
+        non-negative amount otherwise persists across battles and Job changes.
         """
         if job is None:
             job = self.data.jobs.get(p["current_job"])
@@ -15611,16 +15619,28 @@ class CrystalGuildEngine:
         max_ap = int(pools["max_ap"])
         raw_mp = p["current_mp"]
         raw_ap = p["current_ap"]
-        mp = 0 if max_mp <= 0 else (max_mp if raw_mp is None else max(0, min(max_mp, int(raw_mp))))
-        ap = 0 if max_ap <= 0 else (max_ap if raw_ap is None else max(0, min(max_ap, int(raw_ap))))
+        mp_full = raw_mp is not None and int(raw_mp) == FULL_RESOURCE_SENTINEL
+        ap_full = raw_ap is not None and int(raw_ap) == FULL_RESOURCE_SENTINEL
+        mp = 0 if max_mp <= 0 else (max_mp if raw_mp is None or mp_full else max(0, min(max_mp, int(raw_mp))))
+        ap = 0 if max_ap <= 0 else (max_ap if raw_ap is None or ap_full else max(0, min(max_ap, int(raw_ap))))
 
         if initialize:
             updates: list[str] = []
             params: list[int | str] = []
-            if max_mp > 0 and (raw_mp is None or int(raw_mp) != mp):
+            # NULL retains its original "first use starts full" behavior and is
+            # materialized once.  The explicit full-rest sentinel must *not* be
+            # materialized, because doing so would lose full status when the
+            # player later selects another Job with a larger resource maximum.
+            if max_mp > 0 and raw_mp is None:
                 updates.append("current_mp=?")
                 params.append(mp)
-            if max_ap > 0 and (raw_ap is None or int(raw_ap) != ap):
+            elif max_mp > 0 and not mp_full and int(raw_mp) != mp:
+                updates.append("current_mp=?")
+                params.append(mp)
+            if max_ap > 0 and raw_ap is None:
+                updates.append("current_ap=?")
+                params.append(ap)
+            elif max_ap > 0 and not ap_full and int(raw_ap) != ap:
                 updates.append("current_ap=?")
                 params.append(ap)
             if updates:
@@ -15638,17 +15658,27 @@ class CrystalGuildEngine:
         }
 
     def _save_resources_from_meta(self, player_id: str, meta: dict[str, Any]) -> None:
-        """Persist resources used by the current combat Job without erasing inactive pools."""
+        """Persist current Job resources without erasing cross-Job full state."""
         updates: list[str] = []
         params: list[int | str] = []
+        persisted = self.db.one(
+            "SELECT current_mp,current_ap FROM players WHERE twitch_id=?",
+            (str(player_id),),
+        )
         max_mp = max(0, int(meta.get("max_mp", 0)))
         max_ap = max(0, int(meta.get("max_ap", 0)))
         if max_mp > 0:
-            updates.append("current_mp=?")
-            params.append(max(0, min(max_mp, int(meta.get("mp", 0)))))
+            value = max(0, min(max_mp, int(meta.get("mp", 0))))
+            raw = persisted["current_mp"] if persisted is not None else None
+            if not (raw is not None and int(raw) == FULL_RESOURCE_SENTINEL and value >= max_mp):
+                updates.append("current_mp=?")
+                params.append(value)
         if max_ap > 0:
-            updates.append("current_ap=?")
-            params.append(max(0, min(max_ap, int(meta.get("ap", 0)))))
+            value = max(0, min(max_ap, int(meta.get("ap", 0))))
+            raw = persisted["current_ap"] if persisted is not None else None
+            if not (raw is not None and int(raw) == FULL_RESOURCE_SENTINEL and value >= max_ap):
+                updates.append("current_ap=?")
+                params.append(value)
         if updates:
             params.append(str(player_id))
             self.db.execute(
@@ -15669,10 +15699,10 @@ class CrystalGuildEngine:
         params: list[int | str] = []
         if int(pools["max_mp"]) > 0:
             updates.append("current_mp=?")
-            params.append(int(pools["max_mp"]))
+            params.append(FULL_RESOURCE_SENTINEL)
         if int(pools["max_ap"]) > 0:
             updates.append("current_ap=?")
-            params.append(int(pools["max_ap"]))
+            params.append(FULL_RESOURCE_SENTINEL)
         if updates:
             params.append(str(player_id))
             self.db.execute(
@@ -15714,9 +15744,7 @@ class CrystalGuildEngine:
             return False
         if int(p["camp_until"]) > int(time.time()):
             return False
-        max_hp = self._max_hp(p)
-        self.db.execute("UPDATE players SET current_hp=?, camp_until=0 WHERE twitch_id=?", (max_hp, player_id))
-        self._restore_current_job_resources(player_id)
+        self._full_refresh_player_row(p, clear_camp=True)
         return True
 
     def _activity_block(self, player_id: str) -> str | None:

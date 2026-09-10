@@ -1,4 +1,4 @@
-Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Gear Favorites Authority Fix
+Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Full Rest & Combat Continuity
 Bot runtime: 1.7.1-resynthesis-a2h5
 Paired Web frontend: 1.7.1-resynthesis-a2h5
 Local DB schema: 16

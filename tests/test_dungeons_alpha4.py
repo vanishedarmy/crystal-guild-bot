@@ -58,16 +58,16 @@ class DungeonsAlpha4Tests(unittest.TestCase):
         self.assertTrue(public["event"].get("outcome_id"))
         self.assertTrue(public["discoveries"])
 
-    def test_miniboss_combat_rules_apply_status_and_round_limit(self):
+    def test_miniboss_combat_rules_apply_status_without_round_defeat_limit(self):
         self.assertTrue(self.game.dungeon_start("144", "riftglass_observatory").ok)
         state = self.game._dungeon_load("144")
         state["room_index"] = 6
         self.game._dungeon_save("144", state)
         self.game._dungeon_begin_room("144", state)
         public = self.game._dungeon_public("144")
-        self.assertEqual(public["combat"]["max_rounds"], 10)
+        self.assertEqual(public["combat"]["max_rounds"], 0)
         self.assertIn("Protect", public["combat"]["enemy"]["statuses"])
-        self.assertTrue(any("10 rounds" in row for row in public["combat"]["mechanics"]))
+        self.assertFalse(any("defeat it within" in row.lower() for row in public["combat"]["mechanics"]))
 
     def test_boss_opening_resource_drain_is_persisted_in_run_state(self):
         self.assertTrue(self.game.dungeon_start("144", "riftglass_observatory").ok)
@@ -76,7 +76,7 @@ class DungeonsAlpha4Tests(unittest.TestCase):
         self.game._dungeon_save("144", state)
         self.game._dungeon_begin_room("144", state)
         public = self.game._dungeon_public("144")
-        self.assertEqual(public["combat"]["max_rounds"], 9)
+        self.assertEqual(public["combat"]["max_rounds"], 0)
         self.assertTrue(public["combat"]["opening_effects"])
         self.assertTrue(any("Aperture drain" in row for row in public["combat"]["mechanics"]))
 

@@ -63,6 +63,24 @@ class ActiveBattleTests(unittest.TestCase):
         self.assertEqual(actor["ap"], actor["max_ap"])
         self.assertEqual(opened.data["encounter_id"], self.game.active_encounter["id"])
 
+    def test_rally_venture_continues_past_legacy_round_12_while_party_and_enemy_live(self):
+        opened = self.start()
+        self.game.active_encounter["round"] = 12
+        self.game.active_encounter["max_rounds"] = 0
+        self.game.active_encounter["monster_hp"] = 99999
+        self.game.active_encounter["monster_max_hp"] = 99999
+        actor = self.game.encounter_roster["1"]
+        actor["hp"] = max(1, int(actor["hp"]))
+        self.assertTrue(self.game.battle_attack("1").ok)
+        from unittest.mock import patch
+        with patch.object(self.game, "_resolve_active_attack", return_value=None), patch.object(self.game, "_active_enemy_turn", return_value=None):
+            result = self.game.advance_encounter_round(opened.data["encounter_id"])
+        self.assertTrue(result.ok, result.messages)
+        self.assertIsNotNone(self.game.active_encounter)
+        self.assertEqual(int(self.game.active_encounter["round"]), 13)
+        self.assertGreater(int(self.game.encounter_roster["1"]["hp"]), 0)
+        self.assertGreater(int(self.game.active_encounter["monster_hp"]), 0)
+
     def test_attack_can_be_queued_and_replaced_before_resolution(self):
         self.start()
         first = self.game.battle_attack("1")
@@ -285,6 +303,32 @@ class ActiveBattleTests(unittest.TestCase):
         self.assertTrue(self.game.use_item("1", "potion").ok)
         self.game.advance_encounter_round(opened.data["encounter_id"])
         self.assertEqual(self.game._inventory_qty("1", "potion"), before)
+
+    def test_admin_resolver_watchdog_preserves_living_battle(self):
+        from unittest.mock import patch
+        from crystal_guild.engine import GameResult
+
+        opened = self.game.venture("1", bypass_cooldown=True)
+        self.game.start_encounter_battle(opened.data["encounter_id"])
+        actor = self.game.encounter_roster["1"]
+        self.assertGreater(int(actor["hp"]), 0)
+        self.assertGreater(int(self.game.active_encounter["monster_hp"]), 0)
+
+        def no_terminal_round(_encounter_id=None):
+            self.game.active_encounter["round"] = int(self.game.active_encounter.get("round", 1)) + 1
+            return GameResult.success("technical test round", round_resolved=True)
+
+        with patch("crystal_guild.engine.ADMIN_AUTOSIM_WATCHDOG_ROUNDS", 2), patch.object(
+            self.game, "advance_encounter_round", side_effect=no_terminal_round
+        ):
+            result = self.game.resolve_encounter(opened.data["encounter_id"])
+
+        self.assertTrue(result.ok, result.messages)
+        self.assertFalse(result.data.get("encounter_finished"))
+        self.assertTrue(result.data.get("combat_continues"))
+        self.assertIsNotNone(self.game.active_encounter)
+        self.assertGreater(int(self.game.encounter_roster["1"]["hp"]), 0)
+        self.assertGreater(int(self.game.active_encounter["monster_hp"]), 0)
 
     def test_admin_resolver_uses_active_battle_and_clears_state(self):
         opened = self.game.venture("1", bypass_cooldown=True)

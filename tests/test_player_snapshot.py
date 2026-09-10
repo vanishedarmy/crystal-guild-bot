@@ -46,6 +46,28 @@ class PlayerSnapshotTests(unittest.TestCase):
             db.close()
 
 
+    def test_snapshot_reads_full_rest_sentinel_at_selected_job_maximum(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "guild.db"
+            db = Database(path)
+            data = GameData(ROOT / "data")
+            engine = CrystalGuildEngine(db, data, venture_cooldown_seconds=0, venture_treasure_chance=0.0)
+            engine.recruit("100", "van", "Van")
+            engine.choose_job("100", "blackmage")
+            black = engine._resource_state_for(engine._player("100"))
+            engine._full_refresh_player_row(engine._player("100"), clear_camp=True)
+            self.assertTrue(engine.choose_job("100", "whitemage").ok)
+            white = engine._resource_state_for(engine._player("100"), initialize=False)
+            self.assertGreater(int(white["max_mp"]), int(black["max_mp"]))
+
+            repo = PortalRepository(path, ROOT / "data")
+            profile = repo.overview("van")
+            self.assertEqual(profile["resources"]["mp"]["current"], profile["resources"]["mp"]["max"] )
+            self.assertEqual(profile["resources"]["mp"]["max"], int(white["max_mp"]))
+            repo.close()
+            db.close()
+
+
     def test_snapshot_resource_bars_follow_live_battle_runtime_state(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "guild.db"

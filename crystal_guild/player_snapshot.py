@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import unquote
 
-from .active_battle import battle_resource_pools, job_resource_mode
+from .active_battle import FULL_RESOURCE_SENTINEL, battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
@@ -171,8 +171,8 @@ class PortalRepository:
         max_ap = int(pools["max_ap"])
         raw_mp = persisted["current_mp"] if persisted else None
         raw_ap = persisted["current_ap"] if persisted else None
-        current_mp = 0 if max_mp <= 0 else (max_mp if raw_mp is None else max(0, min(max_mp, int(raw_mp))))
-        current_ap = 0 if max_ap <= 0 else (max_ap if raw_ap is None else max(0, min(max_ap, int(raw_ap))))
+        current_mp = 0 if max_mp <= 0 else (max_mp if raw_mp is None or int(raw_mp) == FULL_RESOURCE_SENTINEL else max(0, min(max_mp, int(raw_mp))))
+        current_ap = 0 if max_ap <= 0 else (max_ap if raw_ap is None or int(raw_ap) == FULL_RESOURCE_SENTINEL else max(0, min(max_ap, int(raw_ap))))
         live = False
         try:
             row = conn.execute(

@@ -562,6 +562,27 @@ class EngineTests(unittest.TestCase):
                 self.assertGreaterEqual(drop["chance"], 0)
                 self.assertLessEqual(drop["chance"], 1)
 
+    def test_admin_raid_resolver_watchdog_preserves_living_raid(self):
+        from crystal_guild.engine import GameResult
+
+        self.game.active_boss = {"id": "watchdog_boss", "state": "combat", "round": 1}
+        self.game.raid_roster = {"1": {"name": "Van", "hp": 100, "max_hp": 100}}
+
+        def no_terminal_raid_round(*args, **kwargs):
+            self.game.active_boss["round"] = int(self.game.active_boss.get("round", 0)) + 1
+            return GameResult.success("technical raid test round", raid_round=True)
+
+        with patch("crystal_guild.engine.ADMIN_AUTOSIM_WATCHDOG_ROUNDS", 2), patch.object(
+            self.game, "raid_round", side_effect=no_terminal_raid_round
+        ):
+            result = self.game.resolve_boss()
+
+        self.assertTrue(result.ok, result.messages)
+        self.assertFalse(result.data.get("raid_finished"))
+        self.assertTrue(result.data.get("combat_continues"))
+        self.assertIsNotNone(self.game.active_boss)
+        self.assertGreater(int(self.game.raid_roster["1"]["hp"]), 0)
+
     def test_boss_lifecycle(self):
         self.game.choose_job("1", "blackmage")
         self.assertTrue(self.game.spawn_boss("bomb king").ok)

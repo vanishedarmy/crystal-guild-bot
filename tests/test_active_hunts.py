@@ -192,6 +192,27 @@ class ActiveHuntTests(unittest.TestCase):
         self.assertEqual(hp_values[-1], 1300)
         self.assertEqual(pressure[-1], 1.15)
 
+    def test_hunt_watchdog_never_converts_a_living_fight_into_defeat(self):
+        started = self.start_hunt()
+        assignment = self.game.active_hunts["1"]
+        assignment["encounter"]["monster_hp"] = 99999
+        assignment["encounter"]["monster_max_hp"] = 99999
+        assignment["roster"]["1"]["hp"] = max(1, int(assignment["roster"]["1"]["hp"]))
+
+        def keep_fighting(_encounter_id):
+            self.game.active_encounter["round"] = int(self.game.active_encounter.get("round", 1)) + 1
+            return type(started).success("round continues", hunt_finished=False)
+
+        with patch("crystal_guild.engine.HUNT_AUTOSIM_WATCHDOG_ROUNDS", 2), patch.object(self.game, "advance_encounter_round", side_effect=keep_fighting):
+            result = self.game.resolve_hunt("1", started.data["hunt_run_id"], force=True)
+        self.assertTrue(result.ok, result.messages)
+        self.assertTrue(result.data.get("combat_continues"))
+        self.assertFalse(result.data.get("hunt_finished", True))
+        self.assertIn("1", self.game.active_hunts)
+        persisted = self.game.active_hunts["1"]
+        self.assertGreater(int(persisted["roster"]["1"]["hp"]), 0)
+        self.assertGreater(int(persisted["encounter"]["monster_hp"]), 0)
+
     def test_timed_hunt_records_hunt_combat_metrics(self):
         started = self.start_hunt()
         result = self.game.resolve_hunt("1", started.data["hunt_run_id"], force=True)

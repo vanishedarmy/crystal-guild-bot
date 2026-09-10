@@ -23,7 +23,7 @@ When the rally timer ends, the **combat scheduler starts Active Battle automatic
 Rally → Round action window → Resolve → Next round / Finish
 ```
 
-The default action window is `ENCOUNTER_ROUND_SECONDS=30`. Every round resolves on its original scheduled deadline—even if all living heroes submit early. If a player submits nothing, their action safely defaults to Attack at that same deadline. Late actions are rejected instead of becoming the event that resolves the round.
+The default action window is `ENCOUNTER_ROUND_SECONDS=30`. Every round resolves on its original scheduled deadline—even if all living heroes submit early. If a player submits nothing, their action safely defaults to Attack at that same deadline. Late actions are rejected instead of becoming the event that resolves the round. **Round count is never a defeat condition**: a living encounter continues until the enemy is defeated, the hero/party is KO'd, or a supported retreat/withdrawal is deliberately initiated.
 
 Useful commands:
 
@@ -119,7 +119,7 @@ Broadly:
 
 ## Camp
 
-`!rest` or `!camp` begins a free camp rest. Camp now uses a stream-aware base timer: 15 minutes while the Twitch channel is LIVE and 60 minutes while OFFLINE or when live status cannot be confirmed. Existing Fellowship/Infirmary Camp-time reductions still apply. A resting hero cannot join combat. When the timer completes, the hero returns at full calculated maximum HP for the current Job.
+`!rest` or `!camp` begins a free camp rest. Camp now uses a stream-aware base timer: 15 minutes while the Twitch channel is LIVE and 60 minutes while OFFLINE or when live status cannot be confirmed. Existing Fellowship/Infirmary Camp-time reductions still apply. A resting hero cannot join combat. When the timer completes, the hero returns at full calculated maximum HP and both persistent Job-resource families are fully refreshed. Switching between MP- and AP-based Jobs after resting therefore begins from a full resource pool rather than a stale pre-rest value.
 
 ## Enemy combat
 

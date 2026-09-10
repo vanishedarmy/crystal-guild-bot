@@ -7,7 +7,7 @@ import time
 import unittest
 from pathlib import Path
 
-from crystal_guild.active_battle import battle_ap, battle_mp
+from crystal_guild.active_battle import FULL_RESOURCE_SENTINEL, battle_ap, battle_mp
 from crystal_guild.data import GameData
 from crystal_guild.database import Database, SCHEMA
 from crystal_guild.engine import CrystalGuildEngine
@@ -70,7 +70,56 @@ class PersistentResourceTests(unittest.TestCase):
         self.db.execute("UPDATE players SET camp_until=? WHERE twitch_id='1'", (int(time.time()) - 1,))
         self.assertTrue(self.game.rest("1").ok)
         after = self.game._player("1")
-        self.assertEqual(int(after["current_ap"]), int(resources["max_ap"]))
+        self.assertEqual(int(after["current_ap"]), FULL_RESOURCE_SENTINEL)
+        restored = self.game._resource_state_for(after, initialize=False)
+        self.assertEqual(int(restored["ap"]), int(restored["max_ap"]))
+
+    def test_camp_restores_inactive_ap_family_after_resting_as_mp_job(self):
+        self.game.choose_job("1", "warrior")
+        warrior = self.game._resource_state_for(self.game._player("1"))
+        self.db.execute("UPDATE players SET current_ap=1 WHERE twitch_id='1'")
+        self.assertTrue(self.game.choose_job("1", "blackmage").ok)
+        blackmage = self.game._resource_state_for(self.game._player("1"))
+        self.db.execute("UPDATE players SET current_mp=1 WHERE twitch_id='1'")
+
+        started = self.game.rest("1")
+        self.assertTrue(started.ok, started.messages)
+        self.db.execute("UPDATE players SET camp_until=? WHERE twitch_id='1'", (int(time.time()) - 1,))
+        finished = self.game.rest("1")
+        self.assertTrue(finished.ok, finished.messages)
+        after_rest = self.game._player("1")
+        self.assertEqual(int(after_rest["current_mp"]), FULL_RESOURCE_SENTINEL)
+        self.assertEqual(int(after_rest["current_ap"]), FULL_RESOURCE_SENTINEL)
+        current = self.game._resource_state_for(after_rest, initialize=False)
+        self.assertEqual(int(current["mp"]), int(current["max_mp"]))
+
+        switched = self.game.choose_job("1", "warrior")
+        self.assertTrue(switched.ok, switched.messages)
+        restored = self.game._resource_state_for(self.game._player("1"), initialize=False)
+        self.assertEqual(int(restored["ap"]), int(restored["max_ap"]))
+        self.assertGreaterEqual(int(restored["ap"]), int(warrior["max_ap"]))
+
+    def test_tent_restores_inactive_mp_family_before_switching_jobs(self):
+        self.game.choose_job("1", "blackmage")
+        blackmage = self.game._resource_state_for(self.game._player("1"))
+        self.db.execute("UPDATE players SET current_mp=1 WHERE twitch_id='1'")
+        self.assertTrue(self.game.choose_job("1", "warrior").ok)
+        warrior = self.game._resource_state_for(self.game._player("1"))
+        self.db.execute("UPDATE players SET current_ap=1 WHERE twitch_id='1'")
+        self.game._change_item("1", "tent", 1, "test")
+        used = self.game.use_item("1", "tent")
+        self.assertTrue(used.ok, used.messages)
+        after_tent = self.game._player("1")
+        self.assertEqual(int(after_tent["current_ap"]), FULL_RESOURCE_SENTINEL)
+        self.assertEqual(int(after_tent["current_mp"]), FULL_RESOURCE_SENTINEL)
+        current = self.game._resource_state_for(after_tent, initialize=False)
+        self.assertEqual(int(current["ap"]), int(current["max_ap"]))
+
+        switched = self.game.choose_job("1", "blackmage")
+        self.assertTrue(switched.ok, switched.messages)
+        restored = self.game._resource_state_for(self.game._player("1"), initialize=False)
+        self.assertEqual(int(restored["mp"]), int(restored["max_mp"]))
+        self.assertGreaterEqual(int(restored["mp"]), int(blackmage["max_mp"]))
 
     def test_ether_and_stamina_items_have_field_recovery(self):
         self.game.choose_job("1", "blackmage")
@@ -107,7 +156,35 @@ class PersistentResourceTests(unittest.TestCase):
         result = self.game.use_item("1", "tent")
         self.assertTrue(result.ok, result.messages)
         after = self.game._player("1")
-        self.assertEqual(int(after["current_ap"]), int(resources["max_ap"]))
+        self.assertEqual(int(after["current_ap"]), FULL_RESOURCE_SENTINEL)
+        restored = self.game._resource_state_for(after, initialize=False)
+        self.assertEqual(int(restored["ap"]), int(resources["max_ap"]))
+
+    def test_full_rest_stays_full_when_switching_between_same_resource_jobs(self):
+        self.game.choose_job("1", "blackmage")
+        black = self.game._resource_state_for(self.game._player("1"))
+        self.assertTrue(self.game.choose_job("1", "whitemage").ok)
+        white = self.game._resource_state_for(self.game._player("1"))
+        self.assertGreater(int(white["max_mp"]), int(black["max_mp"]))
+
+        # Deplete on Black Mage, complete a Camp rest, then prove that the
+        # larger White Mage MP maximum is also full—not capped to Black Mage's
+        # smaller concrete maximum.
+        self.assertTrue(self.game.choose_job("1", "blackmage").ok)
+        p = self.game._player("1")
+        self.db.execute(
+            "UPDATE players SET current_hp=?, current_mp=1 WHERE twitch_id='1'",
+            (self.game._max_hp(p),),
+        )
+        self.assertTrue(self.game.rest("1").ok)
+        self.db.execute("UPDATE players SET camp_until=? WHERE twitch_id='1'", (int(time.time()) - 1,))
+        self.assertTrue(self.game.rest("1").ok)
+        self.assertEqual(int(self.game._player("1")["current_mp"]), FULL_RESOURCE_SENTINEL)
+
+        self.assertTrue(self.game.choose_job("1", "whitemage").ok)
+        restored = self.game._resource_state_for(self.game._player("1"), initialize=False)
+        self.assertEqual(int(restored["mp"]), int(restored["max_mp"]))
+        self.assertEqual(int(restored["max_mp"]), int(white["max_mp"]))
 
 
 class ResourceMigrationTests(unittest.TestCase):

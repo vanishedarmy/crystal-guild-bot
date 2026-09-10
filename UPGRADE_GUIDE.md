@@ -1,14 +1,13 @@
-# Upgrade — Hotfix 5 Gear Favorites Authority Fix
+# Upgrade Guide — Full Rest & Combat Continuity
 
-**Deploy Bot and Web together.** This update advances local schema **15 → 16** and Portal Action protocol **32 → 33**. A mismatched Bot/Web pair will intentionally reject Portal actions.
+Deploy **Bot and Web together** for this correction. The Bot contains the Rest/resource and encounter-continuity fixes; the Web removes obsolete Dungeon round-limit presentation and updates player-facing Guide copy.
 
-Preserve the live `crystal_guild.db`, token database, persistent storage, and environment secrets. On first Bot startup, Crystal Guild creates and verifies a `backups/pre_schema_16_*.db` backup before applying the additive `player_gear_favorites` migration. Existing players, inventory, progression, Retainers, Fellowship, Gold Saucer, Resynthesis, Ventures, Hunts, Trials/Raids, and Treasure Seekers progress remain intact.
+Preserve the live player database, token database, environment secrets, and persistent runtime files. Local schema remains **16**, hosted sync remains **1**, and Portal Action protocol remains **33**. No migration or player reset is performed by this correction. If upgrading from a pre-Favorites-authority installation, complete the existing **15 → 16** migration first using its verified `backups/pre_schema_16_*.db` backup path before applying this package.
 
-After both components are deployed:
-1. Confirm `!cgversion` reports schema **16** and Portal protocol **33**.
-2. Open Equipment on a browser that previously held local Favorites; any legacy list is offered for authoritative migration automatically.
-3. Favorite or unfavorite one item and allow the Bot to process the queued preference action.
-4. Open/return to Equipment on mobile; the same Favorites should appear.
-5. Clearing all Favorites on one device must also propagate as an authoritative empty list.
+After deployment, verify:
 
-Hosted sync schema remains **1**. No new environment variables or sync keys are required.
+1. Complete a Camp/Rest while on an MP Job, switch to an AP Job, and confirm AP is at that Job's full maximum. Repeat in the opposite direction.
+2. Switch between two Jobs with different maxima for the same resource family after Rest and confirm each resolves at its own maximum.
+3. Let a living encounter advance beyond round 12; it must continue while both sides remain alive.
+4. Dungeon combat displays `Round N` without a `/ 12` or other defeat-limit denominator.
+5. An explicit retreat still resolves through its normal retreat path.
