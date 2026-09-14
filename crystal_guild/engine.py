@@ -4271,7 +4271,7 @@ class CrystalGuildEngine:
         resolved_round = round_no or int(encounter.get("round", 1))
         log = list(round_log or [])
         messages: list[str] = []
-        if log:
+        if log and kind != "venture":
             messages.append(f"ROUND {resolved_round} — {round_summary(log)}")
 
         reward_lines: list[str] = []
@@ -4279,6 +4279,7 @@ class CrystalGuildEngine:
         levelup_lines: list[str] = []
         achievement_lines: list[str] = []
         fellowship_lines: list[str] = []
+        participant_result_messages: list[str] = []
         hunt_results: dict[str, dict[str, Any]] = {}
         solo_rewards: dict[str, Any] = {"xp": 0, "jp": 0, "gil": 0, "loot": [], "levelups": []}
         solo_pid: str | None = next(iter(self.encounter_roster), None) if kind == "solo_venture" else None
@@ -4287,6 +4288,7 @@ class CrystalGuildEngine:
                 p = self._player(pid)
                 if not p or not meta.get("max_hp"):
                     continue
+                venture_rewards: dict[str, Any] | None = None
 
                 knocked_out = int(meta.get("hp", 0)) <= 0
                 self._save_hp(pid, int(meta.get("hp", 0)))
@@ -4365,6 +4367,8 @@ class CrystalGuildEngine:
                     }
                 elif won:
                     rewards = self._award_victory(pid, p, monster, rally_venture=kind == "venture")
+                    if kind == "venture":
+                        venture_rewards = rewards
                     if kind == "solo_venture" and pid == solo_pid:
                         solo_rewards = {
                             "xp": int(rewards.get("xp", 0)),
@@ -4424,6 +4428,35 @@ class CrystalGuildEngine:
                 achievement_lines.extend(player_achievements)
                 if str(pid) in hunt_results:
                     hunt_results[str(pid)]["rewards"]["achievements"] = [str(value) for value in player_achievements[:4]]
+                if kind == "venture":
+                    mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
+                    parts = [
+                        "Venture victory" if won else "Venture defeat",
+                        f"{int(meta.get('damage', 0)):,} DMG",
+                        f"{int(meta.get('damage_taken', 0)):,} taken",
+                        f"{int(meta.get('healing', 0)):,} heal",
+                        "KO" if knocked_out else "Standing",
+                    ]
+                    if won and venture_rewards is not None:
+                        parts.extend([
+                            f"+{int(venture_rewards.get('xp', 0)):,} XP",
+                            f"+{int(venture_rewards.get('jp', 0)):,} JP",
+                            f"+{int(venture_rewards.get('gil', 0)):,} Gil",
+                        ])
+                        loot = [str(value) for value in venture_rewards.get("loot", [])]
+                        if loot:
+                            shown = ", ".join(loot[:2])
+                            if len(loot) > 2:
+                                shown += f" +{len(loot) - 2} more"
+                            parts.append(f"Loot: {shown}")
+                        levelups = [str(value) for value in venture_rewards.get("levelups", [])]
+                        if levelups:
+                            parts.append("Level up: " + ", ".join(levelups[:2]))
+                    else:
+                        parts.append("No victory spoils")
+                    if player_achievements:
+                        parts.append("Achievement: " + str(player_achievements[0]))
+                    participant_result_messages.append(f"{mention} — " + " · ".join(parts))
 
             if won and hunt:
                 messages.append(
@@ -4433,11 +4466,17 @@ class CrystalGuildEngine:
                 if first_clear_lines:
                     messages.append("FIRST CLEAR — " + " | ".join(first_clear_lines[:5]))
             elif won:
-                prefix = "SOLO VICTORY" if kind == "solo_venture" else "VICTORY"
-                messages.append(
-                    f"{prefix} — {monster['name']} falls in {resolved_round} rounds. "
-                    + " | ".join(reward_lines[:6])
-                )
+                if kind == "venture":
+                    messages.append(
+                        f"VENTURE VICTORY — {monster['name']} falls in {resolved_round} rounds. "
+                        f"{len(participant_result_messages)} adventurer{'s' if len(participant_result_messages) != 1 else ''} participated. "
+                        "Personal results incoming."
+                    )
+                else:
+                    messages.append(
+                        f"SOLO VICTORY — {monster['name']} falls in {resolved_round} rounds. "
+                        + " | ".join(reward_lines[:6])
+                    )
             elif hunt:
                 messages.append(
                     f"HUNT FAILED [{hunt['rank']}] — {hunt['name']}: "
@@ -4446,16 +4485,23 @@ class CrystalGuildEngine:
                     f"{reason or 'The mark remains on the board.'}"
                 )
             else:
-                prefix = "SOLO VENTURE FAILED" if kind == "solo_venture" else "PARTY WIPE"
-                messages.append(
-                    f"{prefix} — {monster['name']} survives with "
-                    f"{int(encounter.get('monster_hp', monster['hp'])):,} HP. "
-                    f"{reason or 'The campfire is about to become very popular.'}"
-                )
+                if kind == "venture":
+                    messages.append(
+                        f"VENTURE DEFEAT — {monster['name']} survives with "
+                        f"{int(encounter.get('monster_hp', monster['hp'])):,} HP after {resolved_round} rounds. "
+                        f"{len(participant_result_messages)} adventurer{'s' if len(participant_result_messages) != 1 else ''} participated. "
+                        "Personal results incoming."
+                    )
+                else:
+                    messages.append(
+                        f"SOLO VENTURE FAILED — {monster['name']} survives with "
+                        f"{int(encounter.get('monster_hp', monster['hp'])):,} HP. "
+                        f"{reason or 'The campfire is about to become very popular.'}"
+                    )
 
-            if levelup_lines:
+            if levelup_lines and kind != "venture":
                 messages.append("Level up! " + " | ".join(levelup_lines[:6]))
-            if achievement_lines:
+            if achievement_lines and kind != "venture":
                 messages.append("Achievement unlocked: " + " | ".join(achievement_lines[:4]))
             if fellowship_lines:
                 messages.append("Fellowship — " + " | ".join(dict.fromkeys(fellowship_lines[:6])))
@@ -4513,6 +4559,8 @@ class CrystalGuildEngine:
                 solo_result=solo_result,
                 resolved_immediately=kind == "solo_venture",
                 notification_limit=4,
+                participant_result_messages=participant_result_messages if kind == "venture" else [],
+                participant_message_delay_seconds=1.5 if kind == "venture" else 0.0,
             )
         finally:
             self._clear_encounter(active_id)
@@ -14430,10 +14478,10 @@ class CrystalGuildEngine:
                 meta["defending"] = False
                 self._save_hp(pid, meta.get("hp", 0))
                 self._save_resources_from_meta(pid, meta)
-            msg = f"R{round_no} — Heroes deal {round_damage:,} damage. " + ("LIMIT BREAK: " + "; ".join(limit_users[:3]) + ". " if limit_users else "")
             finished = self._finish_raid(True)
-            extras = [summon_message] if summon_message else []
-            return GameResult.success(*extras, msg, *finished.messages, raid_finished=True, won=True)
+            data = dict(finished.data)
+            data.update({"raid_finished": True, "won": True})
+            return GameResult.success(*finished.messages, **data)
 
         # Boss response
         enrage_round = boss.get("enrage_round",10)
@@ -14566,7 +14614,9 @@ class CrystalGuildEngine:
                 messages.append(telegraph)
         if alive <= 0:
             finished=self._finish_raid(False, reason="The entire raid is KO'd.")
-            return GameResult.success(*messages,*finished.messages,raid_finished=True,won=False)
+            data = dict(finished.data)
+            data.update({"raid_finished": True, "won": False})
+            return GameResult.success(*finished.messages, **data)
         boss["next_round_at"] = time.time() + self.raid_round_seconds
         messages.append(
             f"NEXT RAID R{round_no + 1} · {self._format_seconds(self.raid_round_seconds)} — "
@@ -14679,6 +14729,7 @@ class CrystalGuildEngine:
             if not started.ok:
                 return started
         messages=[]
+        final_data: dict[str, Any] = {}
         simulation_steps = 0
         while self.active_boss:
             result=self.raid_round()
@@ -14687,6 +14738,7 @@ class CrystalGuildEngine:
                 messages.extend(result.messages[:1])
                 if result.data.get("raid_finished"):
                     messages.extend(result.messages[1:])
+                    final_data = dict(result.data)
                     break
             if not self.active_boss:
                 break
@@ -14700,7 +14752,7 @@ class CrystalGuildEngine:
                     combat_continues=True,
                     technical_watchdog=True,
                 )
-        return GameResult.success(*messages[-5:])
+        return GameResult.success(*messages[-5:], **final_data)
 
     def _record_trial_result(self, boss: dict[str, Any], *, won: bool) -> None:
         """Persist per-player flagship Trial records without another schema table.
@@ -14757,7 +14809,6 @@ class CrystalGuildEngine:
                 f"RAID SETTLEMENT REPLAY — {boss_name} was already settled; no rewards or records were applied again.",
                 raid_finished=True, won=settled_won, settlement_replay=True,
             )
-        total_damage=sum(max(0,int(m.get("damage",0))) for m in self.raid_roster.values())
         contribution_scores = {
             pid: raid_contribution_score(
                 damage=meta.get("damage", 0),
@@ -14770,9 +14821,8 @@ class CrystalGuildEngine:
         if total_contribution <= 0 and self.raid_roster:
             contribution_scores = {pid: 1.0 for pid in self.raid_roster}
             total_contribution = float(len(self.raid_roster))
-        top=sorted(self.raid_roster.items(),key=lambda kv:kv[1].get("damage",0),reverse=True)[:3]
-        top_text=", ".join(f"{m['name']} {m.get('damage',0):,}" for _,m in top) or "none"
         messages=[]
+        participant_result_messages: list[str] = []
         for pid, meta in self.raid_roster.items():
             p = self._player(pid)
             if not p:
@@ -14805,7 +14855,6 @@ class CrystalGuildEngine:
             )
         fellowship_raid_notes: list[str] = []
         if won:
-            loot_winners=[]
             allocations = raid_reward_allocations(contribution_scores, boss["xp"], boss["gil"])
             for pid,meta in self.raid_roster.items():
                 p=self._player(pid)
@@ -14819,8 +14868,29 @@ class CrystalGuildEngine:
                 for drop in boss.get("drops",[]):
                     if self.rng.random()<=drop.get("chance",0):
                         qty=self.rng.randint(drop.get("min",1),drop.get("max",1)); self._change_item(pid,drop["item_id"],qty,f"boss:{boss['id']}"); won_items.append(f"{self.data.items[drop['item_id']]['name']} x{qty}")
-                if won_items: loot_winners.append(f"{meta['name']}: "+", ".join(won_items))
-                self._process_levels(pid,p["current_job"]); self._check_achievements(pid)
+                levelups = self._process_levels(pid,p["current_job"])
+                player_achievements = self._check_achievements(pid)
+                mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
+                personal_parts = [
+                    "Raid victory",
+                    f"{int(meta.get('damage', 0)):,} DMG",
+                    f"{int(meta.get('healing', 0)):,} heal",
+                    f"{int(meta.get('mitigation', 0)):,} mit",
+                    f"{int(meta.get('damage_taken', 0)):,} taken",
+                    "KO" if int(meta.get("hp", 0)) <= 0 else "Standing",
+                    f"+{int(xp):,} XP",
+                    f"+{int(share):,} Gil",
+                ]
+                if won_items:
+                    shown = ", ".join(won_items[:2])
+                    if len(won_items) > 2:
+                        shown += f" +{len(won_items) - 2} more"
+                    personal_parts.append(f"Loot: {shown}")
+                if levelups:
+                    personal_parts.append("Level up: " + ", ".join(str(value) for value in levelups[:2]))
+                if player_achievements:
+                    personal_parts.append("Achievement: " + str(player_achievements[0]))
+                participant_result_messages.append(f"{mention} — " + " · ".join(personal_parts))
                 fellowship_raid_notes.extend(self.fellowship_system.record_activity(
                     pid, "raid_win", event_key=f"raid_win:{boss['id']}:{boss.get('closes_at',0)}:{pid}"
                 ))
@@ -14829,11 +14899,30 @@ class CrystalGuildEngine:
             fellowship_raid_notes.extend(self.fellowship_system.record_shared_activity(
                 "raid_clear", event_key=f"raid_clear:{raid_key}"
             ))
-            messages.append(f"RAID VICTORY — {boss['name']} falls after {boss['round']} rounds! Total damage {total_damage:,}. Top: {top_text}.")
-            if loot_winners: messages.append("Raid loot — " + " | ".join(loot_winners[:5]))
+            standing = sum(1 for meta in self.raid_roster.values() if int(meta.get("hp", 0)) > 0)
+            messages.append(
+                f"RAID VICTORY — {boss['name']} falls after {boss['round']} rounds. "
+                f"{len(participant_result_messages)} raider{'s' if len(participant_result_messages) != 1 else ''} participated; "
+                f"{standing} standing. Personal results incoming."
+            )
             final_status="VICTORY"
         else:
-            messages.append(f"RAID WIPE — {boss['name']} survives at {boss['current_hp']:,}/{boss['max_hp']:,} HP after {boss['round']} rounds. {reason or 'The Guild newsletter will be tasteful.'}")
+            for pid, meta in self.raid_roster.items():
+                p = self._player(pid)
+                if not p:
+                    continue
+                mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
+                participant_result_messages.append(
+                    f"{mention} — Raid wipe · {int(meta.get('damage', 0)):,} DMG · "
+                    f"{int(meta.get('healing', 0)):,} heal · {int(meta.get('mitigation', 0)):,} mit · "
+                    f"{int(meta.get('damage_taken', 0)):,} taken · "
+                    f"{'KO' if int(meta.get('hp', 0)) <= 0 else 'Standing'} · No victory spoils"
+                )
+            messages.append(
+                f"RAID WIPE — {boss['name']} survives at {boss['current_hp']:,}/{boss['max_hp']:,} HP after {boss['round']} rounds. "
+                f"{len(participant_result_messages)} raider{'s' if len(participant_result_messages) != 1 else ''} participated. "
+                "Personal results incoming."
+            )
             final_status="WIPE"
         if fellowship_raid_notes:
             messages.append("Fellowship — " + " | ".join(dict.fromkeys(fellowship_raid_notes[:5])))
@@ -14842,7 +14931,12 @@ class CrystalGuildEngine:
         final_overlay=self._overlay_payload(active=False,status=final_status,boss_override=boss)
         self._write_overlay(final_overlay)
         self.active_boss=None; self.raid_roster.clear()
-        return GameResult.success(*messages)
+        return GameResult.success(
+            *messages,
+            participant_result_messages=participant_result_messages,
+            participant_message_delay_seconds=1.5,
+            notification_limit=2,
+        )
 
     def _boss_phase(self, boss: dict[str, Any]) -> dict[str, Any]:
         ratio=boss.get("current_hp",boss["hp"])/max(1,boss.get("max_hp",boss["hp"]))

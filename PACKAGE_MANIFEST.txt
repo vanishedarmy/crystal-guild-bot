@@ -1,11 +1,11 @@
-Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — HTTP Response Efficiency
+Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Personalized Chat Results + Raid XP Boost
 Bot runtime: 1.7.1-resynthesis-a2h5
 Paired Web frontend: 1.7.1-resynthesis-a2h5
 Local DB schema: 16
 Hosted sync schema: 1
 Portal Action protocol: 33
 Command prefix: !
-Baseline: Hotfix 5 Full Rest & Combat Continuity
-Transport: 20s action long-poll; 60s manifest-first hosted heartbeat
+Baseline: Hotfix 5 Contextual Quick Help
+Scope: per-participant Twitch Venture/Raid settlement messages + 50% Raid Victory XP increase
 Database migration: none (existing schema 16 preserved)
 Deployment: Bot + Web together

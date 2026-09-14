@@ -202,11 +202,25 @@ class TwitchRESTChatSender:
         """Send one engine result using its presentation-aware message budget.
 
         Timed battle results may request a smaller automatic-chat
-        budget without changing command responses or combat resolution.
+        budget without changing command responses or combat resolution. Final
+        Venture/Raid settlements can also carry one personal result line per
+        participant. Those lines deliberately bypass message packing so every
+        viewer keeps their own @-mentioned, easy-to-scan result.
         """
         resolved_limit = int(limit if limit is not None else result.data.get("notification_limit", 4))
         resolved_limit = max(1, min(6, resolved_limit))
-        for message in _packed_messages(result.messages, max_messages=resolved_limit):
+        packed = _packed_messages(result.messages, max_messages=resolved_limit)
+        for message in packed:
+            self.send(message)
+        personal = [
+            " ".join(str(message).split())[:480]
+            for message in list(result.data.get("participant_result_messages") or [])
+            if str(message).strip()
+        ]
+        delay = max(0.0, min(2.5, float(result.data.get("participant_message_delay_seconds", 1.5) or 0.0)))
+        for index, message in enumerate(personal):
+            if delay > 0 and (packed or index > 0):
+                time.sleep(delay)
             self.send(message)
 
 

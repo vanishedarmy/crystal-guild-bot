@@ -57,6 +57,16 @@ def _identity(ctx: commands.Context) -> tuple[str, str, str]:
 async def send_result(ctx: commands.Context, result: GameResult, limit: int = 3) -> None:
     for message in _packed_messages(result.messages, max_messages=limit):
         await ctx.send(message)
+    personal = [
+        " ".join(str(message).split())[:480]
+        for message in list(result.data.get("participant_result_messages") or [])
+        if str(message).strip()
+    ]
+    delay = max(0.0, min(2.5, float(result.data.get("participant_message_delay_seconds", 1.5) or 0.0)))
+    for index, message in enumerate(personal):
+        if delay > 0:
+            await asyncio.sleep(delay)
+        await ctx.send(message)
 
 
 class RPGCommands(commands.Component):
