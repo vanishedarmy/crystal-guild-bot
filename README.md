@@ -1,7 +1,7 @@
-# Crystal Guild v1.8.0 RC2 — Merc Service
+# Crystal Guild v1.8.0 RC3 — Merc Service
 
-RC2 is the Portal-wide desktop/mobile UI consistency candidate built from the sealed RC1 Complete baseline. Merc Service gameplay remains unchanged; this build focuses on navigation balance, responsive containment, media safety, and consistent player-facing presentation.
+RC3 is the Portal UI polish candidate built from the sealed v1.8.0 RC2 package. It fixes desktop navigation label fit, improves the visual balance of the profile section grid, and consolidates manual refresh into one page-bottom control while preserving automatic live updates.
 
-Release contract: runtime `1.8.0-merc-rc2`, local schema **17**, hosted sync **1**, Portal Action protocol **34**, no player reset.
+Release contract: runtime `1.8.0-merc-rc3`, local schema **17**, hosted sync **1**, Portal Action protocol **34**, no player reset.
 
-See `UI_CONSISTENCY_RC2_RELEASE_NOTES.md` and `UI_CONSISTENCY_RC2_VALIDATION.md` for the RC2 scope.
+See `UI_POLISH_RC3_RELEASE_NOTES.md` and `UI_POLISH_RC3_VALIDATION.md` for the RC3 scope.

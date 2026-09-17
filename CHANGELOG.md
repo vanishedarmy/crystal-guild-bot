@@ -1,5 +1,11 @@
 # Crystal Guild Changelog
 
+## v1.8.0 RC3 — Portal UI Polish
+- Roomier desktop profile navigation with 6/8/4/2-column responsive tiers and no label overflow.
+- Removed section-specific manual refresh controls; one shared Refresh button now sits at the bottom of live Portal pages.
+- Simplified the connection strip to passive status only while preserving automatic live updates.
+- No gameplay, schema, economy, or Merc Service balance changes.
+
 ## v1.8.0 RC2 — UI Consistency
 - Balanced Adventurer Profile navigation and responsive breakpoints across the Portal.
 - Added global layout/media containment guardrails for desktop and mobile consistency.

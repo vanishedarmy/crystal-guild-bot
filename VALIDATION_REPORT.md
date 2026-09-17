@@ -1,32 +1,30 @@
-# Crystal Guild v1.8.0 RC2 — Validation Report
+# Crystal Guild v1.8.0 RC3 — Validation Report
 
-RC2 validates the Portal-wide UI consistency pass against the sealed RC1 Complete baseline.
+RC3 validates the navigation/readability and refresh-control polish pass against the sealed RC2 package.
 
 ## Completed validation
 
-- Frontend Node regression suite: **652/652 PASS**.
+- Frontend Node regression suite: **656/656 PASS**.
 - Hosted Web/API Python suite: **78/78 PASS**.
 - Bot Python suite: **733/733 PASS**.
-- Direct static media-reference audit: **159 references checked, 0 missing**. One template-generated region path is dynamic and remains covered by the existing region/artwork regression suite.
 - Python compileall: **PASS** for Bot and hosted Web modules.
-- JSON parse audit: **PASS** for Bot data and Player Guide metadata.
-- No Merc gameplay, Hunt Seal economy, schema, sync, or Portal protocol changes.
+- Static media-reference audit: **161 unique references checked: 160 static files present, 1 expected dynamic region template; 0 broken static references**.
+- No gameplay, Hunt Seal economy, schema, sync, or Portal protocol changes.
 
-## UI consistency coverage
+## UI polish coverage
 
-- The sixteen Adventurer Profile destinations render as two balanced 8-item rows on wide desktop.
-- Compact desktop/tablet uses a balanced 4-column grid, avoiding orphan navigation rows.
-- At 720px and below the desktop tab grid is replaced by the compact section selector.
-- Shared layout guardrails allow panels, grids, titles, badges, and controls to shrink without forcing horizontal viewport overflow.
-- Shared media containment keeps images, figures, video, canvas, and feature artwork inside their authored parent frames.
-- Existing mobile, Fellowship, Guide, Gold Saucer, Merc Service, accessibility, and artwork-routing regressions remain green.
+- Standard desktop navigation uses six readable columns with a centered four-item final row.
+- Very wide desktop uses eight columns; compact desktop/tablet uses four and two columns before the mobile selector takes over.
+- Profile navigation labels remain single-line and are contained within their button geometry.
+- No feature panel exposes a section-specific manual Refresh button.
+- One shared Refresh control appears at the bottom of live Portal pages.
+- Automatic live updates and post-action refresh behavior remain active.
+- The connection status strip is passive and no longer creates or polls PING actions from the UI.
 
 ## Release contract
 
-- Runtime/frontend: `1.8.0-merc-rc2`
+- Runtime/frontend: `1.8.0-merc-rc3`
 - Local database schema: **17**
 - Hosted sync schema: **1**
 - Portal Action protocol: **34**
 - No player reset or migration.
-
-The frontend source archive intentionally does not ship `node_modules`; the source/regression suite is authoritative in this workspace, while deployment installs the pinned Vite/React dependencies from `package.json`.
