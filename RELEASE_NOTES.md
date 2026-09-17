@@ -1,23 +1,29 @@
-# Crystal Guild v1.8.0 RC3 — Portal UI Polish
+# Crystal Guild v1.8.0 Final — Merc Service
 
-RC3 refines the RC2 visual consistency pass after desktop review. Gameplay is unchanged; this build focuses on readable navigation, cleaner manual refresh behavior, and consistent live-page controls.
+v1.8.0 Final promotes the RC3 candidate to the completed Merc Service release. No new gameplay features or balance changes are introduced in the Final pass; this release seals the tested RC feature set, release identity, documentation, and packages.
 
-## Player-facing improvements
+## Final feature set
 
-- Reworked Adventurer Profile navigation so normal desktop widths use a roomier 6-column grid instead of forcing 8 narrow buttons across.
-- Very wide screens (1600px+) retain the 8-column two-row layout; 901–1279px uses 4 columns; 721–900px uses 2 columns; phones keep the compact section selector.
-- Kept navigation labels on one line and inside their buttons without ellipsis/truncation.
-- Centered the 4-button final row at common desktop widths so the navigation feels deliberate instead of left-heavy.
-- Removed section-specific manual refresh buttons from Adventure Board, Jobs, Inventory/Recovery, Moogle Emporium, Blacksmith, Chocobo Stable, Retainer Service, Hero Merc Service, Gold Saucer, Fellowship, and Daily Reward surfaces.
-- Added one shared **Refresh** control at the bottom of live Portal pages: Guild Heroes, Adventurer Profile, Fellowship, and Streamer Dashboard.
-- Kept automatic SSE/live updates, focus refreshes, post-action synchronization, and feature state reloads intact.
-- Simplified the signed-in Crystal Guild connection strip to passive ONLINE/OFFLINE status only.
+- Hero Merc Service with Aerith, Tifa, Zidane, Yuna, Balthier, and Cloud.
+- Existing **Hunt Seals** are the Merc contract currency; no separate Hunt Marks economy is used.
+- Three independent assignment slots: one Hero for Hunt, one for Venture, and one for Raid.
+- Mission eligibility, progression locks, occupied slots, contracted Heroes, and deployed Heroes all produce explicit availability states in the Portal.
+- Deployed Heroes remain unavailable until their Hunt, Venture, or Raid resolves, including timed-Hunt restart recovery.
+- Signature Hero contributions cover burst damage, healing, protection, extra finds, and rare-spoil support.
+- Complete available/unavailable Merc artwork and service presentation.
+- Responsive Portal hardening for desktop, tablet, and mobile layouts.
+- Readable profile navigation with roomier desktop breakpoints and contained single-line labels.
+- One shared manual **Refresh** control at the bottom of live Portal pages; automatic/live synchronization remains active.
 
-## Compatibility
+## Release contract
 
-- Runtime/frontend: `1.8.0-merc-rc3`
+- Runtime/frontend: `1.8.0-merc-final`
+- Frontend package: `1.8.0`
 - Local database schema: **17**
 - Hosted sync schema: **1**
 - Portal Action protocol: **34**
-- No player reset or migration.
-- Merc Service pricing, Hero effects, Hunt Seal economy, and deployment lifecycle are unchanged from RC2.
+- No player reset or Final-specific database migration.
+
+## Upgrade path
+
+RC3 upgrades directly to Final. Existing schema-17 player databases and active Merc state remain compatible. The original v1.8 schema migration remains the only database migration in this release line.

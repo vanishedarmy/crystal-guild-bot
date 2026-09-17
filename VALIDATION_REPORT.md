@@ -1,30 +1,35 @@
-# Crystal Guild v1.8.0 RC3 — Validation Report
+# Crystal Guild v1.8.0 Final — Validation Report
 
-RC3 validates the navigation/readability and refresh-control polish pass against the sealed RC2 package.
+The Final pass promotes the sealed RC3 feature set without gameplay expansion and verifies the production release identity, compatibility contract, source integrity, and packaged assets.
 
-## Completed validation
+## Automated validation
 
 - Frontend Node regression suite: **656/656 PASS**.
 - Hosted Web/API Python suite: **78/78 PASS**.
 - Bot Python suite: **733/733 PASS**.
 - Python compileall: **PASS** for Bot and hosted Web modules.
-- Static media-reference audit: **161 unique references checked: 160 static files present, 1 expected dynamic region template; 0 broken static references**.
-- No gameplay, Hunt Seal economy, schema, sync, or Portal protocol changes.
+- JSON integrity: **31/31 JSON files parsed successfully**.
+- Static media-reference audit: **159/159 direct static references present; 0 broken direct static references**.
+- Final release identity is synchronized across Bot runtime, hosted API, frontend version/cache revision, Guide metadata, package metadata, and release tests.
 
-## UI polish coverage
+## Final release scope
 
-- Standard desktop navigation uses six readable columns with a centered four-item final row.
-- Very wide desktop uses eight columns; compact desktop/tablet uses four and two columns before the mobile selector takes over.
-- Profile navigation labels remain single-line and are contained within their button geometry.
-- No feature panel exposes a section-specific manual Refresh button.
-- One shared Refresh control appears at the bottom of live Portal pages.
-- Automatic live updates and post-action refresh behavior remain active.
-- The connection status strip is passive and no longer creates or polls PING actions from the UI.
+- No Merc Service balance changes from RC3.
+- No Hunt Seal economy changes from RC3.
+- No Hero effect or mission-eligibility changes from RC3.
+- No Portal navigation/refresh behavior changes beyond the already-tested RC3 implementation.
+- No local database schema, hosted sync schema, or Portal Action protocol change.
 
 ## Release contract
 
-- Runtime/frontend: `1.8.0-merc-rc3`
+- Runtime/frontend: `1.8.0-merc-final`
+- Frontend package: `1.8.0`
 - Local database schema: **17**
 - Hosted sync schema: **1**
 - Portal Action protocol: **34**
-- No player reset or migration.
+- Final-specific migration: **none**
+- Player reset: **none**
+
+## Build environment note
+
+The extracted shipping source does not include installed `node_modules`, so `npm run build` cannot invoke the Vite executable in this workspace (`vite: not found`). As with the RC line, the production bundle command is not used as a release gate here; frontend source/unit/regression coverage is complete and the direct static-media audit confirms referenced packaged assets are present.

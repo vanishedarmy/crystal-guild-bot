@@ -1,5 +1,11 @@
 # Crystal Guild Changelog
 
+## v1.8.0 Final — Merc Service
+- Promotes the hardened RC3 feature set to the production v1.8 release.
+- Hero Merc Service uses Hunt Seals with independent Hunt, Venture, and Raid assignment slots.
+- Includes deployed-state recovery, full Merc artwork, responsive Portal hardening, readable navigation, and one shared page-bottom Refresh control.
+- Runtime `1.8.0-merc-final`; schema 17, hosted sync 1, Portal Action protocol 34; no player reset.
+
 ## v1.8.0 RC3 — Portal UI Polish
 - Roomier desktop profile navigation with 6/8/4/2-column responsive tiers and no label overflow.
 - Removed section-specific manual refresh controls; one shared Refresh button now sits at the bottom of live Portal pages.

@@ -1,5 +1,5 @@
-# Crystal Guild v1.8.0 RC3 — Merc Service
-# Runtime: 1.8.0-merc-rc3
+# Crystal Guild v1.8.0 Final — Merc Service
+# Runtime: 1.8.0-merc-final
 # Schema: 17 · Hosted sync: 1 · Portal Action protocol: 34
 # Files
 .env.example
@@ -37,6 +37,8 @@ UI_CONSISTENCY_RC2_VALIDATION.md
 UI_POLISH_RC3_RELEASE_NOTES.md
 UI_POLISH_RC3_VALIDATION.md
 UPGRADE_GUIDE.md
+V1_8_FINAL_RELEASE_NOTES.md
+V1_8_FINAL_VALIDATION.md
 VALIDATION_REPORT.md
 VERSION.txt
 WEB_SYNC_SETUP.md

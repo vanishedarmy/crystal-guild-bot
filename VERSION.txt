@@ -1,1 +1,1 @@
-1.8.0-merc-rc3
+1.8.0-merc-final
