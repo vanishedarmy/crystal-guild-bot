@@ -30,7 +30,7 @@ class MercServiceBatch2Tests(unittest.TestCase):
         )
         self.assertTrue(self.game.recruit("100", "van", "Van").ok)
         self.assertTrue(self.game.choose_job("100", "warrior").ok)
-        self.db.execute("UPDATE players SET level=60,hunt_marks=100 WHERE twitch_id='100'")
+        self.db.execute("UPDATE players SET level=60,hunt_seals=100 WHERE twitch_id='100'")
         self.db.execute(
             "INSERT INTO player_hunts(player_id,hunt_id,clears) VALUES ('100','chieftains_challenge',20)"
         )

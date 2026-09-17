@@ -129,7 +129,7 @@ from .retainer import (
 )
 from .mercenary import (
     MERC_SERVICE_NAME, MERC_PROPRIETOR, MERC_MISSION_TYPES, HEROES, HEROES_BY_ID,
-    HUNT_MARK_REWARDS_BY_RANK, public_hero,
+    public_hero,
 )
 from .time_format import format_duration
 from .chocobo import (
@@ -4354,7 +4354,7 @@ class CrystalGuildEngine:
                     loot_text = ", ".join(rewards["loot"][:3]) if rewards["loot"] else "no extra drops"
                     reward_lines.append(
                         f"{meta['name']} +{rewards['xp']}XP/{rewards['jp']}JP/"
-                        f"{rewards['gil']}g/+{rewards['seals']} seals/+{rewards['marks']} Hunt Marks · {loot_text}"
+                        f"{rewards['gil']}g/+{rewards['seals']} Hunt Seals · {loot_text}"
                     )
                     if rewards["first_clear"]:
                         first_clear_lines.extend(rewards["first_rewards"])
@@ -5361,19 +5361,17 @@ class CrystalGuildEngine:
         )
         jp = self.fellowship_system.apply_jp_bonus(jp)
         seals = reward["seals"]
-        marks = int(HUNT_MARK_REWARDS_BY_RANK.get(str(hunt.get("rank", "C")).upper(), 1))
         job = self.data.jobs[p["current_job"]]
         effects = self._effects(player_id, p["current_job"])
         gil = int(gil * (1 + job.get("gil_bonus", 0) + effects.get("gil_bonus", 0)))
         loot_bonus = job.get("loot_bonus", 0) + effects.get("loot_bonus", 0)
         with self.db.tx() as conn:
-            conn.execute("UPDATE players SET xp=xp+?, gil=gil+?, hunt_seals=hunt_seals+?, hunt_marks=hunt_marks+?, monsters_defeated=monsters_defeated+1 WHERE twitch_id=?", (xp, gil, seals, marks, player_id))
+            conn.execute("UPDATE players SET xp=xp+?, gil=gil+?, hunt_seals=hunt_seals+?, monsters_defeated=monsters_defeated+1 WHERE twitch_id=?", (xp, gil, seals, player_id))
             conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (jp, player_id, p["current_job"]))
             conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (player_id, monster["id"]))
             conn.execute("INSERT INTO player_hunts(player_id,hunt_id,clears,first_cleared_at,last_cleared_at) VALUES (?,?,1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) ON CONFLICT(player_id,hunt_id) DO UPDATE SET clears=clears+1,last_cleared_at=CURRENT_TIMESTAMP", (player_id, hunt["id"]))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)", (player_id, gil, f"hunt:{hunt['id']}"))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_seals','hunt_seals',?,?)", (player_id, seals, f"hunt:{hunt['id']}"))
-            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_marks','hunt_marks',?,?)", (player_id, marks, f"hunt:{hunt['id']}"))
         loot: list[str] = []
         for drop in monster.get("drops", []):
             chance = min(0.95, drop["chance"] * (1 + loot_bonus))
@@ -5396,7 +5394,7 @@ class CrystalGuildEngine:
             if title_id and self._unlock_title(player_id, title_id):
                 first_rewards.append(f"Title: {self.data.titles[title_id]['name']}")
         levelups = self._process_levels(player_id, p["current_job"])
-        return {"xp": xp, "jp": jp, "gil": gil, "seals": seals, "marks": marks, "loot": loot, "first_clear": first_clear, "first_rewards": first_rewards, "levelups": levelups}
+        return {"xp": xp, "jp": jp, "gil": gil, "seals": seals, "loot": loot, "first_clear": first_clear, "first_rewards": first_rewards, "levelups": levelups}
 
     def _complete_job_quest_if_ready(self, player_id: str, quest: dict[str, Any]) -> dict[str, Any] | None:
         """Complete one ready Job quest exactly once, including its rewards.
@@ -11678,7 +11676,7 @@ class CrystalGuildEngine:
         return {"id": item_id, "name": item_name, "quantity": qty, "label": label, "kind": "merc_bonus"}
 
     def _merc_state_sql(self, conn: Any, twitch_id: str) -> dict[str, Any]:
-        player = conn.execute("SELECT level,hunt_marks FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+        player = conn.execute("SELECT level,hunt_seals FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
         if not player:
             return {}
         clears_row = conn.execute(
@@ -11696,13 +11694,13 @@ class CrystalGuildEngine:
                 "role": str(hero.get("role") or "Mercenary"),
                 "signature": str(hero.get("signature") or ""),
                 "mission_type": str(contract["mission_type"]),
-                "fee_marks": int(contract["fee_marks"] or 0),
+                "fee_seals": int(contract["fee_marks"] or 0),
                 "hired_at": int(contract["hired_at"] or 0),
             }
         return {
             "service": MERC_SERVICE_NAME,
             "proprietor": MERC_PROPRIETOR,
-            "hunt_marks": max(0, int(player["hunt_marks"] or 0)),
+            "hunt_seals": max(0, int(player["hunt_seals"] or 0)),
             "player_level": max(1, int(player["level"] or 1)),
             "hunt_clears": hunt_clears,
             "contract": current,
@@ -11733,9 +11731,9 @@ class CrystalGuildEngine:
         if mission not in MERC_MISSION_TYPES or mission not in set(hero.get("mission_types") or ()):
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Hero does not accept that type of contract."))
         now = int(time.time())
-        fee = int(hero.get("fee_marks", 0))
+        fee = int(hero.get("fee_seals", 0))
         with self.db.tx() as conn:
-            player = conn.execute("SELECT level,hunt_marks FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+            player = conn.execute("SELECT level,hunt_seals FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
             if not player:
                 result = self._need_recruit(); self._portal_action_store_sql(conn, action_id, result); return result
             clears_row = conn.execute("SELECT COALESCE(SUM(clears),0) AS clears FROM player_hunts WHERE player_id=?", (str(twitch_id),)).fetchone()
@@ -11751,14 +11749,14 @@ class CrystalGuildEngine:
                 result = GameResult.fail(f"You already have a Merc contract with {active.get('name', existing['hero_id'])}.")
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
                 self._portal_action_store_sql(conn, action_id, result); return result
-            if int(player["hunt_marks"] or 0) < fee:
-                result = GameResult.fail(f"You need {fee} Hunt Marks to hire {hero['name']}.")
+            if int(player["hunt_seals"] or 0) < fee:
+                result = GameResult.fail(f"You need {fee} Hunt Seals to hire {hero['name']}.")
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
                 self._portal_action_store_sql(conn, action_id, result); return result
-            conn.execute("UPDATE players SET hunt_marks=hunt_marks-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (fee, str(twitch_id)))
-            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_marks','hunt_marks',?,?)", (str(twitch_id), -fee, f"merc_hire:{hero_key}:{mission}"))
+            conn.execute("UPDATE players SET hunt_seals=hunt_seals-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (fee, str(twitch_id)))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_seals','hunt_seals',?,?)", (str(twitch_id), -fee, f"merc_hire:{hero_key}:{mission}"))
             conn.execute("INSERT INTO player_merc_contracts(player_id,hero_id,mission_type,fee_marks,hired_at,updated_at) VALUES (?,?,?,?,?,?)", (str(twitch_id), hero_key, mission, fee, now, now))
-            result = GameResult.success(f"MERC CONTRACT — {hero['name']} hired for your next {mission.title()} assignment for {fee} Hunt Marks.", hero_id=hero_key, mission_type=mission)
+            result = GameResult.success(f"MERC CONTRACT — {hero['name']} hired for your next {mission.title()} assignment for {fee} Hunt Seals.", hero_id=hero_key, mission_type=mission)
             result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11777,7 +11775,7 @@ class CrystalGuildEngine:
             hero = HEROES_BY_ID.get(str(row["hero_id"]), {})
             conn.execute("DELETE FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),))
             conn.execute("INSERT INTO merc_contract_history(player_id,hero_id,mission_type,fee_marks,outcome,contracted_at,consumed_at) VALUES (?,?,?,?,?,?,?)", (str(twitch_id), str(row["hero_id"]), str(row["mission_type"]), int(row["fee_marks"]), "cancelled", int(row["hired_at"]), now))
-            result = GameResult.success(f"Merc contract with {hero.get('name', row['hero_id'])} cancelled. Hunt Marks are non-refundable.")
+            result = GameResult.success(f"Merc contract with {hero.get('name', row['hero_id'])} cancelled. Hunt Seals are non-refundable.")
             result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11796,7 +11794,7 @@ class CrystalGuildEngine:
                 "hero_id": str(row["hero_id"]), "hero_name": str(hero["name"]),
                 "role": str(hero["role"]), "specialty": str(hero.get("specialty") or ""),
                 "signature": str(hero.get("signature") or ""), "catchphrase": str(hero.get("catchphrase") or ""),
-                "mission_type": mission, "fee_marks": int(row["fee_marks"] or 0),
+                "mission_type": mission, "fee_seals": int(row["fee_marks"] or 0),
             }
             conn.execute("DELETE FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),))
             conn.execute("INSERT INTO merc_contract_history(player_id,hero_id,mission_type,fee_marks,outcome,contracted_at,consumed_at) VALUES (?,?,?,?,?,?,?)", (str(twitch_id), str(row["hero_id"]), mission, int(row["fee_marks"]), "deployed", int(row["hired_at"]), now))

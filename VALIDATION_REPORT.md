@@ -9,6 +9,6 @@
 - Focused Merc/Portal hosted actions: **17 / 17 PASS**
 - Focused Merc/help Bot checks: **34 / 34 PASS**
 - Merc Service remains artwork-free in Batch 4 by focused regression guard.
-- Hunt Marks remain distinct from Hunt Seals in player-facing Guide/help copy.
+- Hunt Seals remain distinct from Hunt Seals in player-facing Guide/help copy.
 - Current release identity is `v1.8.0 Alpha 1 — Merc Service` / `1.8.0-merc-a1`.
 - Release contract remains schema **17**, hosted sync **1**, Portal protocol **34**.

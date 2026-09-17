@@ -7,7 +7,7 @@ Batch 4 completes the code-only player-facing Merc Service layer before artwork 
 ### Web / Portal
 - Visible Web identity is now **v1.8.0 Alpha 1 — Merc Service** (`1.8.0-merc-a1`).
 - Player Guide adds a dedicated **Hero Merc Service** chapter and navigation entry.
-- Guide documents the separate Hunt Marks economy: **C 1 / B 2 / A 3 / S 5** per successful Hunt.
+- Guide documents the separate Hunt Seals economy: **C 1 / B 2 / A 3 / S 5** per successful Hunt.
 - Guide documents all six Heroes, real unlock requirements, Hunt Mark fees, eligible mission types, and signature assists.
 - Merc Service page now includes contextual `?` Quick Help and an inline **How Merc Contracts Work** briefing.
 - Mobile adds an in-page Current / Roster / How It Works navigator, one-column roster behavior, touch-safe controls, and overflow protection.
@@ -16,7 +16,7 @@ Batch 4 completes the code-only player-facing Merc Service layer before artwork 
 - Merc artwork remains intentionally absent until Batch 5.
 
 ### Bot help
-- `!guild mercs`, `!guild merc`, and `!guild huntmarks` explain the Portal-first Merc Service, Hunt Marks, contract consumption, and cancellation rules.
+- `!guild mercs` and `!guild merc` explain the Portal-first Merc Service, Hunt Seals, contract consumption, and cancellation rules.
 - No new Twitch gameplay command is introduced; hiring remains authoritative through the Adventurer Portal.
 
 ### Release contract

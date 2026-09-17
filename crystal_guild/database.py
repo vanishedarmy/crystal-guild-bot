@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS players (
     xp INTEGER NOT NULL DEFAULT 0,
     gil INTEGER NOT NULL DEFAULT 250,
     hunt_seals INTEGER NOT NULL DEFAULT 0,
-    hunt_marks INTEGER NOT NULL DEFAULT 0,
     current_job TEXT NOT NULL DEFAULT 'adventurer',
     current_region TEXT NOT NULL DEFAULT 'greenwind_plains',
     title TEXT NOT NULL DEFAULT 'Fresh Meat',
@@ -1020,11 +1019,6 @@ class Database:
             if self._preexisting_players_table:
                 self.pre_migration_backup_path = self._verified_pre_migration_backup(17)
             try:
-                columns_v17 = {str(row[1]) for row in self.conn.execute("PRAGMA table_info(players)").fetchall()}
-                if "hunt_marks" not in columns_v17:
-                    self.conn.execute("BEGIN IMMEDIATE")
-                    self.conn.execute("ALTER TABLE players ADD COLUMN hunt_marks INTEGER NOT NULL DEFAULT 0")
-                    self.conn.commit()
                 self.conn.executescript(
                     """
                     BEGIN IMMEDIATE;
@@ -1050,7 +1044,7 @@ class Database:
                     );
                     CREATE INDEX IF NOT EXISTS idx_merc_history_player
                     ON merc_contract_history(player_id, consumed_at DESC, id DESC);
-                    INSERT INTO schema_migrations(version,name) VALUES (17,'hero_merc_service_hunt_marks');
+                    INSERT INTO schema_migrations(version,name) VALUES (17,'hero_merc_service');
                     COMMIT;
                     """
                 )

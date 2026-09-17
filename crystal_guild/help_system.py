@@ -35,8 +35,8 @@ HELP_TOPICS = {
         "Hunts return automatically after their rank timer: C 15m, B 30m, A 2h, S 5h. No round commands are needed; your hero conserves supplies, uses learned abilities/Defend when useful, and only spends limited survival items when warranted. Rewards and first-clear prizes are committed when the Hunt resolves.",
     ),
     "mercs": (
-        "MERC SERVICE — hire one unlocked Hero from Adventurer Portal → Guild Services → Hero Merc Service. Contracts use Hunt Marks, not Hunt Seals, and can be reserved for a supported Hunt, Venture, or Raid.",
-        "Successful Hunts award Hunt Marks by rank: C 1, B 2, A 3, S 5. A Merc contract is consumed only when its matching assignment begins; cancelling frees the slot but does not refund spent Hunt Marks. Each Hero has distinct unlocks, fees, mission eligibility, and a signature assist.",
+        "MERC SERVICE — hire one unlocked Hero from Adventurer Portal → Guild Services → Hero Merc Service. Contracts use Hunt Seals earned through Hunts, and can be reserved for a supported Hunt, Venture, or Raid.",
+        "Hunts already award Hunt Seals, which are used for Merc contracts as well as other Guild services. A Merc contract is consumed only when its matching assignment begins; cancelling frees the slot but does not refund spent Hunt Seals. Each Hero has distinct unlocks, fees, mission eligibility, and a signature assist.",
     ),
     "quests": (
         "QUESTS — !quests lists Job-unlock quests. Ready Job quests complete automatically and retroactively; !quest <name> inspects a specific quest.",
@@ -89,7 +89,7 @@ ALIASES = {
     "inv": "inventory", "gear": "inventory", "equipment": "inventory", "equip": "inventory", "item": "inventory",
     "buy": "shop", "sell": "shop",
     "hunt": "hunts", "huntboard": "hunts", "marks": "hunts", "sealshop": "hunts", "sealbuy": "hunts",
-    "merc": "mercs", "mercs": "mercs", "mercenary": "mercs", "mercenaries": "mercs", "huntmarks": "mercs",
+    "merc": "mercs", "mercs": "mercs", "mercenary": "mercs", "mercenaries": "mercs",
     "quest": "quests",
     "blacksmith": "crafting", "forge": "crafting", "recipes": "crafting", "recipe": "crafting", "craft": "crafting", "upgrade": "crafting", "resynthesize": "crafting", "desynth": "crafting", "dismantle": "crafting",
     "relic": "relics", "awaken": "relics",
