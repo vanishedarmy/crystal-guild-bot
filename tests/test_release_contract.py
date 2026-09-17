@@ -21,8 +21,8 @@ REPO = ROOT.parent
 
 
 class ReleaseReadinessTests(unittest.TestCase):
-    def test_release_identity_is_merc_alpha1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.8.0-merc-a2")
+    def test_release_identity_is_merc_rc1_without_hosted_sync_schema_break(self):
+        self.assertEqual(__version__, "1.8.0-merc-rc1")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -90,7 +90,7 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.8 - MERC SERVICE ALPHA 1", panel)
+        self.assertIn("v1.8 - MERC SERVICE RC1", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
@@ -99,8 +99,8 @@ class ReleaseReadinessTests(unittest.TestCase):
     def test_current_finalization_audit_matches_final_package_identity(self):
         audit = (ROOT / "FINALIZATION_AUDIT.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
-        self.assertIn("Crystal Guild v1.8 Merc Service Alpha 1", audit)
-        self.assertIn("1.8.0-merc-a2", audit)
+        self.assertIn("Crystal Guild v1.8.0 RC1 — Merc Service", audit)
+        self.assertIn("1.8.0-merc-rc1", audit)
         self.assertIn("Merc Service", manifest)
         self.assertNotIn("v1.1.19 — Retro Phase III RC1 Finalization Audit", audit)
         self.assertNotIn("Expeditions Alpha 2 Hotfix 1 Finalization", audit)

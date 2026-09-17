@@ -46,7 +46,10 @@ class MercServiceBatch2Tests(unittest.TestCase):
         self.assertIsNotNone(self.game.portal_merc_state("100").data["merc_state"]["contract"])
         battle = self.game.start_encounter_battle()
         self.assertTrue(battle.ok, battle.messages)
-        self.assertIsNone(self.game.portal_merc_state("100").data["merc_state"]["contract"])
+        deployed = self.game.portal_merc_state("100").data["merc_state"]["contract"]
+        self.assertIsNotNone(deployed)
+        self.assertTrue(deployed["deployed"])
+        self.assertEqual(deployed["mission_type"], "venture")
         self.assertEqual(self.game.encounter_roster["100"]["merc_contract"]["hero_id"], "cloud")
         self.game.active_encounter["monster_hp"] = 1
         result = self.game.advance_encounter_round()

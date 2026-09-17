@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GuildExpansionFinalTests(unittest.TestCase):
     def test_final_identity_schema_and_protocol_are_release_values(self):
-        self.assertEqual(__version__, "1.8.0-merc-a2")
+        self.assertEqual(__version__, "1.8.0-merc-rc1")
         self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "final.db")

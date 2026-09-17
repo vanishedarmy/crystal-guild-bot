@@ -1,3 +1,14 @@
+# v1.8.0 RC1 Upgrade Notes
+
+RC1 upgrades cleanly from v1.8.0 Alpha 2.
+
+- No schema change: remains **17**.
+- No hosted sync change: remains **1**.
+- No Portal protocol change: remains **34**.
+- Existing Hunt / Venture / Raid reservations remain valid.
+- Runtime-deployed assignments remain unavailable through resolution and timed Hunt deployment survives checkpoint recovery.
+- No Hunt Seal conversion, refund, repricing, or player reset is required.
+
 # v1.8.0 Alpha 2 Upgrade Notes
 
 Alpha 2 upgrades cleanly from v1.8 Alpha 1 Hotfix 3.
