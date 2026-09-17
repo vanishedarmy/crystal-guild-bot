@@ -1,24 +1,23 @@
-# Crystal Guild v1.8.0 RC1 — Merc Service Finalization Audit
+# Crystal Guild v1.8.0 RC2 — Merc Service Finalization Audit
 
-**Decision: PASS.** RC1 completes the planned Merc Service lifecycle, recovery, and release-hardening pass.
-
-## Verified changes
-- Deployed Hero/slot remains unavailable from mission start through actual resolution.
-- Deployed contracts cannot be cancelled or rehired mid-mission.
-- Timed Hunt deployment survives runtime checkpoint/restart recovery.
-- Solo Venture pre-start setup failure restores the paid Merc reservation.
-- Three independent Hunt / Venture / Raid slots remain isolated during resolution.
-- Alpha 2 Hunt Seal fees, Hero effects, artwork, Guide behavior, and availability rules remain intact.
-
-## Regression result
-- Frontend: **648/648 PASS**
-- Hosted Web/API: **78/78 PASS**
-- Bot: **733/733 PASS**
+**Decision: PASS.** RC2 completes the requested Portal-wide desktop/mobile consistency pass without changing gameplay scope.
 
 ## Release contract
-- Runtime/frontend: `1.8.0-merc-rc1`
-- Local schema: **17**
-- Hosted sync: **1**
+
+- Runtime/frontend: `1.8.0-merc-rc2`
+- Local database schema: **17**
+- Hosted sync schema: **1**
 - Portal Action protocol: **34**
-- New migration: **none**
-- Player reset: **none**
+- No player reset or migration.
+
+## Validation seal
+
+- Frontend: **652/652 PASS**
+- Hosted Web/API: **78/78 PASS**
+- Bot: **733/733 PASS**
+- Static media references: **159/159 present**
+- Compile/JSON integrity: **PASS**
+
+## Scope guard
+
+Merc Service balance, Hunt Seal pricing, Hero abilities, deployed-state lifecycle, and three-slot contract behavior are unchanged from RC1. The only functional presentation change is the responsive UI consistency layer and synchronized RC2 release identity.

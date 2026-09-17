@@ -1,5 +1,5 @@
-# Crystal Guild v1.8.0 RC1 — Merc Service
-# Runtime: 1.8.0-merc-rc1
+# Crystal Guild v1.8.0 RC2 — Merc Service
+# Runtime: 1.8.0-merc-rc2
 .env.example
 .gitignore
 .python-version
@@ -24,12 +24,15 @@ MERC_SERVICE_HOTFIX2.md
 MERC_SERVICE_HOTFIX3.md
 MERC_SERVICE_RC1_RELEASE_NOTES.md
 MERC_SERVICE_RC1_VALIDATION.md
+PACKAGE_MANIFEST.txt
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt
 RELEASE_NOTES.md
 RENDER_CLOUD_SETUP.md
 SIMPLE_RENDER_SETUP.md
+UI_CONSISTENCY_RC2_RELEASE_NOTES.md
+UI_CONSISTENCY_RC2_VALIDATION.md
 UPGRADE_GUIDE.md
 VALIDATION_REPORT.md
 VERSION.txt
@@ -202,4 +205,3 @@ tools/simulate_expedition_balance.py
 tools/simulate_guild_balance.py
 upgrade_crystal_guild.bat
 upgrade_crystal_guild.py
-PACKAGE_MANIFEST.txt

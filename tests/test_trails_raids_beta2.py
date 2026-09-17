@@ -46,7 +46,7 @@ class TrailsRaidsBeta2Tests(unittest.TestCase):
         return self.game.active_boss
 
     def test_beta2_identity_keeps_schema10_protocol25(self):
-        self.assertEqual(__version__, "1.8.0-merc-rc1")
+        self.assertEqual(__version__, "1.8.0-merc-rc2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
         self.assertEqual(self.db.schema_version(), 17)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 34)

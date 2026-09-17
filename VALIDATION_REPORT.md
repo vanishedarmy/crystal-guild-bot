@@ -1,26 +1,32 @@
-# Crystal Guild v1.8.0 RC1 — Validation Report
+# Crystal Guild v1.8.0 RC2 — Validation Report
 
-## Automated suites
-- `Web/frontend`: **648/648 PASS**.
-- `Web`: **78/78 hosted Portal/API tests PASS**.
-- `Bot`: **733/733 Python tests PASS**.
+RC2 validates the Portal-wide UI consistency pass against the sealed RC1 Complete baseline.
 
-## RC1 hardening coverage
-- A matching Merc reservation becomes **Deployed** when Hunt, Venture, or Raid begins.
-- Deployed Heroes and their mission slots remain unavailable until assignment resolution.
-- Mid-mission cancellation and rehire are rejected.
-- Timed Hunt deployment state survives runtime checkpoint/restart recovery.
-- Hunt/Venture/Raid slots continue to resolve independently.
-- Solo Venture pre-start setup failure restores the already-paid reservation.
-- Alpha 2 Hunt Seal pricing and Hero signature effects remain unchanged.
+## Completed validation
 
-## Compatibility
-- Runtime/frontend: `1.8.0-merc-rc1`
-- Local schema: **17**
-- Hosted sync: **1**
+- Frontend Node regression suite: **652/652 PASS**.
+- Hosted Web/API Python suite: **78/78 PASS**.
+- Bot Python suite: **733/733 PASS**.
+- Direct static media-reference audit: **159 references checked, 0 missing**. One template-generated region path is dynamic and remains covered by the existing region/artwork regression suite.
+- Python compileall: **PASS** for Bot and hosted Web modules.
+- JSON parse audit: **PASS** for Bot data and Player Guide metadata.
+- No Merc gameplay, Hunt Seal economy, schema, sync, or Portal protocol changes.
+
+## UI consistency coverage
+
+- The sixteen Adventurer Profile destinations render as two balanced 8-item rows on wide desktop.
+- Compact desktop/tablet uses a balanced 4-column grid, avoiding orphan navigation rows.
+- At 720px and below the desktop tab grid is replaced by the compact section selector.
+- Shared layout guardrails allow panels, grids, titles, badges, and controls to shrink without forcing horizontal viewport overflow.
+- Shared media containment keeps images, figures, video, canvas, and feature artwork inside their authored parent frames.
+- Existing mobile, Fellowship, Guide, Gold Saucer, Merc Service, accessibility, and artwork-routing regressions remain green.
+
+## Release contract
+
+- Runtime/frontend: `1.8.0-merc-rc2`
+- Local database schema: **17**
+- Hosted sync schema: **1**
 - Portal Action protocol: **34**
-- New migration: **none**
-- Player reset: **none**
+- No player reset or migration.
 
-## Build environment note
-The extracted source workspace does not include installed Vite dependencies, so the production bundle command is not used as a release gate here. Frontend source/unit/regression coverage is complete and all referenced source assets remain packaged.
+The frontend source archive intentionally does not ship `node_modules`; the source/regression suite is authoritative in this workspace, while deployment installs the pinned Vite/React dependencies from `package.json`.

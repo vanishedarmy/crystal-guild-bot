@@ -1,5 +1,5 @@
-Crystal Guild v1.8.0 RC1 — Merc Service
-Runtime/frontend: 1.8.0-merc-rc1
+Crystal Guild v1.8.0 RC2 — Merc Service
+Runtime/frontend: 1.8.0-merc-rc2
 Local schema: 17
 Hosted sync: 1
 Portal Action protocol: 34

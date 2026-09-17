@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.8.0-merc-rc1")
+        self.assertEqual(__version__, "1.8.0-merc-rc2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)

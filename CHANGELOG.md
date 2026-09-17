@@ -1,3 +1,10 @@
+# Crystal Guild Changelog
+
+## v1.8.0 RC2 — UI Consistency
+- Balanced Adventurer Profile navigation and responsive breakpoints across the Portal.
+- Added global layout/media containment guardrails for desktop and mobile consistency.
+- No gameplay, schema, economy, or Merc Service balance changes.
+
 # v1.8.0 Alpha 2 — Merc Service Balance & UX
 
 - Added visual three-slot deployment board.

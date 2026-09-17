@@ -1,23 +1,21 @@
-# Crystal Guild v1.8.0 RC1 — Merc Service
+# Crystal Guild v1.8.0 RC2 — UI Consistency
 
-## Deployment lifecycle hardening
+RC2 is a desktop/mobile presentation hardening pass built directly from the sealed v1.8.0 RC1 Complete baseline. It does not add or rebalance gameplay.
 
-- A Merc reservation changes to **Deployed** when its matching Hunt, Venture, or Raid actually begins.
-- The deployed Hero and mission slot remain unavailable until that assignment resolves.
-- Deployed contracts cannot be cancelled or reused mid-mission.
-- Hunt, Venture, and Raid continue to resolve independently; one completed assignment does not consume either of the other two slots.
+## Player-facing improvements
 
-## Recovery and failure safety
+- Reworked the Adventurer Profile navigation into a deliberate responsive grid: 8 columns on wide desktop, 4 columns across compact desktop/tablet widths, and the existing compact selector on phones.
+- Removed the awkward free-form tab wrapping that could leave Trophy Hall stranded on its own row.
+- Added shared min-width and overflow guardrails so panels, grids, headings, badges, controls, and long player-facing copy cannot force the Portal wider than the viewport.
+- Added shared artwork/media containment so authored images remain inside cards and figures without distorting surrounding layout.
+- Tightened mobile selector spacing, touch height, panel gutters, and title-row behavior for a more consistent phone presentation.
+- Preserved feature-specific visual identities and all existing Merc Service artwork.
 
-- Timed Hunt deployment survives runtime checkpoint/restart recovery and still blocks rehire after recovery.
-- If Solo Venture setup fails before a playable assignment begins, the paid Merc reservation is restored rather than consumed.
-- Existing Alpha 2 reservations and deployments remain compatible.
+## Compatibility
 
-## Balance and compatibility
-
-- Hunt Seal fees remain Aerith 5, Tifa 6, Zidane 5, Yuna 7, Balthier 9, Cloud 12.
-- Hero signature effects are unchanged.
-- Local DB schema remains **17**.
-- Hosted sync remains **1**.
-- Portal Action protocol remains **34**.
-- No player reset is required.
+- Runtime/frontend: `1.8.0-merc-rc2`
+- Local database schema: **17**
+- Hosted sync schema: **1**
+- Portal Action protocol: **34**
+- No player reset or migration.
+- Merc Service balance, Hero effects, Hunt Seal costs, and mission lifecycle are unchanged from RC1.

@@ -1,11 +1,7 @@
-# Crystal Guild v1.8.0 RC1 — Merc Service
+# Crystal Guild v1.8.0 RC2 — Merc Service
 
-RC1 hardens the Alpha 2 Merc Service without adding new feature scope.
+RC2 is the Portal-wide desktop/mobile UI consistency candidate built from the sealed RC1 Complete baseline. Merc Service gameplay remains unchanged; this build focuses on navigation balance, responsive containment, media safety, and consistent player-facing presentation.
 
-- Deployed Heroes and their Hunt / Venture / Raid slots remain unavailable until the active assignment resolves.
-- Deployed contracts cannot be cancelled or rehired mid-mission.
-- Timed Hunt deployment state survives runtime checkpoint recovery.
-- A Solo Venture that fails during pre-start setup restores the already-paid Merc reservation.
-- Alpha 2 Hunt Seal pricing, Hero signature effects, three independent slots, artwork, and availability rules remain unchanged.
+Release contract: runtime `1.8.0-merc-rc2`, local schema **17**, hosted sync **1**, Portal Action protocol **34**, no player reset.
 
-Release contract: runtime `1.8.0-merc-rc1`, local schema **17**, hosted sync **1**, Portal Action protocol **34**, no player reset.
+See `UI_CONSISTENCY_RC2_RELEASE_NOTES.md` and `UI_CONSISTENCY_RC2_VALIDATION.md` for the RC2 scope.
