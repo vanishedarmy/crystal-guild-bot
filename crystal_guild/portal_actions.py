@@ -564,9 +564,12 @@ class PortalActionWorker:
                 return False, "Merc contract request is invalid.", {}
             return self._game_result(self.game.portal_merc_hire(twitch_id, hero_id, mission_type, str(action.get("id") or "")))
         if action_type == "MERC_CANCEL":
-            if payload:
-                return False, "Merc cancel does not accept parameters.", {}
-            return self._game_result(self.game.portal_merc_cancel(twitch_id, str(action.get("id") or "")))
+            if not set(payload).issubset({"mission_type"}):
+                return False, "Merc cancel accepts only optional mission_type.", {}
+            mission_type = str(payload.get("mission_type") or "").strip().lower()
+            if mission_type and mission_type not in {"hunt", "venture", "raid"}:
+                return False, "Merc cancel assignment type is invalid.", {}
+            return self._game_result(self.game.portal_merc_cancel(twitch_id, str(action.get("id") or ""), mission_type))
         if action_type == "RETAINER_STATE":
             if payload:
                 return False, "Retainer state does not accept parameters.", {}

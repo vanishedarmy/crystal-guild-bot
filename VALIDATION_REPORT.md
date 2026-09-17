@@ -1,3 +1,9 @@
+# Hotfix 3 validation
+
+- Mission-scoped Merc contract slots validated.
+- Existing schema-17 single-slot layout upgrades in place without player reset.
+- Hunt/Venture/Raid consumption remains independent.
+
 # Validation Report — Merc Service Alpha 1 Batch 4
 
 **PASS**

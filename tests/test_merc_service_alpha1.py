@@ -50,7 +50,7 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         self.assertFalse(cloud["available"])
         self.assertIn("15 Hunt clears", cloud["locked_reason"])
 
-    def test_hire_is_persistent_paid_in_marks_and_single_contract(self):
+    def test_hire_is_persistent_paid_in_seals_and_supports_one_slot_per_job(self):
         before = self.game.portal_merc_state("100").data["merc_state"]["hunt_seals"]
         fee = HEROES_BY_ID["tifa"]["fee_seals"]
         hired = self.game.portal_merc_hire("100", "tifa", "hunt", "merc-hire-1")
@@ -66,12 +66,13 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         self.assertTrue(tifa["available"])  # progression remains unlocked; contract state is separate
         self.assertFalse(aerith["contracted"])
         self.assertEqual(aerith["status"], "available")
-        blocked = self.game.portal_merc_hire("100", "aerith", "raid", "merc-hire-2")
-        self.assertFalse(blocked.ok)
+        second = self.game.portal_merc_hire("100", "aerith", "raid", "merc-hire-2")
+        self.assertTrue(second.ok)
+        self.assertEqual(len(second.data["merc_state"]["contracts"]), 2)
         replay = self.game.portal_merc_hire("100", "tifa", "hunt", "merc-hire-1")
         self.assertTrue(replay.ok)
-        self.assertEqual(self.game.portal_merc_state("100").data["merc_state"]["hunt_seals"], before - fee)
-        tx = self.db.one("SELECT kind,amount FROM transactions WHERE player_id='100' AND source LIKE 'merc_hire:%' ORDER BY id DESC LIMIT 1")
+        self.assertEqual(self.game.portal_merc_state("100").data["merc_state"]["hunt_seals"], before - fee - HEROES_BY_ID["aerith"]["fee_seals"])
+        tx = self.db.one("SELECT kind,amount FROM transactions WHERE player_id='100' AND source='merc_hire:tifa:hunt' ORDER BY id DESC LIMIT 1")
         self.assertEqual(tx["kind"], "hunt_seals")
         self.assertEqual(tx["amount"], -fee)
 

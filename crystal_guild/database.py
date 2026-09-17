@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds one persistent Hero Mercenary contract per player plus contract history.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -1023,12 +1023,14 @@ class Database:
                     """
                     BEGIN IMMEDIATE;
                     CREATE TABLE IF NOT EXISTS player_merc_contracts (
-                        player_id TEXT PRIMARY KEY,
+                        player_id TEXT NOT NULL,
                         hero_id TEXT NOT NULL,
                         mission_type TEXT NOT NULL,
                         fee_marks INTEGER NOT NULL CHECK(fee_marks >= 0),
                         hired_at INTEGER NOT NULL,
                         updated_at INTEGER NOT NULL,
+                        PRIMARY KEY (player_id, mission_type),
+                        UNIQUE (player_id, hero_id),
                         FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
                     );
                     CREATE TABLE IF NOT EXISTS merc_contract_history (
@@ -1045,6 +1047,41 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_merc_history_player
                     ON merc_contract_history(player_id, consumed_at DESC, id DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (17,'hero_merc_service');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # Hotfix 3: early v1.8 Alpha 1 schema-17 databases stored only one
+        # Merc contract per player (player_id was the sole primary key). The
+        # feature now supports one independent Hunt, Venture, and Raid slot.
+        # Repair that table layout in-place while preserving any active row.
+        merc_info = self.conn.execute("PRAGMA table_info(player_merc_contracts)").fetchall()
+        merc_pk = [str(row["name"]) for row in sorted(merc_info, key=lambda row: int(row["pk"] or 0)) if int(row["pk"] or 0) > 0]
+        if merc_info and merc_pk == ["player_id"]:
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    ALTER TABLE player_merc_contracts RENAME TO player_merc_contracts_single_slot;
+                    CREATE TABLE player_merc_contracts (
+                        player_id TEXT NOT NULL,
+                        hero_id TEXT NOT NULL,
+                        mission_type TEXT NOT NULL,
+                        fee_marks INTEGER NOT NULL CHECK(fee_marks >= 0),
+                        hired_at INTEGER NOT NULL,
+                        updated_at INTEGER NOT NULL,
+                        PRIMARY KEY (player_id, mission_type),
+                        UNIQUE (player_id, hero_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO player_merc_contracts(player_id,hero_id,mission_type,fee_marks,hired_at,updated_at)
+                    SELECT player_id,hero_id,mission_type,fee_marks,hired_at,updated_at
+                    FROM player_merc_contracts_single_slot;
+                    DROP TABLE player_merc_contracts_single_slot;
                     COMMIT;
                     """
                 )

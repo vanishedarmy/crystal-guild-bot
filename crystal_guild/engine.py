@@ -11684,26 +11684,45 @@ class CrystalGuildEngine:
             (str(twitch_id),),
         ).fetchone()
         hunt_clears = max(0, int(clears_row["clears"] or 0)) if clears_row else 0
-        contract = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
-        current = None
-        if contract:
-            hero = HEROES_BY_ID.get(str(contract["hero_id"]), {})
-            current = {
-                "hero_id": str(contract["hero_id"]),
-                "hero_name": str(hero.get("name") or contract["hero_id"]),
+        contract_rows = conn.execute(
+            """
+            SELECT * FROM player_merc_contracts
+            WHERE player_id=?
+            ORDER BY CASE mission_type WHEN 'hunt' THEN 1 WHEN 'venture' THEN 2 WHEN 'raid' THEN 3 ELSE 9 END
+            """,
+            (str(twitch_id),),
+        ).fetchall()
+        contracts: list[dict[str, Any]] = []
+        for row in contract_rows:
+            hero = HEROES_BY_ID.get(str(row["hero_id"]), {})
+            contracts.append({
+                "hero_id": str(row["hero_id"]),
+                "hero_name": str(hero.get("name") or row["hero_id"]),
                 "role": str(hero.get("role") or "Mercenary"),
                 "signature": str(hero.get("signature") or ""),
-                "mission_type": str(contract["mission_type"]),
-                "fee_seals": int(contract["fee_marks"] or 0),
-                "hired_at": int(contract["hired_at"] or 0),
-            }
+                "mission_type": str(row["mission_type"]),
+                "fee_seals": int(row["fee_marks"] or 0),
+                "hired_at": int(row["hired_at"] or 0),
+            })
+        contracts_by_mission = {str(row["mission_type"]): row for row in contracts}
+        contract_by_hero = {str(row["hero_id"]): row for row in contracts}
+        occupied_missions = set(contracts_by_mission)
+        open_mission_types = sorted(MERC_MISSION_TYPES - occupied_missions)
         heroes: list[dict[str, Any]] = []
+        can_hire = False
         for hero in HEROES:
             public = public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
-            contracted = bool(current and str(current.get("hero_id") or "") == str(public.get("id") or ""))
+            hero_id = str(public.get("id") or "")
+            contracted_row = contract_by_hero.get(hero_id)
+            contracted = contracted_row is not None
+            eligible = [str(m) for m in public.get("mission_types") or [] if str(m) in open_mission_types]
+            hireable = list(eligible) if public.get("available") and not contracted else []
             public["contracted"] = contracted
-            public["contract_mission_type"] = str(current.get("mission_type") or "") if contracted and current else None
-            public["status"] = "contracted" if contracted else ("available" if public.get("available") else "locked")
+            public["contract_mission_type"] = str(contracted_row.get("mission_type") or "") if contracted_row else None
+            public["hireable_mission_types"] = hireable
+            public["status"] = "contracted" if contracted else ("available" if public.get("available") and hireable else ("unavailable" if public.get("available") else "locked"))
+            if hireable:
+                can_hire = True
             heroes.append(public)
         return {
             "service": MERC_SERVICE_NAME,
@@ -11711,10 +11730,14 @@ class CrystalGuildEngine:
             "hunt_seals": max(0, int(player["hunt_seals"] or 0)),
             "player_level": max(1, int(player["level"] or 1)),
             "hunt_clears": hunt_clears,
-            "contract": current,
+            # Legacy singular field retained for older clients. New clients use contracts.
+            "contract": contracts[0] if contracts else None,
+            "contracts": contracts,
+            "contracts_by_mission": contracts_by_mission,
             "heroes": heroes,
             "mission_types": sorted(MERC_MISSION_TYPES),
-            "can_hire": current is None,
+            "open_mission_types": open_mission_types,
+            "can_hire": can_hire,
         }
 
     def portal_merc_state(self, twitch_id: str) -> GameResult:
@@ -11748,10 +11771,21 @@ class CrystalGuildEngine:
                 result = GameResult.fail(f"{hero['name']} is unavailable — {public['locked_reason']}.")
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
                 self._portal_action_store_sql(conn, action_id, result); return result
-            existing = conn.execute("SELECT hero_id FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
-            if existing:
-                active = HEROES_BY_ID.get(str(existing["hero_id"]), {})
-                result = GameResult.fail(f"You already have a Merc contract with {active.get('name', existing['hero_id'])}.")
+            occupied = conn.execute(
+                "SELECT hero_id FROM player_merc_contracts WHERE player_id=? AND mission_type=?",
+                (str(twitch_id), mission),
+            ).fetchone()
+            if occupied:
+                active = HEROES_BY_ID.get(str(occupied["hero_id"]), {})
+                result = GameResult.fail(f"Your {mission.title()} Merc slot is already reserved by {active.get('name', occupied['hero_id'])}.")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            hero_busy = conn.execute(
+                "SELECT mission_type FROM player_merc_contracts WHERE player_id=? AND hero_id=?",
+                (str(twitch_id), hero_key),
+            ).fetchone()
+            if hero_busy:
+                result = GameResult.fail(f"{hero['name']} is already contracted for your next {str(hero_busy['mission_type']).title()} assignment.")
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
                 self._portal_action_store_sql(conn, action_id, result); return result
             if int(player["hunt_seals"] or 0) < fee:
@@ -11766,21 +11800,32 @@ class CrystalGuildEngine:
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
-    def portal_merc_cancel(self, twitch_id: str, action_id: str) -> GameResult:
+    def portal_merc_cancel(self, twitch_id: str, action_id: str, mission_type: str = "") -> GameResult:
         replay = self._portal_action_replay(action_id)
         if replay is not None:
             return replay
+        mission = str(mission_type or "").strip().lower()
+        if mission and mission not in MERC_MISSION_TYPES:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Merc assignment type is invalid."))
         now = int(time.time())
         with self.db.tx() as conn:
-            row = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            if mission:
+                row = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=? AND mission_type=?", (str(twitch_id), mission)).fetchone()
+            else:
+                rows = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchall()
+                if len(rows) > 1:
+                    result = GameResult.fail("Choose which Hunt, Venture, or Raid Merc contract to cancel.")
+                    result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                    self._portal_action_store_sql(conn, action_id, result); return result
+                row = rows[0] if rows else None
             if not row:
-                result = GameResult.fail("You do not have an active Merc contract.")
+                result = GameResult.fail(f"You do not have an active {mission.title() + ' ' if mission else ''}Merc contract.")
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id) if self._player(twitch_id) else {}
                 self._portal_action_store_sql(conn, action_id, result); return result
             hero = HEROES_BY_ID.get(str(row["hero_id"]), {})
-            conn.execute("DELETE FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),))
+            conn.execute("DELETE FROM player_merc_contracts WHERE player_id=? AND mission_type=?", (str(twitch_id), str(row["mission_type"])))
             conn.execute("INSERT INTO merc_contract_history(player_id,hero_id,mission_type,fee_marks,outcome,contracted_at,consumed_at) VALUES (?,?,?,?,?,?,?)", (str(twitch_id), str(row["hero_id"]), str(row["mission_type"]), int(row["fee_marks"]), "cancelled", int(row["hired_at"]), now))
-            result = GameResult.success(f"Merc contract with {hero.get('name', row['hero_id'])} cancelled. Hunt Seals are non-refundable.")
+            result = GameResult.success(f"{str(row['mission_type']).title()} Merc contract with {hero.get('name', row['hero_id'])} cancelled. Hunt Seals are non-refundable.")
             result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11789,8 +11834,8 @@ class CrystalGuildEngine:
         mission = str(mission_type or "").strip().lower()
         now = int(time.time())
         with self.db.tx() as conn:
-            row = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
-            if not row or str(row["mission_type"]) != mission:
+            row = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=? AND mission_type=?", (str(twitch_id), mission)).fetchone()
+            if not row:
                 return None
             hero = HEROES_BY_ID.get(str(row["hero_id"]))
             if not hero:
@@ -11801,7 +11846,7 @@ class CrystalGuildEngine:
                 "signature": str(hero.get("signature") or ""), "catchphrase": str(hero.get("catchphrase") or ""),
                 "mission_type": mission, "fee_seals": int(row["fee_marks"] or 0),
             }
-            conn.execute("DELETE FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),))
+            conn.execute("DELETE FROM player_merc_contracts WHERE player_id=? AND mission_type=?", (str(twitch_id), mission))
             conn.execute("INSERT INTO merc_contract_history(player_id,hero_id,mission_type,fee_marks,outcome,contracted_at,consumed_at) VALUES (?,?,?,?,?,?,?)", (str(twitch_id), str(row["hero_id"]), mission, int(row["fee_marks"]), "deployed", int(row["hired_at"]), now))
             return contract
 

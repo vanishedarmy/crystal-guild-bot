@@ -35,8 +35,8 @@ HELP_TOPICS = {
         "Hunts return automatically after their rank timer: C 15m, B 30m, A 2h, S 5h. No round commands are needed; your hero conserves supplies, uses learned abilities/Defend when useful, and only spends limited survival items when warranted. Rewards and first-clear prizes are committed when the Hunt resolves.",
     ),
     "mercs": (
-        "MERC SERVICE — hire one unlocked Hero from Adventurer Portal → Guild Services → Hero Merc Service. Contracts use Hunt Seals earned through Hunts, and can be reserved for a supported Hunt, Venture, or Raid.",
-        "Hunts already award Hunt Seals, which are used for Merc contracts as well as other Guild services. A Merc contract is consumed only when its matching assignment begins; cancelling frees the slot but does not refund spent Hunt Seals. Each Hero has distinct unlocks, fees, mission eligibility, and a signature assist.",
+        "MERC SERVICE — hire up to three unlocked Heroes from Adventurer Portal → Guild Services → Hero Merc Service: one Hunt contract, one Venture contract, and one Raid contract. Contracts use Hunt Seals earned through Hunts.",
+        "Hunts already award Hunt Seals, which are used for Merc contracts as well as other Guild services. Each job type has its own slot; a Hero already contracted cannot take another job, and unsupported Heroes are unavailable for that job type. Contracts are consumed only when their matching assignment begins; cancelling frees that slot without refunding spent Hunt Seals.",
     ),
     "quests": (
         "QUESTS — !quests lists Job-unlock quests. Ready Job quests complete automatically and retroactively; !quest <name> inspects a specific quest.",
