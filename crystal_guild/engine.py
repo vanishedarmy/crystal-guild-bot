@@ -127,6 +127,10 @@ from .retainer import (
     RETAINER_DEFAULT_NAME, RETAINER_ASSIGNMENTS, RETAINER_ASSIGNMENTS_BY_ID,
     retainer_rank, roll_retainer_rewards,
 )
+from .mercenary import (
+    MERC_SERVICE_NAME, MERC_PROPRIETOR, MERC_MISSION_TYPES, HEROES, HEROES_BY_ID,
+    HUNT_MARK_REWARDS_BY_RANK, public_hero,
+)
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
@@ -2089,6 +2093,8 @@ class CrystalGuildEngine:
             "starter_id": str(twitch_id),
         }
         roster = {str(twitch_id): {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}}
+        if isinstance(expedition.get("merc_contract"), dict):
+            roster[str(twitch_id)]["merc_contract"] = copy.deepcopy(expedition["merc_contract"])
         old_encounter, old_roster = self.active_encounter, self.encounter_roster
         try:
             self.active_encounter, self.encounter_roster = encounter, roster
@@ -2228,6 +2234,9 @@ class CrystalGuildEngine:
         if not action:
             return GameResult.fail("Choose Attack, Ability, Use Item, or Defend for this round.")
         log: list[str] = []
+        self._merc_apply_active_assist(str(twitch_id), meta, monster, log)
+        if int(encounter.get("monster_hp", 0)) <= 0:
+            return self._finish_solo_stage_victory(twitch_id, expedition, monster, meta, round_no, log)
         meta["actions"] = int(meta.get("actions", 0)) + 1
         if has_status(meta.get("statuses", {}), "stun"):
             log.append(f"{meta['name']} is stunned and loses their action.")
@@ -2287,6 +2296,12 @@ class CrystalGuildEngine:
     def _finish_solo_stage_victory(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
         self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
         rewards = self._solo_roll_stage_rewards(twitch_id, monster, int(expedition.get("stage", 1)))
+        contract = meta.get("merc_contract") if isinstance(meta, dict) else None
+        if isinstance(contract, dict) and str(contract.get("hero_id") or "") in {"zidane", "balthier"} and not expedition.get("merc_bonus_loot_attempted"):
+            bonus = self._merc_bonus_loot(twitch_id, meta, list(monster.get("drops", [])), source=f"merc:solo_venture:{monster['id']}", grant=False)
+            expedition["merc_bonus_loot_attempted"] = True
+            if bonus:
+                rewards.setdefault("items", []).append({"id": bonus["id"], "name": bonus["name"], "quantity": bonus["quantity"], "kind": "merc_bonus"})
         secured = expedition.setdefault("secured", {"xp": 0, "jp": 0})
         secured["xp"] = int(secured.get("xp", 0)) + int(rewards["xp"]); secured["jp"] = int(secured.get("jp", 0)) + int(rewards["jp"])
         spoils = expedition.setdefault("spoils", {"gil": 0, "items": []})
@@ -2298,7 +2313,7 @@ class CrystalGuildEngine:
         )
         self.db.update_record_stats(twitch_id, {"active_actions": int(meta.get("actions", 0)), "active_abilities": int(meta.get("abilities_used", 0)), "active_items": int(meta.get("items_used", 0)), "active_defends": int(meta.get("defends", 0))})
         achievements = self._check_achievements(twitch_id)
-        expedition["last_stage"] = {"type": "victory", "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])}, "rounds": round_no, "rewards": rewards, "achievements": achievements[:4]}
+        expedition["last_stage"] = {"type": "victory", "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])}, "rounds": round_no, "rewards": rewards, "achievements": achievements[:4], "merc": self._merc_public_result(meta)}
         expedition["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
         expedition.setdefault("history", []).append({"stage": int(expedition.get("stage", 1)), "type": "victory", "label": f"Defeated {monster['name']}"})
         expedition["combat"] = None; expedition["event"] = {"type": "victory", "monster_id": str(monster["id"])}; expedition["status"] = "choice"
@@ -2363,10 +2378,12 @@ class CrystalGuildEngine:
             return GameResult.fail(f"Solo Venture ready in {self._format_seconds(remaining)}.")
         p = self._player(twitch_id)
         now = int(time.time())
+        merc_contract = self._merc_claim_for_mission(twitch_id, "venture")
         expedition = {
             "version": 1, "started_at": now, "updated_at": now, "stage": 1, "max_stages": SOLO_EXPEDITION_MAX_STAGES,
             "region_id": str(p["current_region"]), "status": "event", "secured": {"xp": 0, "jp": 0}, "secured_loot": [],
             "spoils": {"gil": 0, "items": []}, "history": [], "round_history": [], "event": None, "combat": None,
+            "merc_contract": merc_contract,
         }
         self._set_cooldown(twitch_id, "solo_venture", SOLO_VENTURE_COOLDOWN_SECONDS)
         self.db.execute("UPDATE players SET ventures=ventures+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (twitch_id,))
@@ -2724,6 +2741,12 @@ class CrystalGuildEngine:
 
         encounter = self.active_encounter
         combatants, monster, monster_max = self._initialize_active_combat(encounter)
+        if encounter.get("kind", "venture") == "venture":
+            for pid, meta in self.encounter_roster.items():
+                if int(meta.get("max_hp", 0)) > 0 and not isinstance(meta.get("merc_contract"), dict):
+                    contract = self._merc_claim_for_mission(str(pid), "venture")
+                    if contract:
+                        meta["merc_contract"] = contract
         if combatants == 0:
             self._clear_encounter(int(encounter["id"]))
             return GameResult.success(
@@ -4115,6 +4138,12 @@ class CrystalGuildEngine:
         if not living:
             return self._finish_active_encounter(False, reason="No heroes remain standing.")
 
+        merc_log: list[str] = []
+        for pid, row in living:
+            self._merc_apply_active_assist(str(pid), row, monster, merc_log)
+        if int(self.active_encounter.get("monster_hp", 0)) <= 0:
+            return self._finish_active_encounter(True, round_log=merc_log, round_no=round_no)
+
         for _, row in living:
             if not row.get("action"):
                 row["action"] = {"kind": "attack", "auto": True}
@@ -4127,7 +4156,7 @@ class CrystalGuildEngine:
             ),
         )
 
-        log: list[str] = []
+        log: list[str] = list(merc_log)
         for pid, meta in ordered:
             if int(meta.get("hp", 0)) <= 0:
                 continue
@@ -4319,10 +4348,13 @@ class CrystalGuildEngine:
 
                 if won and hunt:
                     rewards = self._award_hunt_victory(pid, p, hunt, monster)
+                    merc_bonus = self._merc_bonus_loot(pid, meta, list(monster.get("drops", [])), source=f"merc:hunt:{hunt['id']}")
+                    if merc_bonus:
+                        rewards.setdefault("loot", []).append(merc_bonus["label"])
                     loot_text = ", ".join(rewards["loot"][:3]) if rewards["loot"] else "no extra drops"
                     reward_lines.append(
                         f"{meta['name']} +{rewards['xp']}XP/{rewards['jp']}JP/"
-                        f"{rewards['gil']}g/+{rewards['seals']} seals · {loot_text}"
+                        f"{rewards['gil']}g/+{rewards['seals']} seals/+{rewards['marks']} Hunt Marks · {loot_text}"
                     )
                     if rewards["first_clear"]:
                         first_clear_lines.extend(rewards["first_rewards"])
@@ -4352,6 +4384,7 @@ class CrystalGuildEngine:
                             "jp": int(rewards.get("jp", 0)),
                             "gil": int(rewards.get("gil", 0)),
                             "seals": int(rewards.get("seals", 0)),
+                            "marks": int(rewards.get("marks", 0)),
                             "loot": [str(value) for value in rewards.get("loot", [])],
                             "first_clear": bool(rewards.get("first_clear")),
                             "first_rewards": [str(value) for value in rewards.get("first_rewards", [])],
@@ -4364,10 +4397,14 @@ class CrystalGuildEngine:
                             "best_hit": int(meta.get("best_hit", 0)),
                         },
                         "player": self._solo_result_vitals(pid),
+                        "merc": self._merc_public_result(meta),
                     }
                 elif won:
                     rewards = self._award_victory(pid, p, monster, rally_venture=kind == "venture")
                     if kind == "venture":
+                        merc_bonus = self._merc_bonus_loot(pid, meta, list(monster.get("drops", [])), source=f"merc:venture:{active_id}")
+                        if merc_bonus:
+                            rewards.setdefault("loot", []).append(merc_bonus["label"])
                         venture_rewards = rewards
                     if kind == "solo_venture" and pid == solo_pid:
                         solo_rewards = {
@@ -4421,6 +4458,7 @@ class CrystalGuildEngine:
                             "best_hit": int(meta.get("best_hit", 0)),
                         },
                         "player": self._solo_result_vitals(pid),
+                        "merc": self._merc_public_result(meta),
                         "reason": str(reason or "The mark remains on the board."),
                     }
 
@@ -4456,6 +4494,9 @@ class CrystalGuildEngine:
                         parts.append("No victory spoils")
                     if player_achievements:
                         parts.append("Achievement: " + str(player_achievements[0]))
+                    merc_text = self._merc_result_text(meta)
+                    if merc_text:
+                        parts.append(merc_text)
                     participant_result_messages.append(f"{mention} — " + " · ".join(parts))
 
             if won and hunt:
@@ -5001,6 +5042,9 @@ class CrystalGuildEngine:
         rank = str(hunt.get("rank", "C")).upper()
         duration_seconds = self._hunt_duration_seconds(rank)
         resolves_at = int(now) + duration_seconds
+        merc_contract = self._merc_claim_for_mission(twitch_id, "hunt")
+        if merc_contract and twitch_id in roster:
+            roster[twitch_id]["merc_contract"] = copy.deepcopy(merc_contract)
         self.active_hunts[twitch_id] = {
             "id": encounter_id,
             "player_id": twitch_id,
@@ -5012,6 +5056,7 @@ class CrystalGuildEngine:
             "duration_seconds": duration_seconds,
             "encounter": encounter,
             "roster": roster,
+            "merc_contract": merc_contract,
         }
 
         # Cooldown starts at acceptance, but can never expire before the timed
@@ -5027,6 +5072,7 @@ class CrystalGuildEngine:
             resolves_at=resolves_at,
             duration_seconds=duration_seconds,
             enemy_max_hp=monster_max,
+            merc_contract=merc_contract,
         )
 
     @staticmethod
@@ -5315,17 +5361,19 @@ class CrystalGuildEngine:
         )
         jp = self.fellowship_system.apply_jp_bonus(jp)
         seals = reward["seals"]
+        marks = int(HUNT_MARK_REWARDS_BY_RANK.get(str(hunt.get("rank", "C")).upper(), 1))
         job = self.data.jobs[p["current_job"]]
         effects = self._effects(player_id, p["current_job"])
         gil = int(gil * (1 + job.get("gil_bonus", 0) + effects.get("gil_bonus", 0)))
         loot_bonus = job.get("loot_bonus", 0) + effects.get("loot_bonus", 0)
         with self.db.tx() as conn:
-            conn.execute("UPDATE players SET xp=xp+?, gil=gil+?, hunt_seals=hunt_seals+?, monsters_defeated=monsters_defeated+1 WHERE twitch_id=?", (xp, gil, seals, player_id))
+            conn.execute("UPDATE players SET xp=xp+?, gil=gil+?, hunt_seals=hunt_seals+?, hunt_marks=hunt_marks+?, monsters_defeated=monsters_defeated+1 WHERE twitch_id=?", (xp, gil, seals, marks, player_id))
             conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (jp, player_id, p["current_job"]))
             conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (player_id, monster["id"]))
             conn.execute("INSERT INTO player_hunts(player_id,hunt_id,clears,first_cleared_at,last_cleared_at) VALUES (?,?,1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) ON CONFLICT(player_id,hunt_id) DO UPDATE SET clears=clears+1,last_cleared_at=CURRENT_TIMESTAMP", (player_id, hunt["id"]))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)", (player_id, gil, f"hunt:{hunt['id']}"))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_seals','hunt_seals',?,?)", (player_id, seals, f"hunt:{hunt['id']}"))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_marks','hunt_marks',?,?)", (player_id, marks, f"hunt:{hunt['id']}"))
         loot: list[str] = []
         for drop in monster.get("drops", []):
             chance = min(0.95, drop["chance"] * (1 + loot_bonus))
@@ -5348,7 +5396,7 @@ class CrystalGuildEngine:
             if title_id and self._unlock_title(player_id, title_id):
                 first_rewards.append(f"Title: {self.data.titles[title_id]['name']}")
         levelups = self._process_levels(player_id, p["current_job"])
-        return {"xp": xp, "jp": jp, "gil": gil, "seals": seals, "loot": loot, "first_clear": first_clear, "first_rewards": first_rewards, "levelups": levelups}
+        return {"xp": xp, "jp": jp, "gil": gil, "seals": seals, "marks": marks, "loot": loot, "first_clear": first_clear, "first_rewards": first_rewards, "levelups": levelups}
 
     def _complete_job_quest_if_ready(self, player_id: str, quest: dict[str, Any]) -> dict[str, Any] | None:
         """Complete one ready Job quest exactly once, including its rewards.
@@ -11432,6 +11480,328 @@ class CrystalGuildEngine:
             "can_dispatch": not busy,
         }
 
+    def _merc_result_bucket(self, meta: dict[str, Any]) -> dict[str, Any]:
+        contract = meta.get("merc_contract") if isinstance(meta, dict) else None
+        if not isinstance(contract, dict):
+            return {}
+        bucket = meta.setdefault("merc_result", {})
+        bucket.setdefault("hero_id", str(contract.get("hero_id") or ""))
+        bucket.setdefault("hero_name", str(contract.get("hero_name") or "Merc"))
+        bucket.setdefault("signature", str(contract.get("signature") or "Assist"))
+        bucket.setdefault("damage", 0)
+        bucket.setdefault("healing", 0)
+        bucket.setdefault("mitigation", 0)
+        bucket.setdefault("bonus_loot", [])
+        bucket.setdefault("events", [])
+        return bucket
+
+    def _merc_record_event(self, meta: dict[str, Any], text: str) -> None:
+        bucket = self._merc_result_bucket(meta)
+        if not bucket:
+            return
+        events = bucket.setdefault("events", [])
+        text = str(text or "").strip()
+        if text and text not in events:
+            events.append(text)
+            del events[:-4]
+
+    def _merc_public_result(self, meta: dict[str, Any]) -> dict[str, Any] | None:
+        contract = meta.get("merc_contract") if isinstance(meta, dict) else None
+        if not isinstance(contract, dict):
+            return None
+        bucket = self._merc_result_bucket(meta)
+        return {
+            "hero_id": str(contract.get("hero_id") or ""),
+            "hero_name": str(contract.get("hero_name") or "Merc"),
+            "signature": str(contract.get("signature") or "Assist"),
+            "damage": max(0, int(bucket.get("damage", 0))),
+            "healing": max(0, int(bucket.get("healing", 0))),
+            "mitigation": max(0, int(bucket.get("mitigation", 0))),
+            "bonus_loot": [str(value) for value in bucket.get("bonus_loot", [])],
+            "events": [str(value) for value in bucket.get("events", [])][-4:],
+        }
+
+    def _merc_result_text(self, meta: dict[str, Any]) -> str:
+        public = self._merc_public_result(meta)
+        if not public:
+            return ""
+        events = list(public.get("events") or [])
+        detail = events[-1] if events else str(public.get("signature") or "Assist")
+        return f"Merc {public['hero_name']}: {detail}"
+
+    def _merc_active_damage(self, meta: dict[str, Any], *, hero_id: str, enemy_max_hp: int, raid: bool = False) -> int:
+        stats = meta.get("stats") or {}
+        attack = max(1, int(stats.get("str", stats.get("atk", 1)) or 1))
+        magic = max(1, int(stats.get("mag", 1) or 1))
+        offense = max(attack, magic)
+        if hero_id == "cloud":
+            fraction = 0.045 if raid else 0.075
+            scale = 2.8
+        elif hero_id == "tifa":
+            fraction = 0.035 if raid else 0.060
+            scale = 2.35
+        elif hero_id == "balthier":
+            fraction = 0.018 if raid else 0.030
+            scale = 1.45
+        else:
+            return 0
+        hp_cap = max(1, int(max(1, enemy_max_hp) * fraction))
+        stat_cap = max(35, int(offense * scale + max(1, int(meta.get("job_level", 1))) * 3))
+        return max(1, min(hp_cap, stat_cap))
+
+    def _merc_apply_active_assist(self, pid: str, meta: dict[str, Any], monster: dict[str, Any], log: list[str]) -> tuple[int, int]:
+        contract = meta.get("merc_contract")
+        if not isinstance(contract, dict) or meta.get("merc_opening_used"):
+            return 0, 0
+        hero_id = str(contract.get("hero_id") or "")
+        hero_name = str(contract.get("hero_name") or "Merc")
+        signature = str(contract.get("signature") or "Assist")
+        bucket = self._merc_result_bucket(meta)
+        damage = 0
+        healing = 0
+        if hero_id in {"cloud", "tifa", "balthier"}:
+            damage = self._merc_active_damage(
+                meta,
+                hero_id=hero_id,
+                enemy_max_hp=int(self.active_encounter.get("monster_max_hp", monster.get("hp", 1))) if self.active_encounter else int(monster.get("hp", 1)),
+                raid=False,
+            )
+            if self.active_encounter:
+                before = int(self.active_encounter.get("monster_hp", 0))
+                self.active_encounter["monster_hp"] = max(0, before - damage)
+                damage = before - int(self.active_encounter["monster_hp"])
+            meta["damage"] = int(meta.get("damage", 0)) + damage
+            meta["best_hit"] = max(int(meta.get("best_hit", 0)), damage)
+            bucket["damage"] = int(bucket.get("damage", 0)) + damage
+            event = f"{signature} {damage:,} dmg"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage!")
+        elif hero_id == "aerith":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            before = int(meta.get("hp", 0))
+            meta["hp"] = min(maximum, before + max(1, int(maximum * 0.28)))
+            healing = int(meta["hp"]) - before
+            apply_status(meta.setdefault("statuses", {}), "regen", 3, 0.08)
+            meta["healing"] = int(meta.get("healing", 0)) + healing
+            bucket["healing"] = int(bucket.get("healing", 0)) + healing
+            event = f"{signature} +{healing:,} HP + Regen" if healing else f"{signature} grants Regen"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature}: {event.split(signature,1)[-1].strip()}.")
+        elif hero_id == "yuna":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            before = int(meta.get("hp", 0))
+            meta["hp"] = min(maximum, before + max(1, int(maximum * 0.12)))
+            healing = int(meta["hp"]) - before
+            apply_status(meta.setdefault("statuses", {}), "protect", 4, 0.18)
+            meta["healing"] = int(meta.get("healing", 0)) + healing
+            bucket["healing"] = int(bucket.get("healing", 0)) + healing
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.18))
+            event = f"{signature} +{healing:,} HP + Protect" if healing else f"{signature} grants Protect"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature}: {event.split(signature,1)[-1].strip()}.")
+        meta["merc_opening_used"] = True
+        return damage, healing
+
+    def _merc_apply_raid_assist(self, pid: str, meta: dict[str, Any], boss: dict[str, Any], log: list[str]) -> tuple[int, int]:
+        contract = meta.get("merc_contract")
+        if not isinstance(contract, dict) or meta.get("merc_opening_used"):
+            return 0, 0
+        hero_id = str(contract.get("hero_id") or "")
+        hero_name = str(contract.get("hero_name") or "Merc")
+        signature = str(contract.get("signature") or "Assist")
+        bucket = self._merc_result_bucket(meta)
+        damage = 0
+        healing = 0
+        if hero_id in {"cloud", "tifa", "balthier"}:
+            damage = self._merc_active_damage(meta, hero_id=hero_id, enemy_max_hp=int(boss.get("max_hp", 1)), raid=True)
+            damage = self._raid_damage_boss(pid, meta, damage, [], use_limit=False)
+            bucket["damage"] = int(bucket.get("damage", 0)) + damage
+            event = f"{signature} {damage:,} dmg"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage")
+        elif hero_id == "aerith":
+            maximum = max(1, int(meta.get("max_hp", 1))); before = int(meta.get("hp", 0))
+            meta["hp"] = min(maximum, before + max(1, int(maximum * 0.28)))
+            healing = int(meta["hp"]) - before
+            apply_status(meta.setdefault("statuses", {}), "regen", 3, 0.08)
+            meta["healing"] = int(meta.get("healing", 0)) + healing
+            bucket["healing"] = int(bucket.get("healing", 0)) + healing
+            event = f"{signature} +{healing:,} HP + Regen" if healing else f"{signature} grants Regen"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature} ({'+'+str(healing)+' HP, ' if healing else ''}Regen)")
+        elif hero_id == "yuna":
+            maximum = max(1, int(meta.get("max_hp", 1))); before = int(meta.get("hp", 0))
+            meta["hp"] = min(maximum, before + max(1, int(maximum * 0.12)))
+            healing = int(meta["hp"]) - before
+            apply_status(meta.setdefault("statuses", {}), "protect", 4, 0.18)
+            meta["healing"] = int(meta.get("healing", 0)) + healing
+            bucket["healing"] = int(bucket.get("healing", 0)) + healing
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.18))
+            event = f"{signature} +{healing:,} HP + Protect" if healing else f"{signature} grants Protect"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature} ({'+'+str(healing)+' HP, ' if healing else ''}Protect)")
+        meta["merc_opening_used"] = True
+        return damage, healing
+
+    def _merc_bonus_loot(self, pid: str, meta: dict[str, Any], drops: list[dict[str, Any]], *, source: str, grant: bool = True) -> dict[str, Any] | None:
+        contract = meta.get("merc_contract")
+        if not isinstance(contract, dict) or not drops:
+            return None
+        hero_id = str(contract.get("hero_id") or "")
+        if hero_id not in {"zidane", "balthier"}:
+            return None
+        candidates = [row for row in drops if row.get("item_id") in self.data.items]
+        if not candidates:
+            return None
+        chosen: dict[str, Any] | None = None
+        if hero_id == "zidane":
+            weights = [max(0.02, float(row.get("chance", 0.1))) for row in candidates]
+            chosen = self.rng.choices(candidates, weights=weights, k=1)[0]
+        else:
+            rarest = min(candidates, key=lambda row: float(row.get("chance", 1.0)))
+            chance = min(0.65, max(0.30, float(rarest.get("chance", 0.1)) * 2.5))
+            if self.rng.random() <= chance:
+                chosen = rarest
+            else:
+                self._merc_record_event(meta, "Leading Man rare-spoil search found nothing")
+                return None
+        item_id = str(chosen["item_id"])
+        qty = self.rng.randint(max(1, int(chosen.get("min", 1))), max(1, int(chosen.get("max", 1))))
+        item_name = str(self.data.items[item_id]["name"])
+        if grant:
+            self._change_item(pid, item_id, qty, source)
+        label = f"{item_name} x{qty}"
+        bucket = self._merc_result_bucket(meta)
+        bucket.setdefault("bonus_loot", []).append(label)
+        signature = str(contract.get("signature") or ("Treasure Hunter" if hero_id == "zidane" else "Leading Man"))
+        self._merc_record_event(meta, f"{signature}: {label}")
+        return {"id": item_id, "name": item_name, "quantity": qty, "label": label, "kind": "merc_bonus"}
+
+    def _merc_state_sql(self, conn: Any, twitch_id: str) -> dict[str, Any]:
+        player = conn.execute("SELECT level,hunt_marks FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+        if not player:
+            return {}
+        clears_row = conn.execute(
+            "SELECT COALESCE(SUM(clears),0) AS clears FROM player_hunts WHERE player_id=?",
+            (str(twitch_id),),
+        ).fetchone()
+        hunt_clears = max(0, int(clears_row["clears"] or 0)) if clears_row else 0
+        contract = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
+        current = None
+        if contract:
+            hero = HEROES_BY_ID.get(str(contract["hero_id"]), {})
+            current = {
+                "hero_id": str(contract["hero_id"]),
+                "hero_name": str(hero.get("name") or contract["hero_id"]),
+                "role": str(hero.get("role") or "Mercenary"),
+                "signature": str(hero.get("signature") or ""),
+                "mission_type": str(contract["mission_type"]),
+                "fee_marks": int(contract["fee_marks"] or 0),
+                "hired_at": int(contract["hired_at"] or 0),
+            }
+        return {
+            "service": MERC_SERVICE_NAME,
+            "proprietor": MERC_PROPRIETOR,
+            "hunt_marks": max(0, int(player["hunt_marks"] or 0)),
+            "player_level": max(1, int(player["level"] or 1)),
+            "hunt_clears": hunt_clears,
+            "contract": current,
+            "heroes": [
+                public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
+                for hero in HEROES
+            ],
+            "mission_types": sorted(MERC_MISSION_TYPES),
+            "can_hire": current is None,
+        }
+
+    def portal_merc_state(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        with self.db.tx() as conn:
+            state = self._merc_state_sql(conn, twitch_id)
+        return GameResult.success("Hero Merc Service ready.", merc_state=state)
+
+    def portal_merc_hire(self, twitch_id: str, hero_id: str, mission_type: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        hero_key = str(hero_id or "").strip().lower()
+        mission = str(mission_type or "").strip().lower()
+        hero = HEROES_BY_ID.get(hero_key)
+        if not hero:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Hero is not on the Merc roster."))
+        if mission not in MERC_MISSION_TYPES or mission not in set(hero.get("mission_types") or ()):
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Hero does not accept that type of contract."))
+        now = int(time.time())
+        fee = int(hero.get("fee_marks", 0))
+        with self.db.tx() as conn:
+            player = conn.execute("SELECT level,hunt_marks FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+            if not player:
+                result = self._need_recruit(); self._portal_action_store_sql(conn, action_id, result); return result
+            clears_row = conn.execute("SELECT COALESCE(SUM(clears),0) AS clears FROM player_hunts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            hunt_clears = max(0, int(clears_row["clears"] or 0)) if clears_row else 0
+            public = public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
+            if not public["available"]:
+                result = GameResult.fail(f"{hero['name']} is unavailable — {public['locked_reason']}.")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            existing = conn.execute("SELECT hero_id FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            if existing:
+                active = HEROES_BY_ID.get(str(existing["hero_id"]), {})
+                result = GameResult.fail(f"You already have a Merc contract with {active.get('name', existing['hero_id'])}.")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            if int(player["hunt_marks"] or 0) < fee:
+                result = GameResult.fail(f"You need {fee} Hunt Marks to hire {hero['name']}.")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            conn.execute("UPDATE players SET hunt_marks=hunt_marks-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (fee, str(twitch_id)))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_marks','hunt_marks',?,?)", (str(twitch_id), -fee, f"merc_hire:{hero_key}:{mission}"))
+            conn.execute("INSERT INTO player_merc_contracts(player_id,hero_id,mission_type,fee_marks,hired_at,updated_at) VALUES (?,?,?,?,?,?)", (str(twitch_id), hero_key, mission, fee, now, now))
+            result = GameResult.success(f"MERC CONTRACT — {hero['name']} hired for your next {mission.title()} assignment for {fee} Hunt Marks.", hero_id=hero_key, mission_type=mission)
+            result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_merc_cancel(self, twitch_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        now = int(time.time())
+        with self.db.tx() as conn:
+            row = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            if not row:
+                result = GameResult.fail("You do not have an active Merc contract.")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id) if self._player(twitch_id) else {}
+                self._portal_action_store_sql(conn, action_id, result); return result
+            hero = HEROES_BY_ID.get(str(row["hero_id"]), {})
+            conn.execute("DELETE FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),))
+            conn.execute("INSERT INTO merc_contract_history(player_id,hero_id,mission_type,fee_marks,outcome,contracted_at,consumed_at) VALUES (?,?,?,?,?,?,?)", (str(twitch_id), str(row["hero_id"]), str(row["mission_type"]), int(row["fee_marks"]), "cancelled", int(row["hired_at"]), now))
+            result = GameResult.success(f"Merc contract with {hero.get('name', row['hero_id'])} cancelled. Hunt Marks are non-refundable.")
+            result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def _merc_claim_for_mission(self, twitch_id: str, mission_type: str) -> dict[str, Any] | None:
+        mission = str(mission_type or "").strip().lower()
+        now = int(time.time())
+        with self.db.tx() as conn:
+            row = conn.execute("SELECT * FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            if not row or str(row["mission_type"]) != mission:
+                return None
+            hero = HEROES_BY_ID.get(str(row["hero_id"]))
+            if not hero:
+                return None
+            contract = {
+                "hero_id": str(row["hero_id"]), "hero_name": str(hero["name"]),
+                "role": str(hero["role"]), "specialty": str(hero.get("specialty") or ""),
+                "signature": str(hero.get("signature") or ""), "catchphrase": str(hero.get("catchphrase") or ""),
+                "mission_type": mission, "fee_marks": int(row["fee_marks"] or 0),
+            }
+            conn.execute("DELETE FROM player_merc_contracts WHERE player_id=?", (str(twitch_id),))
+            conn.execute("INSERT INTO merc_contract_history(player_id,hero_id,mission_type,fee_marks,outcome,contracted_at,consumed_at) VALUES (?,?,?,?,?,?,?)", (str(twitch_id), str(row["hero_id"]), mission, int(row["fee_marks"]), "deployed", int(row["hired_at"]), now))
+            return contract
+
     def portal_retainer_state(self, twitch_id: str) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
@@ -13069,6 +13439,7 @@ class CrystalGuildEngine:
             return GameResult.success(f"{p['display_name']} is already in the raid. Raiders: {len(self.raid_roster)}.")
         job = self.data.jobs[p["current_job"]]
         max_hp = self._max_hp(p)
+        merc_contract = self._merc_claim_for_mission(twitch_id, "raid")
         self.raid_roster[twitch_id] = {
             "name": p["display_name"], "username": p["username"], "job_id": job["id"],
             "hp": min(int(p["current_hp"]), max_hp), "max_hp": max_hp,
@@ -13076,13 +13447,15 @@ class CrystalGuildEngine:
             "mitigation": 0, "limit": 0, "limit_armed": False, "ko_counted": False,
             "action": None, "statuses": {}, "defending": False,
             "actions": 0, "abilities_used": 0, "items_used": 0, "defends": 0,
+            "merc_contract": merc_contract,
         }
         self._update_raid_overlay()
         warning = ""
         rec = self.active_boss.get("recommended_level")
         if rec and p["level"] < rec - 15:
             warning = " The Guild healer has already started filling out your paperwork."
-        return GameResult.success(f"{p['display_name']} joins as {job['name']} against {self.active_boss['name']}! Raiders: {len(self.raid_roster)}.{warning}")
+        merc_note = f" {merc_contract['hero_name']} joins under Merc contract." if merc_contract else ""
+        return GameResult.success(f"{p['display_name']} joins as {job['name']} against {self.active_boss['name']}! Raiders: {len(self.raid_roster)}.{merc_note}{warning}", merc_contract=merc_contract)
 
     @_state_guard
     def boss_status(self) -> GameResult:
@@ -14422,6 +14795,10 @@ class CrystalGuildEngine:
         # replaceable until the timer closes, with MP/AP/items spent only here.
         action_log: list[str] = []
         for pid in alive_ids:
+            dealt, healed = self._merc_apply_raid_assist(str(pid), self.raid_roster[pid], boss, action_log)
+            round_damage += dealt
+            round_healing += healed
+        for pid in alive_ids:
             meta = self.raid_roster[pid]
             meta["defending"] = False
             if not self._raid_action_is_current(meta.get("action"), boss, round_no):
@@ -14435,6 +14812,8 @@ class CrystalGuildEngine:
             ),
         )
         for pid, meta in ordered:
+            if int(boss.get("current_hp", 0)) <= 0:
+                break
             if int(meta.get("hp", 0)) <= 0:
                 continue
             if meta.get("restrained"):
@@ -14868,6 +15247,9 @@ class CrystalGuildEngine:
                 for drop in boss.get("drops",[]):
                     if self.rng.random()<=drop.get("chance",0):
                         qty=self.rng.randint(drop.get("min",1),drop.get("max",1)); self._change_item(pid,drop["item_id"],qty,f"boss:{boss['id']}"); won_items.append(f"{self.data.items[drop['item_id']]['name']} x{qty}")
+                merc_bonus = self._merc_bonus_loot(pid, meta, list(boss.get("drops", [])), source=f"merc:raid:{boss['id']}")
+                if merc_bonus:
+                    won_items.append(merc_bonus["label"])
                 levelups = self._process_levels(pid,p["current_job"])
                 player_achievements = self._check_achievements(pid)
                 mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
@@ -14890,6 +15272,9 @@ class CrystalGuildEngine:
                     personal_parts.append("Level up: " + ", ".join(str(value) for value in levelups[:2]))
                 if player_achievements:
                     personal_parts.append("Achievement: " + str(player_achievements[0]))
+                merc_text = self._merc_result_text(meta)
+                if merc_text:
+                    personal_parts.append(merc_text)
                 participant_result_messages.append(f"{mention} — " + " · ".join(personal_parts))
                 fellowship_raid_notes.extend(self.fellowship_system.record_activity(
                     pid, "raid_win", event_key=f"raid_win:{boss['id']}:{boss.get('closes_at',0)}:{pid}"
@@ -14912,12 +15297,19 @@ class CrystalGuildEngine:
                 if not p:
                     continue
                 mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
-                participant_result_messages.append(
-                    f"{mention} — Raid wipe · {int(meta.get('damage', 0)):,} DMG · "
-                    f"{int(meta.get('healing', 0)):,} heal · {int(meta.get('mitigation', 0)):,} mit · "
-                    f"{int(meta.get('damage_taken', 0)):,} taken · "
-                    f"{'KO' if int(meta.get('hp', 0)) <= 0 else 'Standing'} · No victory spoils"
-                )
+                wipe_parts = [
+                    "Raid wipe",
+                    f"{int(meta.get('damage', 0)):,} DMG",
+                    f"{int(meta.get('healing', 0)):,} heal",
+                    f"{int(meta.get('mitigation', 0)):,} mit",
+                    f"{int(meta.get('damage_taken', 0)):,} taken",
+                    "KO" if int(meta.get("hp", 0)) <= 0 else "Standing",
+                    "No victory spoils",
+                ]
+                merc_text = self._merc_result_text(meta)
+                if merc_text:
+                    wipe_parts.append(merc_text)
+                participant_result_messages.append(f"{mention} — " + " · ".join(wipe_parts))
             messages.append(
                 f"RAID WIPE — {boss['name']} survives at {boss['current_hp']:,}/{boss['max_hp']:,} HP after {boss['round']} rounds. "
                 f"{len(participant_result_messages)} raider{'s' if len(participant_result_messages) != 1 else ''} participated. "

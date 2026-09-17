@@ -34,9 +34,9 @@ class ResynthesisAlpha2Hotfix5Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_release_contract_and_stream_venture_are_encounter_only(self):
-        self.assertEqual(__version__, "1.7.1-resynthesis-a2h5")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
+        self.assertEqual(__version__, "1.8.0-merc-a1")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
         self.assertTrue(self.game.choose_job("100", "warrior").ok)
         result = self.game.venture("100", bypass_cooldown=True)
         self.assertTrue(result.ok)

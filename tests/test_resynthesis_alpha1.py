@@ -41,7 +41,7 @@ class ResynthesisAlpha1Tests(unittest.TestCase):
         }
 
     def test_protocol_advances_for_resynthesis(self):
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 33)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
 
     def test_crafting_state_exposes_only_weapon_and_armor_resynthesis(self):
         self.game._change_item("100", "hunters_axe", 1, "test")

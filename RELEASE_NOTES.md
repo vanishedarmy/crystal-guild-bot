@@ -1,21 +1,28 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Personalized Chat Results + Raid XP Boost
+# Crystal Guild v1.8.0 Alpha 1 — Merc Service — Batch 4
 
-This focused Bot + Web update improves Twitch settlement readability and raises Raid progression rewards without changing combat rules, schemas, or Portal action semantics.
+## Player Guide, Quick Help & responsive polish
 
-## Personalized Venture and Raid results
-- A finished Rally Venture or Raid posts one concise encounter-wide result first.
-- Every participating viewer then receives a separate Twitch chat line beginning with their `@username`.
-- Venture personal results include damage dealt, damage taken, healing, standing/KO state, XP, JP, Gil, loot, and notable level/achievement notices when present.
-- Raid personal results include damage, healing, mitigation, damage taken, standing/KO state, personal XP/Gil allocation, and personal item drops.
-- Raid wipes and Venture defeats still give each participant a personal contribution line even when there are no victory spoils.
-- Personal result lines are deliberately not packed together by the Twitch sender and are paced at 1.5 seconds to improve readability and avoid a sudden result burst.
-- Aggregate participant reward/loot walls are removed from the final summary; special Fellowship notices remain separate when they occur.
+Batch 4 completes the code-only player-facing Merc Service layer before artwork integration.
 
-## Raid XP +50%
-- Configured Victory XP for all 37 Raid/Trial bosses is increased by exactly 50%.
-- The existing bounded Raid allocation formula is unchanged: the larger XP pool is still shared using both participation and contribution.
-- Gil, item drop chances, contribution weighting, mechanics, HP, timers, and settlement safety are unchanged.
-- Portal boss data, contextual Raid help, and the Player Guide show/explain the updated XP values.
+### Web / Portal
+- Visible Web identity is now **v1.8.0 Alpha 1 — Merc Service** (`1.8.0-merc-a1`).
+- Player Guide adds a dedicated **Hero Merc Service** chapter and navigation entry.
+- Guide documents the separate Hunt Marks economy: **C 1 / B 2 / A 3 / S 5** per successful Hunt.
+- Guide documents all six Heroes, real unlock requirements, Hunt Mark fees, eligible mission types, and signature assists.
+- Merc Service page now includes contextual `?` Quick Help and an inline **How Merc Contracts Work** briefing.
+- Mobile adds an in-page Current / Roster / How It Works navigator, one-column roster behavior, touch-safe controls, and overflow protection.
+- What’s New now leads with the v1.8 Merc Service Alpha 1 summary.
+- Raid overlay asset cache-bust follows the v1.8 asset revision.
+- Merc artwork remains intentionally absent until Batch 5.
 
-## Compatibility
-Runtime/frontend `1.7.1-resynthesis-a2h5`; local schema **16**; hosted sync **1**; Portal protocol **33**. No database migration or player reset. HTTP Response Efficiency, Contextual Quick Help, Battle Item Purpose Sort, control-fit work, Full Rest & Combat Continuity, and authoritative Gear Favorites remain intact.
+### Bot help
+- `!guild mercs`, `!guild merc`, and `!guild huntmarks` explain the Portal-first Merc Service, Hunt Marks, contract consumption, and cancellation rules.
+- No new Twitch gameplay command is introduced; hiring remains authoritative through the Adventurer Portal.
+
+### Release contract
+- Runtime/frontend: `1.8.0-merc-a1`
+- Local DB schema: **17**
+- Hosted sync schema: **1**
+- Portal Action protocol: **34**
+- Player reset: **none**
+- New migration in Batch 4: **none**

@@ -44,7 +44,7 @@ class GearFavoritesAuthorityTests(unittest.TestCase):
         }
 
     def test_portal_favorites_persist_in_player_database_and_snapshot(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 16)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
         ok, message, data = self.worker._execute(
             self.action("pa_favorites_1", ["hunters_axe", "chain_mail", "hunters_axe"])
         )
@@ -93,20 +93,20 @@ class GearFavoritesAuthorityTests(unittest.TestCase):
 
 
 class GearFavoritesMigrationTests(unittest.TestCase):
-    def test_schema_15_database_migrates_to_16_with_verified_backup(self):
+    def test_schema_15_database_migrates_through_16_to_17_with_verified_backup(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "guild.db"
             db = Database(path)
             db.close()
             conn = sqlite3.connect(path)
             conn.execute("DROP TABLE player_gear_favorites")
-            conn.execute("DELETE FROM schema_migrations WHERE version=16")
+            conn.execute("DELETE FROM schema_migrations WHERE version>=16")
             conn.commit()
             conn.close()
 
             migrated = Database(path)
             try:
-                self.assertEqual(migrated.schema_version(), 16)
+                self.assertEqual(migrated.schema_version(), 17)
                 table = migrated.conn.execute(
                     "SELECT name FROM sqlite_master WHERE type='table' AND name='player_gear_favorites'"
                 ).fetchone()
@@ -114,14 +114,14 @@ class GearFavoritesMigrationTests(unittest.TestCase):
                 self.assertIsNotNone(migrated.pre_migration_backup_path)
                 backup = Path(migrated.pre_migration_backup_path)
                 self.assertTrue(backup.exists())
-                self.assertIn("pre_schema_16_", backup.name)
+                self.assertIn("pre_schema_17_", backup.name)
                 verify = sqlite3.connect(backup)
                 try:
                     self.assertEqual(verify.execute("PRAGMA quick_check").fetchone()[0], "ok")
                     version = verify.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-                    self.assertEqual(int(version), 15)
+                    self.assertEqual(int(version), 16)
                     tables = {row[0] for row in verify.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-                    self.assertNotIn("player_gear_favorites", tables)
+                    self.assertIn("player_gear_favorites", tables)
                 finally:
                     verify.close()
             finally:

@@ -1,1 +1,1 @@
-__version__ = "1.7.1-resynthesis-a2h5"
+__version__ = "1.8.0-merc-a1"

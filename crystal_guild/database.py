@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS players (
     xp INTEGER NOT NULL DEFAULT 0,
     gil INTEGER NOT NULL DEFAULT 250,
     hunt_seals INTEGER NOT NULL DEFAULT 0,
+    hunt_marks INTEGER NOT NULL DEFAULT 0,
     current_job TEXT NOT NULL DEFAULT 'adventurer',
     current_region TEXT NOT NULL DEFAULT 'greenwind_plains',
     title TEXT NOT NULL DEFAULT 'Fresh Meat',
@@ -257,7 +258,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds one persistent Hero Mercenary contract per player plus contract history.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +266,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 16
+DATABASE_SCHEMA_VERSION = 17
 
 
 class Database:
@@ -1004,6 +1005,52 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_player_gear_favorites_player
                     ON player_gear_favorites(player_id, created_at, item_id);
                     INSERT INTO schema_migrations(version,name) VALUES (16,'cross_device_gear_favorites');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v17 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=17").fetchone()
+        )
+        if not already_v17:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(17)
+            try:
+                columns_v17 = {str(row[1]) for row in self.conn.execute("PRAGMA table_info(players)").fetchall()}
+                if "hunt_marks" not in columns_v17:
+                    self.conn.execute("BEGIN IMMEDIATE")
+                    self.conn.execute("ALTER TABLE players ADD COLUMN hunt_marks INTEGER NOT NULL DEFAULT 0")
+                    self.conn.commit()
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_merc_contracts (
+                        player_id TEXT PRIMARY KEY,
+                        hero_id TEXT NOT NULL,
+                        mission_type TEXT NOT NULL,
+                        fee_marks INTEGER NOT NULL CHECK(fee_marks >= 0),
+                        hired_at INTEGER NOT NULL,
+                        updated_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS merc_contract_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id TEXT NOT NULL,
+                        hero_id TEXT NOT NULL,
+                        mission_type TEXT NOT NULL,
+                        fee_marks INTEGER NOT NULL CHECK(fee_marks >= 0),
+                        outcome TEXT NOT NULL,
+                        contracted_at INTEGER NOT NULL,
+                        consumed_at INTEGER NOT NULL,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_merc_history_player
+                    ON merc_contract_history(player_id, consumed_at DESC, id DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (17,'hero_merc_service_hunt_marks');
                     COMMIT;
                     """
                 )

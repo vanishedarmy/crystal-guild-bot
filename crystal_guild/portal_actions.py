@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 33
+ACTION_PROTOCOL_VERSION = 34
 
 
 class PortalActionWorker:
@@ -551,6 +551,22 @@ class PortalActionWorker:
             if not prize_id:
                 return False, "Gold Saucer prize purchase is missing a prize.", {}
             return self._game_result(self.game.portal_saucer_buy(twitch_id, prize_id, str(action.get("id") or "")))
+        if action_type == "MERC_STATE":
+            if payload:
+                return False, "Merc state does not accept parameters.", {}
+            return self._game_result(self.game.portal_merc_state(twitch_id))
+        if action_type == "MERC_HIRE":
+            if set(payload) != {"hero_id", "mission_type"}:
+                return False, "Merc hire requires hero_id and mission_type only.", {}
+            hero_id = str(payload.get("hero_id") or "").strip().lower()
+            mission_type = str(payload.get("mission_type") or "").strip().lower()
+            if not re.fullmatch(r"[a-z0-9_]+", hero_id) or mission_type not in {"hunt", "venture", "raid"}:
+                return False, "Merc contract request is invalid.", {}
+            return self._game_result(self.game.portal_merc_hire(twitch_id, hero_id, mission_type, str(action.get("id") or "")))
+        if action_type == "MERC_CANCEL":
+            if payload:
+                return False, "Merc cancel does not accept parameters.", {}
+            return self._game_result(self.game.portal_merc_cancel(twitch_id, str(action.get("id") or "")))
         if action_type == "RETAINER_STATE":
             if payload:
                 return False, "Retainer state does not accept parameters.", {}

@@ -817,7 +817,7 @@ class RPGCommands(commands.Component):
         uid, _, _ = self._identity(ctx)
         await ctx.send(
             "MOGNET — !next = what to do now | !hero = character | !venture = adventure | "
-            "!inventory = items | !hunts = marks | !guild <topic> = focused help"
+            "!inventory = items | !hunts = marks | !guild mercs = Merc Service | !guild <topic> = focused help"
         )
         await send_result(ctx, self.game.next_step(uid), limit=1)
 
