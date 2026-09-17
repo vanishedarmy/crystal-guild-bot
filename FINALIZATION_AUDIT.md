@@ -1,3 +1,9 @@
+# Hotfix 2 Finalization Audit — Contracted Hero State
+
+**Decision: PASS.** Active Merc contracts now propagate a distinct contracted roster state through Bot → Portal, and the active Hero uses unavailable artwork until the contract is cancelled or consumed.
+
+Full regressions: **638/638 frontend**, **78/78 hosted Web/API**, **726/726 Bot tests + 30 subtests**. No schema, sync, protocol, migration, or player-reset change.
+
 # Crystal Guild v1.8 Merc Service Alpha 1 — Hunt Seal Currency Hotfix
 
 Runtime: `1.8.0-merc-a1`

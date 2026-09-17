@@ -58,6 +58,14 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         state = hired.data["merc_state"]
         self.assertEqual(state["hunt_seals"], before - fee)
         self.assertEqual(state["contract"]["hero_id"], "tifa")
+        tifa = next(h for h in state["heroes"] if h["id"] == "tifa")
+        aerith = next(h for h in state["heroes"] if h["id"] == "aerith")
+        self.assertTrue(tifa["contracted"])
+        self.assertEqual(tifa["status"], "contracted")
+        self.assertEqual(tifa["contract_mission_type"], "hunt")
+        self.assertTrue(tifa["available"])  # progression remains unlocked; contract state is separate
+        self.assertFalse(aerith["contracted"])
+        self.assertEqual(aerith["status"], "available")
         blocked = self.game.portal_merc_hire("100", "aerith", "raid", "merc-hire-2")
         self.assertFalse(blocked.ok)
         replay = self.game.portal_merc_hire("100", "tifa", "hunt", "merc-hire-1")
@@ -84,6 +92,10 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         cancelled = self.game.portal_merc_cancel("100", "merc-cancel")
         self.assertTrue(cancelled.ok)
         self.assertEqual(cancelled.data["merc_state"]["hunt_seals"], before - fee)
+        aerith = next(h for h in cancelled.data["merc_state"]["heroes"] if h["id"] == "aerith")
+        self.assertFalse(aerith["contracted"])
+        self.assertEqual(aerith["status"], "available")
+        self.assertIsNone(aerith["contract_mission_type"])
         row = self.db.one("SELECT outcome FROM merc_contract_history WHERE player_id='100' ORDER BY id DESC LIMIT 1")
         self.assertEqual(row["outcome"], "cancelled")
 

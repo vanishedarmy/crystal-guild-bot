@@ -11697,6 +11697,14 @@ class CrystalGuildEngine:
                 "fee_seals": int(contract["fee_marks"] or 0),
                 "hired_at": int(contract["hired_at"] or 0),
             }
+        heroes: list[dict[str, Any]] = []
+        for hero in HEROES:
+            public = public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
+            contracted = bool(current and str(current.get("hero_id") or "") == str(public.get("id") or ""))
+            public["contracted"] = contracted
+            public["contract_mission_type"] = str(current.get("mission_type") or "") if contracted and current else None
+            public["status"] = "contracted" if contracted else ("available" if public.get("available") else "locked")
+            heroes.append(public)
         return {
             "service": MERC_SERVICE_NAME,
             "proprietor": MERC_PROPRIETOR,
@@ -11704,10 +11712,7 @@ class CrystalGuildEngine:
             "player_level": max(1, int(player["level"] or 1)),
             "hunt_clears": hunt_clears,
             "contract": current,
-            "heroes": [
-                public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
-                for hero in HEROES
-            ],
+            "heroes": heroes,
             "mission_types": sorted(MERC_MISSION_TYPES),
             "can_hire": current is None,
         }

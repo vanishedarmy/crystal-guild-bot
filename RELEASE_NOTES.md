@@ -1,3 +1,11 @@
+# Hotfix 2 — Contracted Hero roster state
+
+- Hired Hero now shows **CONTRACTED** in the Merc roster and switches immediately to unavailable card artwork.
+- Contracted Hero shows the reserved mission instead of hire controls.
+- Other unlocked Heroes remain visible as available, with hiring disabled while the single contract slot is occupied.
+- Contract cancellation or deployment restores normal availability automatically.
+- Hunt Seals remain the only Merc contract currency.
+
 # Crystal Guild v1.8.0 Alpha 1 — Merc Service — Batch 4
 
 ## Player Guide, Quick Help & responsive polish
@@ -7,8 +15,8 @@ Batch 4 completes the code-only player-facing Merc Service layer before artwork 
 ### Web / Portal
 - Visible Web identity is now **v1.8.0 Alpha 1 — Merc Service** (`1.8.0-merc-a1`).
 - Player Guide adds a dedicated **Hero Merc Service** chapter and navigation entry.
-- Guide documents the separate Hunt Seals economy: **C 1 / B 2 / A 3 / S 5** per successful Hunt.
-- Guide documents all six Heroes, real unlock requirements, Hunt Mark fees, eligible mission types, and signature assists.
+- Guide documents the existing Hunt Seal economy already awarded by Hunts; Merc Service does not add a second Hunt currency.
+- Guide documents all six Heroes, real unlock requirements, Hunt Seal fees, eligible mission types, and signature assists.
 - Merc Service page now includes contextual `?` Quick Help and an inline **How Merc Contracts Work** briefing.
 - Mobile adds an in-page Current / Roster / How It Works navigator, one-column roster behavior, touch-safe controls, and overflow protection.
 - What’s New now leads with the v1.8 Merc Service Alpha 1 summary.

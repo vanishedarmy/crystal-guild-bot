@@ -1,4 +1,4 @@
-# Crystal Guild v1.8 Merc Service Alpha 1
+# Crystal Guild v1.8 Merc Service Alpha 1 — Hotfix 2
 # Runtime: 1.8.0-merc-a1
 .env.example
 .gitignore
@@ -17,6 +17,8 @@ JOB_RESOURCE_PERSISTENCE_AUDIT.md
 MANUAL_TEST_CHECKLIST.md
 MERC_SERVICE_BATCH4_RELEASE_NOTES.md
 MERC_SERVICE_BATCH4_VALIDATION.md
+MERC_SERVICE_CURRENCY_HOTFIX.md
+MERC_SERVICE_HOTFIX2.md
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt
