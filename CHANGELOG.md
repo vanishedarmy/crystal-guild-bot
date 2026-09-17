@@ -1,3 +1,10 @@
+# v1.8.0 Alpha 2 — Merc Service Balance & UX
+
+- Added visual three-slot deployment board.
+- Added exact per-mission Hero availability reasons.
+- Rebalanced Merc Hunt Seal fees to 5/6/5/7/9/12.
+- Preserved signature effects, schema 17, sync 1, and protocol 34.
+
 # Crystal Guild Changelog
 
 ## v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Treasure Seekers Solo Progress

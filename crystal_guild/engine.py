@@ -11710,6 +11710,7 @@ class CrystalGuildEngine:
         open_mission_types = sorted(MERC_MISSION_TYPES - occupied_missions)
         heroes: list[dict[str, Any]] = []
         can_hire = False
+        mission_labels = {"hunt": "Hunt", "venture": "Venture", "raid": "Raid"}
         for hero in HEROES:
             public = public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
             hero_id = str(public.get("id") or "")
@@ -11721,6 +11722,24 @@ class CrystalGuildEngine:
             public["contract_mission_type"] = str(contracted_row.get("mission_type") or "") if contracted_row else None
             public["hireable_mission_types"] = hireable
             public["status"] = "contracted" if contracted else ("available" if public.get("available") and hireable else ("unavailable" if public.get("available") else "locked"))
+
+            mission_availability: dict[str, dict[str, Any]] = {}
+            supported = {str(m) for m in public.get("mission_types") or []}
+            for mission in sorted(MERC_MISSION_TYPES):
+                label = mission_labels.get(mission, mission.title())
+                occupied = contracts_by_mission.get(mission)
+                if contracted:
+                    active_label = mission_labels.get(str(contracted_row.get("mission_type") or ""), str(contracted_row.get("mission_type") or "assignment").title())
+                    mission_availability[mission] = {"status": "contracted", "reason": f"On contract — {active_label}", "hireable": False}
+                elif not public.get("available"):
+                    mission_availability[mission] = {"status": "locked", "reason": str(public.get("locked_reason") or "Progression requirements not met"), "hireable": False}
+                elif mission not in supported:
+                    mission_availability[mission] = {"status": "unavailable", "reason": f"Does not accept {label} contracts", "hireable": False}
+                elif occupied:
+                    mission_availability[mission] = {"status": "unavailable", "reason": f"{label} slot occupied by {occupied['hero_name']}", "hireable": False}
+                else:
+                    mission_availability[mission] = {"status": "available", "reason": f"Available for {label} · {int(public.get('fee_seals') or 0)} Hunt Seals", "hireable": True}
+            public["mission_availability"] = mission_availability
             if hireable:
                 can_hire = True
             heroes.append(public)

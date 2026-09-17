@@ -1,3 +1,33 @@
+# Crystal Guild v1.8.0 Alpha 2 — Merc Service Balance & UX
+
+## Deployment board and availability clarity
+
+- Current Contracts is now a visual three-slot deployment board for Hunt, Venture, and Raid.
+- Assigned slots show the contracted Hero artwork and signature; open slots use the matching mission scene.
+- Each slot jumps directly to that mission's roster and retains mission-scoped cancellation.
+- The Portal no longer forces selection away from a filled job type, so players can inspect why the selected roster is unavailable.
+- Every Hero now exposes an exact mission-specific reason: Available, progression Locked, unsupported job, occupied job slot, or On Contract.
+
+## Hunt Seal balance pass
+
+- Aerith: **5 Hunt Seals**
+- Tifa: **6 Hunt Seals**
+- Zidane: **5 Hunt Seals**
+- Yuna: **7 Hunt Seals**
+- Balthier: **9 Hunt Seals**
+- Cloud: **12 Hunt Seals**
+- Signature effects are unchanged after review; Alpha 2 tunes pricing rather than arbitrarily changing Hero identity.
+- Hunt rewards, Quartermaster costs, Relic costs, and the established Hunt Seal wallet are unchanged.
+
+## Release contract
+
+- Runtime/frontend: `1.8.0-merc-a2`
+- Local DB schema: **17**
+- Hosted sync schema: **1**
+- Portal Action protocol: **34**
+- Player reset: **none**
+- New migration: **none**
+
 # Crystal Guild v1.8.0 Alpha 1 — Merc Service — Hotfix 3
 
 ## Mission-scoped Merc contract slots

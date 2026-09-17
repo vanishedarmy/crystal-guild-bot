@@ -1,3 +1,15 @@
+# v1.8.0 Alpha 2 Upgrade Notes
+
+Alpha 2 upgrades cleanly from v1.8 Alpha 1 Hotfix 3.
+
+- No schema change: remains **17**.
+- No hosted sync change: remains **1**.
+- No Portal protocol change: remains **34**.
+- Existing Hunt/Venture/Raid Merc contracts remain valid.
+- No Hunt Seal refund or conversion is needed.
+- New fees apply only to future hires; already-paid active contracts are not repriced.
+- No player reset is required.
+
 # Upgrade Guide — Merc Service Alpha 1 Batch 4
 
 Batch 4 should be applied on top of **Merc Service Alpha 1 Batch 3 Web** and **Batch 2 Bot**.

@@ -13,7 +13,7 @@ HEROES: tuple[dict[str, Any], ...] = (
     {
         "id": "aerith", "name": "Aerith Gainsborough", "origin": "Final Fantasy VII",
         "role": "Support", "specialty": "Healing / Recovery", "weapon": "Staff",
-        "fee_seals": 4, "min_level": 8, "required_hunt_clears": 2,
+        "fee_seals": 5, "min_level": 8, "required_hunt_clears": 2,
         "mission_types": ("hunt", "venture", "raid"), "signature": "Healing Wind",
         "catchphrase": "I'll help.",
         "effect_summary": "Healing Wind restores HP and grants short regeneration.",
@@ -21,7 +21,7 @@ HEROES: tuple[dict[str, Any], ...] = (
     {
         "id": "tifa", "name": "Tifa Lockhart", "origin": "Final Fantasy VII",
         "role": "Striker", "specialty": "Critical Burst", "weapon": "Gloves",
-        "fee_seals": 5, "min_level": 10, "required_hunt_clears": 3,
+        "fee_seals": 6, "min_level": 10, "required_hunt_clears": 3,
         "mission_types": ("hunt", "raid"), "signature": "Beat Rush",
         "catchphrase": "Leave it to me.",
         "effect_summary": "Beat Rush opens the mission with a critical burst of damage.",
@@ -29,7 +29,7 @@ HEROES: tuple[dict[str, Any], ...] = (
     {
         "id": "zidane", "name": "Zidane Tribal", "origin": "Final Fantasy IX",
         "role": "Scavenger", "specialty": "Extra Finds", "weapon": "Daggers",
-        "fee_seals": 4, "min_level": 7, "required_hunt_clears": 2,
+        "fee_seals": 5, "min_level": 7, "required_hunt_clears": 2,
         "mission_types": ("venture", "hunt"), "signature": "Treasure Hunter",
         "catchphrase": "Let's make this fun.",
         "effect_summary": "Treasure Hunter secures one additional monster drop on a victory.",
@@ -37,7 +37,7 @@ HEROES: tuple[dict[str, Any], ...] = (
     {
         "id": "yuna", "name": "Yuna", "origin": "Final Fantasy X",
         "role": "Support", "specialty": "Protection / Recovery", "weapon": "Staff",
-        "fee_seals": 6, "min_level": 12, "required_hunt_clears": 5,
+        "fee_seals": 7, "min_level": 12, "required_hunt_clears": 5,
         "mission_types": ("hunt", "venture", "raid"), "signature": "Guardian's Grace",
         "catchphrase": "I can help.",
         "effect_summary": "Guardian's Grace restores HP and grants temporary protection.",
@@ -45,7 +45,7 @@ HEROES: tuple[dict[str, Any], ...] = (
     {
         "id": "balthier", "name": "Balthier", "origin": "Final Fantasy XII",
         "role": "Specialist", "specialty": "Rare Spoils", "weapon": "Gun",
-        "fee_seals": 7, "min_level": 15, "required_hunt_clears": 7,
+        "fee_seals": 9, "min_level": 15, "required_hunt_clears": 7,
         "mission_types": ("venture", "hunt", "raid"), "signature": "Leading Man",
         "catchphrase": "Leave the leading man to it.",
         "effect_summary": "Leading Man fires an opening shot and makes a rare-spoil attempt on victory.",
@@ -53,7 +53,7 @@ HEROES: tuple[dict[str, Any], ...] = (
     {
         "id": "cloud", "name": "Cloud Strife", "origin": "Final Fantasy VII",
         "role": "Striker", "specialty": "Heavy Burst", "weapon": "Buster Sword",
-        "fee_seals": 10, "min_level": 30, "required_hunt_clears": 15,
+        "fee_seals": 12, "min_level": 30, "required_hunt_clears": 15,
         "mission_types": ("hunt", "venture", "raid"), "signature": "Braver",
         "catchphrase": "Let's finish this.",
         "effect_summary": "Braver opens the mission with a heavy burst of damage.",

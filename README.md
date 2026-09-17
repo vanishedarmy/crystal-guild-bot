@@ -1,5 +1,11 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Personalized Chat Results + Raid XP Boost
+# Crystal Guild v1.8.0 Alpha 2 — Merc Service Balance & UX
 
-Current focused update: **Personalized Chat Results + Raid XP Boost**. Rally Venture and Raid settlements now provide individual @-mentioned Twitch results, and all configured Raid Victory XP values are 50% higher.
+Alpha 2 stabilizes and clarifies the Hero Merc Service introduced in v1.8 Alpha 1.
 
-Runtime/frontend `1.7.1-resynthesis-a2h5`; local schema **16**; hosted sync **1**; Portal protocol **33**. No migration/reset.
+- Three independent Merc contract slots remain authoritative: Hunt, Venture, and Raid.
+- Merc hiring continues to spend the existing Hunt Seal wallet.
+- Hero fees are tuned to 5 / 6 / 5 / 7 / 9 / 12 Hunt Seals for Aerith / Tifa / Zidane / Yuna / Balthier / Cloud.
+- Bot state now publishes exact mission-specific Hero availability reasons for the Portal.
+- Hero signature effects and mission-scoped contract consumption are unchanged.
+
+Release contract: runtime `1.8.0-merc-a2`, local schema **17**, hosted sync **1**, Portal Action protocol **34**, no player reset.

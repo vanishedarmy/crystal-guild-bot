@@ -34,7 +34,7 @@ class ResynthesisAlpha2Hotfix5Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_release_contract_and_stream_venture_are_encounter_only(self):
-        self.assertEqual(__version__, "1.8.0-merc-a1")
+        self.assertEqual(__version__, "1.8.0-merc-a2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
         self.assertTrue(self.game.choose_job("100", "warrior").ok)
