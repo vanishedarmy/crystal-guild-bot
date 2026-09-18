@@ -61,6 +61,43 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn("no longer exists", message.lower())
 
+    def test_live_stream_portal_action_uses_authoritative_battle_and_announces_after_ack(self):
+        opened = self.game.venture("100", bypass_cooldown=True)
+        self.assertTrue(opened.ok, opened.messages)
+        encounter_id = str(opened.data["encounter_id"])
+        self.assertTrue(self.game.start_encounter_battle(int(encounter_id)).ok)
+        announcements = []
+        wakes = []
+        worker = PortalActionWorker(
+            self.game, "https://guild.example", "sync-key",
+            notify_result=announcements.append, stream_live_lookup=lambda: True,
+            wake_encounter=lambda: wakes.append("wake"),
+        )
+        action = self.action(
+            id="pa_live_attack", type="LIVE_EVENT_ACTION",
+            payload={"event": "venture", "event_id": encounter_id, "round": 1, "kind": "attack"},
+        )
+        posted = []
+        def fake_post(path, payload):
+            posted.append((path, payload))
+            if path == "/api/actions/claim":
+                return {"ok": True, "protocol_version": ACTION_PROTOCOL_VERSION, "actions": [action]}
+            if path == "/api/actions/result":
+                self.assertEqual(len(announcements), 0, "chat output must wait for hosted acknowledgement")
+                return {"ok": True}
+            raise AssertionError(path)
+        worker._post = fake_post
+        self.assertEqual(worker.poll_once(), 1)
+        self.assertEqual(wakes, ["wake"])
+        self.assertEqual(len(announcements), 1)
+        self.assertTrue(announcements[0].ok)
+        self.assertIn("QUEUED R1", announcements[0].messages[0])
+        self.assertEqual(self.game.encounter_roster["100"]["action"]["kind"], "attack")
+        result_posts = [payload for path, payload in posted if path == "/api/actions/result"]
+        self.assertEqual(len(result_posts), 1)
+        self.assertTrue(result_posts[0]["ok"])
+        self.assertIn("adventure_state", result_posts[0]["data"])
+
     def test_streamer_command_requires_authoritative_owner_and_runs_allowlisted_backend_actions(self):
         worker = PortalActionWorker(
             self.game, "https://guild.example", "sync-key",

@@ -633,6 +633,38 @@ class PortalActionWorker:
         if action_type == "ADVENTURE_STATE":
             result = self.game.portal_adventure_state(twitch_id, stream_live=self._stream_live())
             return self._game_result(result)
+        if action_type == "LIVE_EVENT_JOIN":
+            event = str(payload.get("event") or "").strip().lower()
+            event_id = str(payload.get("event_id") or "").strip()
+            if event not in {"venture", "raid"} or not event_id:
+                return False, "Live event join request is invalid.", {}
+            result = self.game.portal_live_event_join(
+                twitch_id, event, event_id, str(action.get("id") or ""), stream_live=self._stream_live()
+            )
+            if result.ok:
+                self._wake_encounter_scheduler()
+                self._stage_post_ack_announcement(str(action.get("id") or ""), result, live_only=True)
+            return self._game_result(result)
+        if action_type == "LIVE_EVENT_ACTION":
+            event = str(payload.get("event") or "").strip().lower()
+            event_id = str(payload.get("event_id") or "").strip()
+            command = str(payload.get("kind") or "").strip().lower()
+            choice = str(payload.get("choice") or "").strip()
+            target_username = str(payload.get("target_username") or "").strip().lower()
+            try:
+                round_no = int(payload.get("round") or 0)
+            except (TypeError, ValueError):
+                return False, "Live event round is invalid.", {}
+            if event not in {"venture", "raid"} or not event_id or round_no < 1 or command not in {"attack", "defend", "ability", "item"}:
+                return False, "Live event action request is invalid.", {}
+            result = self.game.portal_live_event_action(
+                twitch_id, event, event_id, round_no, command, choice, target_username,
+                str(action.get("id") or ""), stream_live=self._stream_live(),
+            )
+            if result.ok:
+                self._wake_encounter_scheduler()
+                self._stage_post_ack_announcement(str(action.get("id") or ""), result, live_only=True)
+            return self._game_result(result)
         if action_type == "TRAVEL_REGION":
             region_id = str(payload.get("region_id") or "").strip()
             if not region_id:

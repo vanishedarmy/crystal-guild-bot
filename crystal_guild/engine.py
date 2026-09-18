@@ -8444,6 +8444,300 @@ class CrystalGuildEngine:
 
 
     # ---------- Portal Actions Phase 9: Adventure Board ----------
+    @staticmethod
+    def _portal_live_item_category(item: dict[str, Any]) -> str:
+        use = item.get("use") if isinstance(item.get("use"), dict) else {}
+        effects = list(use.get("effects") or [])
+        target = str(use.get("target") or "ally")
+        effect_types = {str(effect.get("type") or "") for effect in effects}
+        if target == "enemy" or effect_types.intersection({"damage", "damage_hp", "elemental_damage"}):
+            return "damage"
+        if effect_types.intersection({"heal_hp", "revive"}):
+            return "healing"
+        return "support"
+
+    def _portal_live_combat_controls(
+        self,
+        twitch_id: str,
+        *,
+        event: str,
+    ) -> dict[str, Any] | None:
+        """Build player-safe controls for a live Twitch Venture or Raid round.
+
+        The browser receives only public character labels, owned consumable
+        counts, and unlocked Job actions. Internal Twitch IDs remain local to
+        the Bot; ally targeting round-trips through usernames instead.
+        """
+        event = str(event or "").strip().lower()
+        if event == "venture":
+            encounter = self.active_encounter
+            if not encounter or str(encounter.get("kind") or "venture") != "venture" or str(encounter.get("state") or "") != "combat":
+                return None
+            meta = self.encounter_roster.get(str(twitch_id))
+            roster = self.encounter_roster
+            event_id = str(encounter.get("id") or "")
+            round_no = int(encounter.get("round") or 0)
+            restrained = False
+        elif event == "raid":
+            boss = self.active_boss
+            if not boss or str(boss.get("state") or "") != "combat":
+                return None
+            meta = self.raid_roster.get(str(twitch_id))
+            roster = self.raid_roster
+            event_id = self._raid_instance_id(boss)
+            round_no = int(boss.get("round") or 0) + 1
+            restrained = bool(meta and meta.get("restrained"))
+        else:
+            return None
+        if not meta:
+            return None
+
+        hp = max(0, int(meta.get("hp") or 0))
+        max_hp = max(0, int(meta.get("max_hp") or 0))
+        can_act = hp > 0 and not restrained
+        reason = ""
+        if hp <= 0:
+            reason = "Your hero is KO'd and cannot queue a round action."
+        elif restrained:
+            reason = "Your hero is restrained and cannot queue an action this round."
+
+        targets: list[dict[str, Any]] = []
+        for pid, member in roster.items():
+            username = str(member.get("username") or "").strip().lower()
+            if not username:
+                continue
+            targets.append({
+                "username": username,
+                "display_name": str(member.get("name") or member.get("username") or "Adventurer"),
+                "hp": max(0, int(member.get("hp") or 0)),
+                "max_hp": max(0, int(member.get("max_hp") or 0)),
+                "mp": max(0, int(member.get("mp") or 0)),
+                "max_mp": max(0, int(member.get("max_mp") or 0)),
+                "ap": max(0, int(member.get("ap") or 0)),
+                "max_ap": max(0, int(member.get("max_ap") or 0)),
+                "ko": int(member.get("hp") or 0) <= 0,
+                "self": str(pid) == str(twitch_id),
+            })
+
+        job_id = str(meta.get("job_id") or "adventurer")
+        job = self.data.jobs.get(job_id) or {}
+        job_level = int(meta.get("job_level") or 0)
+        abilities: list[dict[str, Any]] = []
+        for ability in self.data.active_abilities.get(job_id, []):
+            if int(ability.get("level", 1)) > job_level:
+                continue
+            resource = ability_resource(ability, job)
+            cost = ability_cost(ability)
+            silenced = resource == "mp" and has_status(meta.get("statuses", {}), "silence")
+            enough = int(meta.get(resource, 0) or 0) >= cost
+            needs_ko = any(str(effect.get("type") or "") == "revive" for effect in ability.get("effects", []))
+            usable = can_act and enough and not silenced
+            ability_reason = ""
+            if not can_act:
+                ability_reason = reason
+            elif silenced:
+                ability_reason = "Silence prevents MP abilities."
+            elif not enough:
+                ability_reason = f"Needs {cost} {resource.upper()}."
+            elif needs_ko and not any(target.get("ko") for target in targets):
+                usable = False
+                ability_reason = "No KO'd ally is available to revive."
+            abilities.append({
+                "id": str(ability.get("id") or ""),
+                "name": str(ability.get("name") or ability.get("id") or "Ability"),
+                "resource": resource,
+                "cost": cost,
+                "target": str(ability.get("target") or "enemy"),
+                "description": str(ability.get("description") or ""),
+                "requires_ko": needs_ko,
+                "usable": bool(usable),
+                "reason": ability_reason,
+            })
+
+        items: list[dict[str, Any]] = []
+        for row in self.db.all(
+            "SELECT item_id,quantity FROM inventory WHERE player_id=? AND quantity>0 ORDER BY item_id",
+            (str(twitch_id),),
+        ):
+            item = self.data.items.get(str(row["item_id"]))
+            use = item.get("use") if item and isinstance(item.get("use"), dict) else None
+            if not item or not use or item.get("id") == "tent" or not use.get("battle", True):
+                continue
+            effects = list(use.get("effects") or [])
+            needs_ko = any(str(effect.get("type") or "") == "revive" for effect in effects)
+            usable = can_act
+            item_reason = "" if can_act else reason
+            if usable and needs_ko and not any(target.get("ko") for target in targets):
+                usable = False
+                item_reason = "No KO'd ally is available to revive."
+            items.append({
+                "id": str(item.get("id") or ""),
+                "name": str(item.get("name") or item.get("id") or "Item"),
+                "quantity": max(0, int(row["quantity"] or 0)),
+                "description": str(item.get("description") or ""),
+                "target": str(use.get("target") or "ally"),
+                "requires_ko": needs_ko,
+                "category": self._portal_live_item_category(item),
+                "usable": bool(usable),
+                "reason": item_reason,
+            })
+
+        return {
+            "event": event,
+            "event_id": event_id,
+            "round": round_no,
+            "can_act": bool(can_act),
+            "reason": reason,
+            "queued_action": self._queued_action_label(meta),
+            "actor": {
+                "username": str(meta.get("username") or "").strip().lower(),
+                "display_name": str(meta.get("name") or meta.get("username") or "Adventurer"),
+                "job_id": job_id,
+                "job_name": str(job.get("name") or "Adventurer"),
+                "hp": hp,
+                "max_hp": max_hp,
+                "mp": max(0, int(meta.get("mp") or 0)),
+                "max_mp": max(0, int(meta.get("max_mp") or 0)),
+                "ap": max(0, int(meta.get("ap") or 0)),
+                "max_ap": max(0, int(meta.get("max_ap") or 0)),
+            },
+            "targets": targets,
+            "abilities": abilities,
+            "items": items,
+        }
+
+    def _portal_live_event_stale(self) -> GameResult:
+        return GameResult.fail("That live battle changed before the Portal command arrived. Refresh Stream Activities and try again.", stale_live_event=True)
+
+    def _portal_live_event_result(
+        self,
+        action_id: str,
+        result: GameResult,
+        twitch_id: str,
+        *,
+        stream_live: bool,
+    ) -> GameResult:
+        result.data["adventure_state"] = self._portal_adventure_state_data(twitch_id, stream_live=stream_live)
+        with self.db.tx() as conn:
+            self._portal_action_store_sql(conn, action_id, result)
+        return result
+
+    @_state_guard
+    def portal_live_event_join(
+        self,
+        twitch_id: str,
+        event: str,
+        event_id: str,
+        action_id: str,
+        *,
+        stream_live: bool,
+    ) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not stream_live:
+            return self._portal_live_event_result(
+                action_id, GameResult.fail("Live Stream commands are available only while the Twitch stream is LIVE."), twitch_id, stream_live=False
+            )
+        event = str(event or "").strip().lower()
+        expected = str(event_id or "").strip()
+        if event == "venture":
+            encounter = self.active_encounter
+            if not encounter or str(encounter.get("kind") or "venture") != "venture" or str(encounter.get("state") or "") != "rally" or str(encounter.get("id") or "") != expected:
+                result = self._portal_live_event_stale()
+            else:
+                result = self.join_encounter(twitch_id)
+        elif event == "raid":
+            boss = self.active_boss
+            if not boss or str(boss.get("state") or "") != "rally" or self._raid_instance_id(boss) != expected:
+                result = self._portal_live_event_stale()
+            else:
+                result = self.raid_join(twitch_id)
+                if result.ok:
+                    self._update_raid_overlay()
+        else:
+            result = GameResult.fail("Unknown live Stream event.")
+        return self._portal_live_event_result(action_id, result, twitch_id, stream_live=True)
+
+    @_state_guard
+    def portal_live_event_action(
+        self,
+        twitch_id: str,
+        event: str,
+        event_id: str,
+        round_no: int,
+        kind: str,
+        choice: str,
+        target_username: str,
+        action_id: str,
+        *,
+        stream_live: bool,
+    ) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not stream_live:
+            return self._portal_live_event_result(
+                action_id, GameResult.fail("Live Stream commands are available only while the Twitch stream is LIVE."), twitch_id, stream_live=False
+            )
+        event = str(event or "").strip().lower()
+        event_id = str(event_id or "").strip()
+        kind = str(kind or "").strip().lower()
+        choice = str(choice or "").strip()
+        target_username = str(target_username or "").strip().lower()
+        try:
+            round_no = int(round_no)
+        except (TypeError, ValueError):
+            round_no = 0
+
+        stale = False
+        if event == "venture":
+            encounter = self.active_encounter
+            stale = bool(
+                not encounter
+                or str(encounter.get("kind") or "venture") != "venture"
+                or str(encounter.get("state") or "") != "combat"
+                or str(encounter.get("id") or "") != event_id
+                or int(encounter.get("round") or 0) != round_no
+                or str(twitch_id) not in self.encounter_roster
+            )
+        elif event == "raid":
+            boss = self.active_boss
+            stale = bool(
+                not boss
+                or str(boss.get("state") or "") != "combat"
+                or self._raid_instance_id(boss) != event_id
+                or int(boss.get("round") or 0) + 1 != round_no
+                or str(twitch_id) not in self.raid_roster
+            )
+        else:
+            return self._portal_live_event_result(action_id, GameResult.fail("Unknown live Stream event."), twitch_id, stream_live=True)
+        if stale:
+            return self._portal_live_event_result(action_id, self._portal_live_event_stale(), twitch_id, stream_live=True)
+
+        query = choice
+        if target_username:
+            query = f"{choice} {target_username}".strip()
+        if kind == "attack":
+            result = self.battle_attack(twitch_id)
+        elif kind == "defend":
+            result = self.battle_defend(twitch_id)
+        elif kind == "ability":
+            if not choice:
+                result = GameResult.fail("Choose an ability first.")
+            else:
+                result = self.battle_ability(twitch_id, query)
+        elif kind == "item":
+            if not choice:
+                result = GameResult.fail("Choose a battle item first.")
+            else:
+                result = self.battle_item(twitch_id, query)
+        else:
+            result = GameResult.fail("Unknown live battle command.")
+        if result.ok and event == "raid":
+            self._update_raid_overlay()
+        return self._portal_live_event_result(action_id, result, twitch_id, stream_live=True)
+
     def _portal_adventure_state_data(self, twitch_id: str, *, stream_live: bool | None = None) -> dict[str, Any]:
         """Return live, player-safe Adventure Board state.
 
@@ -8571,7 +8865,30 @@ class CrystalGuildEngine:
             if kind == "solo_venture":
                 join_reason = "Solo Venture battles do not open a rally."
             elif kind == "venture":
-                join_reason = "Rally Ventures are joined through Twitch chat with !join."
+                if state != "rally":
+                    join_reason = "The rally has closed and combat is underway."
+                elif joined_encounter:
+                    join_reason = "You are already in this Stream Venture."
+                elif stream_live is not True:
+                    join_reason = "Portal rally commands are available while the Twitch stream is LIVE."
+                elif p["current_job"] == "adventurer":
+                    join_reason = "Choose a Job before joining the rally."
+                elif resting or ko:
+                    join_reason = activity_reason
+                elif dungeon_active:
+                    join_reason = "Finish or retreat from your Dungeon before joining the rally."
+                elif field_expedition_active:
+                    join_reason = "Return from your Expedition before joining the rally."
+                elif solo_expedition_active:
+                    join_reason = "Return or retreat from your Solo Venture before joining the rally."
+                elif active_hunt_running:
+                    join_reason = f"Your hunter returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
+                elif joined_raid:
+                    join_reason = "Finish your active raid before joining the rally."
+                elif venture_remaining > 0:
+                    join_reason = f"Your hero can answer another Venture rally in {self._format_seconds(venture_remaining)}."
+                else:
+                    can_join = True
             elif kind != "venture":
                 join_reason = "Hunt marks are solo battles."
             hunt_info = None
@@ -8607,7 +8924,53 @@ class CrystalGuildEngine:
                 "you_joined": joined_encounter,
                 "can_join": can_join,
                 "join_reason": join_reason,
-                "web_combat_controls": False,
+                "web_combat_controls": bool(kind == "venture" and state == "combat" and joined_encounter and stream_live is True),
+                "controls": self._portal_live_combat_controls(twitch_id, event="venture") if kind == "venture" and state == "combat" and joined_encounter and stream_live is True else None,
+            }
+
+        raid_payload: dict[str, Any] | None = None
+        if self.active_boss:
+            boss = self.active_boss
+            raid_state = str(boss.get("state") or "rally")
+            raid_event_id = self._raid_instance_id(boss)
+            raid_can_join = False
+            raid_join_reason = ""
+            if raid_state != "rally":
+                raid_join_reason = "The raid rally has closed and combat is underway."
+            elif joined_raid:
+                raid_join_reason = "You are already in this raid."
+            elif stream_live is not True:
+                raid_join_reason = "Portal raid commands are available while the Twitch stream is LIVE."
+            elif p["current_job"] == "adventurer":
+                raid_join_reason = "Choose a Job before joining the raid."
+            elif resting or ko:
+                raid_join_reason = activity_reason
+            elif dungeon_active:
+                raid_join_reason = "Finish or retreat from your Dungeon before joining the raid."
+            elif field_expedition_active:
+                raid_join_reason = "Return from your Expedition before joining the raid."
+            elif solo_expedition_active:
+                raid_join_reason = "Return or retreat from your Solo Venture before joining the raid."
+            elif active_hunt_running:
+                raid_join_reason = f"Your hunter returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
+            elif joined_encounter:
+                raid_join_reason = "Finish your active encounter before joining the raid."
+            else:
+                raid_can_join = True
+            raid_payload = {
+                "event_id": raid_event_id,
+                "state": raid_state,
+                "boss_name": str(boss.get("name") or "Raid Boss"),
+                "tier": str(boss.get("tier") or "Raid"),
+                "rally_closes_at": int(float(boss.get("closes_at") or 0)) if raid_state == "rally" else 0,
+                "next_round_at": int(float(boss.get("next_round_at") or 0)) if raid_state == "combat" else 0,
+                "round": int(boss.get("round") or 0),
+                "action_round": int(boss.get("round") or 0) + 1 if raid_state == "combat" else 0,
+                "you_joined": joined_raid,
+                "can_join": bool(raid_can_join),
+                "join_reason": raid_join_reason,
+                "web_combat_controls": bool(raid_state == "combat" and joined_raid and stream_live is True),
+                "controls": self._portal_live_combat_controls(twitch_id, event="raid") if raid_state == "combat" and joined_raid and stream_live is True else None,
             }
 
         global_battle_reason = ""
@@ -8807,7 +9170,7 @@ class CrystalGuildEngine:
                 "rally_reward_bonus_per_level_percent": 5,
                 "rally_reward_bonus_max_percent": 50,
                 "portal_start_enabled": False,
-                "portal_join_enabled": False,
+                "portal_join_enabled": bool(encounter_payload and encounter_payload.get("kind") == "venture" and encounter_payload.get("state") == "rally" and stream_live is True),
             },
             "expeditions": self._expedition_board_state(twitch_id),
             "dungeons": self._dungeon_board_state(twitch_id),
@@ -8835,6 +9198,8 @@ class CrystalGuildEngine:
             "recent_result": recent_result,
             "pending_results": pending_results,
             "raid_active": bool(self.active_boss),
+            "raid": raid_payload,
+            "stream_live": bool(stream_live is True),
         }
 
     # ---------- Chocobo companions ----------
