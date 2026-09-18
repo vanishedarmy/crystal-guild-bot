@@ -6,7 +6,7 @@ title Crystal Guild v1.7.1 - Resynthesis Alpha 2 Hotfix 3
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.8 - MERC SERVICE FINAL
+echo              CRYSTAL GUILD v1.8.1 - MERC RECRUITMENT
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

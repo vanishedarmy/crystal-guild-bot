@@ -1,6 +1,6 @@
-# Crystal Guild v1.8.0 Final — Merc Service
-# Runtime: 1.8.0-merc-final
-# Schema: 17 · Hosted sync: 1 · Portal Action protocol: 34
+# Crystal Guild v1.8.1 — Merc Recruitment (Hero Merc Service)
+# Runtime: 1.8.1-merc-recruitment
+# Schema: 18 · Hosted sync: 1 · Portal Action protocol: 35
 # Files
 .env.example
 .gitignore
@@ -26,6 +26,7 @@ MERC_SERVICE_HOTFIX2.md
 MERC_SERVICE_HOTFIX3.md
 MERC_SERVICE_RC1_RELEASE_NOTES.md
 MERC_SERVICE_RC1_VALIDATION.md
+PACKAGE_MANIFEST.txt
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt
@@ -37,6 +38,8 @@ UI_CONSISTENCY_RC2_VALIDATION.md
 UI_POLISH_RC3_RELEASE_NOTES.md
 UI_POLISH_RC3_VALIDATION.md
 UPGRADE_GUIDE.md
+V1_8_1_RELEASE_NOTES.md
+V1_8_1_VALIDATION.md
 V1_8_FINAL_RELEASE_NOTES.md
 V1_8_FINAL_VALIDATION.md
 VALIDATION_REPORT.md
@@ -173,6 +176,7 @@ tests/test_item_expansion.py
 tests/test_item_progression.py
 tests/test_item_usage_copy_hotfix2.py
 tests/test_job_resource_switching.py
+tests/test_merc_recruitment_181.py
 tests/test_merc_service_alpha1.py
 tests/test_merc_service_alpha2.py
 tests/test_merc_service_batch2.py

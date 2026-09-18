@@ -1,7 +1,7 @@
-# Crystal Guild v1.8.0 Final — Merc Service
+# Crystal Guild v1.8.1 — Merc Recruitment
 
-This is the production v1.8 Merc Service release, promoted from the sealed RC3 candidate after final release-contract, regression, packaging, and integrity verification.
+Crystal Guild is the Twitch/Portal RPG runtime. v1.8.1 adds permanent Hero Merc recruitment, six expansion Heroes, the Merc Registry, and the Dungeon Portal revision repair.
 
-Release contract: runtime `1.8.0-merc-final`, local schema **17**, hosted sync **1**, Portal Action protocol **34**, no player reset.
+Release contract: runtime `1.8.1-merc-recruitment`, local schema **18**, hosted sync **1**, Portal Action protocol **35**, no player reset.
 
-See `V1_8_FINAL_RELEASE_NOTES.md` and `V1_8_FINAL_VALIDATION.md` for the release scope and verification seal. Historical Alpha/RC notes remain included as the development record.
+See `V1_8_1_RELEASE_NOTES.md`, `V1_8_1_VALIDATION.md`, and `UPGRADE_GUIDE.md` for upgrade and validation details.

@@ -28,8 +28,8 @@ class DungeonsAlpha3Tests(unittest.TestCase):
         self.db.close(); self.tmp.cleanup()
 
     def test_alpha3_keeps_schema10_protocol24_and_adds_third_dungeon(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
         board = self.game._dungeon_board_state("143")
         self.assertEqual([row["id"] for row in board["dungeons"][:3]], ["forgotten_ossuary", "emberglass_foundry", "whiteglass_bastion"])
         whiteglass = board["dungeons"][2]

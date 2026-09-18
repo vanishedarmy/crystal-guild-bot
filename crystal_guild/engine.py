@@ -11548,6 +11548,15 @@ class CrystalGuildEngine:
         elif hero_id == "balthier":
             fraction = 0.018 if raid else 0.030
             scale = 1.45
+        elif hero_id == "auron":
+            fraction = 0.052 if raid else 0.082
+            scale = 3.0
+        elif hero_id == "vivi":
+            fraction = 0.040 if raid else 0.068
+            scale = 2.65
+        elif hero_id == "terra":
+            fraction = 0.047 if raid else 0.074
+            scale = 2.85
         else:
             return 0
         hp_cap = max(1, int(max(1, enemy_max_hp) * fraction))
@@ -11564,7 +11573,7 @@ class CrystalGuildEngine:
         bucket = self._merc_result_bucket(meta)
         damage = 0
         healing = 0
-        if hero_id in {"cloud", "tifa", "balthier"}:
+        if hero_id in {"cloud", "tifa", "balthier", "auron", "vivi", "terra"}:
             damage = self._merc_active_damage(
                 meta,
                 hero_id=hero_id,
@@ -11604,6 +11613,23 @@ class CrystalGuildEngine:
             event = f"{signature} +{healing:,} HP + Protect" if healing else f"{signature} grants Protect"
             self._merc_record_event(meta, event)
             log.append(f"MERC — {hero_name} uses {signature}: {event.split(signature,1)[-1].strip()}.")
+        elif hero_id == "cecil":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            apply_status(meta.setdefault("statuses", {}), "protect", 5, 0.24)
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.24))
+            self._merc_record_event(meta, f"{signature} grants strong Protect")
+            log.append(f"MERC — {hero_name} uses {signature} (Protect)")
+        elif hero_id == "tidus":
+            apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.16)
+            self._merc_record_event(meta, f"{signature} grants Haste")
+            log.append(f"MERC — {hero_name} uses {signature} (Haste)")
+        elif hero_id == "ramza":
+            apply_status(meta.setdefault("statuses", {}), "power_up", 4, 0.12)
+            apply_status(meta.setdefault("statuses", {}), "protect", 4, 0.12)
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.12))
+            self._merc_record_event(meta, f"{signature} grants Power Up + Protect")
+            log.append(f"MERC — {hero_name} uses {signature} (Power Up, Protect)")
         meta["merc_opening_used"] = True
         return damage, healing
 
@@ -11617,7 +11643,7 @@ class CrystalGuildEngine:
         bucket = self._merc_result_bucket(meta)
         damage = 0
         healing = 0
-        if hero_id in {"cloud", "tifa", "balthier"}:
+        if hero_id in {"cloud", "tifa", "balthier", "auron", "vivi", "terra"}:
             damage = self._merc_active_damage(meta, hero_id=hero_id, enemy_max_hp=int(boss.get("max_hp", 1)), raid=True)
             damage = self._raid_damage_boss(pid, meta, damage, [], use_limit=False)
             bucket["damage"] = int(bucket.get("damage", 0)) + damage
@@ -11645,6 +11671,23 @@ class CrystalGuildEngine:
             event = f"{signature} +{healing:,} HP + Protect" if healing else f"{signature} grants Protect"
             self._merc_record_event(meta, event)
             log.append(f"MERC — {hero_name} uses {signature} ({'+'+str(healing)+' HP, ' if healing else ''}Protect)")
+        elif hero_id == "cecil":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            apply_status(meta.setdefault("statuses", {}), "protect", 5, 0.24)
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.24))
+            self._merc_record_event(meta, f"{signature} grants strong Protect")
+            log.append(f"MERC — {hero_name} uses {signature} (Protect)")
+        elif hero_id == "tidus":
+            apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.16)
+            self._merc_record_event(meta, f"{signature} grants Haste")
+            log.append(f"MERC — {hero_name} uses {signature} (Haste)")
+        elif hero_id == "ramza":
+            apply_status(meta.setdefault("statuses", {}), "power_up", 4, 0.12)
+            apply_status(meta.setdefault("statuses", {}), "protect", 4, 0.12)
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.12))
+            self._merc_record_event(meta, f"{signature} grants Power Up + Protect")
+            log.append(f"MERC — {hero_name} uses {signature} (Power Up, Protect)")
         meta["merc_opening_used"] = True
         return damage, healing
 
@@ -11735,7 +11778,7 @@ class CrystalGuildEngine:
         return deployments
 
     def _merc_state_sql(self, conn: Any, twitch_id: str) -> dict[str, Any]:
-        player = conn.execute("SELECT level,hunt_seals FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+        player = conn.execute("SELECT level,hunt_seals,gil FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
         if not player:
             return {}
         clears_row = conn.execute(
@@ -11743,6 +11786,17 @@ class CrystalGuildEngine:
             (str(twitch_id),),
         ).fetchone()
         hunt_clears = max(0, int(clears_row["clears"] or 0)) if clears_row else 0
+        dungeon_row = conn.execute(
+            "SELECT COALESCE(SUM(clears),0) AS clears FROM player_dungeon_progress WHERE player_id=?",
+            (str(twitch_id),),
+        ).fetchone()
+        dungeon_clears = max(0, int(dungeon_row["clears"] or 0)) if dungeon_row else 0
+        recruited_ids = {
+            str(row["hero_id"]) for row in conn.execute(
+                "SELECT hero_id FROM player_merc_recruits WHERE player_id=?",
+                (str(twitch_id),),
+            ).fetchall()
+        }
         contract_rows = conn.execute(
             """
             SELECT * FROM player_merc_contracts
@@ -11775,10 +11829,18 @@ class CrystalGuildEngine:
         open_mission_types = sorted(MERC_MISSION_TYPES - occupied_missions)
         heroes: list[dict[str, Any]] = []
         can_hire = False
+        can_recruit = False
         mission_labels = {"hunt": "Hunt", "venture": "Venture", "raid": "Raid"}
         for hero in HEROES:
-            public = public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
-            hero_id = str(public.get("id") or "")
+            hero_id = str(hero.get("id") or "")
+            public = public_hero(
+                hero,
+                player_level=int(player["level"] or 1),
+                hunt_clears=hunt_clears,
+                dungeon_clears=dungeon_clears,
+                player_gil=int(player["gil"] or 0),
+                recruited=hero_id in recruited_ids,
+            )
             contracted_row = contract_by_hero.get(hero_id)
             contracted = contracted_row is not None
             deployed = bool(contracted_row and contracted_row.get("deployed"))
@@ -11802,7 +11864,7 @@ class CrystalGuildEngine:
                     else:
                         mission_availability[mission] = {"status": "contracted", "reason": f"On contract — {active_label}", "hireable": False}
                 elif not public.get("available"):
-                    mission_availability[mission] = {"status": "locked", "reason": str(public.get("locked_reason") or "Progression requirements not met"), "hireable": False}
+                    mission_availability[mission] = {"status": "locked", "reason": str(public.get("locked_reason") or "Progression or recruitment requirements not met"), "hireable": False}
                 elif mission not in supported:
                     mission_availability[mission] = {"status": "unavailable", "reason": f"Does not accept {label} contracts", "hireable": False}
                 elif occupied:
@@ -11815,13 +11877,19 @@ class CrystalGuildEngine:
             public["mission_availability"] = mission_availability
             if hireable:
                 can_hire = True
+            recruitment = public.get("recruitment") or {}
+            if recruitment.get("required") and not recruitment.get("recruited") and recruitment.get("ready"):
+                can_recruit = True
             heroes.append(public)
+        recruited_count = sum(1 for hero in heroes if (hero.get("recruitment") or {}).get("recruited"))
         return {
             "service": MERC_SERVICE_NAME,
             "proprietor": MERC_PROPRIETOR,
             "hunt_seals": max(0, int(player["hunt_seals"] or 0)),
+            "gil": max(0, int(player["gil"] or 0)),
             "player_level": max(1, int(player["level"] or 1)),
             "hunt_clears": hunt_clears,
+            "dungeon_clears": dungeon_clears,
             # Legacy singular field retained for older clients. New clients use contracts.
             "contract": contracts[0] if contracts else None,
             "contracts": contracts,
@@ -11830,6 +11898,8 @@ class CrystalGuildEngine:
             "mission_types": sorted(MERC_MISSION_TYPES),
             "open_mission_types": open_mission_types,
             "can_hire": can_hire,
+            "can_recruit": can_recruit,
+            "registry": {"recruited": recruited_count, "total": len(heroes)},
         }
 
     def portal_merc_state(self, twitch_id: str) -> GameResult:
@@ -11838,6 +11908,68 @@ class CrystalGuildEngine:
         with self.db.tx() as conn:
             state = self._merc_state_sql(conn, twitch_id)
         return GameResult.success("Hero Merc Service ready.", merc_state=state)
+
+    def portal_merc_recruit(self, twitch_id: str, hero_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        hero_key = str(hero_id or "").strip().lower()
+        hero = HEROES_BY_ID.get(hero_key)
+        if not hero:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That Hero is not in the Merc Registry."))
+        spec = dict(hero.get("recruitment") or {})
+        if str(spec.get("kind") or "founding") == "founding":
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail(f"{hero['name']} is part of the founding Merc roster and does not require recruitment."))
+        now = int(time.time())
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            player = conn.execute("SELECT level,hunt_seals,gil FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+            if not player:
+                result = self._need_recruit(); self._portal_action_store_sql(conn, action_id, result); return result
+            existing = conn.execute("SELECT hero_id FROM player_merc_recruits WHERE player_id=? AND hero_id=?", (str(twitch_id), hero_key)).fetchone()
+            if existing:
+                result = GameResult.success(f"{hero['name']} is already permanently recruited.", hero_id=hero_key, already_recruited=True)
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            hunt_row = conn.execute("SELECT COALESCE(SUM(clears),0) AS clears FROM player_hunts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            dungeon_row = conn.execute("SELECT COALESCE(SUM(clears),0) AS clears FROM player_dungeon_progress WHERE player_id=?", (str(twitch_id),)).fetchone()
+            public = public_hero(
+                hero,
+                player_level=int(player["level"] or 1),
+                hunt_clears=max(0, int(hunt_row["clears"] or 0)) if hunt_row else 0,
+                dungeon_clears=max(0, int(dungeon_row["clears"] or 0)) if dungeon_row else 0,
+                player_gil=int(player["gil"] or 0),
+                recruited=False,
+            )
+            recruitment = dict(public.get("recruitment") or {})
+            if not recruitment.get("prereqs_met"):
+                missing = [f"{row['label']} {row['current']}/{row['required']}" for row in recruitment.get("objectives") or [] if not row.get("met")]
+                result = GameResult.fail(f"{hero['name']} cannot be recruited yet — " + ", ".join(missing) + ".")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            gil_cost = max(0, int(recruitment.get("gil_cost") or 0))
+            if gil_cost and int(player["gil"] or 0) < gil_cost:
+                result = GameResult.fail(f"{hero['name']}'s permanent contract costs {gil_cost:,} Gil.")
+                result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+                self._portal_action_store_sql(conn, action_id, result); return result
+            kind = str(recruitment.get("kind") or "quest")
+            if gil_cost:
+                conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (gil_cost, str(twitch_id)))
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)",
+                    (str(twitch_id), -gil_cost, f"merc_recruit:{hero_key}"),
+                )
+            conn.execute(
+                "INSERT INTO player_merc_recruits(player_id,hero_id,unlock_method,gil_paid,recruited_at) VALUES (?,?,?,?,?)",
+                (str(twitch_id), hero_key, kind, gil_cost, now),
+            )
+            method_text = f"{gil_cost:,} Gil permanent contract" if gil_cost else str(recruitment.get("name") or "recruitment quest")
+            result = GameResult.success(f"MERC RECRUITMENT — {hero['name']} joined the permanent roster via {method_text}.", hero_id=hero_key, recruitment_method=kind, gil_paid=gil_cost)
+            result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
 
     def portal_merc_hire(self, twitch_id: str, hero_id: str, mission_type: str, action_id: str) -> GameResult:
         replay = self._portal_action_replay(action_id)
@@ -11853,7 +11985,7 @@ class CrystalGuildEngine:
         now = int(time.time())
         fee = int(hero.get("fee_seals", 0))
         with self.db.tx() as conn:
-            player = conn.execute("SELECT level,hunt_seals FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
+            player = conn.execute("SELECT level,hunt_seals,gil FROM players WHERE twitch_id=?", (str(twitch_id),)).fetchone()
             if not player:
                 result = self._need_recruit(); self._portal_action_store_sql(conn, action_id, result); return result
             deployments = self._merc_runtime_deployments(str(twitch_id))
@@ -11868,10 +12000,25 @@ class CrystalGuildEngine:
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
                 self._portal_action_store_sql(conn, action_id, result); return result
             clears_row = conn.execute("SELECT COALESCE(SUM(clears),0) AS clears FROM player_hunts WHERE player_id=?", (str(twitch_id),)).fetchone()
+            dungeon_row = conn.execute("SELECT COALESCE(SUM(clears),0) AS clears FROM player_dungeon_progress WHERE player_id=?", (str(twitch_id),)).fetchone()
+            recruited = bool(conn.execute("SELECT 1 FROM player_merc_recruits WHERE player_id=? AND hero_id=?", (str(twitch_id), hero_key)).fetchone())
             hunt_clears = max(0, int(clears_row["clears"] or 0)) if clears_row else 0
-            public = public_hero(hero, player_level=int(player["level"] or 1), hunt_clears=hunt_clears)
+            dungeon_clears = max(0, int(dungeon_row["clears"] or 0)) if dungeon_row else 0
+            public = public_hero(
+                hero,
+                player_level=int(player["level"] or 1),
+                hunt_clears=hunt_clears,
+                dungeon_clears=dungeon_clears,
+                player_gil=int(player["gil"] or 0),
+                recruited=recruited,
+            )
             if not public["available"]:
-                result = GameResult.fail(f"{hero['name']} is unavailable — {public['locked_reason']}.")
+                recruitment = public.get("recruitment") or {}
+                if recruitment.get("required") and not recruitment.get("recruited"):
+                    message = f"{hero['name']} has not joined your Merc Registry yet. Complete {recruitment.get('name') or 'their recruitment'} first."
+                else:
+                    message = f"{hero['name']} is unavailable — {public['locked_reason']}."
+                result = GameResult.fail(message)
                 result.data["merc_state"] = self._merc_state_sql(conn, twitch_id)
                 self._portal_action_store_sql(conn, action_id, result); return result
             occupied = conn.execute(

@@ -37,9 +37,9 @@ class GuildExpansionBeta3Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_beta3_advances_protocol_only(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
-        self.assertEqual(self.db.schema_version(), 17)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
+        self.assertEqual(self.db.schema_version(), 18)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
 
     def test_simultaneous_contributions_never_overfill_or_overcharge(self):
         self.assertTrue(self.game.set_fellowship_project("infirmary").ok)

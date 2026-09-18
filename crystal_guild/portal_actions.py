@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 34
+ACTION_PROTOCOL_VERSION = 35
 
 
 class PortalActionWorker:
@@ -555,6 +555,13 @@ class PortalActionWorker:
             if payload:
                 return False, "Merc state does not accept parameters.", {}
             return self._game_result(self.game.portal_merc_state(twitch_id))
+        if action_type == "MERC_RECRUIT":
+            if set(payload) != {"hero_id"}:
+                return False, "Merc recruitment requires hero_id only.", {}
+            hero_id = str(payload.get("hero_id") or "").strip().lower()
+            if not re.fullmatch(r"[a-z0-9_]+", hero_id):
+                return False, "Merc recruitment request is invalid.", {}
+            return self._game_result(self.game.portal_merc_recruit(twitch_id, hero_id, str(action.get("id") or "")))
         if action_type == "MERC_HIRE":
             if set(payload) != {"hero_id", "mission_type"}:
                 return False, "Merc hire requires hero_id and mission_type only.", {}

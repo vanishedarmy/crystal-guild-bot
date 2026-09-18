@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 17
+DATABASE_SCHEMA_VERSION = 18
 
 
 class Database:
@@ -1082,6 +1082,36 @@ class Database:
                     SELECT player_id,hero_id,mission_type,fee_marks,hired_at,updated_at
                     FROM player_merc_contracts_single_slot;
                     DROP TABLE player_merc_contracts_single_slot;
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v18 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=18").fetchone()
+        )
+        if not already_v18:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(18)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_merc_recruits (
+                        player_id TEXT NOT NULL,
+                        hero_id TEXT NOT NULL,
+                        unlock_method TEXT NOT NULL,
+                        gil_paid INTEGER NOT NULL DEFAULT 0 CHECK(gil_paid >= 0),
+                        recruited_at INTEGER NOT NULL,
+                        PRIMARY KEY (player_id, hero_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_merc_recruits_player
+                    ON player_merc_recruits(player_id, recruited_at, hero_id);
+                    INSERT INTO schema_migrations(version,name) VALUES (18,'merc_recruitment');
                     COMMIT;
                     """
                 )

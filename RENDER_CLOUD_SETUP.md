@@ -1,21 +1,15 @@
-# Crystal Guild v1.7.1 — Render Cloud Setup
+# Crystal Guild v1.8.1 — Render Cloud Setup
 
-Preserve the worker's persistent `/var/data` state and all Render environment secrets. Never delete or overwrite the live authoritative database during deployment.
+Keep the Bot's persistent database on the mounted disk (normally `/var/data/crystal_guild.db`) and Twitch token storage on persistent disk as configured by the existing deployment. Do not replace the live database with a packaged blank database.
 
-Persistent paths:
-```text
-/var/data/crystal_guild.db
-/var/data/twitch_tokens.db
-/var/data/overlay/state.json
-/var/data/backups/
-```
+Before upgrading, keep your normal external backup. On first startup against a schema-17 database, v1.8.1 also creates and verifies an automatic `pre_schema_18_<timestamp>.db` backup before applying the additive Merc Recruitment migration.
 
-Routine file logs use `/tmp/crystal-guild-logs`; Render's service log stream remains the normal place to review runtime logs.
+Deploy the **v1.8.1 Merc Recruitment Bot and matching Web build together**, then restart the worker. Verify `!cgversion` reports `1.8.1-merc-recruitment`, schema **18**, Portal Action protocol **35**, and `!health` is clean.
 
-The Bot prunes old `crystal_guild-startup-*.db` files **before** creating the next startup backup, retains at most two startup copies, and leaves migration backups such as `pre_schema_15_*.db` and `pre_schema_16_*.db` untouched. If the persistent disk cannot safely fit another backup, startup continues with a warning instead of crashing.
+The hosted Web process and Bot must use the same Portal sync credentials and protocol version. The Web action gateway now requires the Dungeon room `revision` field for action, choice, continue, and retreat requests.
 
-Deploy the v1.7.1 Resynthesis Alpha 2 Hotfix 5 Gear Favorites Authority Fix Bot and the matching v1.7.1 Resynthesis Alpha 2 Web build together, then restart the worker. Startup creates and verifies `pre_schema_16_*.db` before the additive schema migration. Verify `!cgversion` reports `1.7.1-resynthesis-a2h5`, schema **16**, Portal protocol **33**, and `!health` is clean.
+Use `run_cloud_preflight.py` before production rollout where applicable. OBS overlay routes remain available under `/overlay`.
 
-If the worker later reports SQLite write failures, inspect other non-authoritative files consuming `/var/data` or increase the Render disk size. Do not delete `crystal_guild.db`.
+## Persistent state compatibility
 
-Before reconnecting a moved/restored worker, run `python run_cloud_preflight.py`. The hosted raid overlay route remains `/overlay`.
+The deployment layout remains compatible with the persistent-disk setup used by the v1.7.1 release line. The default Twitch token database path is `/var/data/twitch_tokens.db`; preserve that file alongside `/var/data/crystal_guild.db` during upgrades.

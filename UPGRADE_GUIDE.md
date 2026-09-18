@@ -1,17 +1,24 @@
-# v1.8.0 Final Upgrade Notes
+# Crystal Guild v1.8.1 — Merc Recruitment Upgrade Guide
 
-Crystal Guild v1.8.0 Final upgrades cleanly from v1.8.0 RC3. No player reset or Final-specific database migration is required. Replace the Bot/Web trees with the Final package or apply the matching RC3 → Final incremental patches.
+v1.8.1 upgrades directly from the v1.8.0 Merc Service release line. Existing players, inventories, jobs, Hunts, Dungeons, Expeditions, retainers, Gold Saucer progress, and active Merc contracts remain intact.
 
-## Compatibility
+## Database migration
 
-- Runtime/frontend: `1.8.0-merc-final`
-- Local database schema: **17**
+The local player database advances from schema **17 → 18**. On the first launch against an existing database, Crystal Guild automatically creates and verifies a `pre_schema_18_<timestamp>.db` backup before applying the migration.
+
+Schema 18 adds `player_merc_recruits`, which stores permanent recruitment for expansion Heroes. The founding roster does not need rows in this table and keeps its existing progression behavior.
+
+No player reset is required.
+
+## Portal compatibility
+
+- Runtime/frontend: `1.8.1-merc-recruitment`
+- Local database schema: **18**
 - Hosted sync schema: **1**
-- Portal Action protocol: **34**
-- Existing Hunt Seal balances, Merc contracts/deployments, progression, inventory, equipment, Fellowship state, and Gold Saucer state remain compatible.
+- Portal Action protocol: **35**
 
-## Existing v1.8 migration history
+Deploy the v1.8.1 Bot and Web packages together so the new `MERC_RECRUIT` action and Dungeon `revision` fields use the same protocol on both sides.
 
-The original Merc Service upgrade from local schema **16 → 17** remains the only database migration in the v1.8 line. That migration creates and verifies the `pre_schema_17` backup before applying schema changes. Players already on schema 17 do not repeat that migration or recreate the backup during the RC3 → Final upgrade.
+## Dungeon repair
 
-Final does not advance the local schema, hosted sync schema, or Portal Action protocol.
+v1.8.1 also repairs the hosted Portal validation path for Dungeon actions. `DUNGEON_ACTION`, `DUNGEON_CHOICE`, `DUNGEON_CONTINUE`, and `DUNGEON_RETREAT` preserve the authoritative room `revision` sent by the frontend. Existing active Dungeon runs do not need to be cleared or restarted solely for this fix.

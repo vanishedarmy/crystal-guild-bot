@@ -38,13 +38,13 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         self.db.close(); self.temp.cleanup()
 
     def test_release_contract_and_roster(self):
-        self.assertEqual(__version__, "1.8.0-merc-final")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 17)
-        self.assertEqual(self.db.schema_version(), 17)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 34)
+        self.assertEqual(__version__, "1.8.1-merc-recruitment")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
+        self.assertEqual(self.db.schema_version(), 18)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
         state = self.game.portal_merc_state("100").data["merc_state"]
         self.assertEqual(state["proprietor"], MERC_PROPRIETOR)
-        self.assertEqual(len(state["heroes"]), 6)
+        self.assertEqual(len(state["heroes"]), 12)
         self.assertEqual(state["hunt_seals"], 100)
         cloud = next(h for h in state["heroes"] if h["id"] == "cloud")
         self.assertFalse(cloud["available"])

@@ -1,29 +1,40 @@
-# Crystal Guild v1.8.0 Final — Merc Service
+# Crystal Guild v1.8.1 — Merc Recruitment
 
-v1.8.0 Final promotes the RC3 candidate to the completed Merc Service release. No new gameplay features or balance changes are introduced in the Final pass; this release seals the tested RC feature set, release identity, documentation, and packages.
+v1.8.1 expands Hero Merc Service into a permanent recruitment system and includes a repair for Dungeon Portal actions.
 
-## Final feature set
+## Merc Recruitment
 
-- Hero Merc Service with Aerith, Tifa, Zidane, Yuna, Balthier, and Cloud.
-- Existing **Hunt Seals** are the Merc contract currency; no separate Hunt Marks economy is used.
-- Three independent assignment slots: one Hero for Hunt, one for Venture, and one for Raid.
-- Mission eligibility, progression locks, occupied slots, contracted Heroes, and deployed Heroes all produce explicit availability states in the Portal.
-- Deployed Heroes remain unavailable until their Hunt, Venture, or Raid resolves, including timed-Hunt restart recovery.
-- Signature Hero contributions cover burst damage, healing, protection, extra finds, and rare-spoil support.
-- Complete available/unavailable Merc artwork and service presentation.
-- Responsive Portal hardening for desktop, tablet, and mobile layouts.
-- Readable profile navigation with roomier desktop breakpoints and contained single-line labels.
-- One shared manual **Refresh** control at the bottom of live Portal pages; automatic/live synchronization remains active.
+- Adds **Auron, Vivi, Cecil, Terra, Tidus, and Ramza** to the Hero Merc roster.
+- The original **Aerith, Tifa, Zidane, Yuna, Balthier, and Cloud** remain the founding roster and keep their existing progression unlocks.
+- Expansion Heroes begin locked and must be permanently recruited before they can be hired for assignments.
+- Auron, Vivi, Cecil, and Ramza use progression/quest recruitment requirements.
+- Terra and Tidus use one-time Gil contracts after their required Character Level is reached.
+- Permanent recruitment is separate from deployment: individual Hunt, Venture, and Raid contracts continue to spend the established **Hunt Seal** currency.
+- The Portal adds **Hire Heroes**, **Recruitment**, and **Merc Registry** views.
+- The Merc Registry tracks the full 12-Hero roster and uses silhouette artwork for unrecruited expansion Heroes.
+- Expansion Heroes ship with dedicated **Locked**, **Available**, and **Unavailable** SNES/FF-style card artwork.
+
+## New Hero specialties
+
+- **Auron — Bushido:** heavy opening damage suited to elite and boss targets.
+- **Vivi — Elemental Burst:** powerful opening magic damage.
+- **Cecil — Paladin's Guard:** strong opening protection.
+- **Terra — Arcane Burst:** high-powered magical opening damage.
+- **Tidus — Quick Hit:** opening Haste and combat momentum.
+- **Ramza — Shout:** coordinated offensive and defensive support.
+
+## Dungeon Portal repair
+
+The hosted Portal now preserves the authoritative room `revision` on `DUNGEON_ACTION`, `DUNGEON_CHOICE`, `DUNGEON_CONTINUE`, and `DUNGEON_RETREAT`. This fixes cases where Continue Deeper, Retreat, route choices, or combat actions were rejected by the Web gateway before reaching the Bot.
+
+Existing active Dungeon runs do not need to be intentionally cleared for this repair.
 
 ## Release contract
 
-- Runtime/frontend: `1.8.0-merc-final`
-- Frontend package: `1.8.0`
-- Local database schema: **17**
+- Runtime/frontend: `1.8.1-merc-recruitment`
+- Frontend package: `1.8.1`
+- Local database schema: **18**
 - Hosted sync schema: **1**
-- Portal Action protocol: **34**
-- No player reset or Final-specific database migration.
-
-## Upgrade path
-
-RC3 upgrades directly to Final. Existing schema-17 player databases and active Merc state remain compatible. The original v1.8 schema migration remains the only database migration in this release line.
+- Portal Action protocol: **35**
+- Existing schema-17 databases migrate automatically with a verified `pre_schema_18_<timestamp>.db` backup.
+- No player reset.
