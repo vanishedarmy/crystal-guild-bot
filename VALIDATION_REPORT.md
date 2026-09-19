@@ -1,25 +1,42 @@
-# Crystal Guild v1.8.1 — Validation Report
+# Crystal Guild v1.8.2 — Elite Mercs Validation
+
+## Result
+
+**PASS** — the v1.8.2 source trees are ready for release packaging.
 
 ## Automated validation
 
-- Bot Python suite: **738/738 PASS**.
-- Hosted Web/API Python suite: **78/78 PASS**.
-- Frontend Node regression suite: **670/670 PASS**.
-- Python compileall: **PASS** for Bot and hosted Web modules.
-- JSON integrity audit: **PASS**.
-- Expansion Merc artwork: **18/18 required WebP cards present** (6 Heroes × Locked / Available / Unavailable), all below 400 KB.
+| Check | Result |
+| --- | --- |
+| Bot unit/regression tests | 748 / 748 passed |
+| Hosted Web/API tests | 78 / 78 passed |
+| Frontend unit/regression tests | 685 / 685 passed |
+| Python compileall | Passed |
+| JSON parse validation | 33 / 33 passed |
+| Elite Merc artwork set | 18 / 18 passed |
+| Elite artwork dimensions | 660 × 880 for all 18 cards |
+| Elite artwork optimization | All 18 cards under 400 KB |
 
-## Focused coverage
+## Release-contract validation
 
-- Schema 18 creates persistent `player_merc_recruits` records.
-- Founding Mercs remain available without permanent recruitment rows.
-- Quest recruitment blocks until its listed progression requirements are met.
-- Gil recruitment deducts the permanent contract cost exactly once and remains replay-safe.
-- Expansion Heroes cannot be deployed before permanent recruitment.
-- Locked silhouette, Available, and Unavailable artwork routing is verified.
-- `MERC_RECRUIT` is accepted through Portal Action protocol 35.
-- Dungeon action, choice, continue, and retreat payloads preserve positive room `revision` values through the hosted gateway.
+- Runtime/frontend identity: `1.8.2-elite-mercs`
+- Visible release: `v1.8.2 — Elite Mercs`
+- Local database schema: 18
+- Hosted sync schema: 1
+- Portal Action protocol: 35
+- No v1.8.1 → v1.8.2 schema migration is required.
+- Existing recruitment records and active Merc contracts remain compatible.
 
-## Build environment
+## Elite artwork-state validation
 
-The source archive intentionally does not ship `node_modules`, so the Vite production bundle command is not used as a release gate in this workspace. The source/regression suites, direct artwork checks, Python compilation, and data integrity checks are the release validation gates.
+The new `a3` card set contains six Heroes and exactly three cards per Hero:
+
+- `*-locked.webp` — not recruited, silhouette, card status **Locked**.
+- `*-unavailable.webp` — recruited and already hired/deployed, card status **Unavailable**.
+- `*-available.webp` — recruited and not hired, card status **Available**.
+
+Heroes covered: Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid.
+
+## Packaging note
+
+Crystal Guild Web is distributed as the source project, as in the preceding release packages. Unit/regression validation completed against that source tree. A local `vite build` was not used because the validation environment does not have the npm/Vite dependencies installed; deployment installs the pinned dependencies from `frontend/package.json`.

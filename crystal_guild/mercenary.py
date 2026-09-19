@@ -145,6 +145,84 @@ HEROES: tuple[dict[str, Any], ...] = (
             "hint": "Prove your leadership across Hunts and Dungeons to earn Ramza's allegiance.",
         },
     },
+    {
+        "id": "lightning", "name": "Lightning", "origin": "Final Fantasy XIII",
+        "role": "Commando", "specialty": "Burst Assault", "weapon": "Gunblade",
+        "tier": "elite", "fee_seals": 18, "min_level": 35, "required_hunt_clears": 15,
+        "mission_types": ("hunt", "venture", "raid"), "signature": "Army of One",
+        "catchphrase": "Let's make this quick.", "art_set": "a3",
+        "effect_summary": "Army of One delivers an elite opening burst and grants Haste for immediate momentum.",
+        "recruitment": {
+            "kind": "contract", "name": "Stormborn Accord", "required_level": 35,
+            "required_hunt_clears": 15, "required_dungeon_clears": 4, "gil_cost": 150000,
+            "hint": "Prove the Guild can handle elite combat, then fund Lightning's permanent Stormborn Accord.",
+        },
+    },
+    {
+        "id": "sephiroth", "name": "Sephiroth", "origin": "Final Fantasy VII",
+        "role": "Legendary Swordsman", "specialty": "Execution Strike", "weapon": "Masamune",
+        "tier": "elite", "fee_seals": 25, "min_level": 50, "required_hunt_clears": 25,
+        "mission_types": ("hunt", "raid"), "signature": "Octaslash",
+        "catchphrase": "I will handle it.", "art_set": "a3",
+        "effect_summary": "Octaslash delivers the Merc Service's most punishing opening strike against elite and boss targets.",
+        "recruitment": {
+            "kind": "contract", "name": "One-Winged Contract", "required_level": 50,
+            "required_hunt_clears": 25, "required_dungeon_clears": 8, "gil_cost": 300000,
+            "hint": "Only a veteran Guild with exceptional Hunt and Dungeon records can secure this legendary contract.",
+        },
+    },
+    {
+        "id": "rikku", "name": "Rikku", "origin": "Final Fantasy X",
+        "role": "Scavenger", "specialty": "Bonus Finds", "weapon": "Daggers",
+        "tier": "elite", "fee_seals": 17, "min_level": 32, "required_hunt_clears": 10,
+        "mission_types": ("hunt", "venture", "raid"), "signature": "Master Salvager",
+        "catchphrase": "Leave the scavenging to me!", "art_set": "a3",
+        "effect_summary": "Master Salvager guarantees a premium bonus-spoil pull and doubles the quantity recovered from that Merc find.",
+        "recruitment": {
+            "kind": "contract", "name": "Al Bhed Salvage Pact", "required_level": 32,
+            "required_hunt_clears": 10, "required_dungeon_clears": 3, "gil_cost": 125000,
+            "hint": "Build a strong exploration record and finance Rikku's specialist salvage operation for the Guild.",
+        },
+    },
+    {
+        "id": "yshtola", "name": "Y'shtola", "origin": "Final Fantasy XIV",
+        "role": "Archmage", "specialty": "Grand Recovery", "weapon": "Staff",
+        "tier": "elite", "fee_seals": 20, "min_level": 40, "required_hunt_clears": 12,
+        "mission_types": ("hunt", "venture", "raid"), "signature": "Aetherial Recovery",
+        "catchphrase": "You may rely on me.", "art_set": "a3",
+        "effect_summary": "Aetherial Recovery restores a large share of HP, cleanses harmful effects, and grants powerful regeneration.",
+        "recruitment": {
+            "kind": "contract", "name": "Aetherial Covenant", "required_level": 40,
+            "required_hunt_clears": 12, "required_dungeon_clears": 5, "gil_cost": 180000,
+            "hint": "Demonstrate mastery of difficult content, then establish a permanent Aetherial Covenant with the Guild.",
+        },
+    },
+    {
+        "id": "noctis", "name": "Noctis", "origin": "Final Fantasy XV",
+        "role": "Royal Vanguard", "specialty": "Tactical Versatility", "weapon": "Sword",
+        "tier": "elite", "fee_seals": 21, "min_level": 42, "required_hunt_clears": 18,
+        "mission_types": ("hunt", "venture", "raid"), "signature": "Armiger",
+        "catchphrase": "I'm ready when you are.", "art_set": "a3",
+        "effect_summary": "Armiger combines a heavy opening strike with Haste, Power Up, and short protection for an elite all-purpose deployment.",
+        "recruitment": {
+            "kind": "contract", "name": "Royal Contract", "required_level": 42,
+            "required_hunt_clears": 18, "required_dungeon_clears": 5, "gil_cost": 200000,
+            "hint": "Build an accomplished Guild record and secure the costly Royal Contract to add Noctis permanently.",
+        },
+    },
+    {
+        "id": "cid", "name": "Cid", "origin": "Final Fantasy Series",
+        "role": "Engineer", "specialty": "Expedition Support", "weapon": "Tools",
+        "tier": "elite", "fee_seals": 16, "min_level": 30, "required_hunt_clears": 8,
+        "mission_types": ("venture",), "signature": "Field Overhaul",
+        "catchphrase": "Point me at the job.", "art_set": "a3",
+        "effect_summary": "Field Overhaul grants Haste and Protect on Venture deployment and recovers an enlarged bonus material haul on victory.",
+        "recruitment": {
+            "kind": "contract", "name": "Master Engineer Contract", "required_level": 30,
+            "required_hunt_clears": 8, "required_dungeon_clears": 2, "gil_cost": 100000,
+            "hint": "Show enough field experience to justify a permanent workshop contract with the Guild's elite engineer.",
+        },
+    },
 )
 
 HEROES_BY_ID = {row["id"]: row for row in HEROES}
@@ -234,6 +312,7 @@ def public_hero(
         "catchphrase": str(hero.get("catchphrase") or ""),
         "effect_summary": str(hero.get("effect_summary") or ""),
         "art_set": str(hero.get("art_set") or "a1"),
+        "tier": str(hero.get("tier") or "standard"),
         "recruitment": recruitment,
         "recruited": bool(recruitment["recruited"]),
     }

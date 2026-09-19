@@ -41,14 +41,14 @@ class MercRecruitment181Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_and_schema_18_registry_table(self):
-        self.assertEqual(__version__, "1.8.1-merc-recruitment")
+        self.assertEqual(__version__, "1.8.2-elite-mercs")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
         self.assertEqual(self.db.schema_version(), 18)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_merc_recruits'"))
         state = self.game.portal_merc_state("100").data["merc_state"]
-        self.assertEqual(len(state["heroes"]), 12)
-        self.assertEqual(state["registry"], {"recruited": 6, "total": 12})
+        self.assertEqual(len(state["heroes"]), 18)
+        self.assertEqual(state["registry"], {"recruited": 6, "total": 18})
 
     def test_expansion_hero_is_locked_until_permanently_recruited(self):
         state = self.game.portal_merc_state("100").data["merc_state"]

@@ -1,40 +1,27 @@
-# Crystal Guild v1.8.1 — Merc Recruitment
+# Crystal Guild v1.8.2 — Elite Mercs
 
-v1.8.1 expands Hero Merc Service into a permanent recruitment system and includes a repair for Dungeon Portal actions.
+## Elite Merc roster
 
-## Merc Recruitment
+- Adds **Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid** to the permanent Hero Merc Registry.
+- The roster expands from **12 to 18 Heroes**.
+- Elite Mercs use a new `a3` card family with **Locked silhouette**, **Unavailable (hired/deployed)**, and **Available** artwork states.
+- Elite contracts are deliberately late-game: high Character Level, Hunt-clear, Dungeon-clear, and one-time Gil requirements must be met before permanent recruitment.
+- Individual deployments remain paid with Hunt Seals and Elite fees are higher than the standard roster.
 
-- Adds **Auron, Vivi, Cecil, Terra, Tidus, and Ramza** to the Hero Merc roster.
-- The original **Aerith, Tifa, Zidane, Yuna, Balthier, and Cloud** remain the founding roster and keep their existing progression unlocks.
-- Expansion Heroes begin locked and must be permanently recruited before they can be hired for assignments.
-- Auron, Vivi, Cecil, and Ramza use progression/quest recruitment requirements.
-- Terra and Tidus use one-time Gil contracts after their required Character Level is reached.
-- Permanent recruitment is separate from deployment: individual Hunt, Venture, and Raid contracts continue to spend the established **Hunt Seal** currency.
-- The Portal adds **Hire Heroes**, **Recruitment**, and **Merc Registry** views.
-- The Merc Registry tracks the full 12-Hero roster and uses silhouette artwork for unrecruited expansion Heroes.
-- Expansion Heroes ship with dedicated **Locked**, **Available**, and **Unavailable** SNES/FF-style card artwork.
+## Elite specialties
 
-## New Hero specialties
+- **Lightning — Army of One:** elite opening burst plus Haste.
+- **Sephiroth — Octaslash:** the strongest boss-focused opening strike in the Merc Service.
+- **Rikku — Master Salvager:** guaranteed premium bonus-spoil recovery with doubled Merc-find quantity.
+- **Y’shtola — Aetherial Recovery:** major healing, harmful-status cleansing, Regen, and Protect.
+- **Noctis — Armiger:** heavy opening damage plus Haste, Power Up, and Protect.
+- **Cid — Field Overhaul:** Venture-only Haste/Protect support plus an enlarged bonus material haul.
 
-- **Auron — Bushido:** heavy opening damage suited to elite and boss targets.
-- **Vivi — Elemental Burst:** powerful opening magic damage.
-- **Cecil — Paladin's Guard:** strong opening protection.
-- **Terra — Arcane Burst:** high-powered magical opening damage.
-- **Tidus — Quick Hit:** opening Haste and combat momentum.
-- **Ramza — Shout:** coordinated offensive and defensive support.
+## Compatibility
 
-## Dungeon Portal repair
-
-The hosted Portal now preserves the authoritative room `revision` on `DUNGEON_ACTION`, `DUNGEON_CHOICE`, `DUNGEON_CONTINUE`, and `DUNGEON_RETREAT`. This fixes cases where Continue Deeper, Retreat, route choices, or combat actions were rejected by the Web gateway before reaching the Bot.
-
-Existing active Dungeon runs do not need to be intentionally cleared for this repair.
-
-## Release contract
-
-- Runtime/frontend: `1.8.1-merc-recruitment`
-- Frontend package: `1.8.1`
-- Local database schema: **18**
-- Hosted sync schema: **1**
-- Portal Action protocol: **35**
-- Existing schema-17 databases migrate automatically with a verified `pre_schema_18_<timestamp>.db` backup.
+- Runtime/frontend: `1.8.2-elite-mercs`
+- Local database schema: **18** (unchanged)
+- Hosted sync schema: **1** (unchanged)
+- Portal Action protocol: **35** (unchanged)
 - No player reset.
+- Existing v1.8.1 Merc recruitment records and active contracts remain compatible.

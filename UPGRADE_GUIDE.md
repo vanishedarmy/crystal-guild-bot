@@ -1,24 +1,33 @@
-# Crystal Guild v1.8.1 — Merc Recruitment Upgrade Guide
+# Crystal Guild v1.8.2 — Elite Mercs Upgrade Guide
 
-v1.8.1 upgrades directly from the v1.8.0 Merc Service release line. Existing players, inventories, jobs, Hunts, Dungeons, Expeditions, retainers, Gold Saucer progress, and active Merc contracts remain intact.
+## Upgrade from v1.8.1
 
-## Database migration
+Replace the **Bot and Web packages together**. v1.8.2 adds the six Elite Hero definitions on the Bot side and their Merc Service presentation/artwork on the Web side, so both components should remain on the same release.
 
-The local player database advances from schema **17 → 18**. On the first launch against an existing database, Crystal Guild automatically creates and verifies a `pre_schema_18_<timestamp>.db` backup before applying the migration.
+No database migration is required for **v1.8.1 → v1.8.2**:
 
-Schema 18 adds `player_merc_recruits`, which stores permanent recruitment for expansion Heroes. The founding roster does not need rows in this table and keeps its existing progression behavior.
+- Runtime/frontend: `1.8.2-elite-mercs`
+- Local database schema: **18** (unchanged)
+- Hosted sync schema: **1** (unchanged)
+- Portal Action protocol: **35** (unchanged)
+- No player reset is required.
 
-No player reset is required.
+Existing player data, inventories, jobs, Hunts, Dungeons, Expeditions, retainers, Gold Saucer progress, permanent Merc recruitment records, and active Merc contracts are preserved.
 
-## Portal compatibility
+## Elite Merc assets
 
-- Runtime/frontend: `1.8.1-merc-recruitment`
-- Local database schema: **18**
-- Hosted sync schema: **1**
-- Portal Action protocol: **35**
+The Web package adds `/frontend/public/merc-service/a3/cards/` with 18 optimized WebP cards:
 
-Deploy the v1.8.1 Bot and Web packages together so the new `MERC_RECRUIT` action and Dungeon `revision` fields use the same protocol on both sides.
+- `*-locked.webp` — silhouette; Hero has not been recruited.
+- `*-unavailable.webp` — Hero is recruited but currently hired/deployed.
+- `*-available.webp` — Hero is recruited and ready to hire.
 
-## Dungeon repair
+The six Elite Heroes are Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid.
 
-v1.8.1 also repairs the hosted Portal validation path for Dungeon actions. `DUNGEON_ACTION`, `DUNGEON_CHOICE`, `DUNGEON_CONTINUE`, and `DUNGEON_RETREAT` preserve the authoritative room `revision` sent by the frontend. Existing active Dungeon runs do not need to be cleared or restarted solely for this fix.
+## Upgrading from an older schema-17 build
+
+If the installation predates v1.8.1 and still uses local database schema 17, the existing **17 → 18** migration remains required. Crystal Guild creates and verifies a `pre_schema_18_<timestamp>.db` backup before applying that migration. Schema 18 adds permanent Merc recruitment storage; v1.8.2 does not introduce another schema change.
+
+## Deployment check
+
+After updating, verify that both Bot and Web identify as `1.8.2-elite-mercs`. A mixed v1.8.1/v1.8.2 deployment should be avoided even though the Portal protocol number itself remains 35.

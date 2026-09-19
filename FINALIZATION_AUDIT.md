@@ -1,26 +1,37 @@
-# Crystal Guild v1.8.1 — Merc Recruitment Finalization Audit
+# Crystal Guild v1.8.2 — Elite Mercs Finalization Audit
 
-**Decision: PASS.** v1.8.1 adds permanent Merc recruitment and the Dungeon Portal revision repair on top of the v1.8.0 Merc Service release line.
+**Decision: PASS.** v1.8.2 expands the permanent Hero Merc Registry with six premium late-game contracts while preserving the v1.8.1 recruitment, save, Dungeon, and live-stream-control foundations.
 
 ## Release contract
 
-- Runtime/frontend: `1.8.1-merc-recruitment`
-- Frontend package: `1.8.1`
-- Local database schema: **18**
-- Hosted sync schema: **1**
-- Portal Action protocol: **35**
-- Verified automatic `pre_schema_18` migration backup.
-- No player reset.
+- Visible release: **v1.8.2 — Elite Mercs**
+- Runtime/frontend: `1.8.2-elite-mercs`
+- Frontend package: `1.8.2`
+- Local database schema: **18** (unchanged)
+- Hosted sync schema: **1** (unchanged)
+- Portal Action protocol: **35** (unchanged)
+- No new migration from v1.8.1 and no player reset.
 
-## Validation seal
+## Elite Merc scope
 
-- Frontend: **670/670 PASS**
-- Hosted Web/API: **78/78 PASS**
-- Bot: **738/738 PASS**
-- Python compileall: **PASS**
-- JSON integrity: **PASS**
-- Expansion Merc card artwork: **18/18 present** and web optimized.
+The founding six and v1.8.1 expansion six remain intact. v1.8.2 adds **Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid** as Elite contracts, increasing the registry from 12 to 18 Heroes.
 
-## Scope guard
+Each Elite Hero has the three established visual states:
 
-The founding six Merc Heroes and established Hunt Seal deployment economy remain intact. v1.8.1 adds six permanently recruitable expansion Heroes, recruitment/registry presentation, their three-state artwork families, protocol support for `MERC_RECRUIT`, and revision-preserving Dungeon Portal mutations.
+- **Locked** — silhouette, not yet recruited.
+- **Unavailable** — permanently recruited but currently hired/deployed.
+- **Available** — permanently recruited and ready to hire.
+
+Elite contracts use higher permanent recruitment requirements and higher Hunt Seal deployment fees in exchange for substantially stronger damage, recovery, tactical support, or gathering effects.
+
+## Validation gate
+
+- Bot unit/regression suite: **748 / 748 passed**.
+- Hosted Web/API suite: **78 / 78 passed**.
+- Frontend unit/regression suite: **685 / 685 passed**.
+- Python compilation: **PASS**.
+- JSON parse validation: **33 / 33 passed**.
+- Elite Merc artwork: **18 / 18 present**, standardized to **660 × 880 WebP**, all below 400 KB.
+- Active release identity scan: no stale `1.8.1-merc-recruitment` runtime identity remains in active Bot/Web version code.
+
+The frontend distribution remains source-based, matching the existing Crystal Guild Web packages. The local validation environment did not contain installed Vite dependencies, so a separate prebuilt `dist/` bundle is not included.

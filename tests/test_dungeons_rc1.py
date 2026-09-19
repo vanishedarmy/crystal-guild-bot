@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsRC1Tests(unittest.TestCase):
     def test_rc1_identity_and_feature_freeze(self):
-        self.assertEqual(__version__, "1.8.1-merc-recruitment")
+        self.assertEqual(__version__, "1.8.2-elite-mercs")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
         data = GameData(ROOT / "data")

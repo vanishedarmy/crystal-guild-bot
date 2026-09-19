@@ -11922,6 +11922,15 @@ class CrystalGuildEngine:
         elif hero_id == "terra":
             fraction = 0.047 if raid else 0.074
             scale = 2.85
+        elif hero_id == "lightning":
+            fraction = 0.065 if raid else 0.100
+            scale = 3.65
+        elif hero_id == "sephiroth":
+            fraction = 0.085 if raid else 0.130
+            scale = 4.50
+        elif hero_id == "noctis":
+            fraction = 0.055 if raid else 0.085
+            scale = 3.25
         else:
             return 0
         hp_cap = max(1, int(max(1, enemy_max_hp) * fraction))
@@ -11938,7 +11947,7 @@ class CrystalGuildEngine:
         bucket = self._merc_result_bucket(meta)
         damage = 0
         healing = 0
-        if hero_id in {"cloud", "tifa", "balthier", "auron", "vivi", "terra"}:
+        if hero_id in {"cloud", "tifa", "balthier", "auron", "vivi", "terra", "lightning", "sephiroth", "noctis"}:
             damage = self._merc_active_damage(
                 meta,
                 hero_id=hero_id,
@@ -11954,7 +11963,42 @@ class CrystalGuildEngine:
             bucket["damage"] = int(bucket.get("damage", 0)) + damage
             event = f"{signature} {damage:,} dmg"
             self._merc_record_event(meta, event)
-            log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage!")
+            if hero_id == "lightning":
+                apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.18)
+                self._merc_record_event(meta, f"{signature} grants Haste")
+                log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage and grants Haste!")
+            elif hero_id == "noctis":
+                apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.14)
+                apply_status(meta.setdefault("statuses", {}), "power_up", 4, 0.16)
+                apply_status(meta.setdefault("statuses", {}), "protect", 3, 0.12)
+                maximum = max(1, int(meta.get("max_hp", 1)))
+                bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.12))
+                self._merc_record_event(meta, f"{signature} grants Haste + Power Up + Protect")
+                log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage (Haste, Power Up, Protect)!")
+            else:
+                log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage!")
+        elif hero_id == "yshtola":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            before = int(meta.get("hp", 0))
+            meta["hp"] = min(maximum, before + max(1, int(maximum * 0.42)))
+            healing = int(meta["hp"]) - before
+            removed = cleanse(meta.setdefault("statuses", {}), count=99)
+            apply_status(meta.setdefault("statuses", {}), "regen", 5, 0.10)
+            apply_status(meta.setdefault("statuses", {}), "protect", 3, 0.10)
+            meta["healing"] = int(meta.get("healing", 0)) + healing
+            bucket["healing"] = int(bucket.get("healing", 0)) + healing
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.10))
+            cleanse_note = f" + Cleanse x{len(removed)}" if removed else ""
+            event = f"{signature} +{healing:,} HP + Regen + Protect{cleanse_note}"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature}: +{healing:,} HP, Regen, Protect{cleanse_note}.")
+        elif hero_id == "cid":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.14)
+            apply_status(meta.setdefault("statuses", {}), "protect", 4, 0.16)
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.16))
+            self._merc_record_event(meta, f"{signature} grants Haste + Protect")
+            log.append(f"MERC — {hero_name} uses {signature} (Haste, Protect)")
         elif hero_id == "aerith":
             maximum = max(1, int(meta.get("max_hp", 1)))
             before = int(meta.get("hp", 0))
@@ -12008,13 +12052,47 @@ class CrystalGuildEngine:
         bucket = self._merc_result_bucket(meta)
         damage = 0
         healing = 0
-        if hero_id in {"cloud", "tifa", "balthier", "auron", "vivi", "terra"}:
+        if hero_id in {"cloud", "tifa", "balthier", "auron", "vivi", "terra", "lightning", "sephiroth", "noctis"}:
             damage = self._merc_active_damage(meta, hero_id=hero_id, enemy_max_hp=int(boss.get("max_hp", 1)), raid=True)
             damage = self._raid_damage_boss(pid, meta, damage, [], use_limit=False)
             bucket["damage"] = int(bucket.get("damage", 0)) + damage
             event = f"{signature} {damage:,} dmg"
             self._merc_record_event(meta, event)
-            log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage")
+            if hero_id == "lightning":
+                apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.18)
+                self._merc_record_event(meta, f"{signature} grants Haste")
+                log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage and grants Haste")
+            elif hero_id == "noctis":
+                apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.14)
+                apply_status(meta.setdefault("statuses", {}), "power_up", 4, 0.16)
+                apply_status(meta.setdefault("statuses", {}), "protect", 3, 0.12)
+                maximum = max(1, int(meta.get("max_hp", 1)))
+                bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.12))
+                self._merc_record_event(meta, f"{signature} grants Haste + Power Up + Protect")
+                log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage (Haste, Power Up, Protect)")
+            else:
+                log.append(f"MERC — {hero_name} uses {signature} for {damage:,} damage")
+        elif hero_id == "yshtola":
+            maximum = max(1, int(meta.get("max_hp", 1))); before = int(meta.get("hp", 0))
+            meta["hp"] = min(maximum, before + max(1, int(maximum * 0.42)))
+            healing = int(meta["hp"]) - before
+            removed = cleanse(meta.setdefault("statuses", {}), count=99)
+            apply_status(meta.setdefault("statuses", {}), "regen", 5, 0.10)
+            apply_status(meta.setdefault("statuses", {}), "protect", 3, 0.10)
+            meta["healing"] = int(meta.get("healing", 0)) + healing
+            bucket["healing"] = int(bucket.get("healing", 0)) + healing
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.10))
+            cleanse_note = f" + Cleanse x{len(removed)}" if removed else ""
+            event = f"{signature} +{healing:,} HP + Regen + Protect{cleanse_note}"
+            self._merc_record_event(meta, event)
+            log.append(f"MERC — {hero_name} uses {signature} (+{healing:,} HP, Regen, Protect{cleanse_note})")
+        elif hero_id == "cid":
+            maximum = max(1, int(meta.get("max_hp", 1)))
+            apply_status(meta.setdefault("statuses", {}), "haste", 4, 0.14)
+            apply_status(meta.setdefault("statuses", {}), "protect", 4, 0.16)
+            bucket["mitigation"] = int(bucket.get("mitigation", 0)) + max(1, int(maximum * 0.16))
+            self._merc_record_event(meta, f"{signature} grants Haste + Protect")
+            log.append(f"MERC — {hero_name} uses {signature} (Haste, Protect)")
         elif hero_id == "aerith":
             maximum = max(1, int(meta.get("max_hp", 1))); before = int(meta.get("hp", 0))
             meta["hp"] = min(maximum, before + max(1, int(maximum * 0.28)))
@@ -12061,7 +12139,7 @@ class CrystalGuildEngine:
         if not isinstance(contract, dict) or not drops:
             return None
         hero_id = str(contract.get("hero_id") or "")
-        if hero_id not in {"zidane", "balthier"}:
+        if hero_id not in {"zidane", "balthier", "rikku", "cid"}:
             return None
         candidates = [row for row in drops if row.get("item_id") in self.data.items]
         if not candidates:
@@ -12070,7 +12148,7 @@ class CrystalGuildEngine:
         if hero_id == "zidane":
             weights = [max(0.02, float(row.get("chance", 0.1))) for row in candidates]
             chosen = self.rng.choices(candidates, weights=weights, k=1)[0]
-        else:
+        elif hero_id == "balthier":
             rarest = min(candidates, key=lambda row: float(row.get("chance", 1.0)))
             chance = min(0.65, max(0.30, float(rarest.get("chance", 0.1)) * 2.5))
             if self.rng.random() <= chance:
@@ -12078,15 +12156,22 @@ class CrystalGuildEngine:
             else:
                 self._merc_record_event(meta, "Leading Man rare-spoil search found nothing")
                 return None
+        elif hero_id == "rikku":
+            chosen = min(candidates, key=lambda row: (float(row.get("chance", 1.0)), -int(row.get("max", 1))))
+        else:  # Cid prioritizes the largest practical material haul.
+            chosen = max(candidates, key=lambda row: (int(row.get("max", 1)), int(row.get("min", 1)), float(row.get("chance", 0.0))))
         item_id = str(chosen["item_id"])
         qty = self.rng.randint(max(1, int(chosen.get("min", 1))), max(1, int(chosen.get("max", 1))))
+        if hero_id in {"rikku", "cid"}:
+            qty *= 2
         item_name = str(self.data.items[item_id]["name"])
         if grant:
             self._change_item(pid, item_id, qty, source)
         label = f"{item_name} x{qty}"
         bucket = self._merc_result_bucket(meta)
         bucket.setdefault("bonus_loot", []).append(label)
-        signature = str(contract.get("signature") or ("Treasure Hunter" if hero_id == "zidane" else "Leading Man"))
+        default_signature = {"zidane": "Treasure Hunter", "balthier": "Leading Man", "rikku": "Master Salvager", "cid": "Field Overhaul"}.get(hero_id, "Assist")
+        signature = str(contract.get("signature") or default_signature)
         self._merc_record_event(meta, f"{signature}: {label}")
         return {"id": item_id, "name": item_name, "quantity": qty, "label": label, "kind": "merc_bonus"}
 

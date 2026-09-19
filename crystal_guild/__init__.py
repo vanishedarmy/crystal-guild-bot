@@ -1,1 +1,1 @@
-__version__ = "1.8.1-merc-recruitment"
+__version__ = "1.8.2-elite-mercs"
