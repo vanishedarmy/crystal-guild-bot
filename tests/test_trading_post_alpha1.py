@@ -51,7 +51,7 @@ class TradingPostAlpha1Tests(unittest.TestCase):
         return int(self.db.one("SELECT gil FROM players WHERE twitch_id=?", (player_id,))["gil"])
 
     def test_release_contract_and_schema(self):
-        self.assertEqual(__version__, "1.9.0-trading-post-alpha1")
+        self.assertEqual(__version__, "1.9.0-economy-balance-alpha2")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
         self.assertEqual(self.db.schema_version(), 19)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
@@ -67,7 +67,7 @@ class TradingPostAlpha1Tests(unittest.TestCase):
         self.assertEqual(targets, {
             "gil": 25_000,
             "item:mythril_ore": 3,
-            "activity:expedition_complete": 15,
+            "activity:venture_complete": 15,
             "fellowship_level": 1,
         })
         public = self.game.fellowship_system.public_snapshot()

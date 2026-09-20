@@ -1,13 +1,13 @@
-# Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post Setup
+# Crystal Guild v1.9.0 Alpha 2 — Economy Balance Setup
 
-**Current Alpha 1 note:** The Moogle Trading Post adds Fellowship-built player commerce to the Moogle Emporium. Deploy the matching Bot and Web together. The Bot performs an automatic schema **18 → 19** migration after creating a verified `pre_schema_19_*.db` backup. No player reset occurs.
+**Current Alpha 2 note:** Economy Balance closes isolated resale loops, improves Monster Toss payouts, and makes the Level-1 Trading Post activity requirement use Ventures. Deploy the matching Bot and Web together. The Bot performs an automatic schema **18 → 19** migration after creating a verified `pre_schema_19_*.db` backup. No player reset occurs.
 
 ## Existing installation
 Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. The additive schema 18 → 19 migration is automatic.
 
 ## Release verification
-- Bot runtime → `1.9.0-trading-post-alpha1`
-- Paired Web → `1.9.0-trading-post-alpha1`
+- Bot runtime → `1.9.0-economy-balance-alpha2`
+- Paired Web → `1.9.0-economy-balance-alpha2`
 - Local DB schema → **19**
 - Hosted sync schema → **1**
 - Portal Action protocol → **36**

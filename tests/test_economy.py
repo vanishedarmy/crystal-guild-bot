@@ -15,6 +15,8 @@ from crystal_guild.balance import (
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine
+from crystal_guild.fellowship import WORKSHOP_EXCHANGES
+from crystal_guild.retainer import RETAINER_ASSIGNMENTS
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -80,6 +82,38 @@ class EconomyBalanceTests(unittest.TestCase):
             item = data.items[out["item_id"]]
             liquidation = sell_value(item.get("price", 0), item["type"]) * int(out.get("quantity", 1))
             self.assertLessEqual(liquidation, acquisition, recipe["id"])
+
+
+    def test_retainer_routes_do_not_print_gil_by_expected_npc_liquidation(self):
+        data = GameData(ROOT / "data")
+        for assignment in RETAINER_ASSIGNMENTS:
+            pool = list(assignment.get("pool") or [])
+            total_weight = sum(int(weight) for _item_id, weight in pool)
+            expected_single = sum(
+                sell_value(data.items[item_id].get("price", 0), data.items[item_id]["type"]) * int(weight)
+                for item_id, weight in pool
+            ) / total_weight
+            low, high = assignment.get("quantity", (1, 1))
+            expected_qty = (int(low) + int(high)) / 2.0
+            expected = int(assignment.get("rolls", 1)) * expected_qty * expected_single
+            rank = int(assignment.get("rank_required", 1))
+            bonus_chance = min(0.10, 0.05 + rank * 0.01)
+            expected += bonus_chance * expected_single
+            self.assertLess(
+                expected,
+                int(assignment["cost_gil"]),
+                f"{assignment['id']} expected NPC liquidation {expected:.2f} must stay below dispatch cost",
+            )
+
+    def test_workshop_material_exchanges_cannot_be_immediately_flipped_to_npc_for_profit(self):
+        data = GameData(ROOT / "data")
+        for exchange in WORKSHOP_EXCHANGES:
+            input_item = data.items[exchange["input_id"]]
+            output_item = data.items[exchange["output_id"]]
+            input_value = sell_value(input_item.get("price", 0), input_item["type"]) * int(exchange["input_qty"])
+            output_value = sell_value(output_item.get("price", 0), output_item["type"]) * int(exchange["output_qty"])
+            total_cost = input_value + int(exchange.get("gil", 0))
+            self.assertLessEqual(output_value, total_cost, exchange["id"])
 
     def test_shipping_item_prices_are_nonnegative(self):
         data = GameData(ROOT / "data")

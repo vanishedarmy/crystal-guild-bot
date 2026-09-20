@@ -1,8 +1,14 @@
-Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post
-Runtime/frontend: 1.9.0-trading-post-alpha1
+Crystal Guild v1.9.0 Alpha 2 — Economy Balance
+Runtime/frontend: 1.9.0-economy-balance-alpha2
 Schema: 19 · Hosted sync: 1 · Portal Action protocol: 36
 
-This build adds the Fellowship-built Moogle Trading Post to the Moogle Emporium.
-Existing Crystal Guild player progress is preserved. Schema 19 creates a verified pre-migration backup before adding the Trading Post listing ledger.
+This update performs the full Gil + Gold Saucer economy audit with a no-grind-first philosophy.
 
-Deploy the matching Bot and Web packages together.
+Key changes:
+- Retainer resale loops closed without reducing material rewards.
+- Press Adamantite Workshop flip closed while preserving Adamantite's value.
+- Monster Toss MGP payouts buffed.
+- Level-1 Trading Post now requires 15 Ventures instead of late-game Expeditions.
+- Core Gil rewards and the rest of the Gold Saucer earning curve remain intact.
+
+No player reset or database migration is required. Deploy the matching Bot and Web packages together.

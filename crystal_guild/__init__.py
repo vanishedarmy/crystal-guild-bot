@@ -1,1 +1,1 @@
-__version__ = "1.9.0-trading-post-alpha1"
+__version__ = "1.9.0-economy-balance-alpha2"

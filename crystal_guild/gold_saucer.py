@@ -71,11 +71,14 @@ MONSTER_TOSS_STYLES = (
     {"id": "power", "name": "Power Throw", "accuracy_mod": -0.15, "score_mult": 1.5, "description": "Harder to land, but scores much more."},
 )
 MONSTER_TOSS_PAYOUTS = (
-    (900, 90, "jackpot"),
-    (600, 60, "gold"),
-    (400, 35, "silver"),
-    (250, 18, "bronze"),
-    (100, 8, "participation"),
+    # Economy Balance Alpha 2: beginner-friendly floor with stronger
+    # performance rewards. Daily entry limits keep the faucet bounded.
+    (900, 120, "jackpot"),
+    (600, 80, "gold"),
+    (400, 50, "silver"),
+    (250, 30, "bronze"),
+    (100, 15, "participation"),
+    (75, 10, "near_miss"),
     (0, 0, "miss"),
 )
 MONSTER_TOSS_TARGETS_BY_ID = {row["id"]: row for row in MONSTER_TOSS_TARGETS}

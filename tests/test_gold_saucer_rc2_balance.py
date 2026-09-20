@@ -76,8 +76,12 @@ class GoldSaucerRC2BalanceTests(unittest.TestCase):
                     payout, _tier = monster_toss_payout(hits * hit_score)
                     ev += chance * payout
                 best = max(best, ev)
-        self.assertGreater(best / MONSTER_TOSS_COST, 1.28)
-        self.assertLess(best / MONSTER_TOSS_COST, 1.31)
+        self.assertGreater(best / MONSTER_TOSS_COST, 1.88)
+        self.assertLess(best / MONSTER_TOSS_COST, 1.91)
+        # A perfect five-hit Small Pot / Safe Throw run scores 90 points;
+        # it should now earn a modest consolation payout instead of zero.
+        low_payout, low_tier = monster_toss_payout(90)
+        self.assertEqual((low_payout, low_tier), (10, "near_miss"))
 
     def test_racing_and_triad_preserve_clear_win_draw_loss_stakes(self):
         for course in CHOCOBO_RACING_COURSES:

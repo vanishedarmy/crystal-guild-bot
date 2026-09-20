@@ -114,7 +114,7 @@ FACILITIES: dict[str, dict[str, Any]] = {
         "benefits": [
             "Player Trading Post unlocked",
         ],
-        "material": "mythril_ore", "activity": "expedition_complete",
+        "material": "mythril_ore", "activity": "venture_complete",
     },
     "training_hall": {
         "name": "Training Hall",
@@ -196,7 +196,7 @@ PUBLIC_GUILD_FACILITY_IDS = ("guild_hall", "workshop", "emporium_annex", "tradin
 WORKSHOP_EXCHANGES = [
     {"id": "refine_mythril", "name": "Refine Mythril", "min_level": 2, "input_id": "iron_ore", "input_qty": 5, "output_id": "mythril_ore", "output_qty": 1, "gil": 250, "description": "Refine five Iron Ore into one Mythril Ore."},
     {"id": "temper_dragon_scale", "name": "Temper Dragon Scale", "min_level": 2, "input_id": "wyvern_scale", "input_qty": 4, "output_id": "dragon_scale", "output_qty": 1, "gil": 300, "description": "Temper four Wyvern Scales into one Dragon Scale."},
-    {"id": "press_adamantite", "name": "Press Adamantite", "min_level": 3, "input_id": "mythril_ore", "input_qty": 6, "output_id": "adamantite", "output_qty": 1, "gil": 750, "description": "Press six Mythril Ore into one Adamantite."},
+    {"id": "press_adamantite", "name": "Press Adamantite", "min_level": 3, "input_id": "mythril_ore", "input_qty": 6, "output_id": "adamantite", "output_qty": 1, "gil": 1600, "description": "Press six Mythril Ore into one Adamantite."},
     {"id": "condense_dark_matter", "name": "Condense Dark Matter", "min_level": 3, "input_id": "elemental_crystal", "input_qty": 10, "output_id": "dark_matter", "output_qty": 1, "gil": 1000, "description": "Condense ten Elemental Crystals into one Dark Matter."},
 ]
 
@@ -281,7 +281,7 @@ def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
         return [
             {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 25_000, "label": "Gil"},
             {"key": "item:mythril_ore", "kind": "item", "asset_id": "mythril_ore", "target": 3, "label": "Mythril Ore"},
-            {"key": "activity:expedition_complete", "kind": "activity", "asset_id": "expedition_complete", "target": 15, "label": "Expeditions completed"},
+            {"key": "activity:venture_complete", "kind": "activity", "asset_id": "venture_complete", "target": 15, "label": "Ventures completed"},
             {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 1, "label": "Fellowship LVL"},
         ]
     if facility_id == "chocobo_stable":
