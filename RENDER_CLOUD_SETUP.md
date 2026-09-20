@@ -1,10 +1,10 @@
-# Crystal Guild v1.8.2 — Render Cloud Setup
+# Crystal Guild v1.9.0 Alpha 1 — Render Cloud Setup
 
 Keep the Bot's persistent database on the mounted disk (normally `/var/data/crystal_guild.db`) and Twitch token storage on persistent disk as configured by the existing deployment. Do not replace the live database with a packaged blank database.
 
 Before upgrading, keep your normal external backup. On first startup against a schema-17 database, the existing schema-18 migration creates and verifies an automatic `pre_schema_18_<timestamp>.db` backup before applying the additive Merc Recruitment migration.
 
-Deploy the **v1.8.2 Elite Mercs Bot and matching Web build together**, then restart the worker. Verify `!cgversion` reports `1.8.2-elite-mercs`, schema **18**, Portal Action protocol **35**, and `!health` is clean.
+Deploy the **v1.9.0 Alpha 1 Moogle Trading Post Bot and matching Web build together**, then restart the worker. Verify `!cgversion` reports `1.9.0-trading-post-alpha1`, schema **19**, Portal Action protocol **36**, and `!health` is clean.
 
 The hosted Web process and Bot must use the same Portal sync credentials and protocol version. The Web action gateway now requires the Dungeon room `revision` field for action, choice, continue, and retreat requests.
 

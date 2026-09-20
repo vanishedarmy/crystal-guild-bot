@@ -14,7 +14,7 @@ from .active_battle import FULL_RESOURCE_SENTINEL, battle_resource_pools, job_re
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
-from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
+from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
 SNAPSHOT_VERSION = "1.1.15-wayfarer"
@@ -293,13 +293,13 @@ class PortalRepository:
                     "level": 1, "level_label": "LVL 1", "renown": 0,
                     "level_progress": fellowship_level_progress(0), "member_count": 0,
                     "active_project": None, "available_projects": [], "facilities": [],
-                    "guild_board": {"facility_count": 5, "built_count": 0, "complete_count": 0, "airship_dock_locked": False},
+                    "guild_board": {"facility_count": 7, "built_count": 0, "complete_count": 0, "airship_dock_locked": False},
                     "orders": {"period": weekly_period_key(), "orders": [], "completed": 0, "total": 0, "weekly_bonus": dict(WEEKLY_ORDER_SET_REWARD)},
                     "deeds": [], "deeds_complete": 0, "leaders": [], "recent_activity": [],
                     "totals": {"gil_donated": 0, "materials_donated": 0},
                     "expedition_board_complete": False, "rank_ladder": GUILD_RANKS,
                     "effects": facility_effects({}),
-                    "services": {"workshop": {"level": 0, "forge_discount": 0.0}, "chocobo_stable": {"level": 0, "xp_bonus": 0.0}, "archive": {"level": 0, "rare_event_bonus": 0.0}},
+                    "services": {"workshop": {"level": 0, "forge_discount": 0.0}, "emporium_annex": {"level": 0, "unlocked": False, "stock_slots": 9}, "trading_post": {"level": 0, "unlocked": False, "listing_fee_rate": 0.02, "sale_tax_rate": 0.05, "listing_hours": 48}, "chocobo_stable": {"level": 0, "xp_bonus": 0.0}, "archive": {"level": 0, "rare_event_bonus": 0.0}},
                     "airship": {"built": False, "dock_level": 0, "active_mission": None, "missions": [], "upgrades": [], "history": [], "missions_completed": 0, "missions_failed": 0},
                     "legacy": {"stage": 1, "stage_name": "Founding Hall", "completed": 0, "total": 10, "accomplishments": [], "decorations": [], "next_accomplishment": None},
                 }
@@ -308,7 +308,7 @@ class PortalRepository:
             tier_rows = conn.execute("SELECT facility_id,tier FROM fellowship_facilities").fetchall()
             tiers = {str(row["facility_id"]): int(row["tier"]) for row in tier_rows}
             facilities = []
-            for facility_id in GUILD_EXPANSION_FACILITY_IDS:
+            for facility_id in PUBLIC_GUILD_FACILITY_IDS:
                 config = FACILITIES[facility_id]
                 raw_tier = int(tiers.get(facility_id, 0))
                 max_level = int(config.get("max_level", 3))
@@ -420,9 +420,13 @@ class PortalRepository:
             member_count = conn.execute("SELECT COUNT(*) AS n FROM fellowship_members").fetchone()
             totals = conn.execute("SELECT COALESCE(SUM(gil_donated),0) AS gil,COALESCE(SUM(materials_donated),0) AS materials FROM fellowship_members").fetchone()
             effects = facility_effects(tiers)
+            annex_level = max(0, min(1, int(tiers.get("emporium_annex", 0))))
+            trading_post_level = max(0, min(1, int(tiers.get("trading_post", 0))))
             services = {
                 "guild_hall": {"level": min(3, int(tiers.get("guild_hall", 0)))},
                 "workshop": {"level": min(3, int(tiers.get("workshop", 0))), "forge_discount": float(effects.get("forge_discount", 0.0))},
+                "emporium_annex": {"level": annex_level, "unlocked": annex_level >= 1, "stock_slots": 12 if annex_level >= 1 else 9},
+                "trading_post": {"level": trading_post_level, "unlocked": trading_post_level >= 1, "listing_fee_rate": 0.02, "sale_tax_rate": 0.05, "listing_hours": 48},
                 "chocobo_stable": {"level": min(3, int(tiers.get("chocobo_stable", 0))), "xp_bonus": float(effects.get("chocobo_xp_bonus", 0.0))},
                 "archive": {"level": min(3, int(tiers.get("archives", 0))), "rare_event_bonus": float(effects.get("archive_rare_event_bonus", 0.0))},
             }

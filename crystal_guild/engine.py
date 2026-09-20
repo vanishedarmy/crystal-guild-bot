@@ -107,6 +107,14 @@ from .enemy_combat import (
 )
 from .database import Database
 from .fellowship_system import FellowshipSystem
+
+TRADING_POST_LISTING_FEE_RATE = 0.02
+TRADING_POST_SALE_TAX_RATE = 0.05
+TRADING_POST_LISTING_SECONDS = 48 * 60 * 60
+TRADING_POST_MAX_QUANTITY = 99
+TRADING_POST_MAX_UNIT_PRICE = 1_000_000
+TRADING_POST_ACTIVE_LIMIT = 24
+
 from .gold_saucer import (
     WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP, DAILY_REWARD_MGP as SAUCER_DAILY_REWARD_MGP,
     CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
@@ -13014,6 +13022,343 @@ class CrystalGuildEngine:
             annex_bonus_slots=3 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
             combat_locked=combat_locked,
         )
+
+    def _trading_post_item_allowed(self, item: dict[str, Any] | None) -> bool:
+        if not item:
+            return False
+        item_type = str(item.get("type") or "item").lower()
+        rarity = str(item.get("rarity") or "common").lower()
+        if item.get("unsellable") or item.get("relic_id"):
+            return False
+        if item_type in {"key", "key_item", "quest", "quest_item"}:
+            return False
+        if rarity in {"relic", "artifact"}:
+            return False
+        return item_type in {"weapon", "armor", "accessory", "consumable", "material", "item"}
+
+    def _settle_trading_post_expired_sql(self, conn: Any, now: int | None = None) -> int:
+        now = int(time.time()) if now is None else int(now)
+        rows = conn.execute(
+            "SELECT id,seller_id,item_id,quantity FROM trading_post_listings WHERE status='active' AND expires_at<=? ORDER BY id",
+            (now,),
+        ).fetchall()
+        returned = 0
+        for row in rows:
+            updated = conn.execute(
+                "UPDATE trading_post_listings SET status='expired' WHERE id=? AND status='active'",
+                (int(row["id"]),),
+            ).rowcount
+            if not updated:
+                continue
+            conn.execute(
+                "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
+                "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",
+                (str(row["seller_id"]), str(row["item_id"]), int(row["quantity"])),
+            )
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'trading_post_expired')",
+                (str(row["seller_id"]), str(row["item_id"]), int(row["quantity"])),
+            )
+            returned += 1
+        return returned
+
+    def _trading_post_listing_payload(self, row: Any, *, viewer_id: str) -> dict[str, Any]:
+        item_id = str(row["item_id"])
+        item = self.data.items.get(item_id, {"id": item_id, "name": item_id.replace("_", " ").title()})
+        quantity = max(1, int(row["quantity"] or 1))
+        unit_price = max(1, int(row["unit_price"] or 1))
+        seller_id = str(row["seller_id"])
+        return {
+            "id": int(row["id"]),
+            "item": {
+                "id": item_id,
+                "name": str(item.get("name") or item_id.replace("_", " ").title()),
+                "type": str(item.get("type") or "item"),
+                "rarity": str(item.get("rarity") or "common"),
+                "description": str(item.get("description") or ""),
+                "min_level": int(item.get("min_level", 1) or 1),
+                "allowed_jobs": list(item.get("allowed_jobs") or []),
+                "bonuses": dict(item.get("bonuses") or {}),
+            },
+            "quantity": quantity,
+            "unit_price": unit_price,
+            "total_price": quantity * unit_price,
+            "seller_id": seller_id,
+            "seller_username": str(row["seller_username"] or ""),
+            "seller_name": str(row["seller_name"] or row["seller_username"] or "Adventurer"),
+            "mine": seller_id == str(viewer_id),
+            "status": str(row["status"]),
+            "created_at": int(row["created_at"] or 0),
+            "expires_at": int(row["expires_at"] or 0),
+            "buyer_id": str(row["buyer_id"] or "") if "buyer_id" in row.keys() else "",
+            "payout_gil": int(row["payout_gil"] or 0) if "payout_gil" in row.keys() else 0,
+            "tax_gil": int(row["tax_gil"] or 0) if "tax_gil" in row.keys() else 0,
+        }
+
+    def portal_trading_post_state(self, twitch_id: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        unlocked = self.fellowship_system.trading_post_unlocked()
+        facility_project = next(
+            (project for project in self.fellowship_system.available_projects() if project.get("facility_id") == "trading_post"),
+            None,
+        )
+        if not unlocked:
+            return GameResult.success(
+                "The Moogle Trading Post has not been constructed yet.",
+                unlocked=False,
+                project=facility_project,
+                listing_fee_rate=TRADING_POST_LISTING_FEE_RATE,
+                sale_tax_rate=TRADING_POST_SALE_TAX_RATE,
+                listing_seconds=TRADING_POST_LISTING_SECONDS,
+                listings=[], my_listings=[], eligible_items=[], gil=int(p["gil"]), combat_locked=False,
+            )
+
+        now = int(time.time())
+        with self.db.tx() as conn:
+            self._settle_trading_post_expired_sql(conn, now)
+            rows = conn.execute(
+                "SELECT l.*,p.username AS seller_username,p.display_name AS seller_name "
+                "FROM trading_post_listings l JOIN players p ON p.twitch_id=l.seller_id "
+                "WHERE l.status='active' AND l.expires_at>? ORDER BY l.created_at DESC,l.id DESC LIMIT 200",
+                (now,),
+            ).fetchall()
+            own_rows = conn.execute(
+                "SELECT l.*,p.username AS seller_username,p.display_name AS seller_name "
+                "FROM trading_post_listings l JOIN players p ON p.twitch_id=l.seller_id "
+                "WHERE l.seller_id=? ORDER BY l.created_at DESC,l.id DESC LIMIT 24",
+                (twitch_id,),
+            ).fetchall()
+            equipment = conn.execute(
+                "SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?",
+                (twitch_id,),
+            ).fetchone()
+            equipped_ids = {
+                str(value) for value in (
+                    equipment["weapon_id"] if equipment else None,
+                    equipment["armor_id"] if equipment else None,
+                    equipment["accessory_id"] if equipment else None,
+                ) if value
+            }
+            inv_rows = conn.execute(
+                "SELECT item_id,quantity FROM inventory WHERE player_id=? AND quantity>0 ORDER BY item_id",
+                (twitch_id,),
+            ).fetchall()
+            active_count_row = conn.execute(
+                "SELECT COUNT(*) AS n FROM trading_post_listings WHERE seller_id=? AND status='active' AND expires_at>?",
+                (twitch_id, now),
+            ).fetchone()
+
+        eligible_items: list[dict[str, Any]] = []
+        for inv in inv_rows:
+            item_id = str(inv["item_id"])
+            item = self.data.items.get(item_id)
+            if not self._trading_post_item_allowed(item):
+                continue
+            owned = max(0, int(inv["quantity"] or 0))
+            max_quantity = max(0, owned - (1 if item_id in equipped_ids else 0))
+            if max_quantity <= 0:
+                continue
+            eligible_items.append({
+                "id": item_id,
+                "name": str(item.get("name") or item_id.replace("_", " ").title()),
+                "type": str(item.get("type") or "item"),
+                "rarity": str(item.get("rarity") or "common"),
+                "description": str(item.get("description") or ""),
+                "quantity": owned,
+                "max_quantity": max_quantity,
+                "equipped": item_id in equipped_ids,
+                "reference_price": max(1, int(item.get("price", 1) or 1)),
+                "min_level": int(item.get("min_level", 1) or 1),
+                "allowed_jobs": list(item.get("allowed_jobs") or []),
+                "bonuses": dict(item.get("bonuses") or {}),
+            })
+        eligible_items.sort(key=lambda item: (str(item["type"]), str(item["name"]).lower()))
+        combat_locked = twitch_id in self.encounter_roster or twitch_id in self.raid_roster
+        return GameResult.success(
+            "Moogle Trading Post ready.",
+            unlocked=True,
+            project=None,
+            gil=int(p["gil"]),
+            listing_fee_rate=TRADING_POST_LISTING_FEE_RATE,
+            sale_tax_rate=TRADING_POST_SALE_TAX_RATE,
+            listing_seconds=TRADING_POST_LISTING_SECONDS,
+            active_limit=TRADING_POST_ACTIVE_LIMIT,
+            active_count=int(active_count_row["n"] if active_count_row else 0),
+            combat_locked=combat_locked,
+            listings=[self._trading_post_listing_payload(row, viewer_id=twitch_id) for row in rows],
+            my_listings=[self._trading_post_listing_payload(row, viewer_id=twitch_id) for row in own_rows],
+            eligible_items=eligible_items,
+        )
+
+    def portal_trading_post_list(self, twitch_id: str, item_id: str, quantity: int, unit_price: int, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self.fellowship_system.trading_post_unlocked():
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("The Fellowship has not built the Moogle Trading Post yet."))
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Trading Post listings are locked while you are committed to an active encounter or raid."))
+        quantity = int(quantity)
+        unit_price = int(unit_price)
+        if quantity < 1 or quantity > TRADING_POST_MAX_QUANTITY:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail(f"Listing quantity must be between 1 and {TRADING_POST_MAX_QUANTITY}."))
+        if unit_price < 1 or unit_price > TRADING_POST_MAX_UNIT_PRICE:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail(f"Unit price must be between 1 and {TRADING_POST_MAX_UNIT_PRICE:,} Gil."))
+        item = self.data.items.get(str(item_id))
+        if not self._trading_post_item_allowed(item):
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That item cannot be listed on the Trading Post."))
+        now = int(time.time())
+        total = unit_price * quantity
+        fee = max(1, int(math.ceil(total * TRADING_POST_LISTING_FEE_RATE)))
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            self._settle_trading_post_expired_sql(conn, now)
+            player = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
+            if not player:
+                result = self._need_recruit(); self._portal_action_store_sql(conn, action_id, result); return result
+            active = conn.execute(
+                "SELECT COUNT(*) AS n FROM trading_post_listings WHERE seller_id=? AND status='active' AND expires_at>?",
+                (twitch_id, now),
+            ).fetchone()
+            if active and int(active["n"] or 0) >= TRADING_POST_ACTIVE_LIMIT:
+                result = GameResult.fail(f"You already have {TRADING_POST_ACTIVE_LIMIT} active Trading Post listings.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            inv = conn.execute("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (twitch_id, item_id)).fetchone()
+            owned = int(inv["quantity"] if inv else 0)
+            equipment = conn.execute("SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?", (twitch_id,)).fetchone()
+            equipped = bool(equipment and item_id in {equipment["weapon_id"], equipment["armor_id"], equipment["accessory_id"]})
+            max_quantity = max(0, owned - (1 if equipped else 0))
+            if max_quantity < quantity:
+                result = GameResult.fail("You do not have that many unequipped copies available to list.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            if int(player["gil"] or 0) < fee:
+                result = GameResult.fail(f"You need {fee:,} Gil for the Trading Post listing fee.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            conn.execute("UPDATE inventory SET quantity=quantity-? WHERE player_id=? AND item_id=?", (quantity, twitch_id, item_id))
+            conn.execute("DELETE FROM inventory WHERE player_id=? AND item_id=? AND quantity<=0", (twitch_id, item_id))
+            conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (fee, twitch_id))
+            cur = conn.execute(
+                "INSERT INTO trading_post_listings(seller_id,item_id,quantity,unit_price,listing_fee,status,created_at,expires_at) VALUES (?,?,?,?,?,'active',?,?)",
+                (twitch_id, item_id, quantity, unit_price, fee, now, now + TRADING_POST_LISTING_SECONDS),
+            )
+            listing_id = int(cur.lastrowid)
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'trading_post_list')", (twitch_id, item_id, -quantity))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'trading_post_listing_fee')", (twitch_id, -fee))
+            fresh = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
+            result = GameResult.success(
+                f"Listed {item['name']} x{quantity} for {unit_price:,} Gil each. Listing fee: {fee:,} Gil.",
+                listing_id=listing_id, item_id=item_id, quantity=quantity, unit_price=unit_price,
+                total_price=total, listing_fee=fee, expires_at=now + TRADING_POST_LISTING_SECONDS,
+                gil=int(fresh["gil"] if fresh else 0),
+            )
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_trading_post_buy(self, twitch_id: str, listing_id: int, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self.fellowship_system.trading_post_unlocked():
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("The Fellowship has not built the Moogle Trading Post yet."))
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Trading Post purchases are locked while you are committed to an active encounter or raid."))
+        now = int(time.time())
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            self._settle_trading_post_expired_sql(conn, now)
+            listing = conn.execute("SELECT * FROM trading_post_listings WHERE id=?", (int(listing_id),)).fetchone()
+            if not listing or str(listing["status"]) != "active" or int(listing["expires_at"] or 0) <= now:
+                result = GameResult.fail("That Trading Post listing is no longer available.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            seller_id = str(listing["seller_id"])
+            if seller_id == twitch_id:
+                result = GameResult.fail("You cannot purchase your own Trading Post listing.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            item_id = str(listing["item_id"])
+            item = self.data.items.get(item_id)
+            if not self._trading_post_item_allowed(item):
+                result = GameResult.fail("That listing contains an item that is no longer tradeable.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            quantity = max(1, int(listing["quantity"] or 1))
+            unit_price = max(1, int(listing["unit_price"] or 1))
+            total = quantity * unit_price
+            buyer = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
+            if not buyer:
+                result = self._need_recruit(); self._portal_action_store_sql(conn, action_id, result); return result
+            if int(buyer["gil"] or 0) < total:
+                result = GameResult.fail(f"You need {total:,} Gil to purchase this listing.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            tax = max(0, int(math.floor(total * TRADING_POST_SALE_TAX_RATE)))
+            payout = max(0, total - tax)
+            updated = conn.execute(
+                "UPDATE trading_post_listings SET status='sold',buyer_id=?,sold_at=?,payout_gil=?,tax_gil=? WHERE id=? AND status='active'",
+                (twitch_id, now, payout, tax, int(listing_id)),
+            ).rowcount
+            if not updated:
+                result = GameResult.fail("Another adventurer purchased that listing first.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (total, twitch_id))
+            conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (payout, seller_id))
+            conn.execute(
+                "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",
+                (twitch_id, item_id, quantity),
+            )
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'trading_post_buy')", (twitch_id, -total))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'trading_post_buy')", (twitch_id, item_id, quantity))
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'trading_post_sale')", (seller_id, payout))
+            fresh = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
+            result = GameResult.success(
+                f"Purchased {item['name']} x{quantity} for {total:,} Gil.",
+                listing_id=int(listing_id), item_id=item_id, quantity=quantity, total_price=total,
+                sale_tax=tax, seller_payout=payout, gil=int(fresh["gil"] if fresh else 0),
+            )
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_trading_post_cancel(self, twitch_id: str, listing_id: int, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self.fellowship_system.trading_post_unlocked():
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("The Fellowship has not built the Moogle Trading Post yet."))
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Trading Post cancellations are locked while you are committed to an active encounter or raid."))
+        now = int(time.time())
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            self._settle_trading_post_expired_sql(conn, now)
+            listing = conn.execute("SELECT * FROM trading_post_listings WHERE id=?", (int(listing_id),)).fetchone()
+            if not listing or str(listing["seller_id"]) != twitch_id:
+                result = GameResult.fail("That Trading Post listing does not belong to you.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            if str(listing["status"]) != "active":
+                result = GameResult.fail("That Trading Post listing is no longer active.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            updated = conn.execute("UPDATE trading_post_listings SET status='cancelled' WHERE id=? AND status='active'", (int(listing_id),)).rowcount
+            if not updated:
+                result = GameResult.fail("That Trading Post listing changed before it could be cancelled.")
+                self._portal_action_store_sql(conn, action_id, result); return result
+            item_id = str(listing["item_id"]); quantity = max(1, int(listing["quantity"] or 1))
+            conn.execute(
+                "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",
+                (twitch_id, item_id, quantity),
+            )
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'trading_post_cancel')", (twitch_id, item_id, quantity))
+            item = self.data.items.get(item_id, {"name": item_id.replace("_", " ").title()})
+            result = GameResult.success(
+                f"Cancelled the listing for {item['name']} x{quantity}. The listing fee was not refunded.",
+                listing_id=int(listing_id), item_id=item_id, quantity=quantity,
+            )
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
 
     @staticmethod
     def _portal_action_replay_sql(conn: Any, action_id: str) -> GameResult | None:

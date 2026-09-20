@@ -1,37 +1,36 @@
-# Crystal Guild v1.8.2 — Elite Mercs Finalization Audit
+# Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post Finalization Audit
 
-**Decision: PASS.** v1.8.2 expands the permanent Hero Merc Registry with six premium late-game contracts while preserving the v1.8.1 recruitment, save, Dungeon, and live-stream-control foundations.
+**Decision: PASS.** The Moogle Trading Post is additive, replay-safe, migration-safe, and integrated into the existing Fellowship and Moogle Emporium architecture.
 
 ## Release contract
 
-- Visible release: **v1.8.2 — Elite Mercs**
-- Runtime/frontend: `1.8.2-elite-mercs`
-- Frontend package: `1.8.2`
-- Local database schema: **18** (unchanged)
-- Hosted sync schema: **1** (unchanged)
-- Portal Action protocol: **35** (unchanged)
-- No new migration from v1.8.1 and no player reset.
+- Visible release: **v1.9.0 Alpha 1 — Moogle Trading Post**
+- Runtime/frontend: `1.9.0-trading-post-alpha1`
+- Frontend package: `1.9.0-alpha.1`
+- Local database schema: **19**
+- Hosted sync schema: **1**
+- Portal Action protocol: **36**
+- Existing player data is preserved; no reset is required.
 
-## Elite Merc scope
+## Trading Post scope
 
-The founding six and v1.8.1 expansion six remain intact. v1.8.2 adds **Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid** as Elite contracts, increasing the registry from 12 to 18 Heroes.
+- Level 1 Fellowship service project: 25,000 Gil, 3 Mythril Ore, 15 Expeditions, Fellowship LVL 1.
+- 48-hour fixed-price player listings.
+- 2% listing fee and 5% completed-sale tax.
+- 24 active listings per seller, quantity cap 99, unit-price cap 1,000,000 Gil.
+- Atomic buyer debit, seller payout, listing-state update, and item transfer.
+- Automatic expired-item returns and seller cancellation returns.
+- Portal idempotency/replay protection for list, buy, and cancel mutations.
+- Combat mutation lock plus protected-item and equipped-last-copy safeguards.
+- Full locked/open marketplace UI and dedicated generated Trading Post artwork.
 
-Each Elite Hero has the three established visual states:
+## Validation
 
-- **Locked** — silhouette, not yet recruited.
-- **Unavailable** — permanently recruited but currently hired/deployed.
-- **Available** — permanently recruited and ready to hire.
+- Bot regression suite: **757 / 757 passed**.
+- Web/hosted Python suite: **80 / 80 passed**.
+- Python compile, JavaScript syntax, JSX parser, and JSON parse checks passed.
+- Vite bundling was not run because the isolated source snapshot lacks installed frontend dependencies and dependency installation was unavailable to completion in this environment; see `VALIDATION_REPORT.md`.
 
-Elite contracts use higher permanent recruitment requirements and higher Hunt Seal deployment fees in exchange for substantially stronger damage, recovery, tactical support, or gathering effects.
+## Compatibility
 
-## Validation gate
-
-- Bot unit/regression suite: **748 / 748 passed**.
-- Hosted Web/API suite: **78 / 78 passed**.
-- Frontend unit/regression suite: **685 / 685 passed**.
-- Python compilation: **PASS**.
-- JSON parse validation: **33 / 33 passed**.
-- Elite Merc artwork: **18 / 18 present**, standardized to **660 × 880 WebP**, all below 400 KB.
-- Active release identity scan: no stale `1.8.1-merc-recruitment` runtime identity remains in active Bot/Web version code.
-
-The frontend distribution remains source-based, matching the existing Crystal Guild Web packages. The local validation environment did not contain installed Vite dependencies, so a separate prebuilt `dist/` bundle is not included.
+The feature reuses existing Fellowship project/facility patterns and the hosted Portal action queue. Hosted sync schema remains 1; only the local Bot database schema and Portal Action protocol require bumps.

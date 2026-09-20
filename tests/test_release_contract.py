@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_merc_rc1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.8.2-elite-mercs")
+        self.assertEqual(__version__, "1.9.0-trading-post-alpha1")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -39,7 +39,7 @@ class ReleaseReadinessTests(unittest.TestCase):
                 self.assertEqual(report["journal_mode"], "wal")
                 self.assertGreaterEqual(report["busy_timeout_ms"], 1000)
                 self.assertEqual(report["players"], 1)
-                self.assertEqual(db.schema_version(), 18)
+                self.assertEqual(db.schema_version(), 19)
                 self.assertIsNotNone(db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='portal_adventure_results'"))
             finally:
                 db.close()
@@ -90,7 +90,7 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.8.2 - ELITE MERCS", panel)
+        self.assertIn("v1.9.0 ALPHA 1 - MOOGLE TRADING POST", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
@@ -99,9 +99,9 @@ class ReleaseReadinessTests(unittest.TestCase):
     def test_current_finalization_audit_matches_final_package_identity(self):
         audit = (ROOT / "FINALIZATION_AUDIT.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
-        self.assertIn("Crystal Guild v1.8.2 — Elite Mercs", audit)
-        self.assertIn("1.8.2-elite-mercs", audit)
-        self.assertIn("Merc Service", manifest)
+        self.assertIn("Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post", audit)
+        self.assertIn("1.9.0-trading-post-alpha1", audit)
+        self.assertIn("Moogle Trading Post", manifest)
         self.assertNotIn("v1.1.19 — Retro Phase III RC1 Finalization Audit", audit)
         self.assertNotIn("Expeditions Alpha 2 Hotfix 1 Finalization", audit)
 

@@ -1,30 +1,27 @@
-# Crystal Guild v1.7.1 — Resynthesis Alpha 2 Hotfix 5 Setup
+# Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post Setup
 
-**Current Hotfix 5 note:** Gear Favorites now persist in the authoritative Crystal Guild player database. Deploy the matching Bot and Web together; the Bot performs an automatic schema **15 → 16** migration after creating a verified `pre_schema_16_*.db` backup. No player reset occurs.
+**Current Alpha 1 note:** The Moogle Trading Post adds Fellowship-built player commerce to the Moogle Emporium. Deploy the matching Bot and Web together. The Bot performs an automatic schema **18 → 19** migration after creating a verified `pre_schema_19_*.db` backup. No player reset occurs.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. The additive schema 15 → 16 migration is automatic and does not reset players.
+Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. The additive schema 18 → 19 migration is automatic.
 
 ## Release verification
-- Bot runtime → `1.7.1-resynthesis-a2h5`
-- Paired Web → `1.7.1-resynthesis-a2h5`
-- Local DB schema → **16**
+- Bot runtime → `1.9.0-trading-post-alpha1`
+- Paired Web → `1.9.0-trading-post-alpha1`
+- Local DB schema → **19**
 - Hosted sync schema → **1**
-- Portal Action protocol → **33**
+- Portal Action protocol → **36**
 - Twitch prefix → `!`
 
-## Hotfix verification
-- AP survives switching to an MP Job, including equipment changes/refreshes while the AP family is inactive.
-- MP survives switching to an AP Job under the same conditions.
-- A genuinely depleted resource remains depleted after switching away and back.
-- The one-time inactive-zero compatibility repair is receipt-protected and does not rerun.
+## Trading Post verification
+- Fellowship Level 1 service building; construction requires 25,000 Gil, 3 Mythril Ore, and 15 completed Expeditions.
+- Fixed-price player listings last 48 hours.
+- Listing fee is 2%; completed-sale tax is 5%.
+- Purchases/listings/cancellations use authoritative replay-safe Portal Actions.
+- Relics, quest/key items, and the last equipped copy of gear cannot be listed.
 
 ## Carried-forward systems
-- Resynthesis with permanent-destruction warning and deterministic material recovery.
-- Gold Saucer Alpha 2 MGP rebalance and daily MGP reward.
-- Encounter Variety Hotfix 1.
-- Retroactive Job Quest Unlock Repair Hotfix 2.
-- Moogle Retainer / Emporium Annex and existing player progression.
+Elite Mercs, Merc Service progression, Resynthesis, Moogle Retainer, Emporium Annex, Gold Saucer, Expeditions, Fellowship projects, equipment favorites, and existing player progression remain intact.
 
 See `UPGRADE_GUIDE.md`, `RENDER_CLOUD_SETUP.md`, `WEB_SYNC_SETUP.md`, and `VALIDATION_REPORT.md` for deployment details.
 
@@ -35,7 +32,7 @@ https://dev.twitch.tv/console/apps
 
 Redirect URL: `http://localhost:4343/oauth/callback`
 
-The dedicated Bot authorization uses `user:read:chat`, `user:write:chat`, and `user:bot`. The broadcaster authorization includes `channel:bot` and the established subscription scope.
+The dedicated Bot authorization uses `user:read:chat`, `user:write:chat`, and `user:bot`. The broadcaster authorization includes `channel:bot`, `channel:read:subscriptions`, and the established subscription scope.
 
 ## Hosted Web and secret separation
 Manage hosted services from:

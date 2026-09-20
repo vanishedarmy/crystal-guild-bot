@@ -102,6 +102,20 @@ FACILITIES: dict[str, dict[str, Any]] = {
         ],
         "material": "mythril_ore", "activity": "craft",
     },
+    "trading_post": {
+        "name": "Moogle Trading Post",
+        "description": "A Fellowship-built player market attached to the Moogle Emporium where adventurers can list eligible gear, materials, and supplies for one another.",
+        "max_tier": 1,
+        "max_level": 1,
+        "guild_service": True,
+        "level_benefits": [
+            "Player-to-player fixed-price listings unlock in the Moogle Emporium.",
+        ],
+        "benefits": [
+            "Player Trading Post unlocked",
+        ],
+        "material": "mythril_ore", "activity": "expedition_complete",
+    },
     "training_hall": {
         "name": "Training Hall",
         "description": "Legacy support facility retained from the original Fellowship program.",
@@ -174,7 +188,7 @@ FACILITIES: dict[str, dict[str, Any]] = {
 GUILD_EXPANSION_FACILITY_IDS = ("guild_hall", "workshop", "chocobo_stable", "archives", "airship_dock")
 # Alpha 3 keeps Legacy's original five-major-facility contract intact while
 # adding the smaller Emporium Annex to the public Guild construction board.
-PUBLIC_GUILD_FACILITY_IDS = ("guild_hall", "workshop", "emporium_annex", "chocobo_stable", "archives", "airship_dock")
+PUBLIC_GUILD_FACILITY_IDS = ("guild_hall", "workshop", "emporium_annex", "trading_post", "chocobo_stable", "archives", "airship_dock")
 
 # Alpha 3 — Guild Services & Workshop. Material exchanges are intentionally
 # lossy and carry a modest Gil service fee so they recycle surplus common
@@ -263,6 +277,13 @@ def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
             {"key": "activity:craft", "kind": "activity", "asset_id": "craft", "target": 20, "label": "Items crafted"},
             {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 3, "label": "Fellowship LVL"},
         ]
+    if facility_id == "trading_post":
+        return [
+            {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 25_000, "label": "Gil"},
+            {"key": "item:mythril_ore", "kind": "item", "asset_id": "mythril_ore", "target": 3, "label": "Mythril Ore"},
+            {"key": "activity:expedition_complete", "kind": "activity", "asset_id": "expedition_complete", "target": 15, "label": "Expeditions completed"},
+            {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 1, "label": "Fellowship LVL"},
+        ]
     if facility_id == "chocobo_stable":
         stable_targets = {
             1: (5_000, 0, 10, 2),
@@ -346,7 +367,7 @@ for _facility_id, _facility in FACILITIES.items():
             "level": min(_tier, int(_facility.get("max_level", _facility["max_tier"]))),
             "name": f"{_facility['name']} — {'Lv. ' if (is_major or is_service) and not is_legacy_step else 'Tier '}{_tier}",
             "description": _facility["description"],
-            "required_level": 3 if _facility_id == "emporium_annex" else (2 if _facility_id == "chocobo_stable" and _tier == 1 else max(1, _tier if _facility_id == "guild_hall" else _tier * 2 - 1)),
+            "required_level": 1 if _facility_id == "trading_post" else (3 if _facility_id == "emporium_annex" else (2 if _facility_id == "chocobo_stable" and _tier == 1 else max(1, _tier if _facility_id == "guild_hall" else _tier * 2 - 1))),
             "requirements": _project_requirements(_facility_id, _tier),
             "legacy": is_legacy_step,
             "project_type": "construction",

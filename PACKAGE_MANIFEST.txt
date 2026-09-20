@@ -1,7 +1,7 @@
-# Crystal Guild v1.8.2 — Elite Mercs
-# Runtime: 1.8.2-elite-mercs
-# Schema: 18 · Hosted sync: 1 · Portal Action protocol: 35
-# Fellowship project selection hotfix included; visible title unchanged.
+# Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post
+# Runtime: 1.9.0-trading-post-alpha1
+# Schema: 19 · Hosted sync: 1 · Portal Action protocol: 36
+# Moogle Trading Post player-market expansion.
 # Packaged source files: 220
 # Files
 .env.example
@@ -106,7 +106,6 @@ generate_portal_sync_key.bat
 generate_portal_sync_key.py
 open_twitch_authorization.bat
 overlay/raid_overlay.html
-overlay/state.json
 prepare_render_migration.py
 pyproject.toml
 render.yaml
@@ -208,6 +207,7 @@ tests/test_retainer_alpha2.py
 tests/test_setup.py
 tests/test_stream_status.py
 tests/test_subscription_status.py
+tests/test_trading_post_alpha1.py
 tests/test_trails_raids_alpha1.py
 tests/test_trails_raids_alpha2.py
 tests/test_trails_raids_alpha3.py

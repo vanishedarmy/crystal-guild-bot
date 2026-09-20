@@ -122,6 +122,12 @@ class FellowshipSystem:
     def emporium_stock_slots(self) -> int:
         return 12 if self.emporium_annex_level() >= 1 else 9
 
+    def trading_post_level(self) -> int:
+        return max(0, min(1, int(self.facility_tiers().get("trading_post", 0))))
+
+    def trading_post_unlocked(self) -> bool:
+        return self.trading_post_level() >= 1
+
     def major_facility_level(self, facility_id: str) -> int:
         config = FACILITIES.get(str(facility_id), {})
         maximum = int(config.get("max_level", config.get("max_tier", 0)) or 0)
@@ -449,6 +455,7 @@ class FellowshipSystem:
         stable_level = self.major_facility_level("chocobo_stable")
         archive_level = self.major_facility_level("archives")
         annex_level = self.emporium_annex_level()
+        trading_post_level = self.trading_post_level()
         player = self.db.one("SELECT gil FROM players WHERE twitch_id=?", (str(player_id),)) if player_id else None
         gil = max(0, int(player["gil"] or 0)) if player else 0
         exchanges: list[dict[str, Any]] = []
@@ -488,6 +495,13 @@ class FellowshipSystem:
                 "base_stock_slots": 9,
                 "bonus_stock_slots": 3 if annex_level >= 1 else 0,
                 "stock_slots": self.emporium_stock_slots(),
+            },
+            "trading_post": {
+                "level": trading_post_level,
+                "unlocked": trading_post_level >= 1,
+                "listing_fee_rate": 0.02,
+                "sale_tax_rate": 0.05,
+                "listing_hours": 48,
             },
         }
 
@@ -1371,6 +1385,8 @@ class FellowshipSystem:
                 benefit = FACILITIES[project["facility_id"]]["benefits"][int(project["tier"]) - 1]
                 if project["facility_id"] == "emporium_annex":
                     notes.append(f"Moogle Emporium Annex constructed — {benefit}.")
+                elif project["facility_id"] == "trading_post":
+                    notes.append(f"Moogle Trading Post constructed — {benefit}.")
                 else:
                     notes.append(f"{FACILITIES[project['facility_id']]['name']} Tier {project['tier']} unlocked — {benefit}.")
             conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'project_complete',?,?)", (project["name"], bonus))

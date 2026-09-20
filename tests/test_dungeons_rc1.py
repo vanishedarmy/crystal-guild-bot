@@ -13,9 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsRC1Tests(unittest.TestCase):
     def test_rc1_identity_and_feature_freeze(self):
-        self.assertEqual(__version__, "1.8.2-elite-mercs")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
+        self.assertEqual(__version__, "1.9.0-trading-post-alpha1")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         data = GameData(ROOT / "data")
         self.assertEqual(len(data.dungeons), 4)
 
@@ -26,14 +26,14 @@ class DungeonsRC1Tests(unittest.TestCase):
 
     def test_project_metadata_and_deployment_docs_are_current(self):
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual(pyproject["project"]["version"], "1.7.1a2.post5")
+        self.assertEqual(pyproject["project"]["version"], "1.9.0a1")
         for name in ("FULL_SETUP_README.md", "RENDER_CLOUD_SETUP.md", "SIMPLE_RENDER_SETUP.md", "WEB_SYNC_SETUP.md"):
             text=(ROOT/name).read_text(encoding="utf-8")
-            self.assertIn("1.7.1", text, name)
+            self.assertIn("1.9.0", text, name)
             self.assertNotIn("matching v1.1.16 Web", text, name)
         for name in ("run_maintenance.py", "run_stress_test.py", "prepare_render_migration.py", "setup_windows.bat", "run_selftest.bat", "run_stress_test.bat", "open_twitch_authorization.bat"):
             text=(ROOT/name).read_text(encoding="utf-8")
-            self.assertIn("v1.7.1", text, name)
+            self.assertIn("v1.9.0", text, name)
             self.assertNotIn("v1.1.16", text, name)
             self.assertNotIn("v1.1.17", text, name)
 

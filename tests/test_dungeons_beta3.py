@@ -87,9 +87,9 @@ class DungeonsBeta3Tests(unittest.TestCase):
         return results
 
     def test_beta3_identity_keeps_schema10_protocol25_and_feature_freeze(self):
-        self.assertEqual(__version__, "1.8.2-elite-mercs")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 18)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
+        self.assertEqual(__version__, "1.9.0-trading-post-alpha1")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         self.assertEqual(len(self.game1._dungeon_board_state("1430")["dungeons"]), 4)
 
     def test_two_engine_connections_cannot_spend_same_revision_twice(self):

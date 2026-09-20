@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 18
+DATABASE_SCHEMA_VERSION = 19
 
 
 class Database:
@@ -1112,6 +1112,48 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_merc_recruits_player
                     ON player_merc_recruits(player_id, recruited_at, hero_id);
                     INSERT INTO schema_migrations(version,name) VALUES (18,'merc_recruitment');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v19 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=19").fetchone()
+        )
+        if not already_v19:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(19)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS trading_post_listings (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        seller_id TEXT NOT NULL,
+                        item_id TEXT NOT NULL,
+                        quantity INTEGER NOT NULL CHECK(quantity > 0),
+                        unit_price INTEGER NOT NULL CHECK(unit_price > 0),
+                        listing_fee INTEGER NOT NULL DEFAULT 0 CHECK(listing_fee >= 0),
+                        status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','sold','cancelled','expired')),
+                        created_at INTEGER NOT NULL,
+                        expires_at INTEGER NOT NULL,
+                        buyer_id TEXT,
+                        sold_at INTEGER,
+                        payout_gil INTEGER NOT NULL DEFAULT 0 CHECK(payout_gil >= 0),
+                        tax_gil INTEGER NOT NULL DEFAULT 0 CHECK(tax_gil >= 0),
+                        FOREIGN KEY (seller_id) REFERENCES players(twitch_id) ON DELETE CASCADE,
+                        FOREIGN KEY (buyer_id) REFERENCES players(twitch_id) ON DELETE SET NULL
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_trading_post_active
+                    ON trading_post_listings(status, expires_at, created_at DESC, id DESC);
+                    CREATE INDEX IF NOT EXISTS idx_trading_post_seller
+                    ON trading_post_listings(seller_id, created_at DESC, id DESC);
+                    CREATE INDEX IF NOT EXISTS idx_trading_post_item
+                    ON trading_post_listings(item_id, status, unit_price, created_at DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (19,'fellowship_trading_post');
                     COMMIT;
                     """
                 )

@@ -1,36 +1,53 @@
-# Crystal Guild v1.8.2 — Elite Mercs
+# Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post
 
-## Elite Merc roster
+v1.9.0 Alpha 1 introduces the first player-to-player economy service in Crystal Guild: the **Moogle Trading Post**, a Level 1 Fellowship building attached to the Moogle Emporium.
 
-- Adds **Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid** to the permanent Hero Merc Registry.
-- The roster expands from **12 to 18 Heroes**.
-- Elite Mercs use a new `a3` card family with **Locked silhouette**, **Unavailable (hired/deployed)**, and **Available** artwork states.
-- Elite contracts are deliberately late-game: high Character Level, Hunt-clear, Dungeon-clear, and one-time Gil requirements must be met before permanent recruitment.
-- Individual deployments remain paid with Hunt Seals and Elite fees are higher than the standard roster.
+## Fellowship construction
 
-## Elite specialties
+The Trading Post is available as a one-time Level 1 Guild service project requiring:
 
-- **Lightning — Army of One:** elite opening burst plus Haste.
-- **Sephiroth — Octaslash:** the strongest boss-focused opening strike in the Merc Service.
-- **Rikku — Master Salvager:** guaranteed premium bonus-spoil recovery with doubled Merc-find quantity.
-- **Y’shtola — Aetherial Recovery:** major healing, harmful-status cleansing, Regen, and Protect.
-- **Noctis — Armiger:** heavy opening damage plus Haste, Power Up, and Protect.
-- **Cid — Field Overhaul:** Venture-only Haste/Protect support plus an enlarged bonus material haul.
+- Fellowship LVL 1
+- 25,000 Gil
+- 3 Mythril Ore
+- 15 completed Expeditions
 
-## Compatibility
+Once completed, the Trading Post is permanently available to the Fellowship.
 
-- Runtime/frontend: `1.8.2-elite-mercs`
-- Local database schema: **18** (unchanged)
-- Hosted sync schema: **1** (unchanged)
-- Portal Action protocol: **35** (unchanged)
-- No player reset.
-- Existing v1.8.1 Merc recruitment records and active contracts remain compatible.
+## Player market
 
-## Fellowship project selection hotfix
+- Fixed-price listings; no bidding.
+- Eligible gear, materials, consumables, and ordinary items may be listed.
+- Listings last 48 hours.
+- Maximum 24 active listings per player.
+- Listing quantity is capped at 99 and unit price at 1,000,000 Gil.
+- A 2% listing fee is charged when an item is posted.
+- A 5% tax is removed from completed sales.
+- Unsold expired items are automatically returned to the seller.
+- Sellers can cancel active listings; the original listing fee is not refunded.
 
-- The public **Available Guild Work** list and the streamer build selector now use the same authoritative project IDs.
-- Streamer Control Center replaces the free-text Fellowship project field with a live **Choose unlocked project…** dropdown populated from `/api/fellowship`.
-- Natural chat/owner-control names are now accepted as well: `Moogle Emporium Annex`, `Guild Archive`, `Chocobo Stables`, and unique short labels such as `Annex` resolve to the currently available project instead of requiring an internal ID or the full `— Lv. N` suffix.
-- Ambiguous short labels are still rejected rather than guessing.
-- No progression requirements, construction costs, rewards, schema, sync, Portal protocol, or release identity changed.
+## Progression and item safety
 
+Key/quest-style items, explicitly unsellable items, relic-linked gear, Relic rarity, and Artifact rarity are blocked from the market. The last equipped copy of a piece of gear cannot be listed.
+
+Trading Post mutations are blocked while the acting player is committed to active encounter or raid combat.
+
+## Portal and artwork
+
+The Moogle Emporium now has a third **Trading Post** mode with:
+
+- locked-building construction presentation;
+- live market browsing and category filters;
+- direct purchase controls;
+- listing creation with fee preview;
+- personal listing history and cancellation;
+- desktop/mobile responsive layouts;
+- dedicated Trading Post and Moogle clerk artwork.
+
+## Release contract
+
+- Runtime/frontend: `1.9.0-trading-post-alpha1`
+- Frontend visible version: `v1.9.0 Alpha 1`
+- Local database schema: **19**
+- Hosted sync schema: **1**
+- Portal Action protocol: **36**
+- No player reset is required.

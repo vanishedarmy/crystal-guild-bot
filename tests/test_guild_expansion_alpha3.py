@@ -70,7 +70,7 @@ class GuildExpansionAlpha3Tests(unittest.TestCase):
         workshop = state.data["fellowship_state"]["services"]["workshop"]
         self.assertEqual(workshop["level"], 3)
         self.assertEqual(len([x for x in workshop["exchanges"] if x["unlocked"]]), 4)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
 
 
 if __name__ == "__main__":

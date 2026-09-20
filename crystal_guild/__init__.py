@@ -1,1 +1,1 @@
-__version__ = "1.8.2-elite-mercs"
+__version__ = "1.9.0-trading-post-alpha1"

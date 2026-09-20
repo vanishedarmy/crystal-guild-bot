@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 35
+ACTION_PROTOCOL_VERSION = 36
 
 
 class PortalActionWorker:
@@ -306,7 +306,7 @@ class PortalActionWorker:
                 "display_name": display_name,
             }
         passive_state_actions = {
-            "CHARACTER_STATE", "SHOP_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
+            "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
             "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE",
             "SET_GEAR_FAVORITES",
         }
@@ -395,6 +395,34 @@ class PortalActionWorker:
             if not item_id:
                 return False, "Portal sale request is missing an item.", {}
             result = self.game.portal_sell(twitch_id, item_id, quantity, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "TRADING_POST_STATE":
+            result = self.game.portal_trading_post_state(twitch_id)
+            return self._game_result(result)
+        if action_type == "TRADING_POST_LIST":
+            item_id = str(payload.get("item_id") or "").strip()
+            try:
+                quantity = int(payload.get("quantity", 1))
+                unit_price = int(payload.get("unit_price", 0))
+            except (TypeError, ValueError):
+                return False, "Trading Post listing request has an invalid quantity or price.", {}
+            if not item_id:
+                return False, "Trading Post listing request is missing an item.", {}
+            result = self.game.portal_trading_post_list(twitch_id, item_id, quantity, unit_price, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "TRADING_POST_BUY":
+            try:
+                listing_id = int(payload.get("listing_id"))
+            except (TypeError, ValueError):
+                return False, "Trading Post purchase request has an invalid listing.", {}
+            result = self.game.portal_trading_post_buy(twitch_id, listing_id, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "TRADING_POST_CANCEL":
+            try:
+                listing_id = int(payload.get("listing_id"))
+            except (TypeError, ValueError):
+                return False, "Trading Post cancellation request has an invalid listing.", {}
+            result = self.game.portal_trading_post_cancel(twitch_id, listing_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "RECOVERY_STATE":
             result = self.game.portal_recovery_state(twitch_id)

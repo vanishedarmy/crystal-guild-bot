@@ -16,12 +16,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GuildExpansionFinalTests(unittest.TestCase):
     def test_final_identity_schema_and_protocol_are_release_values(self):
-        self.assertEqual(__version__, "1.8.2-elite-mercs")
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 35)
+        self.assertEqual(__version__, "1.9.0-trading-post-alpha1")
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "final.db")
             try:
-                self.assertEqual(db.schema_version(), 18)
+                self.assertEqual(db.schema_version(), 19)
                 self.assertEqual(db.quick_check(), [])
             finally:
                 db.close()
@@ -58,8 +58,8 @@ class GuildExpansionFinalTests(unittest.TestCase):
     def test_control_panel_and_upgrade_helper_identify_final_release(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
         upgrade = (ROOT / "upgrade_crystal_guild.py").read_text(encoding="utf-8")
-        self.assertIn("ELITE MERCS", panel.upper())
-        self.assertIn("Elite Mercs", upgrade)
+        self.assertIn("MOOGLE TRADING POST", panel.upper())
+        self.assertIn("Moogle Trading Post", upgrade)
         self.assertNotIn("GUILD EXPANSION BETA 1", panel.upper())
 
 

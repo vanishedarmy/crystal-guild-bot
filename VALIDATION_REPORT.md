@@ -1,42 +1,21 @@
-# Crystal Guild v1.8.2 — Elite Mercs Validation
+# Crystal Guild v1.9.0 Alpha 1 — Moogle Trading Post Validation
 
-## Result
+Validation target: runtime `1.9.0-trading-post-alpha1`, local schema **19**, hosted sync schema **1**, and Portal Action protocol **36**.
 
-**PASS** — the v1.8.2 source trees are ready for release packaging.
+## Automated results
 
-## Automated validation
+- Bot regression suite: **757 / 757 passed**.
+- Web/hosted Python suite: **80 / 80 passed**.
+- Dedicated Trading Post coverage includes construction gating, locked/open state, listing fees, fixed-price purchase settlement, seller tax/payout, replay safety, self-purchase rejection, cancellation returns, expiry returns, protected relics, equipped-last-copy protection, and hosted payload validation.
+- Python package compile checks passed for Bot and Web.
+- JavaScript syntax checks passed for `api/auth.js`, `version.js`, and `whatsNewData.js`.
+- JSX parser checks passed for the modified `MoogleEmporium.jsx` and `FellowshipPage.jsx`.
+- Project JSON parse validation passed.
 
-| Check | Result |
-| --- | --- |
-| Bot unit/regression tests | 748 / 748 passed |
-| Hosted Web/API tests | 78 / 78 passed |
-| Frontend unit/regression tests | 685 / 685 passed |
-| Python compileall | Passed |
-| JSON parse validation | 33 / 33 passed |
-| Elite Merc artwork set | 18 / 18 passed |
-| Elite artwork dimensions | 660 × 880 for all 18 cards |
-| Elite artwork optimization | All 18 cards under 400 KB |
+## Frontend build-environment note
 
-## Release-contract validation
+The source archive does not contain `node_modules` or a package lock, and dependency installation was not available to completion in this isolated build environment, so a Vite production bundle could not be executed here. This is an environment/dependency-availability limitation rather than a detected source parse error. The modified JavaScript/JSX passed the syntax/parser checks above. Normal deployment should install the dependencies declared in `frontend/package.json` before running the Vite build.
 
-- Runtime/frontend identity: `1.8.2-elite-mercs`
-- Visible release: `v1.8.2 — Elite Mercs`
-- Local database schema: 18
-- Hosted sync schema: 1
-- Portal Action protocol: 35
-- No v1.8.1 → v1.8.2 schema migration is required.
-- Existing recruitment records and active Merc contracts remain compatible.
+## Migration and safety
 
-## Elite artwork-state validation
-
-The new `a3` card set contains six Heroes and exactly three cards per Hero:
-
-- `*-locked.webp` — not recruited, silhouette, card status **Locked**.
-- `*-unavailable.webp` — recruited and already hired/deployed, card status **Unavailable**.
-- `*-available.webp` — recruited and not hired, card status **Available**.
-
-Heroes covered: Lightning, Sephiroth, Rikku, Y’shtola, Noctis, and Cid.
-
-## Packaging note
-
-Crystal Guild Web is distributed as the source project, as in the preceding release packages. Unit/regression validation completed against that source tree. A local `vite build` was not used because the validation environment does not have the npm/Vite dependencies installed; deployment installs the pinned dependencies from `frontend/package.json`.
+Schema 18 → 19 is additive and uses the existing verified pre-migration backup path (`pre_schema_19_*.db`). No player reset is required. Trading Post mutations remain Bot-authoritative and use the existing replay-safe Portal action pipeline.
