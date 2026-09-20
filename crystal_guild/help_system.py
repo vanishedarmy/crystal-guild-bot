@@ -37,7 +37,7 @@ HELP_TOPICS = {
     "mercs": (
         "MERC SERVICE — hire up to three unlocked Heroes from Adventurer Portal → Guild Services → Hero Merc Service: one Hunt contract, one Venture contract, and one Raid contract. Contracts use Hunt Seals earned through Hunts.",
         "Hunts already award Hunt Seals, which are used for Merc contracts as well as other Guild services. Alpha 2 fees: Aerith 5, Tifa 6, Zidane 5, Yuna 7, Balthier 9, Cloud 12 Hunt Seals.",
-        "Each job type has its own slot; a Hero already contracted cannot take another job, unsupported Heroes are unavailable for that job type, and the Portal explains the exact unavailable reason. Before deployment, cancelling frees that slot without refunding Hunt Seals. Once the assignment begins, the Hero is Deployed and stays unavailable until that Hunt, Venture, or Raid resolves.",
+        "Each job type has its own slot; a Hero already contracted cannot take another job, unsupported Heroes are unavailable for that job type, and the Portal explains the exact unavailable reason. Hunt Seals are consumed only when a Merc contract is successfully created; cancelling before deployment frees that slot but does not refund those Hunt Seals. Once the assignment begins, the Hero is Deployed and stays unavailable until that Hunt, Venture, or Raid resolves.",
     ),
     "quests": (
         "QUESTS — !quests lists Job-unlock quests. Ready Job quests complete automatically and retroactively; !quest <name> inspects a specific quest.",

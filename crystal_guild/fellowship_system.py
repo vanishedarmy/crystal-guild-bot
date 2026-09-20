@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import re
 import time
 from typing import Any
 
@@ -40,6 +41,21 @@ ACTIVITY_RENOWN = {
     "forge": 8,
     "job_mastery": 50,
 }
+
+
+def _project_query_key(value: Any) -> str:
+    """Normalize human-facing project labels for streamer selection.
+
+    Public Fellowship cards intentionally show friendly names such as
+    ``Moogle Emporium Annex — Lv. 1``. Streamer controls should accept that
+    exact label, the facility name without the level suffix, or a unique short
+    fragment instead of requiring an internal identifier.
+    """
+    text = str(value or "").casefold().replace("’", "'")
+    text = re.sub(r"[—–-]+", " ", text)
+    text = re.sub(r"\b(?:lv|level|tier)\.?\s*\d+\b", " ", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
 
 
 class FellowshipSystem:
@@ -764,6 +780,35 @@ class FellowshipSystem:
                 match = next((p for p in available if p.get("facility_id") == norm), None)
             if not match:
                 match = next((p for p in available if str(p["name"]).lower() == str(query).strip().lower()), None)
+            if not match:
+                query_key = _project_query_key(query)
+                for candidate in available:
+                    facility = FACILITIES.get(str(candidate.get("facility_id") or ""), {})
+                    aliases = (
+                        candidate.get("id"),
+                        candidate.get("facility_id"),
+                        candidate.get("name"),
+                        facility.get("name"),
+                    )
+                    if query_key and any(_project_query_key(alias) == query_key for alias in aliases if alias):
+                        match = candidate
+                        break
+            if not match:
+                # A short human label such as "Annex" or "Archive" is safe
+                # when it identifies exactly one currently available project.
+                query_key = _project_query_key(query)
+                if len(query_key) >= 4:
+                    partials = []
+                    for candidate in available:
+                        facility = FACILITIES.get(str(candidate.get("facility_id") or ""), {})
+                        searchable = {
+                            _project_query_key(candidate.get("name")),
+                            _project_query_key(facility.get("name")),
+                        }
+                        if any(query_key in label for label in searchable if label):
+                            partials.append(candidate)
+                    if len(partials) == 1:
+                        match = partials[0]
             if not match:
                 # Compatibility lane for v1.2 support-facility steps.
                 state = conn.execute("SELECT level FROM fellowship_state WHERE singleton_id=1").fetchone()

@@ -25,3 +25,12 @@
 - Portal Action protocol: **35** (unchanged)
 - No player reset.
 - Existing v1.8.1 Merc recruitment records and active contracts remain compatible.
+
+## Fellowship project selection hotfix
+
+- The public **Available Guild Work** list and the streamer build selector now use the same authoritative project IDs.
+- Streamer Control Center replaces the free-text Fellowship project field with a live **Choose unlocked project…** dropdown populated from `/api/fellowship`.
+- Natural chat/owner-control names are now accepted as well: `Moogle Emporium Annex`, `Guild Archive`, `Chocobo Stables`, and unique short labels such as `Annex` resolve to the currently available project instead of requiring an internal ID or the full `— Lv. N` suffix.
+- Ambiguous short labels are still rejected rather than guessing.
+- No progression requirements, construction costs, rewards, schema, sync, Portal protocol, or release identity changed.
+

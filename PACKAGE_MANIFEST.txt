@@ -1,6 +1,8 @@
-# Crystal Guild v1.8.1 — Merc Recruitment (Hero Merc Service)
-# Runtime: 1.8.1-merc-recruitment
+# Crystal Guild v1.8.2 — Elite Mercs
+# Runtime: 1.8.2-elite-mercs
 # Schema: 18 · Hosted sync: 1 · Portal Action protocol: 35
+# Fellowship project selection hotfix included; visible title unchanged.
+# Packaged source files: 220
 # Files
 .env.example
 .gitignore
@@ -10,12 +12,15 @@ COMBAT_DEVELOPER_GUIDE.md
 COMBAT_GUIDE.md
 CRYSTAL_GUILD_CONTROL_PANEL.bat
 ENCOUNTER_VARIETY_AUDIT.md
+FELLOWSHIP_PROJECT_SELECTION_HOTFIX.md
+FELLOWSHIP_PROJECT_SELECTION_HOTFIX_VALIDATION.md
 FINALIZATION_AUDIT.md
 FULL_SETUP_README.md
 GAME_DESIGN.md
 GOLD_SAUCER_MGP_REBALANCE_AUDIT.md
 JOB_QUEST_UNLOCK_AUDIT.md
 JOB_RESOURCE_PERSISTENCE_AUDIT.md
+LIVE_STREAM_CONTROLS_HOTFIX3.md
 MANUAL_TEST_CHECKLIST.md
 MERC_SERVICE_ALPHA2_BALANCE_AUDIT.md
 MERC_SERVICE_ALPHA2_RELEASE_NOTES.md
@@ -40,6 +45,8 @@ UI_POLISH_RC3_VALIDATION.md
 UPGRADE_GUIDE.md
 V1_8_1_RELEASE_NOTES.md
 V1_8_1_VALIDATION.md
+V1_8_2_RELEASE_NOTES.md
+V1_8_2_VALIDATION.md
 V1_8_FINAL_RELEASE_NOTES.md
 V1_8_FINAL_VALIDATION.md
 VALIDATION_REPORT.md
@@ -99,6 +106,7 @@ generate_portal_sync_key.bat
 generate_portal_sync_key.py
 open_twitch_authorization.bat
 overlay/raid_overlay.html
+overlay/state.json
 prepare_render_migration.py
 pyproject.toml
 render.yaml
@@ -145,6 +153,7 @@ tests/test_dungeons_beta3.py
 tests/test_dungeons_rc1.py
 tests/test_dungeons_release.py
 tests/test_economy.py
+tests/test_elite_mercs_182.py
 tests/test_emporium_annex_alpha3.py
 tests/test_encounter_variety.py
 tests/test_enemy_combat.py
@@ -188,6 +197,7 @@ tests/test_persistence_recovery.py
 tests/test_player_records.py
 tests/test_player_snapshot.py
 tests/test_portal_actions.py
+tests/test_portal_live_stream_controls_181.py
 tests/test_release_contract.py
 tests/test_relic_arsenal_151.py
 tests/test_resource_persistence.py

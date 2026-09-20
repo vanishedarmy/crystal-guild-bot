@@ -92,6 +92,27 @@ class FellowshipTests(unittest.TestCase):
         self.assertEqual(self.game.fellowship_system.apply_jp_bonus(100), 105)
 
 
+    def test_available_projects_accept_public_card_names_and_unique_short_aliases(self):
+        self.db.execute("UPDATE fellowship_state SET level=5,renown=8500 WHERE singleton_id=1")
+        available = {project["id"] for project in self.game.fellowship_system.available_projects()}
+        self.assertIn("emporium_annex_t1", available)
+        self.assertIn("archives_t1", available)
+
+        for query, expected_id in (
+            ("Moogle Emporium Annex", "emporium_annex_t1"),
+            ("Annex", "emporium_annex_t1"),
+            ("Guild Archive", "archives_t1"),
+            ("Chocobo Stables", "chocobo_stable_t1"),
+        ):
+            result = self.game.set_fellowship_project(query)
+            self.assertTrue(result.ok, (query, result.messages))
+            state = self.db.one("SELECT active_project_id FROM fellowship_state WHERE singleton_id=1")
+            self.assertEqual(str(state["active_project_id"]), expected_id)
+            self.db.execute("UPDATE fellowship_state SET active_project_id=NULL WHERE singleton_id=1")
+
+        ambiguous = self.game.set_fellowship_project("Guild")
+        self.assertFalse(ambiguous.ok)
+
     def test_guild_hall_projects_use_shared_raid_clears_not_project_completion(self):
         project = self.game.fellowship_system.project_snapshot("guild_hall_t2")
         reqs = {req["key"]: req for req in project["requirements"]}
