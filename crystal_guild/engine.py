@@ -6007,8 +6007,21 @@ class CrystalGuildEngine:
             remaining = [i for i in by_type[kind] if i not in stock]
             stock.extend(self._weighted_shop_sample(remaining, count, level, job_id))
 
-        # The Guild-funded Annex adds six additional choices without changing
-        # the original nine-slot composition, prices, rarity weights, or refresh timer.
+        # The Guild-funded Annex uses a fixed category expansion rather than a
+        # generic random pool: +2 Weapons, +4 Armor/Accessories, +6 Items.
+        if self.fellowship_system.emporium_annex_level() >= 1:
+            bonus = self.fellowship_system.emporium_annex_stock_bonus()
+            bonus_pools = {
+                "weapons": [i for i in eligible if i["type"] == "weapon"],
+                "armor": [i for i in eligible if i["type"] in {"armor", "accessory"}],
+                "items": [i for i in eligible if i["type"] == "consumable"],
+            }
+            for category in ("weapons", "armor", "items"):
+                remaining = [i for i in bonus_pools[category] if i not in stock]
+                stock.extend(self._weighted_shop_sample(remaining, int(bonus[category]), level, job_id))
+
+        # If a low-level character lacks enough eligible entries in one category,
+        # fill any remaining capacity from other eligible stock without duplicates.
         if len(stock) < stock_limit:
             remaining = [i for i in eligible if i not in stock]
             stock.extend(self._weighted_shop_sample(remaining, stock_limit - len(stock), level, job_id))
@@ -13274,7 +13287,8 @@ class CrystalGuildEngine:
             stock=[item_payload(item) for item in stock],
             stock_slots=self.fellowship_system.emporium_stock_slots(),
             annex_unlocked=self.fellowship_system.emporium_annex_level() >= 1,
-            annex_bonus_slots=6 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
+            annex_bonus_slots=12 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
+            annex_bonus_by_category=self.fellowship_system.emporium_annex_stock_bonus(),
             combat_locked=combat_locked,
         )
 

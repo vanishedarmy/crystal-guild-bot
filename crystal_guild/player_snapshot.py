@@ -426,7 +426,7 @@ class PortalRepository:
             services = {
                 "guild_hall": {"level": min(3, int(tiers.get("guild_hall", 0)))},
                 "workshop": {"level": min(3, int(tiers.get("workshop", 0))), "forge_discount": float(effects.get("forge_discount", 0.0))},
-                "emporium_annex": {"level": annex_level, "unlocked": annex_level >= 1, "stock_slots": 15 if annex_level >= 1 else 9},
+                "emporium_annex": {"level": annex_level, "unlocked": annex_level >= 1, "stock_slots": 21 if annex_level >= 1 else 9},
                 "trading_post": {"level": trading_post_level, "unlocked": trading_post_level >= 1, "listing_fee_rate": 0.02, "sale_tax_rate": 0.05, "listing_hours": 48},
                 "chocobo_stable": {"level": min(3, int(tiers.get("chocobo_stable", 0))), "xp_bonus": float(effects.get("chocobo_xp_bonus", 0.0))},
                 "archive": {"level": min(3, int(tiers.get("archives", 0))), "rare_event_bonus": float(effects.get("archive_rare_event_bonus", 0.0))},

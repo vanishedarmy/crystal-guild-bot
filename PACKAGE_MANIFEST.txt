@@ -1,8 +1,3 @@
-# Crystal Guild v1.9.0 Alpha 6 — World Events
-# Runtime: 1.9.0-world-events-alpha6
-# Carried forward systems include Title Status Hardening, Navigation Accessibility, Title Expansion, Moogle Trading Post, Economy Balance, Merc Service, Fellowship, and Gold Saucer.
-# Files: 227
-
 .env.example
 .gitignore
 .python-version
@@ -31,7 +26,8 @@ MERC_SERVICE_HOTFIX2.md
 MERC_SERVICE_HOTFIX3.md
 MERC_SERVICE_RC1_RELEASE_NOTES.md
 MERC_SERVICE_RC1_VALIDATION.md
-PACKAGE_MANIFEST.txt
+MOOGLE_ANNEX_CATEGORY_STOCK_HOTFIX4.md
+MOOGLE_ANNEX_STOCK_HOTFIX3.md
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt

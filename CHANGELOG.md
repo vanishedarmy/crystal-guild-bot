@@ -1,5 +1,10 @@
 # Crystal Guild Changelog
 
+## v1.9.0 Alpha 6 — Moogle Annex Category Stock Hotfix 4
+- Moogle Emporium Annex stock is now fixed by category: **+2 Weapons, +4 Armor/Accessories, +6 Items**.
+- Base rotations remain 9 slots; a completed Annex can expand to **21 total slots** when enough unique level/job-eligible stock exists.
+- Existing 15-slot Annex caches invalidate automatically on the next shop request and reroll under the new category contract.
+
 ## v1.9.0 Alpha 6 — Moogle Annex Stock Hotfix 3
 - Moogle Emporium Annex now adds **6** shop choices instead of 3.
 - Completed Annex rotations expand from **9 to 15** stock slots.

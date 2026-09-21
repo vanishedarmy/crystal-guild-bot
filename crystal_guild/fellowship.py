@@ -95,10 +95,10 @@ FACILITIES: dict[str, dict[str, Any]] = {
         "max_level": 1,
         "guild_service": True,
         "level_benefits": [
-            "Personal Moogle Emporium rotations expand from 9 to 15 stock slots.",
+            "Annex stock is fixed at +2 Weapons, +4 Armor/Accessories, and +6 Items per personal rotation.",
         ],
         "benefits": [
-            "Emporium rotations expand from 9 to 15 stock slots",
+            "Emporium Annex adds +2 Weapons, +4 Armor/Accessories, +6 Items",
         ],
         "material": "mythril_ore", "activity": "craft",
     },
