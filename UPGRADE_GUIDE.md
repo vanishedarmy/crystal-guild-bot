@@ -1,23 +1,21 @@
-# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility Upgrade Guide
+# Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening Upgrade Guide
 
-## From v1.9.0 Alpha 3
-Deploy the matching Alpha 4 Bot and Web packages together and restart the services. Existing player data, MGP, titles, achievements, Trading Post listings, inventories, Fellowship state, Mercs, and Gold Saucer records are preserved.
+## From v1.9.0 Alpha 4
+Deploy the matching Alpha 5 Bot and Web packages together and restart the services. Existing player data, Titles, achievements, MGP, Trading Post listings, inventories, Fellowship state, Mercs, and Gold Saucer records are preserved.
 
-No database migration is required for Alpha 3 → Alpha 4. The release continues to use:
-- Runtime/frontend: `1.9.0-navigation-accessibility-alpha4`
+No database migration is required for Alpha 4 → Alpha 5. The release continues to use:
+- Runtime/frontend: `1.9.0-title-status-hardening-alpha5`
 - Local schema: **19**
-- Hosted sync: **1**
+- Hosted sync schema: **1**
 - Portal Action protocol: **36**
 
-## Existing migration history
-Older installations still upgrade through the existing verified migrations. v1.8.1 introduced schema **17 → 18** for Merc recruitment. v1.9.0 Alpha 1 introduced schema **18 → 19** for the Moogle Trading Post, creating a verified `pre_schema_19_*.db` backup before migration.
+On Bot startup, Alpha 5 performs a safe idempotent reconciliation of existing achievement and reward-Title state. Players who already satisfy a newly introduced requirement do not need to repeat the activity. Missing reward Titles attached to already-earned achievements are repaired automatically.
 
-## After deployment
-1. Confirm `!cgversion` reports `1.9.0-navigation-accessibility-alpha4`.
-2. Open any player profile and confirm the section navigation has subtle color identities with readable icon + text labels.
-3. Check a compact desktop/tablet width and confirm the grid reflows without clipping.
-4. Check mobile and confirm the profile sections remain a two-column touch grid rather than collapsing to the old dropdown.
-5. Verify keyboard focus is clearly visible and the active tab remains obvious without relying on color alone.
-6. Keep the live database at its existing persistent path (for Render, normally `/var/data/crystal_guild.db`).
+## Verification
+1. Confirm `!cgversion` reports `1.9.0-title-status-hardening-alpha5`.
+2. Open **Achievements & Titles** for an established hero and confirm previously earned Titles show **Unlocked**.
+3. Confirm a permanent achievement remains visually complete even if a reversible current value (for example held Gil or inventory quantity) has since fallen below the original threshold.
+4. Confirm secret achievements remain concealed until earned.
+5. No manual SQL migration, Title reset, or player reset should be performed.
 
-No player reset is required.
+Older installations still upgrade through the existing verified migrations. v1.8.1 introduced schema **17 → 18** for Merc recruitment. v1.9.0 Alpha 1 introduced schema **18 → 19** for the Moogle Trading Post with its verified pre-migration backup. That migration preserves the existing `pre_schema_19` backup checkpoint before schema 19 is committed.

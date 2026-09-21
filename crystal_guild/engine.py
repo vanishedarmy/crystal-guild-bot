@@ -294,6 +294,12 @@ class CrystalGuildEngine:
         self._runtime_recovered_at: str | None = None
         self._restore_runtime_state()
         self._repair_inactive_resource_pool_zeros_once()
+        reconciliation = self.reconcile_all_achievements()
+        if reconciliation["achievements_added"] or reconciliation["titles_added"]:
+            LOGGER.info(
+                "Achievement/title reconciliation updated %s heroes: +%s achievements, +%s titles",
+                reconciliation["players"], reconciliation["achievements_added"], reconciliation["titles_added"],
+            )
         if self.active_boss:
             self._update_raid_overlay()
         else:
@@ -10902,9 +10908,9 @@ class CrystalGuildEngine:
                 "secret": secret,
                 "unlocked": unlocked,
                 "progress": {
-                    "value": 0 if hidden else min(value, target),
+                    "value": 0 if hidden else (target if unlocked else min(value, target)),
                     "target": 0 if hidden else target,
-                    "percent": 0 if hidden else min(100, round((value / target) * 100, 1) if target > 0 else 100),
+                    "percent": 0 if hidden else (100 if unlocked else min(100, round((value / target) * 100, 1) if target > 0 else 100)),
                     "hidden": hidden,
                 },
             })
@@ -14403,9 +14409,12 @@ class CrystalGuildEngine:
         reward = self.data.titles.get(achievement.get("reward_title"))
         state = "UNLOCKED" if unlocked else f"PROGRESS {min(value, target):,}/{target:,}"
         reward_text = f" | Title: {reward['name']}" if reward else ""
+        requirement_text = self._requirement_text(achievement["condition"], value)
+        if unlocked and value < target:
+            requirement_text = "Requirement completed previously; this achievement remains permanently unlocked."
         return GameResult.success(
             f"{name} [{achievement.get('tier','bronze').upper()} · {achievement.get('category','General')}] — {state}",
-            f"{achievement['description']} | {self._requirement_text(achievement['condition'], value)}{reward_text}",
+            f"{achievement['description']} | {requirement_text}{reward_text}",
         )
 
     def records(self, twitch_id: str) -> GameResult:
@@ -17526,19 +17535,72 @@ class CrystalGuildEngine:
                 return item
         return None
 
+    def reconcile_achievements(self, player_id: str) -> list[str]:
+        """Bring one player's achievements and reward titles up to date.
+
+        This is intentionally safe to call repeatedly.  It handles three cases:
+        new achievements whose requirements are already satisfied, reward titles
+        added to an achievement the player unlocked in an older build, and
+        achievements that depend on other achievement unlocks.
+        """
+        return self._check_achievements(str(player_id))
+
+    def reconcile_all_achievements(self) -> dict[str, int]:
+        """Retroactively reconcile every existing hero without resetting data."""
+        players = self.db.all("SELECT twitch_id FROM players ORDER BY twitch_id")
+        achievements_before = int(self.db.one("SELECT COUNT(*) AS n FROM achievements")["n"] or 0)
+        titles_before = int(self.db.one("SELECT COUNT(*) AS n FROM player_titles")["n"] or 0)
+        for row in players:
+            self._check_achievements(str(row["twitch_id"]))
+        achievements_after = int(self.db.one("SELECT COUNT(*) AS n FROM achievements")["n"] or 0)
+        titles_after = int(self.db.one("SELECT COUNT(*) AS n FROM player_titles")["n"] or 0)
+        return {
+            "players": len(players),
+            "achievements_added": max(0, achievements_after - achievements_before),
+            "titles_added": max(0, titles_after - titles_before),
+        }
+
     def _check_achievements(self, player_id: str) -> list[str]:
+        """Evaluate achievements to a fixed point and repair reward-title rows.
+
+        Older builds could leave a player with an achievement row but no matching
+        reward-title row if the title reward was introduced later.  Also, mastery
+        achievements such as Golden Saucer depend on other achievements.  A
+        fixed-point pass makes those chains order-independent and retroactive.
+        """
         unlocked: list[str] = []
-        for ach in self.data.achievements.values():
-            if self.db.one("SELECT 1 FROM achievements WHERE player_id=? AND achievement_id=?", (player_id, ach["id"])):
-                continue
-            value = self._requirement_value(player_id, ach["condition"])
-            if value >= ach["condition"].get("amount", 1):
-                self.db.execute("INSERT INTO achievements(player_id, achievement_id) VALUES (?, ?)", (player_id, ach["id"]))
+        self._ensure_base_title(player_id)
+        max_passes = max(1, len(self.data.achievements) + 1)
+        for _ in range(max_passes):
+            changed = False
+            for ach in self.data.achievements.values():
+                achievement_id = str(ach["id"])
+                already_unlocked = bool(self.db.one(
+                    "SELECT 1 FROM achievements WHERE player_id=? AND achievement_id=?",
+                    (player_id, achievement_id),
+                ))
+                if already_unlocked:
+                    title_id = ach.get("reward_title")
+                    if title_id and self._unlock_title(player_id, str(title_id)):
+                        changed = True
+                    continue
+
+                value = self._requirement_value(player_id, ach["condition"])
+                if value < ach["condition"].get("amount", 1):
+                    continue
+
+                self.db.execute(
+                    "INSERT INTO achievements(player_id, achievement_id) VALUES (?, ?)",
+                    (player_id, achievement_id),
+                )
+                changed = True
                 unlock_name = ach.get("reveal_name", ach["name"])
                 tier = ach.get("tier", "bronze").upper()
                 text = f"[{tier}] {unlock_name} — {ach['description']} (+{int(ach.get('points', 0))} AP)"
                 title_id = ach.get("reward_title")
-                if title_id and self._unlock_title(player_id, title_id):
+                if title_id and self._unlock_title(player_id, str(title_id)):
                     text += f" [Title: {self.data.titles[title_id]['name']}]"
                 unlocked.append(text)
+            if not changed:
+                break
         return unlocked

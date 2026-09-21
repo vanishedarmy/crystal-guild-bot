@@ -25,7 +25,7 @@ def main() -> int:
     data_dir = Path(os.getenv("DATA_DIR", "data"))
     db_path = Path(os.getenv("DATABASE_PATH", "crystal_guild.db"))
 
-    print("Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility Release Readiness")
+    print("Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening Release Readiness")
     print(f"Data: {data_dir}")
     data = GameData(data_dir)
     errors = data.validate()

@@ -891,6 +891,53 @@ class PortalRepository:
                 return 0
             level, _current, _next = chocobo_level_from_total_xp(int(row["xp"] or 0))
             return int(level)
+        if kind == "ventures":
+            return int(player["ventures"] or 0)
+        if kind == "hunt_clear":
+            row = conn.execute(
+                "SELECT clears FROM player_hunts WHERE player_id=? AND hunt_id=?",
+                (player_id, condition["hunt_id"]),
+            ).fetchone()
+            return int(row["clears"] or 0) if row else 0
+        if kind == "quest_complete":
+            row = conn.execute(
+                "SELECT 1 FROM player_quests WHERE player_id=? AND quest_id=?",
+                (player_id, condition["quest_id"]),
+            ).fetchone()
+            return 1 if row else 0
+        if kind == "expedition_region_progress":
+            row = conn.execute(
+                "SELECT progress FROM player_region_exploration WHERE player_id=? AND region_id=?",
+                (player_id, str(condition.get("region_id") or "")),
+            ).fetchone()
+            return int(row["progress"] or 0) if row else 0
+        if kind == "expedition_regions_mastered":
+            row = conn.execute(
+                "SELECT COUNT(*) AS n FROM player_region_exploration WHERE player_id=? AND progress>=100",
+                (player_id,),
+            ).fetchone()
+            return int(row["n"] or 0) if row else 0
+        if kind == "item_quantity":
+            row = conn.execute(
+                "SELECT quantity FROM inventory WHERE player_id=? AND item_id=?",
+                (player_id, condition["item_id"]),
+            ).fetchone()
+            return int(row["quantity"] or 0) if row else 0
+        if kind == "hunt_seals":
+            return int(player["hunt_seals"] or 0)
+        if kind == "item_upgrade":
+            row = conn.execute(
+                "SELECT upgrade_level FROM item_upgrades WHERE player_id=? AND item_id=?",
+                (player_id, condition["item_id"]),
+            ).fetchone()
+            return int(row["upgrade_level"] or 0) if row else 0
+        if kind == "relic_complete":
+            row = conn.execute(
+                "SELECT stage FROM player_relics WHERE player_id=? AND relic_id=?",
+                (player_id, condition["relic_id"]),
+            ).fetchone()
+            relic = self.data.relics.get(condition["relic_id"])
+            return 1 if row and relic and int(row["stage"] or 0) >= len(relic.get("stages", [])) else 0
         return 0
 
     def achievements(self, key: str) -> dict[str, Any] | None:
@@ -935,11 +982,15 @@ class PortalRepository:
                     display_name = "Secret Achievement"
                     description = "Hidden until unlocked. The Guild refuses to spoil this particular mistake."
                 hidden_secret = secret and not is_unlocked
+                # Achievements are permanent once earned.  For reversible
+                # requirements (current Gil, inventory held, etc.), never show
+                # an unlocked card as partially complete after the value falls.
+                display_value = target if is_unlocked else min(value, target)
                 progress = {
-                    "value": 0 if hidden_secret else min(value, target),
+                    "value": 0 if hidden_secret else display_value,
                     "raw_value": 0 if hidden_secret else value,
                     "target": 0 if hidden_secret else target,
-                    "percent": 0 if hidden_secret else (100 if target <= 0 else min(100, round(value / target * 100, 1))),
+                    "percent": 0 if hidden_secret else (100 if is_unlocked or target <= 0 else min(100, round(value / target * 100, 1))),
                     "hidden": hidden_secret,
                 }
                 entries.append(

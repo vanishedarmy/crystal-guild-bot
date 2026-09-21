@@ -1,13 +1,13 @@
-# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility Setup
+# Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening Setup
 
-**Current Alpha 4 note:** Navigation Accessibility improves profile section recognition and responsive navigation without changing schema 19, hosted sync 1, Portal Action protocol 36, economy values, or title progression. Deploy the matching Bot and Web together; no player reset or Alpha 3 → Alpha 4 database migration is required.
+**Current Alpha 5 note:** Title Status Hardening proactively reconciles existing achievement and reward-Title state, repairs missing reward Titles, and keeps permanent unlocks visually complete. Deploy the matching Bot and Web together; no player reset or Alpha 4 → Alpha 5 database migration is required.
 
 ## Existing installation
 Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. Existing schema 19 databases open in place. Older schema 18 installations still receive the existing automatic 18 → 19 migration with a verified backup.
 
 ## Release verification
-- Bot runtime → `1.9.0-navigation-accessibility-alpha4`
-- Paired Web → `1.9.0-navigation-accessibility-alpha4`
+- Bot runtime → `1.9.0-title-status-hardening-alpha5`
+- Paired Web → `1.9.0-title-status-hardening-alpha5`
 - Local DB schema → **19**
 - Hosted sync schema → **1**
 - Portal Action protocol → **36**

@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_merc_rc1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.9.0-navigation-accessibility-alpha4")
+        self.assertEqual(__version__, "1.9.0-title-status-hardening-alpha5")
         self.assertEqual(SYNC_VERSION, "1.1.15-wayfarer")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.15-wayfarer")
 
@@ -90,7 +90,7 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.9.0 ALPHA 4 - NAVIGATION ACCESSIBILITY", panel)
+        self.assertIn("v1.9.0 ALPHA 5 - TITLE STATUS HARDENING", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
@@ -99,8 +99,8 @@ class ReleaseReadinessTests(unittest.TestCase):
     def test_current_finalization_audit_matches_final_package_identity(self):
         audit = (ROOT / "FINALIZATION_AUDIT.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
-        self.assertIn("Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility", audit)
-        self.assertIn("1.9.0-navigation-accessibility-alpha4", audit)
+        self.assertIn("Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening", audit)
+        self.assertIn("1.9.0-title-status-hardening-alpha5", audit)
         self.assertIn("Moogle Trading Post", manifest)
         self.assertNotIn("v1.1.19 — Retro Phase III RC1 Finalization Audit", audit)
         self.assertNotIn("Expeditions Alpha 2 Hotfix 1 Finalization", audit)

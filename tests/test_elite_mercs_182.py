@@ -40,7 +40,7 @@ class EliteMercs182Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_and_elite_registry(self):
-        self.assertEqual(__version__, "1.9.0-navigation-accessibility-alpha4")
+        self.assertEqual(__version__, "1.9.0-title-status-hardening-alpha5")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         state = self.game.portal_merc_state("100").data["merc_state"]

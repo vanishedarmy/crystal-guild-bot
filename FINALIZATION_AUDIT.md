@@ -1,23 +1,20 @@
-# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility Finalization Audit
+# Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening Finalization Audit
 
 ## Release identity
-- Visible release: **v1.9.0 Alpha 4 — Navigation Accessibility**
-- Runtime/frontend: `1.9.0-navigation-accessibility-alpha4`
-- Frontend package: `1.9.0-alpha.4`
+- Visible release: **v1.9.0 Alpha 5 — Title Status Hardening**
+- Runtime/frontend: `1.9.0-title-status-hardening-alpha5`
+- Frontend package: `1.9.0-alpha.5`
 - Local schema: **19**
 - Hosted sync: **1**
 - Portal Action protocol: **36**
 
 ## Scope verified
-- Profile destinations retain their established order and feature routing.
-- Every destination keeps a non-color identity via icon + label.
-- Accent families improve scanning while maintaining readable foreground contrast.
-- Active and keyboard-focus states remain visually distinct.
-- Navigation reflows 6 → 4 → 3 → 2 columns across desktop, compact desktop, tablet, and mobile.
-- The mobile dropdown fallback is replaced by touch-sized section buttons.
-- High-contrast and reduced-motion preferences receive dedicated CSS behavior.
-- Alpha 3 titles, Alpha 2 economy balance, Gold Saucer values, Trading Post, and all gameplay systems remain unchanged.
-- No schema or Portal protocol bump is required.
-
-## Accessibility guardrail
-Color is supplementary only. Navigation remains identifiable through text, iconography, selection semantics, and a high-contrast focus ring.
+- Existing heroes are reconciled against the current achievement catalog on Bot startup.
+- Hosted snapshots reconcile the requested hero before a profile snapshot is built when running in-process sync.
+- Existing achievement rows repair missing reward-Title rows without duplication.
+- Achievement dependencies resolve to a fixed point instead of depending on catalog order.
+- Permanent unlocks remain visually complete even when reversible current values later decrease.
+- Portal achievement progress supports the same current requirement families used by the Bot, including Expedition-region progress.
+- Secret achievement names, conditions, and progress remain concealed until unlock.
+- Alpha 4 Navigation Accessibility remains intact.
+- No economy, Gold Saucer payout, Title requirement, schema, or Portal Action changes are introduced.
