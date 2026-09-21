@@ -1,21 +1,27 @@
-# Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening Upgrade Guide
+# Crystal Guild v1.9.0 Alpha 6 — World Events Upgrade Guide
 
-## From v1.9.0 Alpha 4
-Deploy the matching Alpha 5 Bot and Web packages together and restart the services. Existing player data, Titles, achievements, MGP, Trading Post listings, inventories, Fellowship state, Mercs, and Gold Saucer records are preserved.
+Upgrade from **v1.9.0 Alpha 5 — Title Status Hardening** by deploying the matching Alpha 6 Bot and Web packages together, then restarting both services.
 
-No database migration is required for Alpha 4 → Alpha 5. The release continues to use:
-- Runtime/frontend: `1.9.0-title-status-hardening-alpha5`
-- Local schema: **19**
+## Compatibility
+- Runtime/frontend: `1.9.0-world-events-alpha6`
+- Local database schema: **19**
 - Hosted sync schema: **1**
 - Portal Action protocol: **36**
+- Database migration required: **No**
+- Player reset required: **No**
 
-On Bot startup, Alpha 5 performs a safe idempotent reconciliation of existing achievement and reward-Title state. Players who already satisfy a newly introduced requirement do not need to repeat the activity. Missing reward Titles attached to already-earned achievements are repaired automatically.
+World Event timing state uses the existing runtime-state table, so no schema migration is needed. Existing player progress, Titles, achievements, inventory, Fellowship state, Gold Saucer data, Mercs, Retainers, and Trading Post state remain intact.
 
-## Verification
-1. Confirm `!cgversion` reports `1.9.0-title-status-hardening-alpha5`.
-2. Open **Achievements & Titles** for an established hero and confirm previously earned Titles show **Unlocked**.
-3. Confirm a permanent achievement remains visually complete even if a reversible current value (for example held Gil or inventory quantity) has since fallen below the original threshold.
-4. Confirm secret achievements remain concealed until earned.
-5. No manual SQL migration, Title reset, or player reset should be performed.
+## Deployment
+1. Stop the current Alpha 5 Bot and Web services.
+2. Replace them with the matching Alpha 6 packages (or apply the Alpha 5 → Alpha 6 overlay patch).
+3. Preserve the existing database and environment configuration.
+4. Start the Web service, then the Bot worker.
+5. Confirm `!cgversion` reports `1.9.0-world-events-alpha6`.
+6. Confirm schema **19**, hosted sync **1**, and Portal Action protocol **36**.
+7. Open **Stream Activities → World Events** and verify the ten-monster roster/artwork loads.
 
-Older installations still upgrade through the existing verified migrations. v1.8.1 introduced schema **17 → 18** for Merc recruitment. v1.9.0 Alpha 1 introduced schema **18 → 19** for the Moogle Trading Post with its verified pre-migration backup. That migration preserves the existing `pre_schema_19` backup checkpoint before schema 19 is committed.
+No manual World Event seed data is required. The live scheduler begins automatically while the configured Twitch stream is live.
+
+## Older persistent-database lineage
+Installations coming from the older Merc Recruitment line may previously have crossed schema **17 → 18**, and the Trading Post migration to schema 19 uses the verified `pre_schema_19_<timestamp>.db` backup path. Alpha 6 itself does not perform a new schema migration.

@@ -329,9 +329,11 @@ class EncounterDaemon:
         *,
         poll_interval: float = 0.75,
         clock: Callable[[], float] = time.time,
+        stream_live_lookup: Callable[[], bool] | None = None,
     ) -> None:
         self.game = game
         self.notify = notify
+        self.stream_live_lookup = stream_live_lookup
         # poll_interval is now a recovery/self-check ceiling, not timer
         # granularity. Known combat deadlines wake at their actual due time.
         self.poll_interval = max(0.05, float(poll_interval))
@@ -351,6 +353,7 @@ class EncounterDaemon:
         self._consecutive_failures = 0
         self._retry_backoff_ms = 0
         self._next_passive_recovery_scan = 0.0
+        self._next_world_event_scan = 0.0
 
     @property
     def is_alive(self) -> bool:
@@ -393,6 +396,22 @@ class EncounterDaemon:
 
     def wake(self) -> None:
         self._wake.set()
+
+    def _tick_world_event_spawn(self, now: float) -> bool:
+        if self.stream_live_lookup is None or now < self._next_world_event_scan:
+            return False
+        self._next_world_event_scan = now + 30.0
+        try:
+            live = bool(self.stream_live_lookup())
+        except Exception:
+            LOGGER.exception("World Event stream-status lookup failed")
+            return False
+        result = self.game.maybe_spawn_world_event(stream_live=live, now=now)
+        if result.ok and result.data.get("world_event_spawned"):
+            self._last_action = f"world-event-spawn:{result.data.get('world_event_id', 'unknown')}"
+            self._publish(result)
+            return True
+        return False
 
     def status(self) -> dict[str, Any]:
         return {
@@ -580,6 +599,7 @@ class EncounterDaemon:
                     self._next_passive_recovery_scan = now + 60.0
                     if int(recovery.get("count") or 0) > 0:
                         self._last_action = f"long-rest:{int(recovery['count'])}"
+                world_event_acted = self._tick_world_event_spawn(now)
                 snapshot = self.game.combat_snapshot()
                 hunt_acted = self._tick_hunts(snapshot, now)
                 if hunt_acted:

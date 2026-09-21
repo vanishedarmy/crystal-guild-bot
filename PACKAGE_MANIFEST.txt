@@ -1,7 +1,7 @@
-# Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening
-# Runtime: 1.9.0-title-status-hardening-alpha5
-# Carried forward systems include Navigation Accessibility, Title Expansion, Moogle Trading Post, Economy Balance, Merc Service, Fellowship, and Gold Saucer.
-# Files: 224
+# Crystal Guild v1.9.0 Alpha 6 — World Events
+# Runtime: 1.9.0-world-events-alpha6
+# Carried forward systems include Title Status Hardening, Navigation Accessibility, Title Expansion, Moogle Trading Post, Economy Balance, Merc Service, Fellowship, and Gold Saucer.
+# Files: 227
 
 .env.example
 .gitignore
@@ -53,6 +53,7 @@ V1_8_FINAL_VALIDATION.md
 VALIDATION_REPORT.md
 VERSION.txt
 WEB_SYNC_SETUP.md
+WORLD_EVENTS.md
 backup_database.bat
 crystal_guild/__init__.py
 crystal_guild/active_battle.py
@@ -85,6 +86,7 @@ crystal_guild/subscription_status.py
 crystal_guild/time_format.py
 crystal_guild/token_store.py
 crystal_guild/twitch_bot.py
+crystal_guild/world_events.py
 data/achievements.json
 data/active_abilities.json
 data/bosses.json
@@ -223,6 +225,7 @@ tests/test_trails_raids_beta2.py
 tests/test_trails_raids_beta3.py
 tests/test_trails_raids_rc1.py
 tests/test_wayfarer.py
+tests/test_world_events_alpha6.py
 tools/simulate_expedition_balance.py
 tools/simulate_guild_balance.py
 upgrade_crystal_guild.bat

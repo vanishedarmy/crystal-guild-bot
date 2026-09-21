@@ -1025,7 +1025,9 @@ def main() -> None:
         direct_sender,
         delivery_allowed=lambda: bool(stream_status.refresh().get("live")),
     )
-    encounter_daemon = EncounterDaemon(game, notifier.enqueue)
+    encounter_daemon = EncounterDaemon(
+        game, notifier.enqueue, stream_live_lookup=lambda: bool(stream_status.refresh().get("live"))
+    )
     token_store = TwitchTokenStore(settings.twitch_token_db) if settings.twitch_token_db else None
     subscription_status = TwitchSubscriptionStatus(
         settings.client_id,

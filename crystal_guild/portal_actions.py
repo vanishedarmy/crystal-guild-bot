@@ -664,7 +664,7 @@ class PortalActionWorker:
         if action_type == "LIVE_EVENT_JOIN":
             event = str(payload.get("event") or "").strip().lower()
             event_id = str(payload.get("event_id") or "").strip()
-            if event not in {"venture", "raid"} or not event_id:
+            if event not in {"venture", "world_event", "raid"} or not event_id:
                 return False, "Live event join request is invalid.", {}
             result = self.game.portal_live_event_join(
                 twitch_id, event, event_id, str(action.get("id") or ""), stream_live=self._stream_live()
@@ -683,7 +683,7 @@ class PortalActionWorker:
                 round_no = int(payload.get("round") or 0)
             except (TypeError, ValueError):
                 return False, "Live event round is invalid.", {}
-            if event not in {"venture", "raid"} or not event_id or round_no < 1 or command not in {"attack", "defend", "ability", "item"}:
+            if event not in {"venture", "world_event", "raid"} or not event_id or round_no < 1 or command not in {"attack", "defend", "ability", "item"}:
                 return False, "Live event action request is invalid.", {}
             result = self.game.portal_live_event_action(
                 twitch_id, event, event_id, round_no, command, choice, target_username,

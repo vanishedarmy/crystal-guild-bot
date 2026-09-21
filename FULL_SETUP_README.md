@@ -1,4 +1,4 @@
-# Crystal Guild v1.9.0 Alpha 5 — Title Status Hardening Setup
+# Crystal Guild v1.9.0 Alpha 6 — World Events Setup
 
 **Current Alpha 5 note:** Title Status Hardening proactively reconciles existing achievement and reward-Title state, repairs missing reward Titles, and keeps permanent unlocks visually complete. Deploy the matching Bot and Web together; no player reset or Alpha 4 → Alpha 5 database migration is required.
 
@@ -6,8 +6,8 @@
 Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. Existing schema 19 databases open in place. Older schema 18 installations still receive the existing automatic 18 → 19 migration with a verified backup.
 
 ## Release verification
-- Bot runtime → `1.9.0-title-status-hardening-alpha5`
-- Paired Web → `1.9.0-title-status-hardening-alpha5`
+- Bot runtime → `1.9.0-world-events-alpha6`
+- Paired Web → `1.9.0-world-events-alpha6`
 - Local DB schema → **19**
 - Hosted sync schema → **1**
 - Portal Action protocol → **36**

@@ -139,6 +139,12 @@ from .mercenary import (
     MERC_SERVICE_NAME, MERC_PROPRIETOR, MERC_MISSION_TYPES, HEROES, HEROES_BY_ID,
     public_hero,
 )
+from .world_events import (
+    WORLD_EVENTS, WORLD_EVENTS_BY_ID, WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST,
+    WORLD_EVENT_INITIAL_GRACE_SECONDS, WORLD_EVENT_CHECK_MIN_SECONDS, WORLD_EVENT_CHECK_MAX_SECONDS,
+    WORLD_EVENT_SPAWN_CHANCE, WORLD_EVENT_POST_COOLDOWN_MIN_SECONDS, WORLD_EVENT_POST_COOLDOWN_MAX_SECONDS,
+    WORLD_EVENT_RALLY_SECONDS,
+)
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
@@ -184,6 +190,7 @@ RAID_SETTLEMENT_RECEIPT_LIMIT = 64
 LONG_REST_SECONDS = 8 * 60 * 60
 PLAYER_ACTIVITY_STATE_PREFIX = "player_activity:"
 STREAM_REFRESH_STATE_KEY = "stream_live_refresh"
+WORLD_EVENT_SCHEDULE_STATE_KEY = "world_event_schedule"
 RESOURCE_POOL_REPAIR_STATE_KEY = "resource_pool_switch_h3_repair"
 CAMP_REST_ONLINE_SECONDS = 15 * 60
 CAMP_REST_OFFLINE_SECONDS = 60 * 60
@@ -475,7 +482,8 @@ class CrystalGuildEngine:
             if str(encounter.get("monster_id") or "") not in self.data.monsters:
                 raise ValueError("active encounter references an unknown monster")
             roster = state.get("encounter_roster")
-            if not isinstance(roster, dict) or not roster:
+            allow_empty_world_rally = str(encounter.get("kind") or "") == "world_event" and str(encounter.get("state") or "rally") == "rally"
+            if not isinstance(roster, dict) or (not roster and not allow_empty_world_rally):
                 raise ValueError("active encounter has no roster")
         hunts = state.get("active_hunts") or {}
         if not isinstance(hunts, dict):
@@ -2242,7 +2250,7 @@ class CrystalGuildEngine:
         meta = self.encounter_roster.get(str(twitch_id))
         if not meta or not encounter:
             return GameResult.fail("That Solo Venture battle state is unavailable. Return to the Adventure Board and refresh.")
-        monster = self.data.monsters[encounter["monster_id"]]
+        monster = self._encounter_monster(encounter)
         round_no = int(encounter.get("round", 1))
         action = meta.get("action")
         if not action:
@@ -2496,6 +2504,140 @@ class CrystalGuildEngine:
         self._remember_adventure_result(twitch_id, summary); self._solo_expedition_delete(twitch_id)
         return GameResult.success("SOLO VENTURE — You retreat safely. Secured XP/JP remain; expedition Gil and loose spoils are abandoned.", solo_result=summary, solo_expedition_finished=True)
 
+    def _encounter_monster(self, encounter: dict[str, Any] | None = None) -> dict[str, Any]:
+        encounter = encounter or self.active_encounter or {}
+        monster_id = str(encounter.get("monster_id") or "")
+        base = copy.deepcopy(self.data.monsters.get(monster_id) or {})
+        override = encounter.get("monster_override")
+        if isinstance(override, dict):
+            base.update(copy.deepcopy(override))
+        return base
+
+    def _world_event_schedule(self) -> dict[str, Any]:
+        row = self.db.runtime_state(WORLD_EVENT_SCHEDULE_STATE_KEY)
+        if not row:
+            return {}
+        try:
+            payload = json.loads(str(row["value_json"] or "{}"))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return {}
+        return payload if isinstance(payload, dict) else {}
+
+    def _save_world_event_schedule(self, payload: dict[str, Any]) -> None:
+        self.db.set_runtime_state(
+            WORLD_EVENT_SCHEDULE_STATE_KEY,
+            json.dumps(payload, separators=(",", ":"), sort_keys=True),
+        )
+
+    def _finish_world_event_schedule(self, event_id: str) -> None:
+        now = int(time.time())
+        cooldown = self.rng.randint(WORLD_EVENT_POST_COOLDOWN_MIN_SECONDS, WORLD_EVENT_POST_COOLDOWN_MAX_SECONDS)
+        until = now + cooldown
+        self._save_world_event_schedule({
+            "last_event_id": str(event_id or ""),
+            "cooldown_until": until,
+            "next_check_at": until,
+        })
+
+    def _highest_character_level(self) -> int:
+        row = self.db.one("SELECT COALESCE(MAX(level),1) AS level FROM players")
+        return max(1, int(row["level"] if row else 1))
+
+    def _scaled_world_event_monster(self, event: dict[str, Any]) -> dict[str, Any]:
+        base = copy.deepcopy(self.data.monsters[str(event["base_monster_id"])])
+        highest = self._highest_character_level()
+        bonus = self.rng.randint(int(event["bonus_min"]), int(event["bonus_max"]))
+        level = min(highest + bonus, highest + WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST)
+        base_level = max(1, int(base.get("level", 1)))
+        ratio = max(0.30, float(level) / float(base_level))
+        hp_ratio = ratio ** 1.30
+        stat_ratio = ratio ** 1.08
+        reward_ratio = max(0.45, ratio)
+        base.update({
+            "name": str(event["name"]),
+            "level": int(level),
+            "hp": max(80, int(round(int(base.get("hp", 1)) * hp_ratio * float(event["hp_mult"])))),
+            "attack": max(8, int(round(int(base.get("attack", 1)) * stat_ratio * float(event["power_mult"])))),
+            "defense": max(5, int(round(int(base.get("defense", 1)) * stat_ratio * (1.05 if event["id"] == "elder_adamantoise" else 1.0)))),
+            "spirit": max(5, int(round(int(base.get("spirit", 1)) * stat_ratio))),
+            "xp": max(10, int(round(int(base.get("xp", 1)) * reward_ratio * float(event["reward_mult"])))),
+            "jp": max(4, int(round(int(base.get("jp", 1)) * reward_ratio * float(event["reward_mult"])))),
+            "gil": max(5, int(round(int(base.get("gil", 1)) * reward_ratio * float(event["reward_mult"])))),
+        })
+        return base
+
+    def world_event_catalog(self) -> list[dict[str, Any]]:
+        return [
+            {
+                "id": str(row["id"]),
+                "name": str(row["name"]),
+                "description": str(row["description"]),
+                "threat": str(row["threat"]),
+                "art": str(row["art"]),
+                "max_level_above_highest": WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST,
+            }
+            for row in WORLD_EVENTS
+        ]
+
+    @_state_guard
+    def maybe_spawn_world_event(self, *, stream_live: bool, now: float | None = None, force: bool = False) -> GameResult:
+        now = float(time.time() if now is None else now)
+        if not stream_live:
+            return GameResult.success(world_event_spawned=False)
+        if self.active_encounter or self.active_boss:
+            return GameResult.success(world_event_spawned=False)
+
+        schedule = self._world_event_schedule()
+        next_check = float(schedule.get("next_check_at") or 0)
+        cooldown_until = float(schedule.get("cooldown_until") or 0)
+        if cooldown_until > now and not force:
+            return GameResult.success(world_event_spawned=False, next_check_at=int(cooldown_until))
+        if next_check <= 0 and not force:
+            next_check = now + WORLD_EVENT_INITIAL_GRACE_SECONDS
+            self._save_world_event_schedule({**schedule, "next_check_at": int(next_check)})
+            return GameResult.success(world_event_spawned=False, next_check_at=int(next_check))
+        if next_check > now and not force:
+            return GameResult.success(world_event_spawned=False, next_check_at=int(next_check))
+
+        if not force and self.rng.random() > WORLD_EVENT_SPAWN_CHANCE:
+            next_check = now + self.rng.randint(WORLD_EVENT_CHECK_MIN_SECONDS, WORLD_EVENT_CHECK_MAX_SECONDS)
+            self._save_world_event_schedule({**schedule, "next_check_at": int(next_check)})
+            return GameResult.success(world_event_spawned=False, next_check_at=int(next_check))
+
+        previous = str(schedule.get("last_event_id") or "")
+        choices = [row for row in WORLD_EVENTS if str(row["id"]) != previous] or list(WORLD_EVENTS)
+        event = copy.deepcopy(self.rng.choice(choices))
+        monster = self._scaled_world_event_monster(event)
+        self._encounter_seq += 1
+        encounter_id = self._encounter_seq
+        closes_at = now + max(self.encounter_join_seconds, WORLD_EVENT_RALLY_SECONDS)
+        self.active_encounter = {
+            "id": encounter_id,
+            "kind": "world_event",
+            "state": "rally",
+            "monster_id": str(event["base_monster_id"]),
+            "monster_override": monster,
+            "world_event_id": str(event["id"]),
+            "region_id": "world_event",
+            "created_at": int(now),
+            "closes_at": closes_at,
+            "starter_id": "world_event",
+        }
+        self.encounter_roster = {}
+        self._save_world_event_schedule({
+            "last_event_id": str(event["id"]),
+            "next_check_at": 0,
+            "cooldown_until": 0,
+        })
+        return GameResult.success(
+            f"WORLD EVENT — {event['name']} (Lv.{monster['level']}) has appeared!",
+            f"NOTORIOUS MONSTER · {event['threat']} threat — rally open {self._format_seconds(int(closes_at - now))}. Type !join or use Stream Activities to answer the call. No raid is started.",
+            world_event_spawned=True,
+            world_event_id=str(event["id"]),
+            encounter_id=encounter_id,
+            closes_at=closes_at,
+        )
+
     @_state_guard
     def venture(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
         p = self._player(twitch_id)
@@ -2568,7 +2710,7 @@ class CrystalGuildEngine:
             weights=encounter_weights,
             k=1,
         )[0]
-        monster = self.data.monsters[encounter["monster_id"]]
+        monster = self._encounter_monster(encounter)
         now = time.time()
         self._encounter_seq += 1
         encounter_id = self._encounter_seq
@@ -2639,17 +2781,25 @@ class CrystalGuildEngine:
         blocked = self._activity_block(twitch_id)
         if blocked:
             return GameResult.fail(blocked)
-        cooldown = self._cooldown_remaining(twitch_id, "venture")
-        if cooldown > 0 and not bypass_cooldown:
-            return GameResult.fail(f"Your hero cannot answer the rally yet. Ready in {self._format_seconds(cooldown)}.")
+        kind = str(self.active_encounter.get("kind") or "venture")
+        if kind != "world_event":
+            cooldown = self._cooldown_remaining(twitch_id, "venture")
+            if cooldown > 0 and not bypass_cooldown:
+                return GameResult.fail(f"Your hero cannot answer the rally yet. Ready in {self._format_seconds(cooldown)}.")
         self.encounter_roster[twitch_id] = {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}
-        self._set_cooldown(twitch_id, "venture", self.venture_cooldown_seconds)
-        self.db.execute(
-            "UPDATE players SET ventures=ventures+1, party_encounters=party_encounters+1, "
-            "updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
-            (twitch_id,),
-        )
-        monster = self.data.monsters[self.active_encounter["monster_id"]]
+        if kind == "world_event":
+            self.db.execute(
+                "UPDATE players SET party_encounters=party_encounters+1, updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                (twitch_id,),
+            )
+        else:
+            self._set_cooldown(twitch_id, "venture", self.venture_cooldown_seconds)
+            self.db.execute(
+                "UPDATE players SET ventures=ventures+1, party_encounters=party_encounters+1, "
+                "updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                (twitch_id,),
+            )
+        monster = self._encounter_monster(self.active_encounter)
         return GameResult.success(
             f"{p['display_name']} joins the fight against {monster['name']}! "
             f"Party: {len(self.encounter_roster)} | "
@@ -2664,7 +2814,7 @@ class CrystalGuildEngine:
         how victory rewards are persisted; HP/MP/action/status setup lives here
         so future combat changes do not fork between the two modes.
         """
-        monster = self.data.monsters[encounter["monster_id"]]
+        monster = self._encounter_monster(encounter)
         combatants = 0
         for pid, meta in list(self.encounter_roster.items()):
             self._finish_rest_if_ready(pid)
@@ -2769,15 +2919,19 @@ class CrystalGuildEngine:
                     if contract:
                         meta["merc_contract"] = contract
         if combatants == 0:
+            if str(encounter.get("kind") or "") == "world_event":
+                self._finish_world_event_schedule(str(encounter.get("world_event_id") or ""))
             self._clear_encounter(int(encounter["id"]))
             return GameResult.success(
-                "ACTIVE BATTLE CANCELLED — nobody in the rally was conscious "
-                "when the gate closed.",
+                ("WORLD EVENT PASSED — no adventurers answered the rally before the threat moved on."
+                 if str(encounter.get("kind") or "") == "world_event"
+                 else "ACTIVE BATTLE CANCELLED — nobody in the rally was conscious when the gate closed."),
                 encounter_finished=True,
             )
 
+        battle_label = "WORLD EVENT" if str(encounter.get("kind") or "") == "world_event" else "ACTIVE BATTLE"
         return GameResult.success(
-            f"ACTIVE BATTLE — {combatants} "
+            f"{battle_label} — {combatants} "
             f"hero{'es' if combatants != 1 else ''} vs {monster['name']} | "
             f"{resource_text('Enemy HP', monster_max, monster_max)}.",
             f"ROUND 1 · {self._format_seconds(self.encounter_round_seconds)} | "
@@ -2829,13 +2983,15 @@ class CrystalGuildEngine:
     def _battle_history_title(self) -> str:
         if not self.active_encounter:
             return "Active Battle"
-        monster = self.data.monsters.get(self.active_encounter.get("monster_id"), {})
+        monster = self._encounter_monster(self.active_encounter)
         kind = self.active_encounter.get("kind", "venture")
         if kind == "hunt":
             hunt = self.data.hunts.get(self.active_encounter.get("hunt_id"), {})
             return f"[{hunt.get('rank', '?')}] {hunt.get('name', 'Hunt')} · {monster.get('name', 'Monster')}"
         if kind == "solo_venture":
             return f"Solo Venture · {monster.get('name', 'Monster')}"
+        if kind == "world_event":
+            return f"World Event · {monster.get('name', 'Notorious Monster')}"
         return str(monster.get("name", "Active Battle"))
 
     @_state_guard
@@ -2870,8 +3026,9 @@ class CrystalGuildEngine:
             )
 
         state = self.active_encounter.get("state", "rally")
-        monster = self.data.monsters[self.active_encounter["monster_id"]]
-        region = self.data.regions[self.active_encounter["region_id"]]
+        monster = self._encounter_monster(self.active_encounter)
+        region_id = str(self.active_encounter.get("region_id") or "")
+        region = self.data.regions.get(region_id) or ({"name": "The Realm"} if self.active_encounter.get("kind") == "world_event" else {"name": region_id or "Unknown Region"})
         now = time.time()
         if state == "rally":
             remaining = max(0, int(float(self.active_encounter["closes_at"]) - now))
@@ -2908,6 +3065,8 @@ class CrystalGuildEngine:
             battle_label = f"ACTIVE HUNT [{hunt['rank']}] — {hunt['name']} · {monster['name']}"
         elif self.active_encounter.get("kind") == "solo_venture":
             battle_label = f"SOLO VENTURE — {monster['name']}"
+        elif self.active_encounter.get("kind") == "world_event":
+            battle_label = f"WORLD EVENT — {monster['name']}"
         else:
             battle_label = f"ACTIVE BATTLE — {monster['name']}"
 
@@ -3334,7 +3493,7 @@ class CrystalGuildEngine:
         target_name: str
         if target_mode == "enemy":
             target_id = "monster"
-            target_name = self.data.monsters[self.active_encounter["monster_id"]]["name"]
+            target_name = self._encounter_monster(self.active_encounter)["name"]
         elif target_mode == "party":
             target_id = "party"
             target_name = "party"
@@ -3736,7 +3895,7 @@ class CrystalGuildEngine:
                 before = int(self.active_encounter.get("monster_hp", 0))
                 amount = max(0, int(effect.get("amount", 0)))
                 element = effect.get("element")
-                monster_weakness = self.data.monsters[self.active_encounter["monster_id"]].get("weakness")
+                monster_weakness = self._encounter_monster(self.active_encounter).get("weakness")
                 if element and monster_weakness and str(monster_weakness).lower() == str(element).lower():
                     amount = int(amount * 1.30)
                 self.active_encounter["monster_hp"] = max(0, before - amount)
@@ -4149,7 +4308,7 @@ class CrystalGuildEngine:
         if self.active_encounter.get("state", "rally") == "rally":
             return self.start_encounter_battle(encounter_id)
 
-        monster = self.data.monsters[self.active_encounter["monster_id"]]
+        monster = self._encounter_monster(self.active_encounter)
         round_no = int(self.active_encounter.get("round", 1))
         living = [
             (pid, row)
@@ -4315,7 +4474,7 @@ class CrystalGuildEngine:
             self._remember_round(round_no or int(self.active_encounter.get("round", 1)), round_log)
         encounter = dict(self.active_encounter)
         active_id = int(encounter["id"])
-        monster = self.data.monsters[encounter["monster_id"]]
+        monster = self._encounter_monster(encounter)
         kind = encounter.get("kind", "venture")
         hunt = self.data.hunts.get(encounter.get("hunt_id")) if kind == "hunt" else None
         resolved_round = round_no or int(encounter.get("round", 1))
@@ -4445,16 +4604,17 @@ class CrystalGuildEngine:
                         + rally_note
                     )
                     levelup_lines.extend(rewards.get("levelups", []))
-                    fellowship_lines.extend(self.fellowship_system.record_activity(
-                        pid,
-                        "venture_complete",
-                        renown=SOLO_VENTURE_FELLOWSHIP_RENOWN if kind == "solo_venture" else None,
-                        event_key=f"{kind}_complete:{active_id}:{pid}",
-                    ))
+                    if kind in {"venture", "solo_venture"}:
+                        fellowship_lines.extend(self.fellowship_system.record_activity(
+                            pid,
+                            "venture_complete",
+                            renown=SOLO_VENTURE_FELLOWSHIP_RENOWN if kind == "solo_venture" else None,
+                            event_key=f"{kind}_complete:{active_id}:{pid}",
+                        ))
                     fellowship_lines.extend(self.fellowship_system.record_activity(
                         pid, "encounter_win", renown=0, event_key=f"encounter_win:{active_id}:{pid}"
                     ))
-                    fellowship_lines.extend(self._award_chocobo_xp(pid, 12))
+                    fellowship_lines.extend(self._award_chocobo_xp(pid, 18 if kind == "world_event" else 12))
 
                 if hunt and not won:
                     hunt_results[str(pid)] = {
@@ -4487,10 +4647,11 @@ class CrystalGuildEngine:
                 achievement_lines.extend(player_achievements)
                 if str(pid) in hunt_results:
                     hunt_results[str(pid)]["rewards"]["achievements"] = [str(value) for value in player_achievements[:4]]
-                if kind == "venture":
+                if kind in {"venture", "world_event"}:
                     mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
+                    outcome_label = ("World Event victory" if won else "World Event defeat") if kind == "world_event" else ("Venture victory" if won else "Venture defeat")
                     parts = [
-                        "Venture victory" if won else "Venture defeat",
+                        outcome_label,
                         f"{int(meta.get('damage', 0)):,} DMG",
                         f"{int(meta.get('damage_taken', 0)):,} taken",
                         f"{int(meta.get('healing', 0)):,} heal",
@@ -4528,9 +4689,10 @@ class CrystalGuildEngine:
                 if first_clear_lines:
                     messages.append("FIRST CLEAR — " + " | ".join(first_clear_lines[:5]))
             elif won:
-                if kind == "venture":
+                if kind in {"venture", "world_event"}:
+                    prefix = "WORLD EVENT DEFEATED" if kind == "world_event" else "VENTURE VICTORY"
                     messages.append(
-                        f"VENTURE VICTORY — {monster['name']} falls in {resolved_round} rounds. "
+                        f"{prefix} — {monster['name']} falls in {resolved_round} rounds. "
                         f"{len(participant_result_messages)} adventurer{'s' if len(participant_result_messages) != 1 else ''} participated. "
                         "Personal results incoming."
                     )
@@ -4547,9 +4709,10 @@ class CrystalGuildEngine:
                     f"{reason or 'The mark remains on the board.'}"
                 )
             else:
-                if kind == "venture":
+                if kind in {"venture", "world_event"}:
+                    prefix = "WORLD EVENT ESCAPED" if kind == "world_event" else "VENTURE DEFEAT"
                     messages.append(
-                        f"VENTURE DEFEAT — {monster['name']} survives with "
+                        f"{prefix} — {monster['name']} survives with "
                         f"{int(encounter.get('monster_hp', monster['hp'])):,} HP after {resolved_round} rounds. "
                         f"{len(participant_result_messages)} adventurer{'s' if len(participant_result_messages) != 1 else ''} participated. "
                         "Personal results incoming."
@@ -4561,9 +4724,9 @@ class CrystalGuildEngine:
                         f"{reason or 'The campfire is about to become very popular.'}"
                     )
 
-            if levelup_lines and kind != "venture":
+            if levelup_lines and kind not in {"venture", "world_event"}:
                 messages.append("Level up! " + " | ".join(levelup_lines[:6]))
-            if achievement_lines and kind != "venture":
+            if achievement_lines and kind not in {"venture", "world_event"}:
                 messages.append("Achievement unlocked: " + " | ".join(achievement_lines[:4]))
             if fellowship_lines:
                 messages.append("Fellowship — " + " | ".join(dict.fromkeys(fellowship_lines[:6])))
@@ -4621,10 +4784,13 @@ class CrystalGuildEngine:
                 solo_result=solo_result,
                 resolved_immediately=kind == "solo_venture",
                 notification_limit=4,
-                participant_result_messages=participant_result_messages if kind == "venture" else [],
-                participant_message_delay_seconds=1.5 if kind == "venture" else 0.0,
+                participant_result_messages=participant_result_messages if kind in {"venture", "world_event"} else [],
+                participant_message_delay_seconds=1.5 if kind in {"venture", "world_event"} else 0.0,
+                world_event_finished=kind == "world_event",
             )
         finally:
+            if str(kind) == "world_event":
+                self._finish_world_event_schedule(str(encounter.get("world_event_id") or ""))
             self._clear_encounter(active_id)
 
     @_state_guard
@@ -5277,7 +5443,7 @@ class CrystalGuildEngine:
             if not self.active_encounter or twitch_id not in self.encounter_roster:
                 raise ValueError("timed Hunt combat snapshot is incomplete")
             encounter_id = int(self.active_encounter["id"])
-            monster = self.data.monsters[self.active_encounter["monster_id"]]
+            monster = self._encounter_monster(self.active_encounter)
             hunt = self.data.hunts[self.active_encounter["hunt_id"]]
             rank = str(hunt.get("rank", "C")).upper()
             last_meta: dict[str, Any] | None = None
@@ -8297,7 +8463,7 @@ class CrystalGuildEngine:
         meta = self.encounter_roster.get(str(twitch_id))
         if not meta or not encounter:
             return GameResult.fail("That Dungeon battle state is unavailable. Refresh the Adventure Board.")
-        monster = self.data.monsters[encounter["monster_id"]]
+        monster = self._encounter_monster(encounter)
         round_no = int(encounter.get("round", 1))
         action = meta.get("action")
         if not action:
@@ -8483,9 +8649,10 @@ class CrystalGuildEngine:
         the Bot; ally targeting round-trips through usernames instead.
         """
         event = str(event or "").strip().lower()
-        if event == "venture":
+        if event in {"venture", "world_event"}:
             encounter = self.active_encounter
-            if not encounter or str(encounter.get("kind") or "venture") != "venture" or str(encounter.get("state") or "") != "combat":
+            expected_kind = "world_event" if event == "world_event" else "venture"
+            if not encounter or str(encounter.get("kind") or "venture") != expected_kind or str(encounter.get("state") or "") != "combat":
                 return None
             meta = self.encounter_roster.get(str(twitch_id))
             roster = self.encounter_roster
@@ -8655,9 +8822,10 @@ class CrystalGuildEngine:
             )
         event = str(event or "").strip().lower()
         expected = str(event_id or "").strip()
-        if event == "venture":
+        if event in {"venture", "world_event"}:
             encounter = self.active_encounter
-            if not encounter or str(encounter.get("kind") or "venture") != "venture" or str(encounter.get("state") or "") != "rally" or str(encounter.get("id") or "") != expected:
+            expected_kind = "world_event" if event == "world_event" else "venture"
+            if not encounter or str(encounter.get("kind") or "venture") != expected_kind or str(encounter.get("state") or "") != "rally" or str(encounter.get("id") or "") != expected:
                 result = self._portal_live_event_stale()
             else:
                 result = self.join_encounter(twitch_id)
@@ -8705,11 +8873,12 @@ class CrystalGuildEngine:
             round_no = 0
 
         stale = False
-        if event == "venture":
+        if event in {"venture", "world_event"}:
             encounter = self.active_encounter
+            expected_kind = "world_event" if event == "world_event" else "venture"
             stale = bool(
                 not encounter
-                or str(encounter.get("kind") or "venture") != "venture"
+                or str(encounter.get("kind") or "venture") != expected_kind
                 or str(encounter.get("state") or "") != "combat"
                 or str(encounter.get("id") or "") != event_id
                 or int(encounter.get("round") or 0) != round_no
@@ -8853,7 +9022,7 @@ class CrystalGuildEngine:
         encounter_payload: dict[str, Any] | None = None
         if self.active_encounter:
             encounter = self.active_encounter
-            monster = self.data.monsters.get(encounter.get("monster_id"), {})
+            monster = self._encounter_monster(encounter)
             region = self.data.regions.get(encounter.get("region_id"), {})
             state = str(encounter.get("state", "rally"))
             kind = str(encounter.get("kind", "venture"))
@@ -8878,11 +9047,12 @@ class CrystalGuildEngine:
             join_reason = ""
             if kind == "solo_venture":
                 join_reason = "Solo Venture battles do not open a rally."
-            elif kind == "venture":
+            elif kind in {"venture", "world_event"}:
+                label = "World Event" if kind == "world_event" else "Stream Venture"
                 if state != "rally":
                     join_reason = "The rally has closed and combat is underway."
                 elif joined_encounter:
-                    join_reason = "You are already in this Stream Venture."
+                    join_reason = f"You are already in this {label}."
                 elif stream_live is not True:
                     join_reason = "Portal rally commands are available while the Twitch stream is LIVE."
                 elif p["current_job"] == "adventurer":
@@ -8899,11 +9069,11 @@ class CrystalGuildEngine:
                     join_reason = f"Your hunter returns in {self._format_seconds(active_hunt['remaining_seconds'])}."
                 elif joined_raid:
                     join_reason = "Finish your active raid before joining the rally."
-                elif venture_remaining > 0:
+                elif kind == "venture" and venture_remaining > 0:
                     join_reason = f"Your hero can answer another Venture rally in {self._format_seconds(venture_remaining)}."
                 else:
                     can_join = True
-            elif kind != "venture":
+            elif kind not in {"venture", "world_event"}:
                 join_reason = "Hunt marks are solo battles."
             hunt_info = None
             if kind == "hunt" and encounter.get("hunt_id") in self.data.hunts:
@@ -8938,9 +9108,18 @@ class CrystalGuildEngine:
                 "you_joined": joined_encounter,
                 "can_join": can_join,
                 "join_reason": join_reason,
-                "web_combat_controls": bool(kind == "venture" and state == "combat" and joined_encounter and stream_live is True),
-                "controls": self._portal_live_combat_controls(twitch_id, event="venture") if kind == "venture" and state == "combat" and joined_encounter and stream_live is True else None,
+                "web_combat_controls": bool(kind in {"venture", "world_event"} and state == "combat" and joined_encounter and stream_live is True),
+                "controls": self._portal_live_combat_controls(twitch_id, event=("world_event" if kind == "world_event" else "venture")) if kind in {"venture", "world_event"} and state == "combat" and joined_encounter and stream_live is True else None,
             }
+            if kind == "world_event":
+                event_def = WORLD_EVENTS_BY_ID.get(str(encounter.get("world_event_id") or ""), {})
+                encounter_payload["world_event"] = {
+                    "id": str(event_def.get("id") or encounter.get("world_event_id") or ""),
+                    "name": str(event_def.get("name") or monster.get("name") or "World Event"),
+                    "description": str(event_def.get("description") or ""),
+                    "threat": str(event_def.get("threat") or "Notorious"),
+                    "art": str(event_def.get("art") or ""),
+                }
 
         raid_payload: dict[str, Any] | None = None
         if self.active_boss:
@@ -9207,6 +9386,14 @@ class CrystalGuildEngine:
                 "expedition": solo_expedition,
             },
             "encounter": encounter_payload,
+            "world_events": {
+                # Keep the high-frequency Adventure State below its long-standing
+                # 16 KiB safety ceiling. The matching Web build carries the
+                # versioned ten-monster display catalog; Bot snapshots only need
+                # live World Event state and the authoritative scaling contract.
+                "active": bool(encounter_payload and encounter_payload.get("kind") == "world_event"),
+                "max_level_above_highest": int(WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST),
+            },
             "active_hunt": active_hunt,
             "hunts": hunts,
             "recent_result": recent_result,
