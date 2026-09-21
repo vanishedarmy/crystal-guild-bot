@@ -1,9 +1,8 @@
-# Crystal Guild v1.9.0 Alpha 3 — Title Expansion
-# Runtime: 1.9.0-title-expansion-alpha3
-# Schema: 19 · Hosted sync: 1 · Portal Action protocol: 36
-# Preserves the Moogle Trading Post and Alpha 2 economy balance while expanding purchased, earned, and secret titles.
-# Packaged source files: 222
-# Files
+# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility
+# Runtime: 1.9.0-navigation-accessibility-alpha4
+# Carried forward systems include Moogle Trading Post, Title Expansion, Economy Balance, Merc Service, Fellowship, and Gold Saucer.
+# Files: 223
+
 .env.example
 .gitignore
 .python-version
@@ -32,6 +31,7 @@ MERC_SERVICE_HOTFIX2.md
 MERC_SERVICE_HOTFIX3.md
 MERC_SERVICE_RC1_RELEASE_NOTES.md
 MERC_SERVICE_RC1_VALIDATION.md
+PACKAGE_MANIFEST.txt
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt

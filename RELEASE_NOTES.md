@@ -1,28 +1,23 @@
-# Crystal Guild v1.9.0 Alpha 3 — Title Expansion
+# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility
 
-## Overview
-Alpha 3 expands Titles across the Gold Saucer and the wider Crystal Guild while keeping the progression philosophy intentionally non-grindy. Cosmetic purchases remain affordable; prestige titles come from meaningful breadth or memorable achievements; secret titles remain hidden until earned.
+Alpha 4 improves the adventurer profile navigation without changing gameplay balance or player progression. The existing Crystal Guild navy/gold identity remains intact, while each destination gains a restrained accent family for faster visual recognition.
 
-## Gold Saucer
-- Adds four affordable Prize Counter titles: **One More Spin** (750 MGP), **Probably Rigged** (1,000), **Bird Is the Word** (1,250), and **Card Shark** (1,500).
-- Adds earned Challenge Titles for lifetime MGP, Mini Cactpot jackpot, Crystal Slots jackpot, Monster Toss performance, Chocobo Racing wins, Triple Triad streaks, attraction variety, and Saucer participation.
-- **Golden Saucer** is a breadth-based prestige title: unlock six other Gold Saucer achievements rather than grinding one giant counter.
-- Secret Gold Saucer challenges hide their title, condition, and progress until completed.
-- Alpha 2 economy values remain intact; this release does not raise MGP costs or reduce payouts.
+## Navigation changes
+- Section buttons now use subtle color families while retaining their icon and text labels, so color is never the only identification cue.
+- Active tabs use stronger borders, brighter copy, accent glow, and the existing `aria-selected` state.
+- Keyboard focus uses a high-contrast gold outline independent of the section accent.
+- Responsive layout is 6 columns on wide desktop, 4 on compact desktop, 3 on tablet, and 2 touch-friendly columns on mobile.
+- Mobile keeps the actual navigation buttons instead of replacing them with the generic section dropdown; long labels may wrap safely.
+- `prefers-contrast: more` and `prefers-reduced-motion: reduce` receive explicit treatments.
 
-## Wider title catalog
-New progression/FF-flavored titles include **Warrior of Light**, **Treasure Hunter**, **Limit Breaker**, and **Chocobo Knight**. New sarcastic rewards include **Professional Hoarder** and **Worth It.**
-
-A new secret achievement awards **Oh hi Mark.** after clearing the same Hunt mark three times. The player-facing Guide and normal locked-achievement UI do not reveal this condition.
-
-## Catalog totals
-- **121 titles**
-- **89 achievements**
+## Carried forward unchanged
+- v1.9.0 Alpha 3 Title Expansion and retroactive achievement/title evaluation.
+- v1.9.0 Alpha 2 economy balance and Gold Saucer payouts.
+- Moogle Trading Post, Merc Service, Fellowship, Resynthesis, Retainers, inventory/equipment, and all existing progression.
 
 ## Compatibility
-- Runtime/frontend: `1.9.0-title-expansion-alpha3`
-- Local database schema: **19**
+- Runtime/frontend: `1.9.0-navigation-accessibility-alpha4`
+- Local schema: **19**
 - Hosted sync schema: **1**
 - Portal Action protocol: **36**
-- No player reset.
-- No database migration from v1.9.0 Alpha 2.
+- No database migration or player reset is required.

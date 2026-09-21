@@ -39,7 +39,7 @@ class MercServiceAlpha2Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_identity_and_rebalanced_fees(self):
-        self.assertEqual(__version__, "1.9.0-title-expansion-alpha3")
+        self.assertEqual(__version__, "1.9.0-navigation-accessibility-alpha4")
         self.assertEqual(
             {hero: HEROES_BY_ID[hero]["fee_seals"] for hero in ("aerith", "tifa", "zidane", "yuna", "balthier", "cloud")},
             {"aerith": 5, "tifa": 6, "zidane": 5, "yuna": 7, "balthier": 9, "cloud": 12},

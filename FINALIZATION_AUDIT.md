@@ -1,21 +1,23 @@
-# Crystal Guild v1.9.0 Alpha 3 — Title Expansion Finalization Audit
+# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility Finalization Audit
 
 ## Release identity
-- Visible release: **v1.9.0 Alpha 3 — Title Expansion**
-- Runtime/frontend: `1.9.0-title-expansion-alpha3`
-- Frontend package: `1.9.0-alpha.3`
+- Visible release: **v1.9.0 Alpha 4 — Navigation Accessibility**
+- Runtime/frontend: `1.9.0-navigation-accessibility-alpha4`
+- Frontend package: `1.9.0-alpha.4`
 - Local schema: **19**
 - Hosted sync: **1**
 - Portal Action protocol: **36**
 
 ## Scope verified
-- Moogle Trading Post and Alpha 2 economy balance remain intact.
-- Gold Saucer Prize Counter gains four affordable purchased titles.
-- Gold Saucer Challenge Titles are earned separately from purchases.
-- Challenge progress uses authoritative persistent Gold Saucer records.
-- Secret achievements hide their identity and progress until unlocked.
-- Wider FF/progression and sarcastic title milestones are included.
-- No schema or protocol bump is required.
+- Profile destinations retain their established order and feature routing.
+- Every destination keeps a non-color identity via icon + label.
+- Accent families improve scanning while maintaining readable foreground contrast.
+- Active and keyboard-focus states remain visually distinct.
+- Navigation reflows 6 → 4 → 3 → 2 columns across desktop, compact desktop, tablet, and mobile.
+- The mobile dropdown fallback is replaced by touch-sized section buttons.
+- High-contrast and reduced-motion preferences receive dedicated CSS behavior.
+- Alpha 3 titles, Alpha 2 economy balance, Gold Saucer values, Trading Post, and all gameplay systems remain unchanged.
+- No schema or Portal protocol bump is required.
 
-## Non-grind guardrail
-Prestige conditions favor breadth, skill moments, or naturally accumulated milestones. No existing MGP payout was reduced and no existing prize cost was increased in Alpha 3.
+## Accessibility guardrail
+Color is supplementary only. Navigation remains identifiable through text, iconography, selection semantics, and a high-contrast focus ring.

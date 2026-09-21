@@ -38,7 +38,7 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         self.db.close(); self.temp.cleanup()
 
     def test_release_contract_and_roster(self):
-        self.assertEqual(__version__, "1.9.0-title-expansion-alpha3")
+        self.assertEqual(__version__, "1.9.0-navigation-accessibility-alpha4")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
         self.assertEqual(self.db.schema_version(), 19)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)

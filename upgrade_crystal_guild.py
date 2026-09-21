@@ -72,7 +72,7 @@ def main() -> int:
     _upgrade_combat_timing_defaults()
     load_dotenv()
     db_path = Path(os.getenv("DATABASE_PATH", "crystal_guild.db"))
-    print("Crystal Guild v1.9.0 Alpha 3 Title Expansion — In-place Upgrade Check")
+    print("Crystal Guild v1.9.0 Alpha 4 Navigation Accessibility — In-place Upgrade Check")
     print(f"Database: {db_path}")
     if not db_path.exists():
         print("INFO — no existing Guild database found; nothing to migrate.")

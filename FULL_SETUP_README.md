@@ -1,13 +1,13 @@
-# Crystal Guild v1.9.0 Alpha 3 — Title Expansion Setup
+# Crystal Guild v1.9.0 Alpha 4 — Navigation Accessibility Setup
 
-**Current Alpha 3 note:** Title Expansion adds earned and secret title milestones without changing schema 19, hosted sync 1, or Portal Action protocol 36. Alpha 2 economy balance remains intact. Deploy the matching Bot and Web together; no player reset or Alpha 2 → Alpha 3 database migration is required.
+**Current Alpha 4 note:** Navigation Accessibility improves profile section recognition and responsive navigation without changing schema 19, hosted sync 1, Portal Action protocol 36, economy values, or title progression. Deploy the matching Bot and Web together; no player reset or Alpha 3 → Alpha 4 database migration is required.
 
 ## Existing installation
 Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. Existing schema 19 databases open in place. Older schema 18 installations still receive the existing automatic 18 → 19 migration with a verified backup.
 
 ## Release verification
-- Bot runtime → `1.9.0-title-expansion-alpha3`
-- Paired Web → `1.9.0-title-expansion-alpha3`
+- Bot runtime → `1.9.0-navigation-accessibility-alpha4`
+- Paired Web → `1.9.0-navigation-accessibility-alpha4`
 - Local DB schema → **19**
 - Hosted sync schema → **1**
 - Portal Action protocol → **36**
