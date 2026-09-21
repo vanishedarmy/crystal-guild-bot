@@ -1,3 +1,4 @@
+Crystal Guild v1.9.0 Alpha 6 — World Events — Moogle Trading Post — Progress Accounting Hardening Hotfix 5
 .env.example
 .gitignore
 .python-version
@@ -28,12 +29,14 @@ MERC_SERVICE_RC1_RELEASE_NOTES.md
 MERC_SERVICE_RC1_VALIDATION.md
 MOOGLE_ANNEX_CATEGORY_STOCK_HOTFIX4.md
 MOOGLE_ANNEX_STOCK_HOTFIX3.md
+PACKAGE_MANIFEST.txt
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt
 RELEASE_NOTES.md
 RENDER_CLOUD_SETUP.md
 SIMPLE_RENDER_SETUP.md
+TASK_COMPLETION_HARDENING_HOTFIX5.md
 TITLE_EXPANSION.md
 UI_CONSISTENCY_RC2_RELEASE_NOTES.md
 UI_CONSISTENCY_RC2_VALIDATION.md
@@ -206,6 +209,7 @@ tests/test_retainer_alpha2.py
 tests/test_setup.py
 tests/test_stream_status.py
 tests/test_subscription_status.py
+tests/test_task_completion_hardening_hotfix5.py
 tests/test_title_expansion_alpha3.py
 tests/test_title_status_hardening_alpha5.py
 tests/test_trading_post_alpha1.py

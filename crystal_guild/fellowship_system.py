@@ -172,6 +172,24 @@ class FellowshipSystem:
         hours = float(mission["duration_hours"]) * (1.0 - (0.06 * engine))
         return max(6 * 3600, int(round(hours * 3600)))
 
+    @staticmethod
+    def _activity_semantics(activity: str) -> set[str]:
+        """Return every requirement family satisfied by one completed activity.
+
+        Source-specific events remain distinct for Hunts, Raids, Ventures, and
+        other systems, while broad labels such as ``combat_victory`` and
+        ``monster_victory`` are treated the way players naturally read them.
+        This keeps Fellowship construction, Weekly Orders, Deeds, and Airship
+        missions aligned even as new combat sources are added.
+        """
+        activity = str(activity)
+        semantics = {activity}
+        if activity in {"encounter_win", "hunt_win", "monster_victory"}:
+            semantics.update({"combat_victory", "monster_victory"})
+        elif activity == "raid_win":
+            semantics.add("combat_victory")
+        return semantics
+
     def _progress_airship_mission(self, conn: Any, player_id: str | None, activity: str, amount: int) -> None:
         state = conn.execute("SELECT * FROM fellowship_airship_state WHERE singleton_id=1").fetchone()
         if not state or not int(state["built"] or 0) or not state["active_mission_id"]:
@@ -182,7 +200,14 @@ class FellowshipSystem:
         mission = self._airship_mission_definition(str(state["active_mission_id"]))
         if not mission:
             return
-        weight = int((mission.get("activities") or {}).get(str(activity), 0))
+        activity_weights = mission.get("activities") or {}
+        # A source event may satisfy a broader activity family (for example a
+        # Hunt win is also a combat victory). Use the strongest matching weight
+        # rather than summing aliases, so one victory can never double-count.
+        weight = max(
+            (int(activity_weights.get(candidate, 0)) for candidate in self._activity_semantics(activity)),
+            default=0,
+        )
         if weight <= 0:
             return
         before = max(0, int(state["progress"] or 0))
@@ -1126,9 +1151,7 @@ class FellowshipSystem:
         project = PROJECTS.get(project_id)
         if not project:
             return
-        accepted_activities = {activity}
-        if activity in {"encounter_win", "hunt_win"}:
-            accepted_activities.update({"combat_victory", "monster_victory"})
+        accepted_activities = self._activity_semantics(activity)
         for candidate in accepted_activities:
             key = f"activity:{candidate}"
             req = next((req for req in project["requirements"] if req["key"] == key), None)
@@ -1149,13 +1172,11 @@ class FellowshipSystem:
                 if player_id:
                     conn.execute("INSERT OR IGNORE INTO fellowship_project_members(project_id,player_id) VALUES (?,?)", (project_id, player_id))
 
-    @staticmethod
-    def _activity_matches(order_activity: str, activity: str) -> bool:
-        if order_activity == activity:
+    @classmethod
+    def _activity_matches(cls, order_activity: str, activity: str) -> bool:
+        if order_activity in cls._activity_semantics(activity):
             return True
         if order_activity == "craft_forge" and activity in {"craft", "forge"}:
-            return True
-        if order_activity == "combat_victory" and activity in {"encounter_win", "hunt_win"}:
             return True
         return False
 
@@ -1184,7 +1205,7 @@ class FellowshipSystem:
 
     def _progress_deeds(self, conn: Any, player_id: str | None, activity: str, amount: int) -> None:
         for deed in DEEDS:
-            if deed["activity"] != activity:
+            if not self._activity_matches(str(deed["activity"]), activity):
                 continue
             row = conn.execute("SELECT progress,target,completed_at FROM fellowship_deeds WHERE deed_id=?", (deed["id"],)).fetchone()
             if not row or row["completed_at"]:

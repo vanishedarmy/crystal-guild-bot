@@ -1,3 +1,13 @@
+## v1.9.0 Alpha 6 — Progress Accounting Hardening Hotfix 5
+
+- Broad Fellowship requirements now use shared activity semantics instead of narrow source assumptions.
+- `Monsters defeated` counts valid Bestiary kills from encounters, Hunts, Ventures, Solo Ventures, Expeditions, Dungeons, and World Events.
+- `Combat victories` counts all monster victories plus Raid victories.
+- Solo Venture, Expedition, and Dungeon monster kills now emit replay-safe canonical monster-victory receipts.
+- Airship mission alias matching uses the strongest applicable activity weight so one victory cannot double-count.
+- Weekly Orders and Deeds use the same semantic matcher as Fellowship construction.
+- No schema, action protocol, balance, or player reset change.
+
 # Crystal Guild Changelog
 
 ## v1.9.0 Alpha 6 — Moogle Annex Category Stock Hotfix 4

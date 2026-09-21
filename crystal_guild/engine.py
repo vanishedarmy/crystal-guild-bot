@@ -2318,6 +2318,15 @@ class CrystalGuildEngine:
     def _finish_solo_stage_victory(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
         self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
         rewards = self._solo_roll_stage_rewards(twitch_id, monster, int(expedition.get("stage", 1)))
+        self.fellowship_system.record_activity(
+            str(twitch_id),
+            "monster_victory",
+            renown=0,
+            event_key=(
+                f"monster_victory:solo_venture:{twitch_id}:"
+                f"{int(expedition.get('started_at', 0))}:{int(expedition.get('stage', 1))}:{monster['id']}"
+            ),
+        )
         contract = meta.get("merc_contract") if isinstance(meta, dict) else None
         if isinstance(contract, dict) and str(contract.get("hero_id") or "") in {"zidane", "balthier"} and not expedition.get("merc_bonus_loot_attempted"):
             bonus = self._merc_bonus_loot(twitch_id, meta, list(monster.get("drops", [])), source=f"merc:solo_venture:{monster['id']}", grant=False)
@@ -7425,6 +7434,15 @@ class CrystalGuildEngine:
                 "ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1",
                 (str(twitch_id), str(monster["id"])),
             )
+        self.fellowship_system.record_activity(
+            str(twitch_id),
+            "monster_victory",
+            renown=0,
+            event_key=(
+                f"monster_victory:expedition:{twitch_id}:"
+                f"{int(state.get('started_at', 0))}:{len(state.get('history') or [])}:{monster['id']}"
+            ),
+        )
         self._record_combat_metrics(
             twitch_id,
             meta.get("job_id"),
@@ -8546,6 +8564,15 @@ class CrystalGuildEngine:
         with self.db.tx() as conn:
             conn.execute("UPDATE players SET monsters_defeated=monsters_defeated+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (str(twitch_id),))
             conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (str(twitch_id), str(monster["id"])))
+        self.fellowship_system.record_activity(
+            str(twitch_id),
+            "monster_victory",
+            renown=0,
+            event_key=(
+                f"monster_victory:dungeon:{twitch_id}:"
+                f"{str(state.get('run_id') or state.get('started_at') or '')}:{room_index}:{monster['id']}"
+            ),
+        )
         self._record_combat_metrics(twitch_id, meta.get("job_id"), monster["id"], battle_type="venture", won=True, knocked_out=False, damage_dealt=int(meta.get("damage", 0)), damage_taken=int(meta.get("damage_taken", 0)), healing_done=int(meta.get("healing", 0)), best_hit=int(meta.get("best_hit", 0)))
         state["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
         state.setdefault("history", []).append({"room": room_index + 1, "type": "victory", "label": f"Defeated {monster['name']}"})

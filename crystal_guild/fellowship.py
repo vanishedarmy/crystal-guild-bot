@@ -525,7 +525,7 @@ for _upgrade_id, _upgrade in AIRSHIP_UPGRADES.items():
 
 ORDER_DEFINITIONS = [
     {"id": "into_the_wilds", "name": "Into the Wilds", "activity": "venture_complete", "target": 75, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Complete Ventures together."},
-    {"id": "monster_hunters", "name": "Monster Hunters", "activity": "combat_victory", "target": 40, "renown": 350, "personal_gil": 500, "personal_renown": 25, "description": "Win normal encounters or Hunts."},
+    {"id": "monster_hunters", "name": "Monster Hunters", "activity": "combat_victory", "target": 40, "renown": 350, "personal_gil": 500, "personal_renown": 25, "description": "Win battles across encounters, Hunts, Ventures, Expeditions, Dungeons, World Events, or Raids."},
     {"id": "bounty_board", "name": "Bounty Board", "activity": "hunt_win", "target": 15, "renown": 400, "personal_gil": 600, "personal_renown": 25, "description": "Defeat Hunt marks."},
     {"id": "hammer_and_tongs", "name": "Hammer & Tongs", "activity": "craft_forge", "target": 35, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Craft items or complete forge upgrades."},
     {"id": "treasure_seekers", "name": "Treasure Seekers", "activity": "treasure", "target": 25, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Discover Venture treasure chests."},
