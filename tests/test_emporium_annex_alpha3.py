@@ -53,15 +53,15 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         self.assertEqual(targets["activity:craft"], 20)
         self.assertEqual(targets["fellowship_level"], 3)
 
-    def test_completion_expands_cached_rotations_from_nine_to_twelve(self):
+    def test_completion_expands_cached_rotations_from_nine_to_fifteen(self):
         stock_before, _ = self.game._shop_stock("100")
         self.assertEqual(len(stock_before), 9)
         self.assertEqual(self.game.fellowship_system.emporium_stock_slots(), 9)
 
         self.db.execute("UPDATE fellowship_facilities SET tier=1 WHERE facility_id='emporium_annex'")
         stock_after, _ = self.game._shop_stock("100")
-        self.assertEqual(self.game.fellowship_system.emporium_stock_slots(), 12)
-        self.assertEqual(len(stock_after), 12)
+        self.assertEqual(self.game.fellowship_system.emporium_stock_slots(), 15)
+        self.assertEqual(len(stock_after), 15)
         cached = self.db.one("SELECT stock_json FROM player_shops WHERE player_id='100'")
         self.assertIn(stock_after[-1]["id"], str(cached["stock_json"]))
 
@@ -75,11 +75,11 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         opened = self.game.portal_shop_state("100")
         self.assertTrue(opened.ok)
         self.assertTrue(opened.data["annex_unlocked"])
-        self.assertEqual(opened.data["stock_slots"], 12)
-        self.assertEqual(opened.data["annex_bonus_slots"], 3)
+        self.assertEqual(opened.data["stock_slots"], 15)
+        self.assertEqual(opened.data["annex_bonus_slots"], 6)
         services = self.game.fellowship_system.workshop_services_snapshot("100")["emporium_annex"]
         self.assertTrue(services["unlocked"])
-        self.assertEqual(services["stock_slots"], 12)
+        self.assertEqual(services["stock_slots"], 15)
 
     def test_project_completion_constructs_annex_once(self):
         self.db.execute("UPDATE fellowship_state SET level=3,renown=5000 WHERE singleton_id=1")

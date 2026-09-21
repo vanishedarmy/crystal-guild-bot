@@ -6007,7 +6007,7 @@ class CrystalGuildEngine:
             remaining = [i for i in by_type[kind] if i not in stock]
             stock.extend(self._weighted_shop_sample(remaining, count, level, job_id))
 
-        # The Guild-funded Annex adds three additional choices without changing
+        # The Guild-funded Annex adds six additional choices without changing
         # the original nine-slot composition, prices, rarity weights, or refresh timer.
         if len(stock) < stock_limit:
             remaining = [i for i in eligible if i not in stock]
@@ -13274,7 +13274,7 @@ class CrystalGuildEngine:
             stock=[item_payload(item) for item in stock],
             stock_slots=self.fellowship_system.emporium_stock_slots(),
             annex_unlocked=self.fellowship_system.emporium_annex_level() >= 1,
-            annex_bonus_slots=3 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
+            annex_bonus_slots=6 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
             combat_locked=combat_locked,
         )
 

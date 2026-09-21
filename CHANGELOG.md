@@ -1,5 +1,12 @@
 # Crystal Guild Changelog
 
+## v1.9.0 Alpha 6 — Moogle Annex Stock Hotfix 3
+- Moogle Emporium Annex now adds **6** shop choices instead of 3.
+- Completed Annex rotations expand from **9 to 15** stock slots.
+- Existing 12-slot cached Annex rotations invalidate automatically on the next shop request and reroll at the new capacity.
+- No schema, hosted sync, Portal Action protocol, price, rarity, or refresh-timer changes.
+
+
 ## v1.8.0 Final — Merc Service
 - Promotes the hardened RC3 feature set to the production v1.8 release.
 - Hero Merc Service uses Hunt Seals with independent Hunt, Venture, and Raid assignment slots.

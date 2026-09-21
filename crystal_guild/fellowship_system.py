@@ -120,7 +120,7 @@ class FellowshipSystem:
         return max(0, min(1, int(self.facility_tiers().get("emporium_annex", 0))))
 
     def emporium_stock_slots(self) -> int:
-        return 12 if self.emporium_annex_level() >= 1 else 9
+        return 15 if self.emporium_annex_level() >= 1 else 9
 
     def trading_post_level(self) -> int:
         return max(0, min(1, int(self.facility_tiers().get("trading_post", 0))))
@@ -493,7 +493,7 @@ class FellowshipSystem:
                 "level": annex_level,
                 "unlocked": annex_level >= 1,
                 "base_stock_slots": 9,
-                "bonus_stock_slots": 3 if annex_level >= 1 else 0,
+                "bonus_stock_slots": 6 if annex_level >= 1 else 0,
                 "stock_slots": self.emporium_stock_slots(),
             },
             "trading_post": {
