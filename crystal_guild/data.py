@@ -574,6 +574,7 @@ class GameData:
         valid_categories = {
             "Adventure", "Combat", "Bestiary", "Hunts", "Jobs", "Crafting",
             "Economy", "Relics", "Raids", "Social", "Comedy", "Boss", "Secret", "Expeditions",
+            "Gold Saucer", "Chocobos",
         }
         valid_tiers = {"bronze", "silver", "gold", "crystal"}
         for achievement in self.achievements.values():

@@ -1,22 +1,22 @@
-# Crystal Guild v1.9.0 Alpha 2 — Economy Balance Upgrade Guide
+# Crystal Guild v1.9.0 Alpha 3 — Title Expansion Upgrade Guide
 
-## Upgrade from v1.9.0 Alpha 1 — Moogle Trading Post
+## From v1.9.0 Alpha 2
+Deploy the matching Alpha 3 Bot and Web packages together and restart the services. Existing player data, MGP, titles, achievements, Trading Post listings, inventories, Fellowship state, Mercs, and Gold Saucer records are preserved.
 
-Replace the matching **Bot and Web packages together**, preserving the live database, `.env`, Twitch token storage, hosted secrets, and persistent data.
-
-No database migration occurs in Alpha 2. Schema remains **19** and existing Trading Post listings/player progress are preserved.
-
-## Release contract
-- Runtime/frontend: `1.9.0-economy-balance-alpha2`
-- Local database schema: **19**
-- Hosted sync schema: **1**
+No database migration is required for Alpha 2 → Alpha 3. The release continues to use:
+- Runtime/frontend: `1.9.0-title-expansion-alpha3`
+- Local schema: **19**
+- Hosted sync: **1**
 - Portal Action protocol: **36**
 
-## Gameplay changes
-- Mineral Survey: 850 Gil / 1,050 focused.
-- Specialist Acquisition: 1,850 Gil / 2,300 focused.
-- Press Adamantite: 1,600 Gil.
-- Trading Post: 15 Ventures rather than 15 Expeditions.
-- Monster Toss payouts: 10 / 15 / 30 / 50 / 80 / 120 MGP.
+## Existing migration history
+Older installations still upgrade through the existing verified migrations. v1.8.1 introduced schema **17 → 18** for Merc recruitment. v1.9.0 Alpha 1 introduced schema **18 → 19** for the Moogle Trading Post, creating a verified `pre_schema_19_*.db` backup before migration.
 
-No other general reward curve is reduced.
+## After deployment
+1. Confirm `!cgversion` reports `1.9.0-title-expansion-alpha3`.
+2. Open Gold Saucer and confirm **Challenge Titles** appear separately from Prize Counter purchases.
+3. Confirm the four new Prize Counter titles cost 750 / 1,000 / 1,250 / 1,500 MGP.
+4. Confirm previously earned achievement progress is preserved; qualifying titles are granted when achievement checks next run.
+5. Keep the live database at its existing persistent path (for Render, normally `/var/data/crystal_guild.db`).
+
+No player reset is required.

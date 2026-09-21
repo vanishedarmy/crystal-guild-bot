@@ -798,5 +798,173 @@
     "category": "Gold Saucer",
     "rarity": "epic",
     "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "one_more_spin",
+    "name": "One More Spin",
+    "description": "It is always the next spin. Statistically. Emotionally. Spiritually.",
+    "category": "Gold Saucer",
+    "rarity": "uncommon",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "probably_rigged",
+    "name": "Probably Rigged",
+    "description": "Has reviewed the evidence and reached the only emotionally satisfying conclusion.",
+    "category": "Gold Saucer",
+    "rarity": "uncommon",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "bird_is_the_word",
+    "name": "Bird Is the Word",
+    "description": "Has strong opinions about racing lines and even stronger opinions about feathers.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "card_shark",
+    "name": "Card Shark",
+    "description": "Smiles politely while calculating all four sides of your inevitable mistake.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Prize Counter"
+  },
+  {
+    "id": "high_roller",
+    "name": "High Roller",
+    "description": "Has moved enough MGP through the Saucer to make the attendants remember the name.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "lucky_devil",
+    "name": "Lucky Devil",
+    "description": "Picked the line everyone else swore was a terrible idea.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "jackpot",
+    "name": "Jackpot!",
+    "description": "Three crystals. One extremely undignified celebration.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "golden_arm",
+    "name": "Golden Arm",
+    "description": "The Golden Cactuar has started filing formal complaints.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "chocobo_whisperer",
+    "name": "Chocobo Whisperer",
+    "description": "Apparently 'kweh' contains detailed tactical instructions if you listen closely enough.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "heart_of_the_cards",
+    "name": "Heart of the Cards",
+    "description": "Believes in the deck. The deck remains noncommittal.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "saucer_sampler",
+    "name": "Saucer Sampler",
+    "description": "Has tried every major attraction at least once and survived the financial consequences.",
+    "category": "Gold Saucer",
+    "rarity": "uncommon",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "house_always_wins",
+    "name": "House Always Wins",
+    "description": "Has personally funded several suspiciously polished sections of carpet.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Gold Saucer Achievement"
+  },
+  {
+    "id": "i_have_a_problem",
+    "name": "I Have a Problem",
+    "description": "The first step is admitting the Gold Saucer knows your schedule.",
+    "category": "Gold Saucer",
+    "rarity": "epic",
+    "source": "Secret Gold Saucer Achievement"
+  },
+  {
+    "id": "golden_saucer",
+    "name": "Golden Saucer",
+    "description": "Earned across the whole floor, not bought from a single counter.",
+    "category": "Gold Saucer",
+    "rarity": "legendary",
+    "source": "Gold Saucer Mastery"
+  },
+  {
+    "id": "warrior_of_light",
+    "name": "Warrior of Light",
+    "description": "Keeps finding crystals, world-ending problems, and reasons not to take a day off.",
+    "category": "Final Fantasy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "treasure_hunter",
+    "name": "Treasure Hunter",
+    "description": "If it was not nailed down, it is probably in the inventory now.",
+    "category": "Final Fantasy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "limit_breaker",
+    "name": "Limit Breaker",
+    "description": "Treats the red part of the gauge as a suggestion to become everyone else's problem.",
+    "category": "Final Fantasy",
+    "rarity": "epic",
+    "source": "Achievement"
+  },
+  {
+    "id": "chocobo_knight",
+    "name": "Chocobo Knight",
+    "description": "A distinguished rider, assuming you ignore the feathers on everything.",
+    "category": "Final Fantasy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "professional_hoarder",
+    "name": "Professional Hoarder",
+    "description": "The inventory is not full. It is strategically dense.",
+    "category": "Comedy",
+    "rarity": "uncommon",
+    "source": "Achievement"
+  },
+  {
+    "id": "worth_it",
+    "name": "Worth It.",
+    "description": "The receipt was horrifying. The purchase was correct.",
+    "category": "Comedy",
+    "rarity": "rare",
+    "source": "Achievement"
+  },
+  {
+    "id": "oh_hi_mark",
+    "name": "Oh hi Mark.",
+    "description": "You two really do keep running into each other.",
+    "category": "Secret",
+    "rarity": "rare",
+    "source": "Secret Achievement"
   }
 ]

@@ -1,8 +1,8 @@
-# Crystal Guild v1.9.0 Alpha 2 — Economy Balance
-# Runtime: 1.9.0-economy-balance-alpha2
+# Crystal Guild v1.9.0 Alpha 3 — Title Expansion
+# Runtime: 1.9.0-title-expansion-alpha3
 # Schema: 19 · Hosted sync: 1 · Portal Action protocol: 36
-# Preserves the Moogle Trading Post while applying targeted economy corrections.
-# Packaged source files: 221
+# Preserves the Moogle Trading Post and Alpha 2 economy balance while expanding purchased, earned, and secret titles.
+# Packaged source files: 222
 # Files
 .env.example
 .gitignore
@@ -38,6 +38,7 @@ README_FIRST.txt
 RELEASE_NOTES.md
 RENDER_CLOUD_SETUP.md
 SIMPLE_RENDER_SETUP.md
+TITLE_EXPANSION.md
 UI_CONSISTENCY_RC2_RELEASE_NOTES.md
 UI_CONSISTENCY_RC2_VALIDATION.md
 UI_POLISH_RC3_RELEASE_NOTES.md
@@ -207,6 +208,7 @@ tests/test_retainer_alpha2.py
 tests/test_setup.py
 tests/test_stream_status.py
 tests/test_subscription_status.py
+tests/test_title_expansion_alpha3.py
 tests/test_trading_post_alpha1.py
 tests/test_trails_raids_alpha1.py
 tests/test_trails_raids_alpha2.py

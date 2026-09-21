@@ -41,7 +41,7 @@ class MercRecruitment181Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_and_schema_18_registry_table(self):
-        self.assertEqual(__version__, "1.9.0-economy-balance-alpha2")
+        self.assertEqual(__version__, "1.9.0-title-expansion-alpha3")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         self.assertEqual(self.db.schema_version(), 19)

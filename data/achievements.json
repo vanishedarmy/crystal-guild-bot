@@ -1051,5 +1051,258 @@
     "tier": "crystal",
     "points": 150,
     "secret": false
+  },
+  {
+    "id": "saucer_high_roller",
+    "name": "High Roller",
+    "description": "Earn 5,000 MGP across Gold Saucer activities.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "lifetime_earned",
+      "amount": 5000
+    },
+    "reward_title": "high_roller",
+    "category": "Gold Saucer",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "cactpot_lucky_devil",
+    "name": "Lucky Devil",
+    "description": "Hit the 1,250 MGP Mini Cactpot jackpot.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "cactpot_jackpots",
+      "amount": 1
+    },
+    "reward_title": "lucky_devil",
+    "category": "Gold Saucer",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "slots_jackpot",
+    "name": "Three Crystals, No Notes",
+    "description": "Land the Crystal Slots 800 MGP jackpot.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "slots_jackpots",
+      "amount": 1
+    },
+    "reward_title": "jackpot",
+    "category": "Gold Saucer",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "toss_golden_arm",
+    "name": "Right Between the Needles",
+    "description": "Score at least 600 points in Monster Toss.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "monster_toss_gold_games",
+      "amount": 1
+    },
+    "reward_title": "golden_arm",
+    "category": "Gold Saucer",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "race_chocobo_whisperer",
+    "name": "Chocobo Whisperer",
+    "description": "Win 3 Gold Saucer Chocobo Races.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "chocobo_race_wins",
+      "amount": 3
+    },
+    "reward_title": "chocobo_whisperer",
+    "category": "Gold Saucer",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "triad_heart_of_cards",
+    "name": "Heart of the Cards",
+    "description": "Build a 3-win Triple Triad streak.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "triple_triad_best_streak",
+      "amount": 3
+    },
+    "reward_title": "heart_of_the_cards",
+    "category": "Gold Saucer",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "saucer_sampler",
+    "name": "Try Everything Once",
+    "description": "Play all five major Gold Saucer attractions.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "unique_games",
+      "amount": 5
+    },
+    "reward_title": "saucer_sampler",
+    "category": "Gold Saucer",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "house_always_wins",
+    "name": "The House Sends Its Regards",
+    "description": "Spend 2,500 MGP across Gold Saucer activities and prizes.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "lifetime_spent",
+      "amount": 2500
+    },
+    "reward_title": "house_always_wins",
+    "category": "Gold Saucer",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "saucer_problem",
+    "name": "???",
+    "reveal_name": "I Have a Problem",
+    "description": "Play 50 Gold Saucer games. At this point the attendants know your usual.",
+    "condition": {
+      "type": "gold_saucer_record",
+      "metric": "games_played",
+      "amount": 50
+    },
+    "reward_title": "i_have_a_problem",
+    "category": "Gold Saucer",
+    "tier": "gold",
+    "points": 50,
+    "secret": true
+  },
+  {
+    "id": "golden_saucer_mastery",
+    "name": "Golden Saucer",
+    "description": "Unlock 6 other Gold Saucer achievements.",
+    "condition": {
+      "type": "achievement_category_count",
+      "category": "Gold Saucer",
+      "amount": 6
+    },
+    "reward_title": "golden_saucer",
+    "category": "Gold Saucer",
+    "tier": "crystal",
+    "points": 100,
+    "secret": false
+  },
+  {
+    "id": "warrior_of_light",
+    "name": "Warrior of Light",
+    "description": "Reach Character Lv.30.",
+    "condition": {
+      "type": "character_level",
+      "amount": 30
+    },
+    "reward_title": "warrior_of_light",
+    "category": "Adventure",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "treasure_hunter",
+    "name": "Treasure Hunter",
+    "description": "Acquire 200 items over your Guild career.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "items_acquired",
+      "amount": 200
+    },
+    "reward_title": "treasure_hunter",
+    "category": "Adventure",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "limit_breaker",
+    "name": "Limit Breaker",
+    "description": "Unleash 50 Limit Breaks.",
+    "condition": {
+      "type": "stat",
+      "field": "limit_breaks",
+      "amount": 50
+    },
+    "reward_title": "limit_breaker",
+    "category": "Raids",
+    "tier": "gold",
+    "points": 50,
+    "secret": false
+  },
+  {
+    "id": "chocobo_knight",
+    "name": "Chocobo Knight",
+    "description": "Raise your registered Chocobo to Bond Lv.10.",
+    "condition": {
+      "type": "chocobo_level",
+      "amount": 10
+    },
+    "reward_title": "chocobo_knight",
+    "category": "Chocobos",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "professional_hoarder",
+    "name": "Professional Hoarder",
+    "description": "Hold 100 total inventory items at once.",
+    "condition": {
+      "type": "inventory_total",
+      "amount": 100
+    },
+    "reward_title": "professional_hoarder",
+    "category": "Comedy",
+    "tier": "bronze",
+    "points": 10,
+    "secret": false
+  },
+  {
+    "id": "worth_it",
+    "name": "Worth It.",
+    "description": "Spend 25,000 Gil over your Guild career.",
+    "condition": {
+      "type": "record_stat",
+      "metric": "gil_spent",
+      "amount": 25000
+    },
+    "reward_title": "worth_it",
+    "category": "Comedy",
+    "tier": "silver",
+    "points": 25,
+    "secret": false
+  },
+  {
+    "id": "oh_hi_mark",
+    "name": "???",
+    "reveal_name": "Oh hi Mark.",
+    "description": "Clear the same Hunt mark 3 times.",
+    "condition": {
+      "type": "hunt_repeat_max",
+      "amount": 3
+    },
+    "reward_title": "oh_hi_mark",
+    "category": "Secret",
+    "tier": "silver",
+    "points": 25,
+    "secret": true
   }
 ]

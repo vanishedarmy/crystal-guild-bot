@@ -1,4 +1,4 @@
-# Web Sync — Crystal Guild v1.9.0 Alpha 2 Economy Balance
+# Web Sync — Crystal Guild v1.9.0 Alpha 3 Title Expansion
 
 Hosted sync schema remains **1**. Portal Action protocol is **36**. The Trading Post adds `TRADING_POST_STATE`, `TRADING_POST_LIST`, `TRADING_POST_BUY`, and `TRADING_POST_CANCEL` to the established authoritative action relay; no sync-key or environment change is required.
 

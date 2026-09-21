@@ -129,7 +129,7 @@ from .gold_saucer import (
     monster_toss_throw_profile as saucer_toss_profile, monster_toss_payout as saucer_toss_payout,
     chocobo_race_result as saucer_chocobo_race_result, triple_triad_card_payload as saucer_triad_card_payload,
     triple_triad_place as saucer_triad_place, triple_triad_score as saucer_triad_score,
-    triple_triad_npc_move as saucer_triad_npc_move,
+    triple_triad_npc_move as saucer_triad_npc_move, gold_saucer_record_value as saucer_record_value,
 )
 from .retainer import (
     RETAINER_DEFAULT_NAME, RETAINER_ASSIGNMENTS, RETAINER_ASSIGNMENTS_BY_ID,
@@ -10875,6 +10875,41 @@ class CrystalGuildEngine:
                 "owned": owned,
                 "can_buy": (not owned and points >= cost),
             })
+        challenge_titles = []
+        for achievement in self.data.achievements.values():
+            if str(achievement.get("category") or "") != "Gold Saucer" or not achievement.get("reward_title"):
+                continue
+            achievement_id = str(achievement["id"])
+            unlocked = bool(conn.execute(
+                "SELECT 1 FROM achievements WHERE player_id=? AND achievement_id=?",
+                (twitch_id, achievement_id),
+            ).fetchone())
+            secret = bool(achievement.get("secret"))
+            hidden = secret and not unlocked
+            condition = dict(achievement.get("condition") or {})
+            target = int(condition.get("amount", 1) or 1)
+            value = int(self._requirement_value(twitch_id, condition)) if condition else 0
+            title = self.data.titles.get(str(achievement.get("reward_title") or "")) or {}
+            challenge_titles.append({
+                "id": achievement_id,
+                "name": (str(achievement.get("reveal_name") or achievement.get("name") or achievement_id) if unlocked else ("Secret Challenge" if hidden else str(achievement.get("name") or achievement_id))),
+                "description": (str(achievement.get("description") or "") if not hidden else "Hidden until unlocked. The Saucer refuses to explain itself."),
+                "title_id": None if hidden else str(achievement.get("reward_title") or ""),
+                "title_name": None if hidden else str(title.get("name") or ""),
+                "rarity": None if hidden else str(title.get("rarity") or "common"),
+                "tier": str(achievement.get("tier") or "bronze"),
+                "points": int(achievement.get("points", 0) or 0),
+                "secret": secret,
+                "unlocked": unlocked,
+                "progress": {
+                    "value": 0 if hidden else min(value, target),
+                    "target": 0 if hidden else target,
+                    "percent": 0 if hidden else min(100, round((value / target) * 100, 1) if target > 0 else 100),
+                    "hidden": hidden,
+                },
+            })
+        challenge_titles.sort(key=lambda row: (not bool(row["unlocked"]), bool(row["secret"]), str(row["name"]).lower()))
+
         aggregate = conn.execute(
             "SELECT "
             "COALESCE(SUM(CASE WHEN game='slots' THEN wager ELSE 0 END),0) AS slots_wager, "
@@ -11083,6 +11118,7 @@ class CrystalGuildEngine:
                 "note": "Alpha 2 raises Gold Saucer earnings and Prize Counter goals while keeping all attraction entry costs unchanged.",
             },
             "prizes": prizes,
+            "challenge_titles": challenge_titles,
             "cactpot": cactpot,
             "slots": {
                 "cost": SLOTS_COST,
@@ -11135,12 +11171,27 @@ class CrystalGuildEngine:
             "history": history,
         }
 
+    def _gold_saucer_attach_achievements(self, twitch_id: str, result: GameResult) -> list[str]:
+        if not result.ok:
+            return []
+        unlocked = self._check_achievements(str(twitch_id))
+        if unlocked:
+            result.data["achievement_unlocks"] = list(unlocked)
+            result.messages.extend(f"ACHIEVEMENT — {entry}" for entry in unlocked)
+        return unlocked
+
     def portal_gold_saucer_state(self, twitch_id: str) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
         with self.db.tx(immediate=True) as conn:
+            self._gold_saucer_ensure_account_sql(conn, twitch_id, int(time.time()))
+            unlocked = self._check_achievements(twitch_id)
             state = self._gold_saucer_state_sql(conn, twitch_id)
-        return GameResult.success("Gold Saucer floor ready.", gold_saucer_state=state)
+        result = GameResult.success("Gold Saucer floor ready.", gold_saucer_state=state)
+        if unlocked:
+            result.data["achievement_unlocks"] = list(unlocked)
+            result.messages.extend(f"ACHIEVEMENT — {entry}" for entry in unlocked)
+        return result
 
     def portal_cactpot_start(self, twitch_id: str, action_id: str) -> GameResult:
         replay = self._portal_action_replay(action_id)
@@ -11182,6 +11233,7 @@ class CrystalGuildEngine:
                         (twitch_id, (now - (now % 86400)) + CACTPOT_COOLDOWN_SECONDS),
                     )
                     result = GameResult.success(f"Mini Cactpot ticket opened for {CACTPOT_COST} MGP. Reveal three more cells.")
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11215,6 +11267,7 @@ class CrystalGuildEngine:
                     )
                     remaining = max(0, 4 - len(set(revealed)))
                     result = GameResult.success("Mini Cactpot cell revealed. Choose a payout line." if state == "line" else f"Mini Cactpot cell revealed. Reveal {remaining} more.")
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11258,6 +11311,7 @@ class CrystalGuildEngine:
                         (twitch_id, CACTPOT_COST, payout, f"sum_{total}", json.dumps(details, separators=(",", ":")), now),
                     )
                     result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} MGP!", cactpot_sum=total, cactpot_payout=payout, result_tier=result_tier)
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11303,6 +11357,7 @@ class CrystalGuildEngine:
                     result = GameResult.success(f"CRYSTAL SLOTS — {labels} — won {payout:,} MGP!", reels=reels, payout=payout, net=net, outcome=outcome, result_tier=result_tier)
                 else:
                     result = GameResult.success(f"CRYSTAL SLOTS — {labels} — no payout this spin.", reels=reels, payout=0, net=net, outcome=outcome, result_tier=result_tier)
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11342,6 +11397,7 @@ class CrystalGuildEngine:
                     (twitch_id, game_id, now, now),
                 )
                 result = GameResult.success(f"MONSTER TOSS — game opened for {MONSTER_TOSS_COST} MGP. You have {MONSTER_TOSS_THROWS} throws.", monster_toss_game_id=game_id)
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11417,6 +11473,7 @@ class CrystalGuildEngine:
                             f"MONSTER TOSS — {'HIT' if hit else 'MISS'} on {target['name']} with {style['name']}. Score: {next_score:,}.",
                             monster_toss_throw=throw_payload, monster_toss_score=next_score, monster_toss_complete=False,
                         )
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11495,6 +11552,7 @@ class CrystalGuildEngine:
                             f"CHOCOBO RACING — {details['chocobo_name']} finished {ordinal} in {course['name']}. No podium MGP this race.",
                             chocobo_race=details, race_payout=0, race_placement=placement,
                         )
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11525,6 +11583,7 @@ class CrystalGuildEngine:
                     (json.dumps(normalized, separators=(",", ":")), twitch_id),
                 )
                 result = GameResult.success("Triple Triad deck saved.", triple_triad_deck=normalized)
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11584,6 +11643,7 @@ class CrystalGuildEngine:
                     ),
                 )
                 result = GameResult.success(f"TRIPLE TRIAD — match started against {opponent['name']} for {cost} MGP.", triple_triad_match_id=match_id)
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11645,6 +11705,7 @@ class CrystalGuildEngine:
                             triple_triad_move=move_data,
                         )
                     result.data["triple_triad_move"] = move_data
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -11682,6 +11743,7 @@ class CrystalGuildEngine:
                     (twitch_id, cost, prize_key, json.dumps({"prize_id": prize_key, "title_id": title_id, "name": str(prize["name"])}, separators=(",", ":")), now),
                 )
                 result = GameResult.success(f"PRIZE COUNTER — {prize['name']} unlocked for {cost:,} MGP!", prize_id=prize_key, title_id=title_id)
+            self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
@@ -16891,6 +16953,31 @@ class CrystalGuildEngine:
                     (player_id,),
                 )
             return int(row["battles"]) if row else 0
+        if kind == "gold_saucer_record":
+            return int(saucer_record_value(self.db.conn, player_id, str(req.get("metric") or "")))
+        if kind == "achievement_category_count":
+            category = str(req.get("category") or "")
+            ids = [str(a["id"]) for a in self.data.achievements.values() if str(a.get("category") or "") == category]
+            if not ids:
+                return 0
+            placeholders = ",".join("?" for _ in ids)
+            row = self.db.one(
+                f"SELECT COUNT(*) AS n FROM achievements WHERE player_id=? AND achievement_id IN ({placeholders})",
+                (player_id, *ids),
+            )
+            return int(row["n"] or 0) if row else 0
+        if kind == "hunt_repeat_max":
+            row = self.db.one("SELECT COALESCE(MAX(clears),0) AS n FROM player_hunts WHERE player_id=?", (player_id,))
+            return int(row["n"] or 0) if row else 0
+        if kind == "inventory_total":
+            row = self.db.one("SELECT COALESCE(SUM(quantity),0) AS n FROM inventory WHERE player_id=?", (player_id,))
+            return int(row["n"] or 0) if row else 0
+        if kind == "chocobo_level":
+            row = self.db.one("SELECT xp FROM player_chocobos WHERE player_id=? AND registered_at IS NOT NULL", (player_id,))
+            if not row:
+                return 0
+            level, _current, _next = chocobo_level_from_total_xp(int(row["xp"] or 0))
+            return int(level)
         if kind == "item_quantity":
             return self._inventory_qty(player_id, req["item_id"])
         if kind == "hunt_seals":
@@ -16960,6 +17047,25 @@ class CrystalGuildEngine:
             job = self.data.jobs.get(req.get("job_id"), {}).get("name")
             subject = job or "a single Job"
             return f"Fight {amount} battles on {subject} ({value}/{amount})"
+        if kind == "gold_saucer_record":
+            labels = {
+                "lifetime_earned": "Earn MGP", "lifetime_spent": "Spend MGP",
+                "games_played": "Gold Saucer games", "unique_games": "different Gold Saucer attractions",
+                "cactpot_jackpots": "Mini Cactpot jackpots", "slots_jackpots": "Crystal Slots jackpots",
+                "monster_toss_gold_games": "600+ point Monster Toss games", "chocobo_race_wins": "Chocobo Racing wins",
+                "triple_triad_best_streak": "Triple Triad win streak",
+            }
+            label = labels.get(str(req.get("metric") or ""), "Gold Saucer progress")
+            return f"{label} {amount:,} ({value:,}/{amount:,})"
+        if kind == "achievement_category_count":
+            category = str(req.get("category") or "Achievement")
+            return f"Unlock {amount} {category} achievements ({value}/{amount})"
+        if kind == "hunt_repeat_max":
+            return f"Clear the same Hunt mark {amount} times ({value}/{amount})"
+        if kind == "inventory_total":
+            return f"Hold {amount} total inventory items ({value}/{amount})"
+        if kind == "chocobo_level":
+            return f"Raise your Chocobo to Bond Lv.{amount} ({value}/{amount})"
         return f"{kind} {value}/{amount}"
 
     def _requirements_met(self, player_id: str, requirements: list[dict[str, Any]]) -> tuple[bool, list[str]]:

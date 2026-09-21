@@ -1,20 +1,20 @@
-# Crystal Guild v1.9.0 Alpha 2 — Economy Balance Setup
+# Crystal Guild v1.9.0 Alpha 3 — Title Expansion Setup
 
-**Current Alpha 2 note:** Economy Balance closes isolated resale loops, improves Monster Toss payouts, and makes the Level-1 Trading Post activity requirement use Ventures. Deploy the matching Bot and Web together. The Bot performs an automatic schema **18 → 19** migration after creating a verified `pre_schema_19_*.db` backup. No player reset occurs.
+**Current Alpha 3 note:** Title Expansion adds earned and secret title milestones without changing schema 19, hosted sync 1, or Portal Action protocol 36. Alpha 2 economy balance remains intact. Deploy the matching Bot and Web together; no player reset or Alpha 2 → Alpha 3 database migration is required.
 
 ## Existing installation
-Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. The additive schema 18 → 19 migration is automatic.
+Preserve the live `crystal_guild.db`, Twitch token storage, `.env`, hosted secrets, and persistent-disk data. Deploy the matching Bot and Web source together, then restart the worker. Existing schema 19 databases open in place. Older schema 18 installations still receive the existing automatic 18 → 19 migration with a verified backup.
 
 ## Release verification
-- Bot runtime → `1.9.0-economy-balance-alpha2`
-- Paired Web → `1.9.0-economy-balance-alpha2`
+- Bot runtime → `1.9.0-title-expansion-alpha3`
+- Paired Web → `1.9.0-title-expansion-alpha3`
 - Local DB schema → **19**
 - Hosted sync schema → **1**
 - Portal Action protocol → **36**
 - Twitch prefix → `!`
 
 ## Trading Post verification
-- Fellowship Level 1 service building; construction requires 25,000 Gil, 3 Mythril Ore, and 15 completed Expeditions.
+- Fellowship Level 1 service building; construction requires 25,000 Gil, 3 Mythril Ore, and 15 completed Ventures.
 - Fixed-price player listings last 48 hours.
 - Listing fee is 2%; completed-sale tax is 5%.
 - Purchases/listings/cancellations use authoritative replay-safe Portal Actions.

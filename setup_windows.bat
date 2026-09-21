@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 echo ========================================
-echo   Crystal Guild v1.9.0 Alpha 2 - Economy Balance Setup
+echo   Crystal Guild v1.9.0 Alpha 3 - Title Expansion Setup
 echo ========================================
 echo.
 echo Upgrading? Stop the old bot and preserve .env, crystal_guild.db, and .tio.tokens.json before replacing program files.

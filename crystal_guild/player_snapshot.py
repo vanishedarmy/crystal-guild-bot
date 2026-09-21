@@ -14,6 +14,7 @@ from .active_battle import FULL_RESOURCE_SENTINEL, battle_resource_pools, job_re
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
+from .gold_saucer import gold_saucer_record_value
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
@@ -865,6 +866,31 @@ class PortalRepository:
                     (player_id,),
                 ).fetchone()
             return int(row["battles"] or 0) if row else 0
+        if kind == "gold_saucer_record":
+            return int(gold_saucer_record_value(conn, player_id, str(condition.get("metric") or "")))
+        if kind == "achievement_category_count":
+            category = str(condition.get("category") or "")
+            ids = [str(a["id"]) for a in self.data.achievements.values() if str(a.get("category") or "") == category]
+            if not ids:
+                return 0
+            placeholders = ",".join("?" for _ in ids)
+            row = conn.execute(
+                f"SELECT COUNT(*) AS n FROM achievements WHERE player_id=? AND achievement_id IN ({placeholders})",
+                (player_id, *ids),
+            ).fetchone()
+            return int(row["n"] or 0) if row else 0
+        if kind == "hunt_repeat_max":
+            row = conn.execute("SELECT COALESCE(MAX(clears),0) AS n FROM player_hunts WHERE player_id=?", (player_id,)).fetchone()
+            return int(row["n"] or 0) if row else 0
+        if kind == "inventory_total":
+            row = conn.execute("SELECT COALESCE(SUM(quantity),0) AS n FROM inventory WHERE player_id=?", (player_id,)).fetchone()
+            return int(row["n"] or 0) if row else 0
+        if kind == "chocobo_level":
+            row = conn.execute("SELECT xp FROM player_chocobos WHERE player_id=? AND registered_at IS NOT NULL", (player_id,)).fetchone()
+            if not row:
+                return 0
+            level, _current, _next = chocobo_level_from_total_xp(int(row["xp"] or 0))
+            return int(level)
         return 0
 
     def achievements(self, key: str) -> dict[str, Any] | None:

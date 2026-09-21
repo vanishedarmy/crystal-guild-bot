@@ -322,6 +322,68 @@ def triple_triad_npc_move(board: list[dict[str, Any] | None], hand: list[str], d
     return str(card_id), int(cell)
 
 
+def gold_saucer_record_value(conn: Any, player_id: str, metric: str) -> int:
+    """Return stable achievement metrics derived from authoritative Saucer state.
+
+    Keeping these metrics here lets the Bot achievement engine and the read-only
+    Portal snapshot use the exact same definitions without adding schema columns.
+    """
+    key = str(metric or "").strip().lower()
+    if key in {"lifetime_earned", "lifetime_spent"}:
+        row = conn.execute(
+            f"SELECT {key} AS value FROM player_gold_saucer WHERE player_id=?",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["value"] or 0) if row else 0
+    if key == "games_played":
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM gold_saucer_history "
+            "WHERE player_id=? AND game IN ('mini_cactpot','slots','monster_toss','chocobo_racing','triple_triad')",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["n"] or 0) if row else 0
+    if key == "unique_games":
+        row = conn.execute(
+            "SELECT COUNT(DISTINCT game) AS n FROM gold_saucer_history "
+            "WHERE player_id=? AND game IN ('mini_cactpot','slots','monster_toss','chocobo_racing','triple_triad')",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["n"] or 0) if row else 0
+    if key == "cactpot_jackpots":
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='mini_cactpot' AND payout>=1250",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["n"] or 0) if row else 0
+    if key == "slots_jackpots":
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='slots' AND outcome='triple' AND payout>=800",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["n"] or 0) if row else 0
+    if key == "monster_toss_gold_games":
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='monster_toss' "
+            "AND COALESCE(CAST(json_extract(details_json,'$.score') AS INTEGER),0)>=600",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["n"] or 0) if row else 0
+    if key == "chocobo_race_wins":
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='chocobo_racing' "
+            "AND COALESCE(CAST(json_extract(details_json,'$.placement') AS INTEGER),99)=1",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["n"] or 0) if row else 0
+    if key == "triple_triad_best_streak":
+        row = conn.execute(
+            "SELECT best_streak AS value FROM player_triple_triad WHERE player_id=?",
+            (str(player_id),),
+        ).fetchone()
+        return int(row["value"] or 0) if row else 0
+    return 0
+
+
 # Alpha 1 Prize Counter is intentionally cosmetic-only. Rewards unlock
 # existing title functionality and never grant combat power, Gil, items,
 # or progression shortcuts.
@@ -388,6 +450,34 @@ PRIZES = (
         "name": "Card Hall Master",
         "cost": 9000,
         "description": "A prestige title for adventurers who have conquered the Gold Saucer card hall.",
+    },
+    {
+        "id": "one_more_spin",
+        "title_id": "one_more_spin",
+        "name": "One More Spin",
+        "cost": 750,
+        "description": "A low-cost vanity title for anyone absolutely certain the next spin is the one.",
+    },
+    {
+        "id": "probably_rigged",
+        "title_id": "probably_rigged",
+        "name": "Probably Rigged",
+        "cost": 1000,
+        "description": "A sarcastic souvenir for players with healthy skepticism and unhealthy persistence.",
+    },
+    {
+        "id": "bird_is_the_word",
+        "title_id": "bird_is_the_word",
+        "name": "Bird Is the Word",
+        "cost": 1250,
+        "description": "A racing-flavored vanity title for dedicated feather enthusiasts.",
+    },
+    {
+        "id": "card_shark",
+        "title_id": "card_shark",
+        "name": "Card Shark",
+        "cost": 1500,
+        "description": "A classic card-table title for players who prefer their threats rectangular.",
     },
 )
 PRIZES_BY_ID = {str(row["id"]): row for row in PRIZES}
