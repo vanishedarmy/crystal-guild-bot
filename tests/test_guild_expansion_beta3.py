@@ -37,8 +37,8 @@ class GuildExpansionBeta3Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_beta3_advances_protocol_only(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
-        self.assertEqual(self.db.schema_version(), 19)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 20)
+        self.assertEqual(self.db.schema_version(), 20)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
 
     def test_simultaneous_contributions_never_overfill_or_overcharge(self):

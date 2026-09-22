@@ -256,10 +256,10 @@ class CloudRuntimeTests(unittest.TestCase):
 
     def test_cloud_setup_docs_preserve_existing_database_and_explain_matching_web(self):
         source = (ROOT / "RENDER_CLOUD_SETUP.md").read_text(encoding="utf-8")
-        self.assertIn("v1.9.0 Alpha 6 World Events Bot and matching Web build", source)
+        self.assertIn("v1.9.0 Alpha 7 Hall of Trophies Bot and matching Web build", source)
         upgrade = (ROOT / "UPGRADE_GUIDE.md").read_text(encoding="utf-8")
         self.assertIn("17 → 18", upgrade)
-        self.assertIn("pre_schema_19", upgrade)
+        self.assertIn("pre_schema_20", upgrade)
         self.assertIn("/var/data/crystal_guild.db", source)
         self.assertIn("/var/data/twitch_tokens.db", source)
         self.assertIn("run_cloud_preflight.py", source)

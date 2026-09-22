@@ -18,7 +18,7 @@ from .gold_saucer import gold_saucer_record_value
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
-SNAPSHOT_VERSION = "1.1.15-wayfarer"
+SNAPSHOT_VERSION = "1.1.16-trophies"
 
 
 class PortalRepository:
@@ -1049,6 +1049,34 @@ class PortalRepository:
                 },
                 "achievements": entries,
                 "titles": titles,
+            }
+
+    def trophies(self, key: str) -> dict[str, Any] | None:
+        with self.connect() as conn:
+            player = self._find_player(conn, key)
+            if not player:
+                return None
+            player_id = str(player["twitch_id"])
+            try:
+                rows = conn.execute(
+                    "SELECT trophy_id,unlock_source,unlocked_at,seen_at FROM player_trophies WHERE player_id=? ORDER BY unlocked_at,trophy_id",
+                    (player_id,),
+                ).fetchall()
+            except sqlite3.Error:
+                # Upgrade-order compatibility while a schema-19 database is
+                # waiting for the Bot's additive schema-20 migration.
+                rows = []
+            return {
+                "player": self._public_identity(player),
+                "unlocked": [
+                    {
+                        "id": str(row["trophy_id"]),
+                        "unlock_source": str(row["unlock_source"] or "reconciliation"),
+                        "unlocked_at": row["unlocked_at"],
+                        "seen_at": row["seen_at"],
+                    }
+                    for row in rows
+                ],
             }
 
     def records(self, key: str) -> dict[str, Any] | None:

@@ -10,7 +10,7 @@ from tools.simulate_guild_balance import run_matrix
 
 class GuildExpansionBeta1Tests(unittest.TestCase):
     def test_beta1_keeps_schema9_and_protocol21(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 20)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
 
     def test_airship_dock_and_launch_costs_are_tuned(self):

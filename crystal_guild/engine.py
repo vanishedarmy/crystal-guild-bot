@@ -145,6 +145,7 @@ from .world_events import (
     WORLD_EVENT_SPAWN_CHANCE, WORLD_EVENT_POST_COOLDOWN_MIN_SECONDS, WORLD_EVENT_POST_COOLDOWN_MAX_SECONDS,
     WORLD_EVENT_RALLY_SECONDS,
 )
+from .trophies import TROPHY_CATALOG, reconcile_player_trophies, record_world_event_clear
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
@@ -306,6 +307,12 @@ class CrystalGuildEngine:
             LOGGER.info(
                 "Achievement/title reconciliation updated %s heroes: +%s achievements, +%s titles",
                 reconciliation["players"], reconciliation["achievements_added"], reconciliation["titles_added"],
+            )
+        trophy_reconciliation = self.reconcile_all_trophies()
+        if trophy_reconciliation["trophies_added"]:
+            LOGGER.info(
+                "Hall of Trophies reconciliation updated %s heroes: +%s trophies",
+                trophy_reconciliation["players"], trophy_reconciliation["trophies_added"],
             )
         if self.active_boss:
             self._update_raid_overlay()
@@ -4496,6 +4503,7 @@ class CrystalGuildEngine:
         first_clear_lines: list[str] = []
         levelup_lines: list[str] = []
         achievement_lines: list[str] = []
+        trophy_lines: list[str] = []
         fellowship_lines: list[str] = []
         participant_result_messages: list[str] = []
         hunt_results: dict[str, dict[str, Any]] = {}
@@ -4652,10 +4660,26 @@ class CrystalGuildEngine:
                         "reason": str(reason or "The mark remains on the board."),
                     }
 
+                player_trophies: list[str] = []
+                if won and kind == "world_event":
+                    world_event_id = str(encounter.get("world_event_id") or "")
+                    if world_event_id in WORLD_EVENTS_BY_ID:
+                        with self.db.tx() as conn:
+                            record_world_event_clear(conn, str(pid), world_event_id)
+                            player_trophies = reconcile_player_trophies(
+                                conn, str(pid), source=f"world_event:{world_event_id}"
+                            )
+                elif won and hunt:
+                    player_trophies = self.reconcile_trophies(
+                        str(pid), source=f"hunt:{hunt.get('id','')}"
+                    )
+                trophy_lines.extend(player_trophies)
+
                 player_achievements = self._check_achievements(pid)
                 achievement_lines.extend(player_achievements)
                 if str(pid) in hunt_results:
                     hunt_results[str(pid)]["rewards"]["achievements"] = [str(value) for value in player_achievements[:4]]
+                    hunt_results[str(pid)]["rewards"]["trophies"] = [str(value) for value in player_trophies[:4]]
                 if kind in {"venture", "world_event"}:
                     mention = "@" + str(p["username"] or meta.get("name") or pid).lstrip("@")
                     outcome_label = ("World Event victory" if won else "World Event defeat") if kind == "world_event" else ("Venture victory" if won else "Venture defeat")
@@ -4685,6 +4709,8 @@ class CrystalGuildEngine:
                         parts.append("No victory spoils")
                     if player_achievements:
                         parts.append("Achievement: " + str(player_achievements[0]))
+                    if player_trophies:
+                        parts.append("Trophy: " + str(player_trophies[0]))
                     merc_text = self._merc_result_text(meta)
                     if merc_text:
                         parts.append(merc_text)
@@ -4737,6 +4763,8 @@ class CrystalGuildEngine:
                 messages.append("Level up! " + " | ".join(levelup_lines[:6]))
             if achievement_lines and kind not in {"venture", "world_event"}:
                 messages.append("Achievement unlocked: " + " | ".join(achievement_lines[:4]))
+            if trophy_lines and kind not in {"venture", "world_event"}:
+                messages.append("Trophy unlocked: " + " | ".join(dict.fromkeys(trophy_lines[:4])))
             if fellowship_lines:
                 messages.append("Fellowship — " + " | ".join(dict.fromkeys(fellowship_lines[:6])))
 
@@ -11010,12 +11038,15 @@ class CrystalGuildEngine:
             "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triple_triad',?,?,?,?,?)",
             (twitch_id, cost, payout, outcome, json.dumps(details, separators=(",", ":")), entry_started_at),
         )
+        trophies = reconcile_player_trophies(conn, str(twitch_id), source=f"triple_triad:{outcome}")
         suffix = f" Card won: {details['card_reward_name']}." if reward_card else ""
+        trophy_suffix = f" Trophy unlocked: {trophies[0]}." if trophies else ""
         result = GameResult.success(
-            f"TRIPLE TRIAD — {outcome.upper()} {player_score}-{npc_score} vs {opponent['name']}. {payout} MGP awarded.{suffix}",
+            f"TRIPLE TRIAD — {outcome.upper()} {player_score}-{npc_score} vs {opponent['name']}. {payout} MGP awarded.{suffix}{trophy_suffix}",
             triple_triad_result=details,
             triad_payout=payout,
             triad_card_reward=reward_card,
+            trophies_unlocked=trophies,
         )
         return result, details
 
@@ -16676,10 +16707,12 @@ class CrystalGuildEngine:
                 p=self._player(pid)
                 if not p: continue
                 xp, share = allocations.get(pid, (1, 1))
+                raid_trophies: list[str] = []
                 with self.db.tx() as conn:
                     conn.execute("UPDATE players SET gil=gil+?, xp=xp+? WHERE twitch_id=?",(share,xp,pid))
                     conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)",(pid,share,f"boss:{boss['id']}"))
                     conn.execute("INSERT INTO player_boss_clears(player_id,boss_id,clears,best_damage,last_cleared_at) VALUES (?,?,1,?,CURRENT_TIMESTAMP) ON CONFLICT(player_id,boss_id) DO UPDATE SET clears=clears+1,best_damage=MAX(best_damage,excluded.best_damage),last_cleared_at=CURRENT_TIMESTAMP",(pid,boss["id"],meta.get("damage",0)))
+                    raid_trophies = reconcile_player_trophies(conn, str(pid), source=f"raid:{boss['id']}")
                 won_items=[]
                 for drop in boss.get("drops",[]):
                     if self.rng.random()<=drop.get("chance",0):
@@ -16709,6 +16742,8 @@ class CrystalGuildEngine:
                     personal_parts.append("Level up: " + ", ".join(str(value) for value in levelups[:2]))
                 if player_achievements:
                     personal_parts.append("Achievement: " + str(player_achievements[0]))
+                if raid_trophies:
+                    personal_parts.append("Trophy: " + str(raid_trophies[0]))
                 merc_text = self._merc_result_text(meta)
                 if merc_text:
                     personal_parts.append(merc_text)
@@ -17762,6 +17797,27 @@ class CrystalGuildEngine:
             if q in names:
                 return item
         return None
+
+    def reconcile_trophies(self, player_id: str, *, source: str = "reconciliation") -> list[str]:
+        """Bring one player's Hall of Trophies ownership up to date."""
+        with self.db.tx() as conn:
+            return reconcile_player_trophies(conn, str(player_id), source=source)
+
+    def reconcile_all_trophies(self) -> dict[str, int]:
+        """Retroactively grant every trophy that existing authoritative data proves."""
+        players = self.db.all("SELECT twitch_id FROM players ORDER BY twitch_id")
+        before = int(self.db.one("SELECT COUNT(*) AS n FROM player_trophies")["n"] or 0)
+        for row in players:
+            self.reconcile_trophies(str(row["twitch_id"]), source="startup_reconciliation")
+        after = int(self.db.one("SELECT COUNT(*) AS n FROM player_trophies")["n"] or 0)
+        return {"players": len(players), "trophies_added": max(0, after - before)}
+
+    def reconcile_player_progress(self, player_id: str) -> dict[str, list[str]]:
+        """Repair achievements/titles and trophies before a hosted profile snapshot."""
+        return {
+            "achievements": self.reconcile_achievements(str(player_id)),
+            "trophies": self.reconcile_trophies(str(player_id), source="profile_reconciliation"),
+        }
 
     def reconcile_achievements(self, player_id: str) -> list[str]:
         """Bring one player's achievements and reward titles up to date.

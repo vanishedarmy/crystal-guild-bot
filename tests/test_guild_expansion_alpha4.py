@@ -36,7 +36,7 @@ class GuildExpansionAlpha4Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_schema9_adds_persistent_airship_tables_without_reset(self):
-        self.assertEqual(self.db.schema_version(), 19)
+        self.assertEqual(self.db.schema_version(), 20)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='fellowship_airship_state'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='fellowship_airship_upgrades'"))
         self.assertEqual(int(self.db.one("SELECT COUNT(*) AS n FROM players")["n"]), 1)
@@ -68,7 +68,7 @@ class GuildExpansionAlpha4Tests(unittest.TestCase):
 
         upgraded = Database(path)
         try:
-            self.assertEqual(upgraded.schema_version(), 19)
+            self.assertEqual(upgraded.schema_version(), 20)
             player = upgraded.one("SELECT level,gil FROM players WHERE twitch_id='808'")
             self.assertEqual((int(player["level"]), int(player["gil"])), (37, 54321))
             self.assertEqual(int(upgraded.one("SELECT tier FROM fellowship_facilities WHERE facility_id='workshop'")["tier"]), 2)

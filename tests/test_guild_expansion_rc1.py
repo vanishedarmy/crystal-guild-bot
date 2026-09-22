@@ -16,12 +16,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GuildExpansionFinalTests(unittest.TestCase):
     def test_final_identity_schema_and_protocol_are_release_values(self):
-        self.assertEqual(__version__, "1.9.0-world-events-alpha6")
+        self.assertEqual(__version__, "1.9.0-hall-of-trophies-alpha7")
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         with tempfile.TemporaryDirectory() as tmp:
             db = Database(Path(tmp) / "final.db")
             try:
-                self.assertEqual(db.schema_version(), 19)
+                self.assertEqual(db.schema_version(), 20)
                 self.assertEqual(db.quick_check(), [])
             finally:
                 db.close()

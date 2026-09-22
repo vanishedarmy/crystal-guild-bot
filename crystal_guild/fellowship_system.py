@@ -5,6 +5,8 @@ import re
 import time
 from typing import Any
 
+from .trophies import reconcile_player_trophies
+
 from .fellowship import (
     AIRSHIP_MISSIONS,
     AIRSHIP_UPGRADES,
@@ -1420,7 +1422,9 @@ class FellowshipSystem:
             conn.execute("INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'project_complete',?,?)", (project["name"], bonus))
             participants = conn.execute("SELECT player_id FROM fellowship_project_members WHERE project_id=?", (project_id,)).fetchall()
             for row in participants:
-                conn.execute("UPDATE fellowship_members SET projects_contributed=projects_contributed+1 WHERE player_id=?", (row["player_id"],))
+                player_id = str(row["player_id"])
+                conn.execute("UPDATE fellowship_members SET projects_contributed=projects_contributed+1 WHERE player_id=?", (player_id,))
+                reconcile_player_trophies(conn, player_id, source=f"fellowship:{project_id}")
             # Progress project-completion Orders/Deeds even though the project has
             # already been cleared from active state.
             self._progress_orders(conn, triggering_player_id, "project_complete", 1)

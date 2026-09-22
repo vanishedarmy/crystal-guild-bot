@@ -50,9 +50,9 @@ class GoldSaucerRC1HardeningTests(unittest.TestCase):
         return result
 
     def test_rc1_identity_freezes_schema_protocol_and_all_five_attractions(self):
-        self.assertEqual(__version__, "1.9.0-world-events-alpha6")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 19)
-        self.assertEqual(self.db.schema_version(), 19)
+        self.assertEqual(__version__, "1.9.0-hall-of-trophies-alpha7")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 20)
+        self.assertEqual(self.db.schema_version(), 20)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         attractions = self.state()["attractions"]
         self.assertEqual(

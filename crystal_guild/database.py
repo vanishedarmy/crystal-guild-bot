@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 19
+DATABASE_SCHEMA_VERSION = 20
 
 
 class Database:
@@ -1154,6 +1154,45 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_trading_post_item
                     ON trading_post_listings(item_id, status, unit_price, created_at DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (19,'fellowship_trading_post');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v20 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=20").fetchone()
+        )
+        if not already_v20:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(20)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_trophies (
+                        player_id TEXT NOT NULL,
+                        trophy_id TEXT NOT NULL,
+                        unlock_source TEXT NOT NULL DEFAULT 'reconciliation',
+                        unlocked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        seen_at TEXT,
+                        PRIMARY KEY (player_id, trophy_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_player_trophies_unlocked
+                    ON player_trophies(player_id, unlocked_at DESC, trophy_id);
+                    CREATE TABLE IF NOT EXISTS player_world_event_clears (
+                        player_id TEXT NOT NULL,
+                        world_event_id TEXT NOT NULL,
+                        clears INTEGER NOT NULL DEFAULT 0 CHECK(clears >= 0),
+                        first_cleared_at TEXT,
+                        last_cleared_at TEXT,
+                        PRIMARY KEY (player_id, world_event_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (20,'hall_of_trophies');
                     COMMIT;
                     """
                 )

@@ -1,1 +1,1 @@
-__version__ = "1.9.0-world-events-alpha6"
+__version__ = "1.9.0-hall-of-trophies-alpha7"

@@ -17,7 +17,7 @@ from .config import load_dotenv
 from .player_snapshot import PortalRepository
 
 
-SYNC_VERSION = "1.1.15-wayfarer"
+SYNC_VERSION = "1.1.16-trophies"
 LOGGER = logging.getLogger("CrystalGuild.PortalSync")
 SCHEMA_VERSION = 1
 MODULES = (
@@ -29,6 +29,7 @@ MODULES = (
     "relics",
     "achievements",
     "records",
+    "trophies",
 )
 
 
@@ -98,6 +99,7 @@ class PortalSyncClient:
             "relics": self.repository.relics,
             "achievements": self.repository.achievements,
             "records": self.repository.records,
+            "trophies": getattr(self.repository, "trophies", lambda _username: {"player": {}, "unlocked": []}),
         }
         snapshot: dict[str, Any] = {}
         # One SQLite read transaction keeps all modules on the same WAL snapshot,

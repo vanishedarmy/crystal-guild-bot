@@ -1,4 +1,4 @@
-Crystal Guild v1.9.0 Alpha 6 — World Events — Moogle Trading Post — Progress Accounting Hardening Hotfix 5
+Crystal Guild v1.9.0 Alpha 7 — Hall of Trophies — Moogle Trading Post and World Events carried forward
 .env.example
 .gitignore
 .python-version
@@ -29,7 +29,6 @@ MERC_SERVICE_RC1_RELEASE_NOTES.md
 MERC_SERVICE_RC1_VALIDATION.md
 MOOGLE_ANNEX_CATEGORY_STOCK_HOTFIX4.md
 MOOGLE_ANNEX_STOCK_HOTFIX3.md
-PACKAGE_MANIFEST.txt
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt
@@ -84,6 +83,7 @@ crystal_guild/stream_status.py
 crystal_guild/subscription_status.py
 crystal_guild/time_format.py
 crystal_guild/token_store.py
+crystal_guild/trophies.py
 crystal_guild/twitch_bot.py
 crystal_guild/world_events.py
 data/achievements.json
@@ -181,6 +181,7 @@ tests/test_guild_expansion_alpha5.py
 tests/test_guild_expansion_beta1.py
 tests/test_guild_expansion_beta3.py
 tests/test_guild_expansion_rc1.py
+tests/test_hall_of_trophies_alpha7.py
 tests/test_help_system.py
 tests/test_item_expansion.py
 tests/test_item_progression.py

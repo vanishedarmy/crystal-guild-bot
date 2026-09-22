@@ -34,7 +34,7 @@ class GuildExpansionAlpha5Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_alpha5_keeps_schema9_and_protocol21(self):
-        self.assertEqual(self.db.schema_version(), 19)
+        self.assertEqual(self.db.schema_version(), 20)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
         self.assertEqual(len(LEGACY_ACCOMPLISHMENTS), 10)
 

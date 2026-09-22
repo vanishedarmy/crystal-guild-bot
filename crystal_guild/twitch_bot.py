@@ -1064,7 +1064,7 @@ def main() -> None:
             overlay_state_path=settings.overlay_state_path,
             owner_twitch_id=settings.owner_id,
             fellowship_prepare=lambda: game.fellowship_system.airship_snapshot(),
-            player_prepare=game.reconcile_achievements,
+            player_prepare=game.reconcile_player_progress,
         )
         portal_sync = PortalSyncWorker(sync_client)
     elif settings.cloud_runtime:
