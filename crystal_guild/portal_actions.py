@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 36
+ACTION_PROTOCOL_VERSION = 37
 
 
 class PortalActionWorker:
@@ -307,7 +307,7 @@ class PortalActionWorker:
             }
         passive_state_actions = {
             "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
-            "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE",
+            "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE", "SEASONAL_STATE",
             "SET_GEAR_FAVORITES",
         }
         if action_type not in passive_state_actions:
@@ -579,6 +579,17 @@ class PortalActionWorker:
             if not prize_id:
                 return False, "Gold Saucer prize purchase is missing a prize.", {}
             return self._game_result(self.game.portal_saucer_buy(twitch_id, prize_id, str(action.get("id") or "")))
+        if action_type == "SEASONAL_STATE":
+            if payload:
+                return False, "Seasonal event state does not accept parameters.", {}
+            return self._game_result(self.game.portal_seasonal_state(twitch_id))
+        if action_type == "SEASONAL_BUY":
+            if set(payload) != {"reward_id"}:
+                return False, "Seasonal purchase requires reward_id only.", {}
+            reward_id = str(payload.get("reward_id") or "").strip().lower()
+            if not reward_id or not re.fullmatch(r"[a-z0-9_]+", reward_id):
+                return False, "Seasonal reward ID is invalid.", {}
+            return self._game_result(self.game.portal_seasonal_buy(twitch_id, reward_id, str(action.get("id") or "")))
         if action_type == "MERC_STATE":
             if payload:
                 return False, "Merc state does not accept parameters.", {}
@@ -869,6 +880,24 @@ class PortalActionWorker:
                 live_only=True,
             )
             return self._game_result(GameResult.success("Direct Twitch API test queued for Twitch chat.", sent=True))
+        if command == "seasonalevent":
+            mode = str(argument or "status").strip().lower()
+            if mode in {"on", "enable", "start"}:
+                return self._game_result(self.game.seasonal_event_control(enabled=True, paused=False))
+            if mode in {"off", "disable", "end"}:
+                return self._game_result(self.game.seasonal_event_control(enabled=False, paused=False))
+            if mode == "pause":
+                return self._game_result(self.game.seasonal_event_control(paused=True))
+            if mode == "resume":
+                return self._game_result(self.game.seasonal_event_control(paused=False))
+            if mode in {"manual", "scheduled"}:
+                return self._game_result(self.game.seasonal_event_control(activation_mode=mode))
+            if mode == "status":
+                with self.game.db.tx() as conn:
+                    from .seasonal_events import event_state
+                    state = event_state(conn)
+                return self._game_result(GameResult.success(f"SEASONAL EVENT — {state['name']} is {state['state']} ({state['activation_mode']}).", seasonal=state))
+            return False, "Seasonal event control must be on, off, pause, resume, manual, scheduled, or status.", {}
         if command == "fellowshipproject":
             text = " ".join(str(argument or "").strip().split())
             if not text:

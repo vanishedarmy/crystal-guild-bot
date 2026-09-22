@@ -1,1 +1,1 @@
-__version__ = "1.9.0-hall-of-trophies-alpha7"
+__version__ = "1.9.0-seasonal-events-alpha8"

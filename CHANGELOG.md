@@ -1,100 +1,21 @@
-## v1.9.0 Alpha 6 — Progress Accounting Hardening Hotfix 5
+# Crystal Guild — Release History (Condensed)
 
-- Broad Fellowship requirements now use shared activity semantics instead of narrow source assumptions.
-- `Monsters defeated` counts valid Bestiary kills from encounters, Hunts, Ventures, Solo Ventures, Expeditions, Dungeons, and World Events.
-- `Combat victories` counts all monster victories plus Raid victories.
-- Solo Venture, Expedition, and Dungeon monster kills now emit replay-safe canonical monster-victory receipts.
-- Airship mission alias matching uses the strongest applicable activity weight so one victory cannot double-count.
-- Weekly Orders and Deeds use the same semantic matcher as Fellowship construction.
-- No schema, action protocol, balance, or player reset change.
+Only major release milestones appear here. Historical hotfix reports and obsolete per-version audits are omitted from deployable source packages; original released archives remain available separately.
 
-# Crystal Guild Changelog
+## v1.9.0 Alpha 8 — Seasonal Event Framework
+Reusable, initially disabled event editions and the first Halloween event, **Night of the Hollow Crystal**. Four seasonal monsters, Hollow Warden World Event, Moonlit Tokens, daily objectives, temporary shop, and four permanent trophies. Schema **21**; Portal Action protocol **37**.
 
-## v1.9.0 Alpha 6 — Moogle Annex Category Stock Hotfix 4
-- Moogle Emporium Annex stock is now fixed by category: **+2 Weapons, +4 Armor/Accessories, +6 Items**.
-- Base rotations remain 9 slots; a completed Annex can expand to **21 total slots** when enough unique level/job-eligible stock exists.
-- Existing 15-slot Annex caches invalidate automatically on the next shop request and reroll under the new category contract.
+## v1.9.0 Alpha 7 — Hall of Trophies
+30 permanent trophies, artwork and participant/contributor-aware reconciliation; schema **20**.
 
-## v1.9.0 Alpha 6 — Moogle Annex Stock Hotfix 3
-- Moogle Emporium Annex now adds **6** shop choices instead of 3.
-- Completed Annex rotations expand from **9 to 15** stock slots.
-- Existing 12-slot cached Annex rotations invalidate automatically on the next shop request and reroll at the new capacity.
-- No schema, hosted sync, Portal Action protocol, price, rarity, or refresh-timer changes.
+## v1.9.0 Alphas 1–6
+Moogle Trading Post and economy adjustments; Titles/navigation improvements; World Events and mobile combat controls. Schema **19**.
 
+## v1.8.0–1.8.2 — Merc Service
+Hero Mercs, recruitment and Elite Merc roster; schema **17–18**.
 
-## v1.8.0 Final — Merc Service
-- Promotes the hardened RC3 feature set to the production v1.8 release.
-- Hero Merc Service uses Hunt Seals with independent Hunt, Venture, and Raid assignment slots.
-- Includes deployed-state recovery, full Merc artwork, responsive Portal hardening, readable navigation, and one shared page-bottom Refresh control.
-- Runtime `1.8.0-merc-final`; schema 17, hosted sync 1, Portal Action protocol 34; no player reset.
+## v1.7.0–1.7.1
+Moogle Retainer, Moogle Emporium Annex, Gold Saucer refinements and Gear Resynthesis.
 
-## v1.8.0 RC3 — Portal UI Polish
-- Roomier desktop profile navigation with 6/8/4/2-column responsive tiers and no label overflow.
-- Removed section-specific manual refresh controls; one shared Refresh button now sits at the bottom of live Portal pages.
-- Simplified the connection strip to passive status only while preserving automatic live updates.
-- No gameplay, schema, economy, or Merc Service balance changes.
-
-## v1.8.0 RC2 — UI Consistency
-- Balanced Adventurer Profile navigation and responsive breakpoints across the Portal.
-- Added global layout/media containment guardrails for desktop and mobile consistency.
-- No gameplay, schema, economy, or Merc Service balance changes.
-
-# v1.8.0 Alpha 2 — Merc Service Balance & UX
-
-- Added visual three-slot deployment board.
-- Added exact per-mission Hero availability reasons.
-- Rebalanced Merc Hunt Seal fees to 5/6/5/7/9/12.
-- Preserved signature effects, schema 17, sync 1, and protocol 34.
-
-# Crystal Guild Changelog
-
-## v1.7.1 — Resynthesis Alpha 2 Hotfix 5 — Treasure Seekers Solo Progress
-
-- Solo Venture treasure discoveries now emit canonical Fellowship `treasure` activity.
-- Treasure Seekers weekly-order progress and Treasure Hunters deed progress now include Solo treasure chests.
-- Run/stage-scoped event keys make the correction replay-safe and prevent double counting.
-- Rally remains 100% Encounter / 0% Treasure Chest; Solo remains 80% Encounter / 20% Treasure.
-- No schema, hosted sync, Portal protocol, or player-data migration changes.
-
-## v1.7.1 — Resynthesis Alpha 2 Hotfix 3 — Job Resource Persistence
-
-- Fixes inactive MP/AP pools being overwritten with zero during refresh or equipment normalization.
-- Preserves MP and AP independently across Job-family switches.
-- Adds a one-time receipt-protected compatibility repair for inactive zeros written by older builds.
-- Legitimately depleted zero pools remain zero after the repair receipt exists, preventing swap-refill exploits.
-- Runtime `1.7.1-resynthesis-a2h3`; schema 15 and Portal protocol 32 unchanged.
-
-## v1.7.1 — Resynthesis Alpha 2 Hotfix 2 — Job Quest Unlock Repair
-
-- Job-unlock quests self-reconcile automatically when all existing requirements are met.
-- Retroactive progress is honored; no requirement must be repeated.
-- Quest Gil/title/achievement rewards are exactly-once across repeated refreshes.
-- Portal Jobs state, `!job`, `!jobinfo`, and `!quests` all trigger reconciliation.
-- Runtime `1.7.1-resynthesis-a2h2`; schema 15 and Portal protocol 32 unchanged.
-
-## v1.7.1 — Resynthesis Alpha 2 Hotfix 1 — Encounter Variety
-
-- Fixes narrow Solo Venture/Expedition level bands that could collapse to a single monster.
-- Widens eligible pools to five candidates when available.
-- Suppresses immediate repeats and blocks a third identical encounter when alternatives exist.
-- Caps one monster at ~45% effective weight when 3+ choices exist.
-- No reward, drop, schema, protocol, or Web changes.
-
-## v1.7.1 — Resynthesis Alpha 2
-- Added Blacksmith Resynthesize Gear for weapons and armor.
-- Added deterministic recovery previews and replay-safe Portal mutation.
-- Protected accessories, Relic/Artifact gear, and last equipped copies.
-- Added bounded final-copy forge recovery and forge-state cleanup.
-- Portal Action protocol advances to 32; schema remains 15.
-
-
-## v1.7.0 — Moogle Retainer
-
-- Adds the complete Retainer Service with timed crafting-material procurement, rank/EXP progression, priority targeting, recent-haul history, and final artwork/UI.
-- Adds the shared Moogle Emporium Annex, expanding personal shop rotations from 9 to 12 stock slots after construction.
-- Carries forward the production Gold Saucer feature set and verified restorative-item balance.
-- Hardens Render startup backups against low-disk restart loops and keeps routine file logs off persistent database storage.
-- Finalizes responsive/mobile layout, compact UI presentation, text spacing, lazy loading, bounded static-art streaming, and ETag revalidation.
-- Production contract: runtime `1.7.0`, schema **15**, hosted sync **1**, Portal Action protocol **31**, Twitch prefix `!`.
-
-Development-phase notes are intentionally excluded from the production package. Repository history remains the source of record for pre-release iteration details.
+## Alpha 8 package cleanup Hotfix 1
+Documentation/duplicate-asset maintenance only: consolidated release history, corrected current setup guides and removed retired Triple Triad asset generations. **Runtime, schema, protocol, rewards and gameplay remain unchanged.**

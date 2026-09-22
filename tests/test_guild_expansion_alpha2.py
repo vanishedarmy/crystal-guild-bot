@@ -38,7 +38,7 @@ class GuildExpansionAlpha2Tests(unittest.TestCase):
         self.assertEqual(projects["moogle_relief_shipment"]["project_type"], "supply_drive")
         self.assertEqual(projects["clear_the_roads"]["project_type"], "guild_objective")
         self.assertEqual(projects["chart_the_frontier"]["requirements"][0]["label"], "Expeditions completed")
-        self.assertEqual(self.db.schema_version(), 20)
+        self.assertEqual(self.db.schema_version(), 21)
 
     def test_supply_drive_completes_once_without_changing_facility_tiers(self):
         before_tiers = self.game.fellowship_system.facility_tiers()

@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 20
+DATABASE_SCHEMA_VERSION = 21
 
 
 class Database:
@@ -1193,6 +1193,86 @@ class Database:
                         FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
                     );
                     INSERT INTO schema_migrations(version,name) VALUES (20,'hall_of_trophies');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v21 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=21").fetchone()
+        )
+        if not already_v21:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(21)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS seasonal_event_instances (
+                        event_id TEXT NOT NULL,
+                        edition_id TEXT PRIMARY KEY,
+                        enabled INTEGER NOT NULL DEFAULT 0,
+                        activation_mode TEXT NOT NULL DEFAULT 'manual',
+                        starts_at TEXT, ends_at TEXT, redemption_ends_at TEXT,
+                        paused INTEGER NOT NULL DEFAULT 0,
+                        config_json TEXT NOT NULL DEFAULT '{}',
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    INSERT OR IGNORE INTO seasonal_event_instances(event_id,edition_id,enabled,activation_mode,starts_at,ends_at,redemption_ends_at,paused,config_json)
+                    VALUES ('night_of_the_hollow_crystal','halloween_2026',0,'manual','2026-10-01T00:00:00Z','2026-11-02T23:59:59Z','2026-11-05T23:59:59Z',0,'{}');
+                    CREATE TABLE IF NOT EXISTS player_seasonal_event_progress (
+                        player_id TEXT NOT NULL, edition_id TEXT NOT NULL,
+                        tokens INTEGER NOT NULL DEFAULT 0 CHECK(tokens>=0),
+                        seasonal_kills INTEGER NOT NULL DEFAULT 0 CHECK(seasonal_kills>=0),
+                        adventures INTEGER NOT NULL DEFAULT 0 CHECK(adventures>=0),
+                        daily_kills INTEGER NOT NULL DEFAULT 0 CHECK(daily_kills>=0),
+                        daily_key TEXT, warden_clears INTEGER NOT NULL DEFAULT 0 CHECK(warden_clears>=0),
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id,edition_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_seasonal_monster_clears (
+                        player_id TEXT NOT NULL, edition_id TEXT NOT NULL, variant_id TEXT NOT NULL,
+                        clears INTEGER NOT NULL DEFAULT 0 CHECK(clears>=0),
+                        first_cleared_at TEXT, last_cleared_at TEXT,
+                        PRIMARY KEY(player_id,edition_id,variant_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_seasonal_daily_progress (
+                        player_id TEXT NOT NULL, edition_id TEXT NOT NULL, day_key TEXT NOT NULL,
+                        seasonal_kills INTEGER NOT NULL DEFAULT 0 CHECK(seasonal_kills>=0),
+                        adventures INTEGER NOT NULL DEFAULT 0 CHECK(adventures>=0),
+                        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id,edition_id,day_key),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_seasonal_objective_claims (
+                        player_id TEXT NOT NULL, edition_id TEXT NOT NULL, day_key TEXT NOT NULL, objective_id TEXT NOT NULL,
+                        reward_tokens INTEGER NOT NULL DEFAULT 0 CHECK(reward_tokens>=0), claimed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id,edition_id,day_key,objective_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_seasonal_reward_claims (
+                        player_id TEXT NOT NULL, edition_id TEXT NOT NULL, reward_id TEXT NOT NULL,
+                        quantity INTEGER NOT NULL DEFAULT 0 CHECK(quantity>=0), claimed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id,edition_id,reward_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_seasonal_trophies (
+                        player_id TEXT NOT NULL, edition_id TEXT NOT NULL, trophy_id TEXT NOT NULL,
+                        unlock_source TEXT NOT NULL DEFAULT 'event', unlocked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id,edition_id,trophy_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS seasonal_action_receipts (
+                        player_id TEXT NOT NULL, action_id TEXT NOT NULL, result_json TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id,action_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (21,'seasonal_event_framework');
                     COMMIT;
                     """
                 )

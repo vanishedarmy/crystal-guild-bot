@@ -18,7 +18,7 @@ from .gold_saucer import gold_saucer_record_value
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
-SNAPSHOT_VERSION = "1.1.16-trophies"
+SNAPSHOT_VERSION = "1.1.17-seasonal"
 
 
 class PortalRepository:
@@ -1078,6 +1078,18 @@ class PortalRepository:
                     for row in rows
                 ],
             }
+
+
+    def seasonal(self, key: str) -> dict[str, Any] | None:
+        with self.connect() as conn:
+            player = self._find_player(conn, key)
+            if not player:
+                return None
+            try:
+                from .seasonal_events import public_snapshot
+                return {"player": self._public_identity(player), "seasonal": public_snapshot(conn, str(player["twitch_id"]))}
+            except sqlite3.Error:
+                return {"player": self._public_identity(player), "seasonal": {"state":"disabled","active":False,"redemption":False}}
 
     def records(self, key: str) -> dict[str, Any] | None:
         with self.connect() as conn:

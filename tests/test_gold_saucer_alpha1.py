@@ -33,10 +33,10 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_advances_only_local_schema_and_portal_protocol(self):
-        self.assertEqual(__version__, "1.9.0-hall-of-trophies-alpha7")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 20)
-        self.assertEqual(self.db.schema_version(), 20)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
+        self.assertEqual(__version__, "1.9.0-seasonal-events-alpha8")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 21)
+        self.assertEqual(self.db.schema_version(), 21)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
         for table in ("player_gold_saucer", "gold_saucer_cactpot", "gold_saucer_history"):
             self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,)))
 
@@ -152,7 +152,7 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
 
     def test_worker_dispatches_new_protocol_actions(self):
         worker = PortalActionWorker(self.game, "https://guild.example", "sync-key")
-        base = {"protocol_version": 36, "twitch_id": "100", "username": "van", "payload": {}, "lease_token": "lease"}
+        base = {"protocol_version": 37, "twitch_id": "100", "username": "van", "payload": {}, "lease_token": "lease"}
         action = {**base, "id": "state-1", "type": "GOLD_SAUCER_STATE"}
         ok, _message, data = worker._execute(action)
         self.assertTrue(ok)
@@ -188,7 +188,7 @@ class GoldSaucerMigrationTests(unittest.TestCase):
 
             upgraded = Database(path)
             try:
-                self.assertEqual(upgraded.schema_version(), 20)
+                self.assertEqual(upgraded.schema_version(), 21)
                 row = upgraded.one("SELECT level,gil FROM players WHERE twitch_id='42'")
                 self.assertEqual((int(row["level"]), int(row["gil"])), (17, 4321))
                 self.assertIsNotNone(upgraded.pre_migration_backup_path)

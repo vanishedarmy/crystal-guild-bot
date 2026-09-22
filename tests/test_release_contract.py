@@ -22,9 +22,9 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_merc_rc1_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.9.0-hall-of-trophies-alpha7")
-        self.assertEqual(SYNC_VERSION, "1.1.16-trophies")
-        self.assertEqual(SNAPSHOT_VERSION, "1.1.16-trophies")
+        self.assertEqual(__version__, "1.9.0-seasonal-events-alpha8")
+        self.assertEqual(SYNC_VERSION, "1.1.17-seasonal")
+        self.assertEqual(SNAPSHOT_VERSION, "1.1.17-seasonal")
 
     def test_database_integrity_report_checks_fk_and_runtime_pragmas(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -39,7 +39,7 @@ class ReleaseReadinessTests(unittest.TestCase):
                 self.assertEqual(report["journal_mode"], "wal")
                 self.assertGreaterEqual(report["busy_timeout_ms"], 1000)
                 self.assertEqual(report["players"], 1)
-                self.assertEqual(db.schema_version(), 20)
+                self.assertEqual(db.schema_version(), 21)
                 self.assertIsNotNone(db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='portal_adventure_results'"))
             finally:
                 db.close()
@@ -90,20 +90,21 @@ class ReleaseReadinessTests(unittest.TestCase):
 
     def test_control_panel_exposes_release_drills(self):
         panel = (ROOT / "CRYSTAL_GUILD_CONTROL_PANEL.bat").read_text(encoding="utf-8")
-        self.assertIn("v1.9.0 ALPHA 7 - HALL OF TROPHIES", panel)
+        self.assertIn("v1.9.0 ALPHA 8 - SEASONAL EVENT FRAMEWORK", panel)
         self.assertIn("Run Non-Destructive Recovery Drill", panel)
         self.assertIn("Run Synthetic Stress Test", panel)
         self.assertIn("run_recovery_drill.bat", panel)
         self.assertIn("run_stress_test.bat", panel)
 
-    def test_current_finalization_audit_matches_final_package_identity(self):
-        audit = (ROOT / "FINALIZATION_AUDIT.md").read_text(encoding="utf-8")
+    def test_current_compact_docs_match_release_identity(self):
+        notes = (ROOT / "RELEASE_NOTES.md").read_text(encoding="utf-8")
+        history = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
-        self.assertIn("Crystal Guild v1.9.0 Alpha 7 — Hall of Trophies", audit)
-        self.assertIn("1.9.0-hall-of-trophies-alpha7", audit)
+        self.assertIn("v1.9.0 Alpha 8", notes)
+        self.assertIn("1.9.0-seasonal-events-alpha8", manifest)
         self.assertIn("Moogle Trading Post", manifest)
-        self.assertNotIn("v1.1.19 — Retro Phase III RC1 Finalization Audit", audit)
-        self.assertNotIn("Expeditions Alpha 2 Hotfix 1 Finalization", audit)
+        self.assertIn("package cleanup Hotfix 1", history)
+        self.assertFalse((ROOT / "FINALIZATION_AUDIT.md").exists())
 
     def test_source_tree_has_no_superseded_hotfix_debris(self):
         # In the repository, release docs live one level above bot/. In the

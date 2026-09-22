@@ -31,10 +31,10 @@ class GoldSaucerAlpha3MGPTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_alpha3_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.9.0-hall-of-trophies-alpha7")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 20)
-        self.assertEqual(self.db.schema_version(), 20)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 36)
+        self.assertEqual(__version__, "1.9.0-seasonal-events-alpha8")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 21)
+        self.assertEqual(self.db.schema_version(), 21)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
 
     def test_mgp_is_canonical_currency_without_resetting_legacy_balance(self):
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]

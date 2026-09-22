@@ -1,15 +1,13 @@
-# Crystal Guild v1.9.0 Alpha 7 — Hall of Trophies Render Cloud Setup
+# Crystal Guild v1.9.0 Alpha 8 — Seasonal Event Framework Render Cloud Setup
 
-Keep the Bot's persistent database on the mounted disk (normally `/var/data/crystal_guild.db`) and Twitch token storage on persistent disk as configured by the existing deployment. Do not replace the live database with a packaged blank database.
+Preserve the live persistent disk and secrets before deployment. Deploy the **Alpha 8 Seasonal Event Framework Bot and matching Web build together**, then restart the services.
 
-Before upgrading, keep your normal external backup. On first startup against a schema-17 database, the existing schema-18 migration creates and verifies an automatic `pre_schema_18_<timestamp>.db` backup before applying the additive Merc Recruitment migration.
+Verify `!cgversion` reports `1.9.0-seasonal-events-alpha8`, local schema **21**, hosted sync **1**, Portal Action protocol **37**, and `!health` is clean. Existing schema 20 databases receive a verified `pre_schema_21_<timestamp>.db` backup before migration.
 
-Deploy the **v1.9.0 Alpha 7 Hall of Trophies Bot and matching Web build together**, then restart the worker. Verify `!cgversion` reports `1.9.0-hall-of-trophies-alpha7`, schema **19**, Portal Action protocol **36**, and `!health` is clean.
+The installed **Night of the Hollow Crystal** event is disabled by default. Use Streamer Control Center seasonal controls only when you are ready to activate or schedule it.
 
-The hosted Web process and Bot must use the same Portal sync credentials and protocol version. The Web action gateway now requires the Dungeon room `revision` field for action, choice, continue, and retreat requests.
-
-Use `run_cloud_preflight.py` before production rollout where applicable. OBS overlay routes remain available under `/overlay`.
-
-## Persistent state compatibility
-
-The deployment layout remains compatible with the persistent-disk setup used by the v1.7.1 release line. The default Twitch token database path is `/var/data/twitch_tokens.db`; preserve that file alongside `/var/data/crystal_guild.db` during upgrades.
+## Persistent Render paths
+- Main database: `/var/data/crystal_guild.db`
+- Twitch token store: `/var/data/twitch_tokens.db`
+- Run `python run_cloud_preflight.py` before a production migration when validating persistent-disk readiness.
+- The paired Web service continues to serve the `/overlay` route used by the OBS/live presentation layer.

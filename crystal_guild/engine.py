@@ -146,6 +146,13 @@ from .world_events import (
     WORLD_EVENT_RALLY_SECONDS,
 )
 from .trophies import TROPHY_CATALOG, reconcile_player_trophies, record_world_event_clear
+from .seasonal_events import (
+    EDITION_ID as SEASONAL_EDITION_ID, SEASONAL_VARIANTS, HOLLOW_WARDEN,
+    HOLLOW_WARDEN_WORLD_EVENT_WEIGHT, SEASONAL_REPLACEMENT_CHANCE,
+    event_state as seasonal_event_state, seasonal_monster, player_progress as seasonal_player_progress,
+    public_snapshot as seasonal_public_snapshot, award_seasonal_kill, award_adventure as seasonal_award_adventure,
+    award_warden_clear, buy_reward as seasonal_buy_reward, set_event_control as seasonal_set_event_control,
+)
 from .time_format import format_duration
 from .chocobo import (
     CHOC_MAX_LEVEL,
@@ -2622,7 +2629,17 @@ class CrystalGuildEngine:
 
         previous = str(schedule.get("last_event_id") or "")
         choices = [row for row in WORLD_EVENTS if str(row["id"]) != previous] or list(WORLD_EVENTS)
-        event = copy.deepcopy(self.rng.choice(choices))
+        seasonal_world_event = False
+        try:
+            with self.db.tx() as conn:
+                season = seasonal_event_state(conn)
+            if season.get("active") and self.rng.random() < HOLLOW_WARDEN_WORLD_EVENT_WEIGHT and previous != HOLLOW_WARDEN["id"]:
+                event = copy.deepcopy(HOLLOW_WARDEN)
+                seasonal_world_event = True
+            else:
+                event = copy.deepcopy(self.rng.choice(choices))
+        except Exception:
+            event = copy.deepcopy(self.rng.choice(choices))
         monster = self._scaled_world_event_monster(event)
         self._encounter_seq += 1
         encounter_id = self._encounter_seq
@@ -2638,6 +2655,7 @@ class CrystalGuildEngine:
             "created_at": int(now),
             "closes_at": closes_at,
             "starter_id": "world_event",
+            **({"seasonal_event_id": SEASONAL_EDITION_ID, "seasonal_world_event": True} if seasonal_world_event else {}),
         }
         self.encounter_roster = {}
         self._save_world_event_schedule({
@@ -2727,6 +2745,20 @@ class CrystalGuildEngine:
             k=1,
         )[0]
         monster = self._encounter_monster(encounter)
+        seasonal_variant = None
+        try:
+            with self.db.tx() as conn:
+                season = seasonal_event_state(conn)
+            if season.get("active") and self.rng.random() < SEASONAL_REPLACEMENT_CHANCE:
+                eligible_variants = [v for v in SEASONAL_VARIANTS if int(self.data.monsters[v["base_monster_id"]]["level"]) <= max_monster_level]
+                if eligible_variants:
+                    previous_variant = str(getattr(self, "_last_seasonal_variant", "") or "")
+                    choices = [v for v in eligible_variants if v["id"] != previous_variant] or eligible_variants
+                    seasonal_variant = copy.deepcopy(self.rng.choice(choices))
+                    monster = seasonal_monster(self.data.monsters[seasonal_variant["base_monster_id"]], seasonal_variant)
+                    self._last_seasonal_variant = seasonal_variant["id"]
+        except Exception:
+            LOGGER.exception("Unable to apply seasonal Venture rotation; continuing with the normal encounter.")
         now = time.time()
         self._encounter_seq += 1
         encounter_id = self._encounter_seq
@@ -2739,6 +2771,7 @@ class CrystalGuildEngine:
             "created_at": int(now),
             "closes_at": now + self.encounter_join_seconds,
             "starter_id": twitch_id,
+            **({"seasonal_event_id": SEASONAL_EDITION_ID, "seasonal_variant_id": seasonal_variant["id"], "monster_override": monster} if seasonal_variant else {}),
         }
         self.encounter_roster = {
             twitch_id: {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}
@@ -4659,6 +4692,28 @@ class CrystalGuildEngine:
                         "merc": self._merc_public_result(meta),
                         "reason": str(reason or "The mark remains on the board."),
                     }
+
+                seasonal_lines: list[str] = []
+                if won and str(encounter.get("seasonal_variant_id") or ""):
+                    with self.db.tx() as conn:
+                        season_award = award_seasonal_kill(conn, str(pid), str(encounter.get("seasonal_variant_id")))
+                    if int(season_award.get("tokens", 0)) > 0:
+                        seasonal_lines.append(f"+{int(season_award['tokens'])} Moonlit Tokens")
+                    seasonal_lines.extend([f"TROPHY UNLOCKED — {name}" for name in season_award.get("trophies", [])])
+                if won and kind in {"venture", "hunt"}:
+                    try:
+                        with self.db.tx() as conn:
+                            if seasonal_event_state(conn).get("active"):
+                                seasonal_award_adventure(conn, str(pid))
+                    except Exception:
+                        LOGGER.exception("Unable to record seasonal adventure objective progress")
+                if won and kind == "world_event" and bool(encounter.get("seasonal_world_event")):
+                    with self.db.tx() as conn:
+                        season_award = award_warden_clear(conn, str(pid))
+                    if int(season_award.get("tokens", 0)) > 0:
+                        seasonal_lines.append(f"+{int(season_award['tokens'])} Moonlit Tokens")
+                    seasonal_lines.extend([f"TROPHY UNLOCKED — {name}" for name in season_award.get("trophies", [])])
+                trophy_lines.extend(seasonal_lines)
 
                 player_trophies: list[str] = []
                 if won and kind == "world_event":
@@ -17888,3 +17943,41 @@ class CrystalGuildEngine:
             if not changed:
                 break
         return unlocked
+
+    def portal_seasonal_state(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        with self.db.tx() as conn:
+            snapshot = seasonal_public_snapshot(conn, str(twitch_id))
+        return GameResult.success(seasonal=snapshot)
+
+    def portal_seasonal_buy(self, twitch_id: str, reward_id: str, action_id: str = "") -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        if action_id:
+            row = self.db.one("SELECT result_json FROM seasonal_action_receipts WHERE player_id=? AND action_id=?", (str(twitch_id), str(action_id)))
+            if row:
+                payload = json.loads(str(row["result_json"]))
+                return GameResult(bool(payload.get("ok")), list(payload.get("messages") or []), dict(payload.get("data") or {}))
+        with self.db.tx() as conn:
+            ok, message, data = seasonal_buy_reward(conn, str(twitch_id), str(reward_id))
+            if ok and str(reward_id) == "spooky_supply_cache":
+                cache_contents = (("potion", 3), ("ether", 1), ("antidote", 2))
+                for item_id, quantity in cache_contents:
+                    conn.execute(
+                        "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
+                        "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",
+                        (str(twitch_id), item_id, quantity),
+                    )
+                data = {**data, "cache_contents": [{"item_id": item_id, "quantity": quantity} for item_id, quantity in cache_contents]}
+                message += " Cache contents: 3 Potions, 1 Ether, 2 Antidotes."
+            snapshot = seasonal_public_snapshot(conn, str(twitch_id))
+            data = {**data, "seasonal": snapshot}
+            if action_id:
+                conn.execute("INSERT OR IGNORE INTO seasonal_action_receipts(player_id,action_id,result_json) VALUES (?,?,?)", (str(twitch_id), str(action_id), json.dumps({"ok":ok,"messages":[message],"data":data}, separators=(",", ":"))))
+        return GameResult.success(message, **data) if ok else GameResult.fail(message, **data)
+
+    def seasonal_event_control(self, *, enabled: bool | None = None, paused: bool | None = None, activation_mode: str | None = None) -> GameResult:
+        with self.db.tx() as conn:
+            state = seasonal_set_event_control(conn, enabled=enabled, paused=paused, activation_mode=activation_mode)
+        return GameResult.success(f"SEASONAL EVENT — {state['name']} is {state['state']}.", seasonal=state)

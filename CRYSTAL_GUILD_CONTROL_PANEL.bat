@@ -6,7 +6,7 @@ title Crystal Guild v1.9.0 Alpha 6 - World Events
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.9.0 ALPHA 7 - HALL OF TROPHIES
+echo              CRYSTAL GUILD v1.9.0 ALPHA 8 - SEASONAL EVENT FRAMEWORK
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

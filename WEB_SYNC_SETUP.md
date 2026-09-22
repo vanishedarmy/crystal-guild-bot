@@ -1,5 +1,5 @@
-# Web Sync — Crystal Guild v1.9.0 Alpha 6 World Events
+# Hosted Web Sync — Alpha 8
 
-Hosted sync schema remains **1**. Portal Action protocol is **36**. The Trading Post adds `TRADING_POST_STATE`, `TRADING_POST_LIST`, `TRADING_POST_BUY`, and `TRADING_POST_CANCEL` to the established authoritative action relay; no sync-key or environment change is required.
+Hosted sync schema remains **1**; authoritative Portal Action protocol is **37**. Run the matching `1.9.0-seasonal-events-alpha8` Bot and Web together. The Bot remains authoritative for combat, inventory, Gil, Trading Post, trophies and seasonal event progress/shop claims.
 
-Deploy the matching v1.9.0 Alpha 1 Bot and Web together. The Bot remains authoritative for inventory, Gil, listings, expiry returns, taxes, and seller payouts. Public Fellowship snapshots now expose the Trading Post service state without exposing private player inventory.
+Maintain the existing private sync key and `PORTAL_PUBLIC_URL` configuration; no new environment variable or hosted sync migration is required for this cleanup hotfix. The live local database must be at schema **21**.
