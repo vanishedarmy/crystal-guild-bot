@@ -747,6 +747,13 @@ class PortalRepository:
             mastery = {row["monster_id"]: row for row in mastery_rows}
             entries = []
             overlay_entries = self.data.bestiary_research.get("entries") or {}
+            # Keep raw habitat IDs for stable API consumers. Names are a separate,
+            # reveal-gated presentation field so players never see sable_coast.
+            location_names = {
+                row_id: row.get("name") or row_id
+                for collection in (self.data.regions, self.data.expedition_regions)
+                for row_id, row in collection.items()
+            }
 
             # Canonical 112-entry base catalog: regional + Hunt + Expedition.
             for monster in self.data.monsters.values():
@@ -774,7 +781,9 @@ class PortalRepository:
                     "category": research["category"] if defeats > 0 else None,
                     "family_id": research["family_id"] if "family" in visible else None,
                     "family": research["family"] if "family" in visible else None,
+                    "family_description": ((self.data.bestiary_research.get("families") or {}).get(research["family_id"]) or {}).get("description") if "family" in visible else None,
                     "habitats": list(field_guide.get("habitats") or []) if "habitats" in visible else [],
+                    "habitat_names": [location_names.get(region_id, region_id) for region_id in field_guide.get("habitats") or []] if "habitats" in visible else [],
                     "weakness": monster.get("weakness", "—") if "weakness" in visible else None,
                     "special": monster.get("special", "—") if "combat_profile" in visible else None,
                     "combat_profile": profile.get("name", "Balanced") if "combat_profile" in visible else None,
@@ -821,6 +830,7 @@ class PortalRepository:
                     "family_id": None,
                     "family": (boss.get("tier") or "Boss Encounter") if discovered else None,
                     "habitats": [str(encounter)] if discovered else [],
+                    "habitat_names": [str(encounter)] if discovered else [],
                     "weakness": None,
                     "special": boss.get("signature") if discovered else None,
                     "combat_profile": (boss.get("tier") or "Boss Encounter") if discovered else None,
@@ -871,6 +881,7 @@ class PortalRepository:
                     "family_id": base_guide.get("family") if discovered else None,
                     "family": "World Event Variant" if discovered else None,
                     "habitats": ["World Event"] if discovered else [],
+                    "habitat_names": ["World Event"] if discovered else [],
                     "weakness": base.get("weakness") if discovered else None,
                     "special": f"Threat: {event.get('threat', 'Unknown')}" if discovered else None,
                     "combat_profile": f"{event.get('threat', 'Unknown')} threat" if discovered else None,
@@ -933,6 +944,7 @@ class PortalRepository:
                     "family_id": None,
                     "family": EVENT_NAME if discovered else None,
                     "habitats": [EVENT_NAME] if discovered else [],
+                    "habitat_names": [EVENT_NAME] if discovered else [],
                     "weakness": base.get("weakness") if discovered else None,
                     "special": variant.get("element") or variant.get("threat") if discovered else None,
                     "combat_profile": "Seasonal Variant" if discovered else None,

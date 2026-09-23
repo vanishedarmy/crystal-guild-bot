@@ -16,111 +16,111 @@
   "families": {
     "goblins": {
       "name": "Goblins",
-      "description": "Field records for the goblins family."
+      "description": "They love a shiny trinket, a poorly guarded supply pack, and a fight they think they can win."
     },
     "wolves": {
       "name": "Wolves & Hounds",
-      "description": "Field records for the wolves & hounds family."
+      "description": "Follow the pawprints, watch the tree line, and remember: the lone wolf rarely stays alone."
     },
     "flora": {
       "name": "Living Flora",
-      "description": "Field records for the living flora family."
+      "description": "The plants out here have teeth, tempers, and absolutely no respect for a gardener."
     },
     "insects": {
       "name": "Insects",
-      "description": "Field records for the insects family."
+      "description": "The buzzing usually gives them away. Usually."
     },
     "flans": {
       "name": "Flans",
-      "description": "Field records for the flans family."
+      "description": "Not every puddle is water. Some of them would quite like to eat you."
     },
     "fiends": {
       "name": "Fiends & Voidborn",
-      "description": "Field records for the fiends & voidborn family."
+      "description": "When the air turns cold and your torch flickers, these are the things you hope not to meet."
     },
     "bombs": {
       "name": "Bombs",
-      "description": "Field records for the bombs family."
+      "description": "Beautiful from a distance. Best admired from a very long distance."
     },
     "birds": {
       "name": "Avian Beasts",
-      "description": "Field records for the avian beasts family."
+      "description": "Feathers, talons, and a bird’s-eye view of adventurers who forgot to look up."
     },
     "undead": {
       "name": "Undead",
-      "description": "Field records for the undead family."
+      "description": "Some guardians never leave their posts, even long after the rest of them is gone."
     },
     "cactuars": {
       "name": "Cactuars",
-      "description": "Field records for the cactuars family."
+      "description": "All needles and nervous energy. Blink, and you might miss them entirely."
     },
     "constructs": {
       "name": "Golems & Constructs",
-      "description": "Field records for the golems & constructs family."
+      "description": "Stone or steel, spellwork or machinery—these guardians have outlasted the people who built them."
     },
     "aquatic": {
       "name": "Aquatic Beasts",
-      "description": "Field records for the aquatic beasts family."
+      "description": "The shoreline looks peaceful right up until something beneath it spots you."
     },
     "tonberries": {
       "name": "Tonberries",
-      "description": "Field records for the tonberries family."
+      "description": "One small lantern in the dark is more than enough reason to turn around."
     },
     "coeurls": {
       "name": "Coeurls",
-      "description": "Field records for the coeurls family."
+      "description": "Those whiskers are not decorative. If a Coeurl is watching you, assume it noticed you first."
     },
     "malboros": {
       "name": "Malboros",
-      "description": "Field records for the malboros family."
+      "description": "A warning from every veteran: keep your distance, and never trust the breeze."
     },
     "mimics": {
       "name": "Mimics & Curios",
-      "description": "Field records for the mimics & curios family."
+      "description": "That promising chest might be full of treasure. It might also have a very big mouth."
     },
     "wild_beasts": {
       "name": "Wild Beasts",
-      "description": "Field records for the wild beasts family."
+      "description": "The wilds belong to them. Travelers are merely passing through—if they’re lucky."
     },
     "dragons": {
       "name": "Dragons & Drakes",
-      "description": "Field records for the dragons & drakes family."
+      "description": "From hot-blooded drakes to ancient wyrms, every one of them deserves a little respect."
     },
     "worms": {
       "name": "Worms",
-      "description": "Field records for the worms family."
+      "description": "The ground can be just as dangerous as the creatures walking on it."
     },
     "chimeras": {
       "name": "Chimeras",
-      "description": "Field records for the chimeras family."
+      "description": "Several dangerous ideas in one creature, and not one of them is friendly."
     },
     "behemoths": {
       "name": "Behemoths",
-      "description": "Field records for the behemoths family."
+      "description": "If the ground begins to shake, find something sturdier than your shield."
     },
     "adamantoises": {
       "name": "Adamantoises",
-      "description": "Field records for the adamantoises family."
+      "description": "Their shells have weathered more battles than most Guild veterans will ever see."
     },
     "watchers": {
       "name": "Floating Watchers",
-      "description": "Field records for the floating watchers family."
+      "description": "One enormous eye is all they need to make an adventurer feel thoroughly unwelcome."
     },
     "magitek": {
       "name": "Magitek & Omega",
-      "description": "Field records for the magitek & omega family."
+      "description": "The old machines are still following their orders. Nobody thought to tell them the war was over."
     },
     "elementals": {
       "name": "Elementals",
-      "description": "Field records for the elementals family."
+      "description": "The land’s own magic, given shape and a rather unpredictable mood."
     },
     "spellcasters": {
       "name": "Sorcerers & Wanderers",
-      "description": "Field records for the sorcerers & wanderers family."
+      "description": "Some meet travelers with a greeting. These prefer a spell at twenty paces."
     },
     "giants": {
       "name": "Giants",
-      "description": "Field records for the giants family."
+      "description": "When something this big is angry, there is no such thing as a safe hiding place."
     }
   },
   "tiers": {
@@ -1233,7 +1233,7 @@
         "emerald_wilds"
       ],
       "habitat_provenance": "expedition_registry",
-      "lore": "The oldest Ochu in Emerald Wilds has turned a grove into a maze of grasping roots."
+      "lore": "Locals say the Emerald Wilds used to have a path through this grove. The Elder Ochu has spent years making sure nobody finds it again."
     },
     "inferno_drake": {
       "category": "expedition",
@@ -1242,7 +1242,7 @@
         "ashen_highlands"
       ],
       "habitat_provenance": "expedition_registry",
-      "lore": "This ash-winged drake roosts near the Ashen Highlands' hottest fissures."
+      "lore": "The Inferno Drake nests where the Ashen Highlands burn hottest. Its shadow over the mountain is usually the last warning travelers get."
     },
     "malboro_sovereign": {
       "category": "expedition",
@@ -1251,7 +1251,7 @@
         "mistfen_marshes"
       ],
       "habitat_provenance": "expedition_registry",
-      "lore": "A colossal Malboro rules the mistiest reaches of Mistfen Marshes."
+      "lore": "Even the smaller Malboros keep their distance from this marshland giant. If the mist begins to smell sweet, turn back."
     },
     "frost_behemoth": {
       "category": "expedition",
@@ -1260,7 +1260,7 @@
         "frostveil_reach"
       ],
       "habitat_provenance": "expedition_registry",
-      "lore": "Deep snow conceals the approach of this Behemoth in Frostveil Reach."
+      "lore": "There are tracks in Frostveil Reach wide enough to swallow a campfire. The Frost Behemoth leaves very few others."
     },
     "rift_wyrm": {
       "category": "expedition",
@@ -1269,7 +1269,7 @@
         "astral_scar"
       ],
       "habitat_provenance": "expedition_registry",
-      "lore": "The Astral Scar's oldest wyrm follows cracks in the sky as if they were mountain trails."
+      "lore": "The Rift Wyrm moves through the Astral Scar as easily as other dragons cross a mountain pass. It has no intention of sharing the route."
     }
   }
 }

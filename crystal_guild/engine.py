@@ -14671,8 +14671,8 @@ class CrystalGuildEngine:
         reconcile_mastery(self.db, self.data, twitch_id)
         rows = self.db.all("SELECT monster_id, defeats FROM bestiary WHERE player_id=? ORDER BY defeats DESC, monster_id", (twitch_id,))
         if not rows:
-            return GameResult.success("Bestiary: 0 discoveries. The monsters remain blissfully undocumented.")
-        entries = [f"{self.data.monsters[r['monster_id']]['name']} x{r['defeats']}" for r in rows[:10] if r["monster_id"] in self.data.monsters]
+            return GameResult.success("Your Bestiary is waiting for its first entry. Time to meet a monster! Check the Portal to follow your discoveries.")
+        entries = [f"{self.data.monsters[r['monster_id']]['name']} ({r['defeats']} defeated)" for r in rows[:5] if r["monster_id"] in self.data.monsters]
         mastery = self.db.one(
             "SELECT COUNT(*) AS seals, COALESCE(SUM(research_points),0) AS points FROM player_bestiary_mastery WHERE player_id=?",
             (twitch_id,),
@@ -14680,8 +14680,10 @@ class CrystalGuildEngine:
         seals = int(mastery["seals"] or 0) if mastery else 0
         points = int(mastery["points"] or 0) if mastery else 0
         return GameResult.success(
-            f"Bestiary {len(rows)}/{len(self.data.monsters)} · Mastered {seals} · Research Points {points} — "
-            + " | ".join(entries)
+            f"Your Bestiary: {len(rows)}/{len(self.data.monsters)} discovered · "
+            f"{seals} mastered · {points} Research Points. "
+            + "Most familiar: " + ", ".join(entries)
+            + ". The Portal has the full field guide."
         )
 
     def achievements(self, twitch_id: str, category: str | None = None) -> GameResult:
