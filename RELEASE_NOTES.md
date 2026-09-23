@@ -1,4 +1,15 @@
-# Crystal Guild v1.9.0 Alpha 8 — Seasonal Event Framework
+# Crystal Guild v1.9.0 Alpha 9 — Bestiary Discovery
+
+- Reworked the Portal Bestiary with responsive research cards, searchable and filterable dossiers, progress bars, habitats, lore and discovery-stage visibility.
+- Introduced research progression for 90 ordinary monsters (20 defeats), 17 Hunts (5 clears/defeats), and 5 Expedition bosses (3 clears). All 112 core entries retain their original IDs and preexisting defeat history.
+- Schema 22 adds a durable idempotent core mastery ledger: one permanent Mastery Seal and one Research Point per mastered core entry. Backfills existing eligible players without a reset. Material-drop bonuses are not enabled.
+- Unified 37 raid/boss records, 10 World Event variants and 5 seasonal records into the same collection using separate scoped IDs. All special rewards remain in their owning systems; no duplicate seals or Research Points.
+- Filled the five Expedition boss art gaps with individual 512×768 WebP portraits. Existing regular monster art uses a matching locked silhouette; the seasonal event retains its own locked art.
+- Full baseline preservation: no changes to existing combat balance, Hall of Trophies ownership, seasonal activation, hosted sync schema (1), or Portal Action protocol (37).
+- Automatic verified schema 21→22 backup and migration on Bot startup, preserving players, inventory, bestiary rows and historical event editions. Preserve your live database and secrets when deploying.
+
+## Earlier release: v1.9.0 Alpha 8 — Seasonal Event Framework
+
 
 Alpha 8 builds one reusable seasonal/event rotation system and ships **Night of the Hollow Crystal** as the first event edition. Seasonal content is a layer over existing Ventures, Hunts, World Events, rewards, profiles, and the Hall rather than a second combat system.
 

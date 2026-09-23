@@ -1,3 +1,16 @@
+# Alpha 8 Hotfix 3 → Alpha 9 Bestiary Discovery
+
+1. Stop the matching Bot and Web services after backing up the live database, .env, credentials and persistent overlay state.
+2. Upgrade the Bot and Web together using the Alpha 9 complete archives or the exact Alpha 8 Hotfix 3 → Alpha 9 patch.
+3. Start the Bot to run verified automatic schema migration 21→22 (or upgrade older schemas in sequence). No player reset is needed.
+4. Confirm both runtime/frontend report 1.9.0-bestiary-alpha9, local schema 22, hosted sync schema 1, and Portal Action protocol 37.
+5. Confirm old Bestiary defeats, one-time mastery rewards, Hall trophies and seasonal editions remain intact. Halloween stays disabled unless owner-enabled.
+6. If validation fails, restore the stopped previous Bot/Web pair and your preserved pre-migration database backup; do not run older code against an upgraded live database.
+
+---
+
+## Previous upgrade instructions (historical)
+
 # Crystal Guild v1.9.0 Alpha 8 — Seasonal Event Framework Upgrade Guide
 
 Upgrade directly from **v1.9.0 Alpha 7 — Hall of Trophies** by deploying the matching Alpha 8 Bot and Web packages together.

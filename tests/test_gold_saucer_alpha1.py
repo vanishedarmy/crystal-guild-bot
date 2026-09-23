@@ -33,9 +33,9 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_advances_only_local_schema_and_portal_protocol(self):
-        self.assertEqual(__version__, "1.9.0-seasonal-events-alpha8")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 21)
-        self.assertEqual(self.db.schema_version(), 21)
+        self.assertEqual(__version__, "1.9.0-bestiary-alpha9")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 22)
+        self.assertEqual(self.db.schema_version(), 22)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
         for table in ("player_gold_saucer", "gold_saucer_cactpot", "gold_saucer_history"):
             self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,)))
@@ -188,7 +188,7 @@ class GoldSaucerMigrationTests(unittest.TestCase):
 
             upgraded = Database(path)
             try:
-                self.assertEqual(upgraded.schema_version(), 21)
+                self.assertEqual(upgraded.schema_version(), 22)
                 row = upgraded.one("SELECT level,gil FROM players WHERE twitch_id='42'")
                 self.assertEqual((int(row["level"]), int(row["gil"])), (17, 4321))
                 self.assertIsNotNone(upgraded.pre_migration_backup_path)

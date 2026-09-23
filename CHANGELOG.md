@@ -2,6 +2,9 @@
 
 Only major release milestones appear here. Historical hotfix reports and obsolete per-version audits are omitted from deployable source packages; original released archives remain available separately.
 
+## v1.9.0 Alpha 9 — Bestiary Discovery
+164 scoped Bestiary records, research stages and one-time permanent core mastery rewards; schema **22**, no sync/protocol change. Five standalone Expedition boss portraits and responsive research UI.
+
 ## v1.9.0 Alpha 8 — Seasonal Event Framework
 Reusable, initially disabled event editions and the first Halloween event, **Night of the Hollow Crystal**. Four seasonal monsters, Hollow Warden World Event, Moonlit Tokens, daily objectives, temporary shop, and four permanent trophies. Schema **21**; Portal Action protocol **37**.
 

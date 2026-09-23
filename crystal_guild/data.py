@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .bestiary_research import validate_research_overlay
+
 
 class GameData:
     def __init__(self, data_dir: str | Path):
@@ -26,6 +28,7 @@ class GameData:
         self.active_abilities = self._load_active_abilities()
         self.enemy_profiles = self._load_map("enemy_profiles.json")
         self.enemy_actions = self._load_map("enemy_actions.json")
+        self.bestiary_research = json.loads((self.data_dir / "bestiary_research.json").read_text(encoding="utf-8"))
 
     def _load_map(self, filename: str) -> dict[str, dict[str, Any]]:
         payload = json.loads((self.data_dir / filename).read_text(encoding="utf-8"))
@@ -663,6 +666,12 @@ class GameData:
                 bonus = dungeon.get(bonus_name) if isinstance(dungeon.get(bonus_name), dict) else {}
                 for loot in list(bonus.get("items") or []):
                     require(self.items, str(loot.get("item_id") or ""), f"dungeon {dungeon['id']} {bonus_name} loot")
+
+        errors.extend(validate_research_overlay(
+            self.bestiary_research,
+            monsters=self.monsters, regions=self.regions,
+            expeditions=self.expedition_regions, hunts=self.hunts,
+        ))
 
         return errors
 

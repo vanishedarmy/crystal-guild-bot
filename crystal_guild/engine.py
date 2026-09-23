@@ -87,6 +87,7 @@ from .daily_provisions import (
     subscriber_perk,
 )
 from .data import GameData
+from .bestiary_progress import reconcile_mastery
 from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, room_kind_label as dungeon_room_kind_label
 from .expeditions import (
     BONUS_STAGES as EXPEDITION_BONUS_STAGES,
@@ -320,6 +321,13 @@ class CrystalGuildEngine:
             LOGGER.info(
                 "Hall of Trophies reconciliation updated %s heroes: +%s trophies",
                 trophy_reconciliation["players"], trophy_reconciliation["trophies_added"],
+            )
+        bestiary_reconciliation = reconcile_mastery(self.db, self.data)
+        if bestiary_reconciliation["masteries_added"]:
+            LOGGER.info(
+                "Bestiary mastery reconciliation: +%s seals / +%s Research Points",
+                bestiary_reconciliation["masteries_added"],
+                bestiary_reconciliation["research_points_added"],
             )
         if self.active_boss:
             self._update_raid_overlay()
@@ -2173,6 +2181,7 @@ class CrystalGuildEngine:
             conn.execute("UPDATE players SET xp=xp+?, monsters_defeated=monsters_defeated+1 WHERE twitch_id=?", (xp, twitch_id))
             conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (jp, twitch_id, p["current_job"]))
             conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (twitch_id, monster["id"]))
+        reconcile_mastery(self.db, self.data, twitch_id)
         # Rare pity drops and recipe discoveries are progression systems rather
         # than ordinary loose expedition cargo. Preserve their existing combat
         # semantics by securing them immediately; normal drops remain at risk.
@@ -5104,6 +5113,7 @@ class CrystalGuildEngine:
             conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (jp, player_id, p["current_job"]))
             conn.execute("INSERT INTO bestiary(player_id, monster_id, defeats) VALUES (?, ?, 1) ON CONFLICT(player_id, monster_id) DO UPDATE SET defeats=defeats+1", (player_id, monster["id"]))
             conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'gil', 'gil', ?, ?)", (player_id, gil, f"monster:{monster['id']}"))
+        reconcile_mastery(self.db, self.data, player_id)
         for drop in monster.get("drops", []):
             chance = min(0.95, drop["chance"] * (1 + loot_bonus))
             if self.rng.random() <= chance:
@@ -5651,6 +5661,7 @@ class CrystalGuildEngine:
             conn.execute("INSERT INTO player_hunts(player_id,hunt_id,clears,first_cleared_at,last_cleared_at) VALUES (?,?,1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) ON CONFLICT(player_id,hunt_id) DO UPDATE SET clears=clears+1,last_cleared_at=CURRENT_TIMESTAMP", (player_id, hunt["id"]))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)", (player_id, gil, f"hunt:{hunt['id']}"))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_seals','hunt_seals',?,?)", (player_id, seals, f"hunt:{hunt['id']}"))
+        reconcile_mastery(self.db, self.data, player_id)
         loot: list[str] = []
         for drop in monster.get("drops", []):
             chance = min(0.95, drop["chance"] * (1 + loot_bonus))
@@ -7517,6 +7528,7 @@ class CrystalGuildEngine:
                 "ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1",
                 (str(twitch_id), str(monster["id"])),
             )
+        reconcile_mastery(self.db, self.data, str(twitch_id))
         self.fellowship_system.record_activity(
             str(twitch_id),
             "monster_victory",
@@ -8647,6 +8659,7 @@ class CrystalGuildEngine:
         with self.db.tx() as conn:
             conn.execute("UPDATE players SET monsters_defeated=monsters_defeated+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (str(twitch_id),))
             conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (str(twitch_id), str(monster["id"])))
+        reconcile_mastery(self.db, self.data, str(twitch_id))
         self.fellowship_system.record_activity(
             str(twitch_id),
             "monster_victory",
@@ -14655,11 +14668,21 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        reconcile_mastery(self.db, self.data, twitch_id)
         rows = self.db.all("SELECT monster_id, defeats FROM bestiary WHERE player_id=? ORDER BY defeats DESC, monster_id", (twitch_id,))
         if not rows:
             return GameResult.success("Bestiary: 0 discoveries. The monsters remain blissfully undocumented.")
         entries = [f"{self.data.monsters[r['monster_id']]['name']} x{r['defeats']}" for r in rows[:10] if r["monster_id"] in self.data.monsters]
-        return GameResult.success(f"Bestiary {len(rows)}/{len(self.data.monsters)} — " + " | ".join(entries))
+        mastery = self.db.one(
+            "SELECT COUNT(*) AS seals, COALESCE(SUM(research_points),0) AS points FROM player_bestiary_mastery WHERE player_id=?",
+            (twitch_id,),
+        )
+        seals = int(mastery["seals"] or 0) if mastery else 0
+        points = int(mastery["points"] or 0) if mastery else 0
+        return GameResult.success(
+            f"Bestiary {len(rows)}/{len(self.data.monsters)} · Mastered {seals} · Research Points {points} — "
+            + " | ".join(entries)
+        )
 
     def achievements(self, twitch_id: str, category: str | None = None) -> GameResult:
         p = self._player(twitch_id)

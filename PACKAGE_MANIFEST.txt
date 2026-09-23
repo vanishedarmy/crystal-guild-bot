@@ -1,8 +1,8 @@
-Crystal Guild v1.9.0 Alpha 8 — Seasonal Event Framework — Package Cleanup Hotfix 1
-Runtime/frontend: 1.9.0-seasonal-events-alpha8 | schema 21 | hosted sync 1 | Portal Action protocol 37
-Carried forward: Moogle Trading Post, Hall of Trophies, World Events, Seasonal Event Framework.
-This is a compact top-level inventory, not a recursively expanded asset manifest.
-Obsolete release/hotfix reports and retired duplicate art are intentionally absent.
+Crystal Guild v1.9.0 Alpha 9 — Bestiary Discovery
+Runtime/frontend: 1.9.0-bestiary-alpha9 | local schema 22 | hosted sync 1 | Portal Action protocol 37
+Carried forward: Seasonal Events, Hall of Trophies, Moogle Trading Post, World Events.
+164 unified monster-domain records; 169 verified Bestiary image states.
+Compact package inventory (full integrity list included in release MANIFEST.json).
 
 .env.example
 .gitignore

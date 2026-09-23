@@ -51,9 +51,9 @@ class TradingPostAlpha1Tests(unittest.TestCase):
         return int(self.db.one("SELECT gil FROM players WHERE twitch_id=?", (player_id,))["gil"])
 
     def test_release_contract_and_schema(self):
-        self.assertEqual(__version__, "1.9.0-seasonal-events-alpha8")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 21)
-        self.assertEqual(self.db.schema_version(), 21)
+        self.assertEqual(__version__, "1.9.0-bestiary-alpha9")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 22)
+        self.assertEqual(self.db.schema_version(), 22)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
         table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='trading_post_listings'")
         self.assertIsNotNone(table)

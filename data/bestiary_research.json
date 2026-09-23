@@ -1,0 +1,1275 @@
+{
+  "schema_version": 1,
+  "namespace": "base",
+  "design_notes": {
+    "authority": "monsters.json supplies names, levels, weaknesses, combat behavior and drops. This overlay supplies only category, family, habitats, lore and research thresholds.",
+    "hunt_habitats": "Guild survey field-guide territory, not a spawn guarantee. Hunt registry has no region field.",
+    "resistances": "Not listed because authoritative combat data has no explicit resistance field.",
+    "migration": "Research tiers derive from existing bestiary.defeats at read time. Only permanent mastery receipts add player state; kill history is never copied or reset.",
+    "reward_policy": "One permanent mastery seal and one Research Point are granted per mastered base entry through a durable once-only receipt. No drop bonus is enabled."
+  },
+  "rewards": {
+    "mastery_seal": true,
+    "research_points": 1,
+    "material_drop_bonus_enabled": false
+  },
+  "families": {
+    "goblins": {
+      "name": "Goblins",
+      "description": "Field records for the goblins family."
+    },
+    "wolves": {
+      "name": "Wolves & Hounds",
+      "description": "Field records for the wolves & hounds family."
+    },
+    "flora": {
+      "name": "Living Flora",
+      "description": "Field records for the living flora family."
+    },
+    "insects": {
+      "name": "Insects",
+      "description": "Field records for the insects family."
+    },
+    "flans": {
+      "name": "Flans",
+      "description": "Field records for the flans family."
+    },
+    "fiends": {
+      "name": "Fiends & Voidborn",
+      "description": "Field records for the fiends & voidborn family."
+    },
+    "bombs": {
+      "name": "Bombs",
+      "description": "Field records for the bombs family."
+    },
+    "birds": {
+      "name": "Avian Beasts",
+      "description": "Field records for the avian beasts family."
+    },
+    "undead": {
+      "name": "Undead",
+      "description": "Field records for the undead family."
+    },
+    "cactuars": {
+      "name": "Cactuars",
+      "description": "Field records for the cactuars family."
+    },
+    "constructs": {
+      "name": "Golems & Constructs",
+      "description": "Field records for the golems & constructs family."
+    },
+    "aquatic": {
+      "name": "Aquatic Beasts",
+      "description": "Field records for the aquatic beasts family."
+    },
+    "tonberries": {
+      "name": "Tonberries",
+      "description": "Field records for the tonberries family."
+    },
+    "coeurls": {
+      "name": "Coeurls",
+      "description": "Field records for the coeurls family."
+    },
+    "malboros": {
+      "name": "Malboros",
+      "description": "Field records for the malboros family."
+    },
+    "mimics": {
+      "name": "Mimics & Curios",
+      "description": "Field records for the mimics & curios family."
+    },
+    "wild_beasts": {
+      "name": "Wild Beasts",
+      "description": "Field records for the wild beasts family."
+    },
+    "dragons": {
+      "name": "Dragons & Drakes",
+      "description": "Field records for the dragons & drakes family."
+    },
+    "worms": {
+      "name": "Worms",
+      "description": "Field records for the worms family."
+    },
+    "chimeras": {
+      "name": "Chimeras",
+      "description": "Field records for the chimeras family."
+    },
+    "behemoths": {
+      "name": "Behemoths",
+      "description": "Field records for the behemoths family."
+    },
+    "adamantoises": {
+      "name": "Adamantoises",
+      "description": "Field records for the adamantoises family."
+    },
+    "watchers": {
+      "name": "Floating Watchers",
+      "description": "Field records for the floating watchers family."
+    },
+    "magitek": {
+      "name": "Magitek & Omega",
+      "description": "Field records for the magitek & omega family."
+    },
+    "elementals": {
+      "name": "Elementals",
+      "description": "Field records for the elementals family."
+    },
+    "spellcasters": {
+      "name": "Sorcerers & Wanderers",
+      "description": "Field records for the sorcerers & wanderers family."
+    },
+    "giants": {
+      "name": "Giants",
+      "description": "Field records for the giants family."
+    }
+  },
+  "tiers": {
+    "regional": {
+      "label": "Ordinary monster",
+      "milestones": [
+        {
+          "key": "encountered",
+          "defeats": 1,
+          "reveal": [
+            "name",
+            "level",
+            "portrait"
+          ]
+        },
+        {
+          "key": "observed",
+          "defeats": 3,
+          "reveal": [
+            "habitats",
+            "family"
+          ]
+        },
+        {
+          "key": "studied",
+          "defeats": 5,
+          "reveal": [
+            "weakness",
+            "combat_profile",
+            "active_skill"
+          ]
+        },
+        {
+          "key": "researched",
+          "defeats": 10,
+          "reveal": [
+            "drops"
+          ]
+        },
+        {
+          "key": "documented",
+          "defeats": 15,
+          "reveal": [
+            "lore"
+          ]
+        },
+        {
+          "key": "mastered",
+          "defeats": 20,
+          "reveal": [
+            "mastery"
+          ]
+        }
+      ]
+    },
+    "hunt": {
+      "label": "Hunt target",
+      "milestones": [
+        {
+          "key": "encountered",
+          "defeats": 1,
+          "reveal": [
+            "name",
+            "level",
+            "portrait"
+          ]
+        },
+        {
+          "key": "studied",
+          "defeats": 2,
+          "reveal": [
+            "habitats",
+            "family",
+            "weakness",
+            "combat_profile",
+            "active_skill"
+          ]
+        },
+        {
+          "key": "documented",
+          "defeats": 3,
+          "reveal": [
+            "drops",
+            "lore"
+          ]
+        },
+        {
+          "key": "mastered",
+          "defeats": 5,
+          "reveal": [
+            "mastery"
+          ]
+        }
+      ]
+    },
+    "expedition": {
+      "label": "Expedition boss",
+      "milestones": [
+        {
+          "key": "encountered",
+          "defeats": 1,
+          "reveal": [
+            "name",
+            "level",
+            "portrait",
+            "habitats",
+            "family",
+            "weakness",
+            "combat_profile",
+            "active_skill"
+          ]
+        },
+        {
+          "key": "documented",
+          "defeats": 2,
+          "reveal": [
+            "drops",
+            "lore"
+          ]
+        },
+        {
+          "key": "mastered",
+          "defeats": 3,
+          "reveal": [
+            "mastery"
+          ]
+        }
+      ]
+    }
+  },
+  "entries": {
+    "goblin": {
+      "category": "regional",
+      "family": "goblins",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A nimble scavenger drawn to the old roads, where abandoned packs often become its next prize."
+    },
+    "wolf": {
+      "category": "regional",
+      "family": "wolves",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Greenwind packs hunt along the grassline and retreat to cover when the wind turns."
+    },
+    "mandragora": {
+      "category": "regional",
+      "family": "flora",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its roots twitch at approaching footsteps; careless travelers learn why botanists wear ear protection."
+    },
+    "goblin_chieftain": {
+      "category": "hunt",
+      "family": "goblins",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "The chieftain rules its scavenger band from a makeshift throne of stolen expedition supplies."
+    },
+    "goblin_guard": {
+      "category": "regional",
+      "family": "goblins",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Guards fashion uneven armor from discarded metal and rarely stray far from their chieftain."
+    },
+    "hornet": {
+      "category": "regional",
+      "family": "insects",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The plains' oversized hornets defend their territory with a ferocity out of proportion to their size."
+    },
+    "flan": {
+      "category": "regional",
+      "family": "flans",
+      "habitats": [
+        "greenwind_plains",
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This wandering mass collects moisture and mana from whichever cave or meadow it inhabits."
+    },
+    "imp": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Mischievous cave-haunters mimic voices to lure travelers away from the marked trails."
+    },
+    "dire_wolf_alpha": {
+      "category": "hunt",
+      "family": "wolves",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A scarred pack leader has been sighted following caravans beyond the usual hunting grounds."
+    },
+    "bomb": {
+      "category": "regional",
+      "family": "bombs",
+      "habitats": [
+        "greenwind_plains",
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An unstable flame-spirit whose heat rises dangerously when threatened or crowded."
+    },
+    "cockatrice": {
+      "category": "regional",
+      "family": "birds",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its shrill calls echo across the plains just before a blur of feathers descends."
+    },
+    "bat": {
+      "category": "regional",
+      "family": "wild_beasts",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Cave bats roost in the highest cracks, emerging when torchlight disturbs their rest."
+    },
+    "queen_hornet": {
+      "category": "hunt",
+      "family": "insects",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "The colony's queen nests beyond reach of ordinary hunters and rallies swarms around her."
+    },
+    "ochu": {
+      "category": "regional",
+      "family": "flora",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A carnivorous plant that blends into dense undergrowth until an unfortunate traveler approaches."
+    },
+    "skeleton": {
+      "category": "regional",
+      "family": "undead",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Old bones remain animated in the caverns long after their original owners are forgotten."
+    },
+    "cactuar": {
+      "category": "regional",
+      "family": "cactuars",
+      "habitats": [
+        "greenwind_plains",
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A nervous desert wanderer as famous for sudden sprints as for its needle-covered hide."
+    },
+    "ossuary_knight": {
+      "category": "hunt",
+      "family": "undead",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "An armored guardian keeps watch over forgotten tombs beneath the caverns."
+    },
+    "spriggan": {
+      "category": "regional",
+      "family": "flora",
+      "habitats": [
+        "greenwind_plains"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Small woodland tricksters hide useful trinkets in places no traveler would think to look."
+    },
+    "basilisk": {
+      "category": "regional",
+      "family": "wild_beasts",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A low-slung cave predator whose patient stillness makes its approach difficult to notice."
+    },
+    "crimson_detonator": {
+      "category": "hunt",
+      "family": "bombs",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "This unusually volatile Bomb has left scorch marks along several abandoned passageways."
+    },
+    "gigas": {
+      "category": "regional",
+      "family": "giants",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A towering cave-dweller that turns natural stone corridors into cramped hunting grounds."
+    },
+    "lamia": {
+      "category": "regional",
+      "family": "spellcasters",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A solitary enchantress whose melodies mingle with the Whispering Caverns' natural echoes."
+    },
+    "mimic": {
+      "category": "regional",
+      "family": "mimics",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "What appears to be an unattended chest may be the cavern's most patient ambush predator."
+    },
+    "gargoyle": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Weathered stone wings disguise a watchful creature among collapsed cavern pillars."
+    },
+    "sahagin": {
+      "category": "regional",
+      "family": "aquatic",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Coastal raiders favor tidal caves and strike while surf masks their movements."
+    },
+    "sahagin_prince": {
+      "category": "hunt",
+      "family": "aquatic",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A self-styled prince commands raiding parties from a fortress of salt-worn stone."
+    },
+    "tonberry": {
+      "category": "regional",
+      "family": "tonberries",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A lantern-light in a dark passage can be a warning rather than an invitation."
+    },
+    "killer_fish": {
+      "category": "regional",
+      "family": "aquatic",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Schools of these aggressive fish stalk shallows where adventurers gather supplies."
+    },
+    "cactuar_jack": {
+      "category": "hunt",
+      "family": "cactuars",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A conspicuously fast Cactuar has evaded repeated Guild pursuit along the coast."
+    },
+    "gigantoad": {
+      "category": "regional",
+      "family": "aquatic",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This oversized amphibian waits beneath riverbank reeds for passing prey."
+    },
+    "mindflayer": {
+      "category": "regional",
+      "family": "spellcasters",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Travelers whisper of a cavern sorcerer that listens to thoughts more closely than voices."
+    },
+    "zu": {
+      "category": "regional",
+      "family": "birds",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The giant coastal bird surveys the cliffs before diving on anything that disturbs its nest."
+    },
+    "antlion": {
+      "category": "regional",
+      "family": "insects",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Sand collapses without warning above the hidden tunnels of this burrowing hunter."
+    },
+    "piscodemon": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A deep-cavern fiend emerges wherever the rock gives way to ancient underground water."
+    },
+    "black_flan": {
+      "category": "regional",
+      "family": "flans",
+      "habitats": [
+        "whispering_caverns"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Dark minerals have altered this Flan's coloring and made it nearly invisible in shadow."
+    },
+    "coeurl": {
+      "category": "regional",
+      "family": "coeurls",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its long whiskers register the slightest movement across coastal scrubland."
+    },
+    "sand_worm": {
+      "category": "regional",
+      "family": "worms",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This burrower crosses long stretches of sand without ever breaking the surface."
+    },
+    "chimera": {
+      "category": "regional",
+      "family": "chimeras",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Travelers disagree on which head notices danger first; all agree not to approach."
+    },
+    "remora": {
+      "category": "regional",
+      "family": "aquatic",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A reef-side parasite large enough to threaten anything that mistakes it for a harmless fish."
+    },
+    "king_coeurl": {
+      "category": "hunt",
+      "family": "coeurls",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "The coastal Coeurls yield territory to one enormous hunter with a distinctive mane."
+    },
+    "magic_pot": {
+      "category": "regional",
+      "family": "mimics",
+      "habitats": [
+        "whispering_caverns",
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A peculiar enchanted vessel that appears in places long abandoned by their former owners."
+    },
+    "malboro": {
+      "category": "regional",
+      "family": "malboros",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The coast's foulest undergrowth conceals a creature that announces itself by smell alone."
+    },
+    "sea_serpent": {
+      "category": "regional",
+      "family": "aquatic",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The serpent follows deep coastal channels, surfacing only when its territory is disturbed."
+    },
+    "riven_ronin": {
+      "category": "hunt",
+      "family": "spellcasters",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A lone swordsman is rumored to haunt ruined roads, challenging those who cross his path."
+    },
+    "adamantoise": {
+      "category": "regional",
+      "family": "adamantoises",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its ancient shell resembles a small boulder until the creature decides to move."
+    },
+    "magitek_drone": {
+      "category": "regional",
+      "family": "magitek",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A discarded reconnaissance machine still patrols the wastes under obsolete orders."
+    },
+    "ahriman": {
+      "category": "regional",
+      "family": "watchers",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A single unblinking eye surveys the ruins from above, following movement between broken towers."
+    },
+    "garuda": {
+      "category": "regional",
+      "family": "birds",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A fierce windborne predator that nests wherever coastal cliffs rise into storm clouds."
+    },
+    "malboro_overlord": {
+      "category": "hunt",
+      "family": "malboros",
+      "habitats": [
+        "sable_coast"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "This enormous Malboro has claimed a reeking stretch of marshland for itself."
+    },
+    "death_claw": {
+      "category": "regional",
+      "family": "wild_beasts",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A feral hunter adapted to the wastes, identifiable by the deep furrows it leaves in stone."
+    },
+    "iron_giant": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An ancient armored sentinel marches the same route long after its purpose has vanished."
+    },
+    "iron_giant_exile": {
+      "category": "hunt",
+      "family": "constructs",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "Driven from its old patrol, this giant wanders the outer ruins in search of a new charge."
+    },
+    "ironclad": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A heavily plated war construct built to outlast the machines that once commanded it."
+    },
+    "behemoth": {
+      "category": "regional",
+      "family": "behemoths",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A towering beast whose footprints are often the first sign of its arrival."
+    },
+    "chimera_brain": {
+      "category": "regional",
+      "family": "chimeras",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This unusual Chimera appears unnervingly alert to the feints of experienced adventurers."
+    },
+    "evil_eye": {
+      "category": "regional",
+      "family": "watchers",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "It drifts through abandoned machinery as though inspecting work that will never resume."
+    },
+    "malboro_great": {
+      "category": "regional",
+      "family": "malboros",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Larger and older than its coastal kin, this Malboro thrives among the wastes' fumes."
+    },
+    "three_moon_chimera": {
+      "category": "hunt",
+      "family": "chimeras",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "Guild hunters have tracked this Chimera by three distinct cries heard after dusk."
+    },
+    "death_machine": {
+      "category": "regional",
+      "family": "magitek",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A silent war engine that awakens whenever it detects movement among the ruins."
+    },
+    "magitek_armor": {
+      "category": "regional",
+      "family": "magitek",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Discarded military plating conceals machinery that still answers a forgotten command."
+    },
+    "crystal_wolf": {
+      "category": "regional",
+      "family": "wolves",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Crystal dust glitters along this wolf's coat as it stalks the Expanse's narrow passes."
+    },
+    "mover": {
+      "category": "regional",
+      "family": "elementals",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A curious machine-like elemental that drifts in precise patterns through ruined installations."
+    },
+    "tonberry_executioner": {
+      "category": "hunt",
+      "family": "tonberries",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A patient figure follows old execution roads with a lantern and an unmistakable blade."
+    },
+    "tonberry_king": {
+      "category": "regional",
+      "family": "tonberries",
+      "habitats": [
+        "magitek_wastes",
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The bearer of a battered crown receives a wide berth even from other Tonberries."
+    },
+    "crystal_golem": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A living shard of the Expanse's geology that awakens when its crystal seam is disturbed."
+    },
+    "red_dragon": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A flame-colored dragon favors the warmest cliffs above the crystal valleys."
+    },
+    "blue_dragon": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its blue scales catch the cold light where the Expanse's stone rises into cloud."
+    },
+    "elemental_archon": {
+      "category": "regional",
+      "family": "elementals",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An ancient spirit is said to appear where several crystal currents converge."
+    },
+    "magitek_juggernaut": {
+      "category": "hunt",
+      "family": "magitek",
+      "habitats": [
+        "magitek_wastes"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "The wastes' largest surviving battle machine appears to have forgotten the concept of retreat."
+    },
+    "gold_dragon": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Rare sightings speak of scales that gleam like sunlight on polished crystal."
+    },
+    "ancient_mimic": {
+      "category": "regional",
+      "family": "mimics",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A chest older than the nearby ruins is rarely an ordinary piece of furniture."
+    },
+    "holy_dragon": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Pilgrims once left offerings near the high ridges where this pale dragon circles."
+    },
+    "skull_dragon": {
+      "category": "regional",
+      "family": "undead",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A long-dead dragon's bones still stir beneath the Expanse's cold crystal winds."
+    },
+    "wyrm": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An old mountain drake that coils among the Expanse's deep mineral seams."
+    },
+    "storm_dragon": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Thunder precedes this dragon when it moves between the Expanse's tallest peaks."
+    },
+    "behemoth_tyrant": {
+      "category": "hunt",
+      "family": "behemoths",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "Riftland travelers mark the tyrant's territory with warnings on broken stone."
+    },
+    "rift_hound": {
+      "category": "regional",
+      "family": "wolves",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A lean hunter whose tracks vanish abruptly near unstable rift crossings."
+    },
+    "brachosaur": {
+      "category": "regional",
+      "family": "wild_beasts",
+      "habitats": [
+        "crystal_expanse"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "One of the Expanse's oldest herbivores, formidable despite its unhurried gait."
+    },
+    "catoblepas": {
+      "category": "regional",
+      "family": "wild_beasts",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its heavy head and patient stride belie how quickly it can defend its territory."
+    },
+    "void_mage": {
+      "category": "regional",
+      "family": "spellcasters",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A robed wanderer gathers forbidden fragments in the Riftlands' ruined sanctuaries."
+    },
+    "death_rider": {
+      "category": "regional",
+      "family": "undead",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This rider follows roads that no longer exist, never slowing for the living."
+    },
+    "ancient_adamantoise": {
+      "category": "hunt",
+      "family": "adamantoises",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "The oldest shell in the Riftlands bears scars mistaken for natural fault lines."
+    },
+    "rift_behemoth": {
+      "category": "regional",
+      "family": "behemoths",
+      "habitats": [
+        "riftlands",
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This Behemoth has learned to cross broken terrain that stops ordinary creatures."
+    },
+    "adamant_golem": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its dense body is almost indistinguishable from the Riftlands' weathered monoliths."
+    },
+    "master_tonberry": {
+      "category": "regional",
+      "family": "tonberries",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Veteran travelers recognize the quiet approach of a master long before seeing its lantern."
+    },
+    "abaddon": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An old fiend stirs where the Riftlands' fractured crystal exposes the world below."
+    },
+    "rift_dragon": {
+      "category": "hunt",
+      "family": "dragons",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "This dragon claims the broken sky above the Riftlands as its hunting territory."
+    },
+    "rift_drake": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "riftlands",
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Smaller than the great Rift dragons, this drake slips through unstable crossings with ease."
+    },
+    "land_worm": {
+      "category": "regional",
+      "family": "worms",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The earth trembles softly before the worm emerges from loose Riftland soil."
+    },
+    "great_wyrm": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This immense drake coils through rock corridors too narrow for most other dragons."
+    },
+    "void_tonberry": {
+      "category": "regional",
+      "family": "tonberries",
+      "habitats": [
+        "riftlands",
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The strange light of its lantern appears only where the Rift thins the world."
+    },
+    "astral_construct": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A geometric guardian remains active around ruins older than the surviving maps."
+    },
+    "crystal_dragon": {
+      "category": "regional",
+      "family": "dragons",
+      "habitats": [
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Its scales resonate faintly with the crystal formations of the Interdimensional Rift."
+    },
+    "archeodemon": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Ancient seals mark the places where this fiend is said to have been imprisoned."
+    },
+    "omega_fragment": {
+      "category": "regional",
+      "family": "magitek",
+      "habitats": [
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A broken part of an unknown machine continues to execute fragments of its last directive."
+    },
+    "varuna": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An elusive rift-dweller appears where magical currents have become dangerously unstable."
+    },
+    "void_avatar": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "interdimensional_rift"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An embodiment of the Rift's deeper shadows takes shape around concentrated crystal energy."
+    },
+    "demonolith": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "interdimensional_rift",
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Inscribed stone faces conceal a creature that has watched generations of travelers pass."
+    },
+    "floating_death": {
+      "category": "regional",
+      "family": "watchers",
+      "habitats": [
+        "interdimensional_rift",
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An enormous hovering eye studies intruders from the ruins' highest chambers."
+    },
+    "machea": {
+      "category": "regional",
+      "family": "fiends",
+      "habitats": [
+        "interdimensional_rift",
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A strange fiend patrols the shattered approaches to Omega's forgotten domain."
+    },
+    "master_coeurl": {
+      "category": "regional",
+      "family": "coeurls",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The largest Coeurl tracks in the Omega Ruins belong to a remarkably elusive hunter."
+    },
+    "dark_element": {
+      "category": "regional",
+      "family": "elementals",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A dense knot of shadow drifts wherever the ruins' crystal light fails."
+    },
+    "malboro_menace": {
+      "category": "regional",
+      "family": "malboros",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "This malignant growth survives where the Omega Ruins' air is barely breathable."
+    },
+    "spirit": {
+      "category": "regional",
+      "family": "undead",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "Old echoes gather into visible shapes among corridors sealed for centuries."
+    },
+    "great_malboro_omega": {
+      "category": "regional",
+      "family": "malboros",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An ancient Malboro has thrived in Omega's poisoned air beyond all expectation."
+    },
+    "mimic_king": {
+      "category": "regional",
+      "family": "mimics",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "The king of false treasure conceals itself amid hoards left by countless expeditions."
+    },
+    "omega_sentinel": {
+      "category": "regional",
+      "family": "magitek",
+      "habitats": [
+        "omega_ruins"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A dormant guardian awakens when explorers stray near Omega's inner chambers."
+    },
+    "elder_ochu": {
+      "category": "expedition",
+      "family": "flora",
+      "habitats": [
+        "emerald_wilds"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "The oldest Ochu in Emerald Wilds has turned a grove into a maze of grasping roots."
+    },
+    "inferno_drake": {
+      "category": "expedition",
+      "family": "dragons",
+      "habitats": [
+        "ashen_highlands"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "This ash-winged drake roosts near the Ashen Highlands' hottest fissures."
+    },
+    "malboro_sovereign": {
+      "category": "expedition",
+      "family": "malboros",
+      "habitats": [
+        "mistfen_marshes"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "A colossal Malboro rules the mistiest reaches of Mistfen Marshes."
+    },
+    "frost_behemoth": {
+      "category": "expedition",
+      "family": "behemoths",
+      "habitats": [
+        "frostveil_reach"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "Deep snow conceals the approach of this Behemoth in Frostveil Reach."
+    },
+    "rift_wyrm": {
+      "category": "expedition",
+      "family": "dragons",
+      "habitats": [
+        "astral_scar"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "The Astral Scar's oldest wyrm follows cracks in the sky as if they were mountain trails."
+    }
+  }
+}

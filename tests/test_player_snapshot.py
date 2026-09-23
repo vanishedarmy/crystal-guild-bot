@@ -36,13 +36,11 @@ class PlayerSnapshotTests(unittest.TestCase):
             self.assertEqual(updated["identity"]["gil"], 4321)
             bestiary = repo.bestiary("van")
             self.assertTrue(bestiary["monsters"])
-            self.assertTrue(all(entry.get("combat_profile") for entry in bestiary["monsters"]))
-            self.assertTrue(all(entry.get("active_skill") for entry in bestiary["monsters"]))
-            levels = [entry["level"] for entry in bestiary["monsters"]]
-            self.assertEqual(levels, sorted(levels))
-            for level in sorted(set(levels)):
-                names = [entry["name"] for entry in bestiary["monsters"] if entry["level"] == level]
-                self.assertEqual(names, sorted(names, key=str.lower))
+            self.assertEqual(bestiary["summary"]["discovered"], 0)
+            self.assertTrue(all(entry["name"] == "???" for entry in bestiary["monsters"]))
+            self.assertTrue(all(entry["level"] is None for entry in bestiary["monsters"]))
+            self.assertTrue(all(entry["combat_profile"] is None for entry in bestiary["monsters"]))
+            self.assertTrue(all(entry["active_skill"] is None for entry in bestiary["monsters"]))
             db.close()
 
 

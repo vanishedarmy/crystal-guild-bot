@@ -14,6 +14,7 @@ from .active_battle import FULL_RESOURCE_SENTINEL, battle_resource_pools, job_re
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .data import GameData
+from .bestiary_progress import progress_for
 from .gold_saucer import gold_saucer_record_value
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
@@ -681,45 +682,297 @@ class PortalRepository:
             return {"player": self._public_identity(player), "summary": rank_summary, "hunts": hunts}
 
     def bestiary(self, key: str) -> dict[str, Any] | None:
+        """Return the unified Bestiary without taking ownership of other systems.
+
+        Base research (regional monsters, Hunts, Expedition bosses) remains
+        driven by ``bestiary.defeats`` and the schema-22 mastery ledger.
+        Raid/boss, World Event, and seasonal records are read from their own
+        canonical progress tables and projected into scoped Bestiary entries.
+        """
+        from .world_events import WORLD_EVENTS
+        from .seasonal_events import EDITION_ID, EVENT_NAME, HOLLOW_WARDEN, SEASONAL_VARIANTS
+
+        def item_drops(rows):
+            out = []
+            for drop in rows or []:
+                item_id = str(drop.get("item_id") or "")
+                item = self.data.items.get(item_id) or {}
+                out.append({
+                    "item_id": item_id,
+                    "name": item.get("name") or item_id,
+                    "chance": float(drop.get("chance", 0) or 0),
+                    "min": int(drop.get("min", 1) or 1),
+                    "max": int(drop.get("max", 1) or 1),
+                })
+            return out
+
+        def external_research(clears: int, *, source: str, unit: str = "clear"):
+            clears = max(0, int(clears or 0))
+            complete = clears > 0
+            return {
+                "category": source,
+                "family_id": None,
+                "family": None,
+                "stage": "recorded" if complete else "undiscovered",
+                "stage_index": 1 if complete else 0,
+                "stage_count": 1,
+                "visible_fields": ["name", "level", "portrait", "habitats", "family", "weakness", "combat_profile", "active_skill", "drops", "lore"] if complete else [],
+                "next_milestone": None if complete else {"key": "recorded", "defeats": 1, "remaining": 1},
+                "mastered": complete,
+                "mastery_threshold": 1,
+                "completion_kind": "external_record",
+                "progress_unit": unit,
+            }
+
         with self.connect() as conn:
             player = self._find_player(conn, key)
             if not player:
                 return None
+            player_id = str(player["twitch_id"])
             rows = conn.execute(
                 "SELECT monster_id, defeats FROM bestiary WHERE player_id=?",
-                (player["twitch_id"],),
+                (player_id,),
             ).fetchall()
             defeated = {row["monster_id"]: int(row["defeats"]) for row in rows}
+            try:
+                mastery_rows = conn.execute(
+                    """
+                    SELECT monster_id, research_points, source_defeats, mastered_at
+                    FROM player_bestiary_mastery WHERE player_id=?
+                    """,
+                    (player_id,),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                mastery_rows = []
+            mastery = {row["monster_id"]: row for row in mastery_rows}
             entries = []
+            overlay_entries = self.data.bestiary_research.get("entries") or {}
+
+            # Canonical 112-entry base catalog: regional + Hunt + Expedition.
             for monster in self.data.monsters.values():
-                defeats = defeated.get(monster["id"], 0)
-                behavior = self.data.enemy_actions.get(monster["id"], {})
+                monster_id = str(monster["id"])
+                defeats = defeated.get(monster_id, 0)
+                research = progress_for(self.data, monster_id, defeats)
+                visible = set(research["visible_fields"])
+                field_guide = overlay_entries.get(monster_id) or {}
+                behavior = self.data.enemy_actions.get(monster_id, {})
                 profile = self.data.enemy_profiles.get(behavior.get("profile"), {})
                 active_skill = behavior.get("ability") or {}
-                entries.append(
-                    {
-                        "id": monster["id"],
-                        "name": monster["name"],
-                        "level": int(monster["level"]),
-                        "weakness": monster.get("weakness", "—"),
-                        "special": monster.get("special", "—"),
-                        "combat_profile": profile.get("name", "Balanced"),
-                        "active_skill": active_skill.get("name") or "Basic attacks",
-                        "defeats": defeats,
-                        "discovered": defeats > 0,
-                    }
-                )
-            entries.sort(key=lambda m: (m["level"], m["name"].lower(), m["id"]))
-            discovered = sum(1 for m in entries if m["discovered"])
-            total_defeats = sum(m["defeats"] for m in entries)
-            nemesis = max(entries, key=lambda m: m["defeats"], default=None)
+                receipt = mastery.get(monster_id)
+                drops = item_drops(monster.get("drops", [])) if "drops" in visible else []
+                entries.append({
+                    "id": monster_id,
+                    "scope": "base",
+                    "source_id": monster_id,
+                    "name": monster["name"] if "name" in visible else "???",
+                    "level": int(monster["level"]) if "level" in visible else None,
+                    "defeats": defeats,
+                    "progress_count": defeats,
+                    "progress_unit": "defeat",
+                    "discovered": defeats > 0,
+                    "portrait_unlocked": "portrait" in visible,
+                    "category": research["category"] if defeats > 0 else None,
+                    "family_id": research["family_id"] if "family" in visible else None,
+                    "family": research["family"] if "family" in visible else None,
+                    "habitats": list(field_guide.get("habitats") or []) if "habitats" in visible else [],
+                    "weakness": monster.get("weakness", "—") if "weakness" in visible else None,
+                    "special": monster.get("special", "—") if "combat_profile" in visible else None,
+                    "combat_profile": profile.get("name", "Balanced") if "combat_profile" in visible else None,
+                    "active_skill": (active_skill.get("name") or "Basic attacks") if "active_skill" in visible else None,
+                    "drops": drops,
+                    "lore": field_guide.get("lore") if "lore" in visible else None,
+                    "research": research,
+                    "mastery_reward": {
+                        "seal": bool(receipt),
+                        "research_points": int(receipt["research_points"]) if receipt else 0,
+                        "awarded_at": receipt["mastered_at"] if receipt else None,
+                        "source_defeats": int(receipt["source_defeats"]) if receipt else None,
+                        "external": False,
+                    },
+                })
+
+            # Raid and boss records remain canonical in player_boss_clears.
+            boss_rows = conn.execute(
+                "SELECT boss_id, clears, last_cleared_at FROM player_boss_clears WHERE player_id=?",
+                (player_id,),
+            ).fetchall()
+            boss_progress = {str(row["boss_id"]): row for row in boss_rows}
+            for boss_id, boss in self.data.bosses.items():
+                row = boss_progress.get(str(boss_id))
+                clears = int(row["clears"] or 0) if row else 0
+                discovered = clears > 0
+                is_raid = str(boss.get("encounter_type") or "").lower() == "trial"
+                category = "raid" if is_raid else "boss"
+                encounter = boss.get("encounter_name") or "Guild Boss Board"
+                research = external_research(clears, source=category, unit="clear")
+                entries.append({
+                    "id": f"boss:{boss_id}",
+                    "scope": "boss",
+                    "source_id": str(boss_id),
+                    "name": boss.get("name", str(boss_id)) if discovered else "???",
+                    "level": int(boss.get("recommended_level", 0) or 0) if discovered else None,
+                    "defeats": clears,
+                    "progress_count": clears,
+                    "progress_unit": "clear",
+                    "discovered": discovered,
+                    "portrait_unlocked": discovered,
+                    "art": f"/retro-phase-ii/boss-art-v1/{boss_id}.webp",
+                    "category": category if discovered else None,
+                    "family_id": None,
+                    "family": (boss.get("tier") or "Boss Encounter") if discovered else None,
+                    "habitats": [str(encounter)] if discovered else [],
+                    "weakness": None,
+                    "special": boss.get("signature") if discovered else None,
+                    "combat_profile": (boss.get("tier") or "Boss Encounter") if discovered else None,
+                    "active_skill": boss.get("signature") if discovered else None,
+                    "drops": item_drops(boss.get("drops", [])) if discovered else [],
+                    "lore": boss.get("description") if discovered else None,
+                    "research": research,
+                    "mastery_reward": {
+                        "seal": False,
+                        "research_points": 0,
+                        "external": True,
+                        "label": "Encounter record complete",
+                        "source": "Raid / Boss clear history",
+                        "awarded_at": row["last_cleared_at"] if row else None,
+                    },
+                })
+
+            # World Event variants remain canonical in player_world_event_clears.
+            try:
+                world_rows = conn.execute(
+                    "SELECT world_event_id, clears, last_cleared_at FROM player_world_event_clears WHERE player_id=?",
+                    (player_id,),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                world_rows = []
+            world_progress = {str(row["world_event_id"]): row for row in world_rows}
+            for event in WORLD_EVENTS:
+                event_id = str(event["id"])
+                row = world_progress.get(event_id)
+                clears = int(row["clears"] or 0) if row else 0
+                discovered = clears > 0
+                base = self.data.monsters.get(str(event.get("base_monster_id") or "")) or {}
+                base_guide = overlay_entries.get(str(event.get("base_monster_id") or "")) or {}
+                research = external_research(clears, source="world_event", unit="victory")
+                entries.append({
+                    "id": f"world_event:{event_id}",
+                    "scope": "world_event",
+                    "source_id": event_id,
+                    "name": event["name"] if discovered else "???",
+                    "level": int(base.get("level", 0) or 0) if discovered else None,
+                    "defeats": clears,
+                    "progress_count": clears,
+                    "progress_unit": "victory",
+                    "discovered": discovered,
+                    "portrait_unlocked": discovered,
+                    "art": event.get("art"),
+                    "category": "world_event" if discovered else None,
+                    "family_id": base_guide.get("family") if discovered else None,
+                    "family": "World Event Variant" if discovered else None,
+                    "habitats": ["World Event"] if discovered else [],
+                    "weakness": base.get("weakness") if discovered else None,
+                    "special": f"Threat: {event.get('threat', 'Unknown')}" if discovered else None,
+                    "combat_profile": f"{event.get('threat', 'Unknown')} threat" if discovered else None,
+                    "active_skill": None,
+                    "drops": item_drops(base.get("drops", [])) if discovered else [],
+                    "lore": event.get("description") if discovered else None,
+                    "research": research,
+                    "mastery_reward": {
+                        "seal": False,
+                        "research_points": 0,
+                        "external": True,
+                        "label": "World Event record complete",
+                        "source": "World Event clear history / Hall of Trophies",
+                        "awarded_at": row["last_cleared_at"] if row else None,
+                    },
+                })
+
+            # Seasonal discoveries stay edition-scoped and survive event archival.
+            try:
+                seasonal_rows = conn.execute(
+                    "SELECT variant_id, clears, last_cleared_at FROM player_seasonal_monster_clears WHERE player_id=? AND edition_id=?",
+                    (player_id, EDITION_ID),
+                ).fetchall()
+                season_state = conn.execute(
+                    "SELECT warden_clears, updated_at FROM player_seasonal_event_progress WHERE player_id=? AND edition_id=?",
+                    (player_id, EDITION_ID),
+                ).fetchone()
+            except sqlite3.OperationalError:
+                seasonal_rows, season_state = [], None
+            seasonal_progress = {str(row["variant_id"]): row for row in seasonal_rows}
+            seasonal_catalog = list(SEASONAL_VARIANTS) + [HOLLOW_WARDEN]
+            for variant in seasonal_catalog:
+                variant_id = str(variant["id"])
+                if variant_id == str(HOLLOW_WARDEN["id"]):
+                    clears = int(season_state["warden_clears"] or 0) if season_state else 0
+                    last_clear = season_state["updated_at"] if season_state and clears > 0 else None
+                else:
+                    row = seasonal_progress.get(variant_id)
+                    clears = int(row["clears"] or 0) if row else 0
+                    last_clear = row["last_cleared_at"] if row else None
+                discovered = clears > 0
+                base_id = str(variant.get("base_monster_id") or "")
+                base = self.data.monsters.get(base_id) or {}
+                research = external_research(clears, source="seasonal", unit="clear")
+                entries.append({
+                    "id": f"seasonal:{EDITION_ID}:{variant_id}",
+                    "scope": "seasonal",
+                    "source_id": variant_id,
+                    "edition_id": EDITION_ID,
+                    "name": variant["name"] if discovered else "???",
+                    "level": int(base.get("level", 0) or 0) if discovered else None,
+                    "defeats": clears,
+                    "progress_count": clears,
+                    "progress_unit": "clear",
+                    "discovered": discovered,
+                    "portrait_unlocked": discovered,
+                    "art": variant.get("art"),
+                    "locked_art": variant.get("locked_art"),
+                    "category": "seasonal" if discovered else None,
+                    "family_id": None,
+                    "family": EVENT_NAME if discovered else None,
+                    "habitats": [EVENT_NAME] if discovered else [],
+                    "weakness": base.get("weakness") if discovered else None,
+                    "special": variant.get("element") or variant.get("threat") if discovered else None,
+                    "combat_profile": "Seasonal Variant" if discovered else None,
+                    "active_skill": None,
+                    "drops": item_drops(base.get("drops", [])) if discovered else [],
+                    "lore": (variant.get("description") or f"A limited seasonal form recorded during {EVENT_NAME}.") if discovered else None,
+                    "research": research,
+                    "mastery_reward": {
+                        "seal": False,
+                        "research_points": 0,
+                        "external": True,
+                        "label": "Seasonal record complete",
+                        "source": f"{EVENT_NAME} ({EDITION_ID})",
+                        "awarded_at": last_clear,
+                    },
+                })
+
+            # Locked names never become a sorting/search oracle.
+            entries.sort(key=lambda m: (m["level"] is None, m["level"] or 10**9, (m["name"] if m["name"] != "???" else "").lower(), m["id"]))
+            discovered_count = sum(1 for m in entries if m["discovered"])
+            completed_count = sum(1 for m in entries if m["research"].get("mastered"))
+            total_progress = sum(int(m.get("progress_count", 0) or 0) for m in entries)
+            research_points = sum(int(row["research_points"] or 0) for row in mastery_rows)
+            base_entries = [m for m in entries if m.get("scope") == "base"]
+            visible_base = [m for m in base_entries if m["defeats"] > 0]
+            nemesis = max(visible_base, key=lambda m: m["defeats"], default=None)
             return {
                 "player": self._public_identity(player),
                 "summary": {
-                    "discovered": discovered,
+                    "discovered": discovered_count,
+                    "mastered": completed_count,
+                    "completed": completed_count,
                     "total": len(entries),
-                    "defeats": total_defeats,
-                    "most_defeated": nemesis if nemesis and nemesis["defeats"] else None,
+                    "base_total": len(base_entries),
+                    "special_total": len(entries) - len(base_entries),
+                    "defeats": sum(m["defeats"] for m in base_entries),
+                    "recorded_progress": total_progress,
+                    "research_points": research_points,
+                    "mastery_seals": len(mastery_rows),
+                    "most_defeated": nemesis,
                 },
                 "monsters": entries,
             }
