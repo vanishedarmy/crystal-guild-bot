@@ -1,1 +1,1 @@
-__version__ = "1.9.0-bestiary-alpha9"
+__version__ = "1.9.0-records-moments-alpha10"

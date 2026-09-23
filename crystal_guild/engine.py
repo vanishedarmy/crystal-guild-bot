@@ -88,6 +88,8 @@ from .daily_provisions import (
 )
 from .data import GameData
 from .bestiary_progress import reconcile_mastery
+from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
+                               reconcile_all_owned_moment_rewards)
 from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, room_kind_label as dungeon_room_kind_label
 from .expeditions import (
     BONUS_STAGES as EXPEDITION_BONUS_STAGES,
@@ -329,6 +331,18 @@ class CrystalGuildEngine:
                 bestiary_reconciliation["masteries_added"],
                 bestiary_reconciliation["research_points_added"],
             )
+        # Only two Moments have provable historic evidence: paid Cactpot losses
+        # and a single shop purchase. All combat Moments begin with live tracking.
+        moment_reconciliation = reconcile_all_verified_history(self.db, self.data)
+        if moment_reconciliation["moments_unlocked"]:
+            LOGGER.info("Verified historic Moments: %s awarded to %s players",
+                        moment_reconciliation["moments_unlocked"], moment_reconciliation["players_reconciled"])
+        # Rebuild missing cosmetic receipts only from authentic ownership, not
+        # old combat totals or client-visible record cards. Safe on every start.
+        moment_rewards = reconcile_all_owned_moment_rewards(self.db, self.data)
+        if moment_rewards["titles_restored"] or moment_rewards["trophies_restored"]:
+            LOGGER.info("Moment reward repair: +%s titles / +%s trophies",
+                        moment_rewards["titles_restored"], moment_rewards["trophies_restored"])
         if self.active_boss:
             self._update_raid_overlay()
         else:
@@ -2873,6 +2887,7 @@ class CrystalGuildEngine:
         so future combat changes do not fork between the two modes.
         """
         monster = self._encounter_monster(encounter)
+        encounter.setdefault("moment_run_key", uuid.uuid4().hex)
         combatants = 0
         for pid, meta in list(self.encounter_roster.items()):
             self._finish_rest_if_ready(pid)
@@ -3733,9 +3748,9 @@ class CrystalGuildEngine:
                     pierce=float(effect.get("pierce", 0)),
                     element=ability.get("element"),
                 )
-                self.active_encounter["monster_hp"] = max(
-                    0, int(self.active_encounter["monster_hp"]) - damage
-                )
+                before_hp = int(self.active_encounter["monster_hp"])
+                self.active_encounter["monster_hp"] = max(0, before_hp - damage)
+                self._moment_field_direct_hit(meta, damage, before_hp)
                 meta["damage"] += damage
                 meta["best_hit"] = max(int(meta["best_hit"]), damage)
                 last_damage = damage
@@ -3868,6 +3883,18 @@ class CrystalGuildEngine:
         detail = ", ".join(parts[:4]) or "no effect"
         log.append(f"{meta['name']} uses {ability['name']} — {detail}.")
 
+    def _moment_field_direct_hit(self, meta: dict[str, Any], raw_damage: int, before_hp: int) -> None:
+        if before_hp <= 0 or raw_damage < before_hp:
+            return
+        meta["_moment_finishing_hit"] = {
+            "event": "combat_finishing_blow", "settled": True,
+            "direct_hit": True, "target_defeated": True,
+            "poison_active_at_hit": bool(has_status(meta.get("statuses", {}), "poison")),
+            "damage_dealt": max(0, int(raw_damage)),
+            "target_hp_before_hit": max(1, int(before_hp)),
+            "target_max_hp": max(1, int(self.active_encounter.get("monster_max_hp", 1))),
+        }
+
     def _resolve_active_attack(self, meta: dict[str, Any], monster: dict[str, Any], log: list[str]) -> None:
         # Basic Attack retains signature and chain mechanics, with weapon traits
         # layered on top rather than creating a separate combat path.
@@ -3884,7 +3911,9 @@ class CrystalGuildEngine:
         if self.rng.random() < float(effects.get("double_strike_chance", 0)):
             dmg += max(1, int(dmg * 0.65))
             flourishes.append("CHAIN")
-        self.active_encounter["monster_hp"] = max(0, int(self.active_encounter["monster_hp"]) - dmg)
+        before_hp = int(self.active_encounter["monster_hp"])
+        self.active_encounter["monster_hp"] = max(0, before_hp - dmg)
+        self._moment_field_direct_hit(meta, dmg, before_hp)
         meta["damage"] += dmg
         meta["best_hit"] = max(int(meta["best_hit"]), dmg)
 
@@ -3957,6 +3986,7 @@ class CrystalGuildEngine:
                 if element and monster_weakness and str(monster_weakness).lower() == str(element).lower():
                     amount = int(amount * 1.30)
                 self.active_encounter["monster_hp"] = max(0, before - amount)
+                self._moment_field_direct_hit(meta, amount, before)
                 dealt = before - int(self.active_encounter["monster_hp"])
                 if dealt > 0:
                     meta["damage"] += dealt
@@ -4050,6 +4080,14 @@ class CrystalGuildEngine:
         if used:
             self._change_item(pid, item_id, -1, "active_battle")
             meta["items_used"] += 1
+            if (target is meta and target_mode in {"self", "ally"}
+                    and any(effect.get("type") in {"heal_hp", "restore_mp", "restore_ap", "revive"}
+                            for effect in use.get("effects", []))):
+                meta["_moment_last_self_item"] = {
+                    "price": int(item.get("price", 0)),
+                    "actions_at_item": int(meta.get("actions", 0)),
+                    "hostile_action_serial": int(self.active_encounter.get("_moment_hostile_serial", 0)),
+                }
             log.append(f"{meta['name']} uses {item['name']} — {'; '.join(parts)}.")
             return
         log.append(f"{meta['name']} cannot use {item['name']} effectively right now; the item is not consumed.")
@@ -4151,8 +4189,25 @@ class CrystalGuildEngine:
         damage = self._enemy_damage_against(
             monster, target, profile, scaling=scaling, power=power
         )
-        target["hp"] = max(0, int(target["hp"]) - damage)
+        before_hp = int(target["hp"])
+        target["hp"] = max(0, before_hp - damage)
         target["damage_taken"] += damage
+        if before_hp > 0 and int(target["hp"]) == 0 and damage > 0:
+            guard = target.get("_moment_last_self_item") or {}
+            action_serial = int(self.active_encounter.get("_moment_hostile_serial", 0))
+            guard_is_next = bool(guard and action_serial == int(guard.get("hostile_action_serial", -100)) + 1
+                                 and int(target.get("actions", 0)) == int(guard.get("actions_at_item", -1)))
+            target.setdefault("_moment_ko_facts", []).append({
+                "event": "combat_player_ko", "settled": True,
+                "player_knocked_out": True, "self_item_consumed": guard_is_next,
+                "self_item_shop_price_gil": int(guard.get("price", 0)) if guard_is_next else 0,
+                "item_targeted_self": guard_is_next, "self_item_restorative": guard_is_next,
+                "ko_source": "enemy_attack", "same_battle": True,
+                "next_hostile_action_caused_ko": guard_is_next,
+                "player_actions_since_item": 0 if guard_is_next else 1,
+                "player_actions_completed": int(target.get("actions", 0)),
+                "first_hostile_action_of_encounter": action_serial == 1,
+            })
         return damage
 
     def _resolve_enemy_special(
@@ -4306,6 +4361,7 @@ class CrystalGuildEngine:
             hp_ratio = int(self.active_encounter.get("monster_hp", 0)) / max(
                 1, int(self.active_encounter.get("monster_max_hp", 1))
             )
+            self.active_encounter["_moment_hostile_serial"] = int(self.active_encounter.get("_moment_hostile_serial", 0)) + 1
             action = choose_enemy_action(
                 behavior,
                 profile,
@@ -4350,6 +4406,12 @@ class CrystalGuildEngine:
                 log.append(f"{target['name']} evades {monster['name']}'s attack.")
             else:
                 log.append(f"{monster['name']} attacks {target['name']} for {damage}.")
+        # No subsequent enemy turn can claim the previous turn's expensive item.
+        serial = int(self.active_encounter.get("_moment_hostile_serial", 0))
+        for row in self.encounter_roster.values():
+            guard = row.get("_moment_last_self_item")
+            if guard and int(guard.get("hostile_action_serial", -99)) < serial:
+                row.pop("_moment_last_self_item", None)
 
     @_state_guard
     def advance_encounter_round(self, encounter_id: int | None = None) -> GameResult:
@@ -4534,6 +4596,13 @@ class CrystalGuildEngine:
         active_id = int(encounter["id"])
         monster = self._encounter_monster(encounter)
         kind = encounter.get("kind", "venture")
+        moment_run = str(encounter.get("moment_run_key") or f"legacy:{active_id}:{encounter.get('created_at', 0)}")
+        survivors = [m for m in self.encounter_roster.values() if int(m.get("hp", 0)) > 0]
+        worst_survivor_hp = max((int(m["hp"]) for m in survivors), default=0)
+        max_survivor_hp_pct = max((float(m["hp"]) / max(1, int(m.get("max_hp", 1)))
+                                   for m in survivors), default=1.0) * 100.0
+        eligible_world_party = len(self.encounter_roster) >= 2 and len(survivors) >= 2
+        venture_seconds = max(1, int(time.time()) - int(encounter.get("created_at", int(time.time()))))
         hunt = self.data.hunts.get(encounter.get("hunt_id")) if kind == "hunt" else None
         resolved_round = round_no or int(encounter.get("round", 1))
         log = list(round_log or [])
@@ -4585,6 +4654,16 @@ class CrystalGuildEngine:
                         (pid,),
                     )
 
+                if (won and hunt and len(self.encounter_roster) == 1
+                        and str(hunt.get("rank", "")).upper() in {"S", "S+"}
+                        and not meta.get("merc_contract") and int(monster.get("level", 0)) >= int(p["level"]) + 10):
+                    with self.db.tx() as conn:
+                        award_settlement(conn, self.data, str(pid), f"field:{moment_run}:{pid}:solo_boss", {
+                            "event": "solo_boss_victory", "settled": True,
+                            "player_alive": not knocked_out, "solo_encounter": True,
+                            "merc_assisted": False,
+                            "boss_effective_level_gap": int(monster["level"]) - int(p["level"]),
+                        })
                 if won and hunt:
                     rewards = self._award_hunt_victory(pid, p, hunt, monster)
                     merc_bonus = self._merc_bonus_loot(pid, meta, list(monster.get("drops", [])), source=f"merc:hunt:{hunt['id']}")
@@ -4739,6 +4818,50 @@ class CrystalGuildEngine:
                     )
                 trophy_lines.extend(player_trophies)
 
+                # Server-authored, final pre-recovery facts. The guard owning
+                # this encounter transaction commits the game and awards together.
+                if won and not knocked_out:
+                    with self.db.tx() as conn:
+                        award_settlement(conn, self.data, str(pid), f"field:{moment_run}:{pid}:victory", {
+                            "event": "combat_victory", "settled": True,
+                            "player_alive": True, "final_hp": int(meta.get("hp", 0)),
+                        })
+                        if int(meta["hp"]) > 0:
+                            best_record(conn, str(pid), "closest_victory", int(meta["hp"]),
+                                f"field:{moment_run}:{pid}:victory", lower_is_better=True,
+                                context={"monster": str(monster.get("name") or "Monster")})
+                        if kind == "world_event" and eligible_world_party:
+                            award_settlement(conn, self.data, str(pid), f"field:{moment_run}:{pid}:world", {
+                                "event": "world_event_victory", "settled": True,
+                                "player_alive": True, "participant_count": len(self.encounter_roster),
+                                "living_party_count": len(survivors),
+                                "highest_survivor_hp_pct_raw": float(max_survivor_hp_pct),
+                            })
+                            best_record(conn, str(pid), "closest_world_event", worst_survivor_hp,
+                                f"field:{moment_run}:{pid}:world", lower_is_better=True,
+                                context={"event": str(encounter.get("world_event_id") or "World Event")})
+                        if kind in {"venture", "solo_venture"}:
+                            award_settlement(conn, self.data, str(pid), f"field:{moment_run}:{pid}:venture", {
+                                "event": "venture_completed", "settled": True,
+                                "successful": True, "player_alive": True,
+                                "final_hp_pct_pre_recovery_raw": float(100.0 * int(meta["hp"]) / max(1, int(meta["max_hp"]))),
+                                "consumables_used": int(meta.get("items_used", 0)),
+                            })
+                            best_record(conn, str(pid), "longest_venture", venture_seconds,
+                                f"field:{moment_run}:{pid}:venture",
+                                context={"monster": str(monster.get("name") or "Monster")})
+                            if int(rewards.get("gil", 0)) > 0:
+                                best_record(conn, str(pid), "biggest_venture_haul", int(rewards["gil"]),
+                                    f"field:{moment_run}:{pid}:haul",
+                                    context={"monster": str(monster.get("name") or "Monster"),
+                                             "venture_type": "solo" if kind == "solo_venture" else "stream"})
+                if won and meta.get("_moment_finishing_hit"):
+                    with self.db.tx() as conn:
+                        award_settlement(conn, self.data, str(pid), f"field:{moment_run}:{pid}:finisher",
+                            meta["_moment_finishing_hit"])
+                for ko_index, ko_event in enumerate(meta.get("_moment_ko_facts", [])):
+                    with self.db.tx() as conn:
+                        award_settlement(conn, self.data, str(pid), f"field:{moment_run}:{pid}:ko:{ko_index}", ko_event)
                 player_achievements = self._check_achievements(pid)
                 achievement_lines.extend(player_achievements)
                 if str(pid) in hunt_results:
@@ -5810,7 +5933,17 @@ class CrystalGuildEngine:
             "SELECT title_id, unlocked_at FROM player_titles WHERE player_id=? ORDER BY unlocked_at DESC",
             (twitch_id,),
         )
-        unlocked = [self.data.titles[r["title_id"]] for r in rows if r["title_id"] in self.data.titles]
+        earned = {str(row["title_id"]) for row in rows}
+        moment_owned = {
+            str(row["title_id"]) for row in self.db.all(
+                "SELECT title_id FROM player_moment_unlocks WHERE player_id=?", (twitch_id,)
+            )
+        }
+        unlocked = [self.data.titles[row["title_id"]] for row in rows
+                    if row["title_id"] in self.data.titles]
+        unlocked.extend(self.data.moment_titles[title_id] for title_id in sorted(
+            moment_owned & earned & self.data.moment_titles.keys()
+        ))
         query = (filter_query or "").strip().lower()
         if query and query not in {"all", "earned"}:
             unlocked = [
@@ -5823,7 +5956,7 @@ class CrystalGuildEngine:
         entries = [f"{t['name']} [{t.get('rarity','common').title()}]" for t in shown]
         suffix = " | ..." if len(unlocked) > len(shown) else ""
         return GameResult.success(
-            f"Titles — Equipped: {p['title']} | Unlocked {len(rows)}/{len(self.data.titles)}",
+            f"Titles — Equipped: {p['title']} | Unlocked {len(unlocked)}/{len(self.data.titles) + len(moment_owned & earned & self.data.moment_titles.keys())}",
             (" | ".join(entries) + suffix) if entries else "No unlocked titles match that filter.",
             "Filter with !titles <category|rarity>. Equip with !title <name>.",
         )
@@ -5833,6 +5966,19 @@ class CrystalGuildEngine:
         if not p:
             return self._need_recruit()
         title = self._find_by_name_or_id(self.data.titles, title_query)
+        if not title:
+            # Secret Moment Titles cannot be name-probed before the Moment is
+            # owned. Restrict the lookup to this player's settled achievements.
+            owned_ids = {
+                str(row["title_id"]) for row in self.db.all(
+                    "SELECT title_id FROM player_moment_unlocks WHERE player_id=?", (twitch_id,)
+                )
+            }
+            owned_catalog = {
+                title_id: candidate for title_id, candidate in self.data.moment_titles.items()
+                if title_id in owned_ids
+            }
+            title = self._find_by_name_or_id(owned_catalog, title_query)
         if not title:
             return GameResult.fail("Title not found. Use !titles to see unlocked titles.")
         if not self.db.one("SELECT 1 FROM player_titles WHERE player_id=? AND title_id=?", (twitch_id, title["id"])):
@@ -6208,6 +6354,16 @@ class CrystalGuildEngine:
             messages.append(" | ".join(tail))
         return GameResult.success(*messages, stock=[i["id"] for i in stock], expires_at=expires)
 
+    def _moment_purchase_sql(self, conn: Any, player_id: str, row_id: int, cost: int, *, source: str) -> None:
+        """Only an actual committed single storefront debit may award Retail Therapy."""
+        if source not in {"shop", "portal_shop", "trading_post_buy"} or cost < 25000:
+            return
+        award_settlement(conn, self.data, str(player_id), f"purchase:{row_id}", {
+            "event": "purchase_settled", "settled": True,
+            "qualifying_shop_purchase": True, "single_transaction": True,
+            "record_id": "biggest_purchase", "record_value": int(cost),
+        })
+
     def buy(self, twitch_id: str, item_query: str, quantity: int = 1) -> GameResult:
         p = self._player(twitch_id)
         if not p:
@@ -6229,7 +6385,8 @@ class CrystalGuildEngine:
         with self.db.tx() as conn:
             conn.execute("UPDATE players SET gil=gil-? WHERE twitch_id=?", (cost, twitch_id))
             conn.execute("INSERT INTO inventory(player_id, item_id, quantity) VALUES (?, ?, ?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity", (twitch_id, item["id"], quantity))
-            conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'gil', 'gil', ?, 'shop')", (twitch_id, -cost))
+            purchase_id = conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'gil', 'gil', ?, 'shop')", (twitch_id, -cost)).lastrowid
+            self._moment_purchase_sql(conn, twitch_id, purchase_id, cost, source="shop")
             conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'item', ?, ?, 'shop')", (twitch_id, item["id"], quantity))
         result = GameResult.success(f"Purchased {item['name']} x{quantity} for {cost:,} gil from your current shop rotation.")
         unlocked = self._check_achievements(twitch_id)
@@ -11638,10 +11795,24 @@ class CrystalGuildEngine:
                     )
                     result_tier = "jackpot" if payout >= 1000 else "big_win" if payout >= 300 else "win" if payout > 0 else "miss"
                     details = {"line": line_index, "cells": list(cells), "sum": total, "grid": grid, "result_tier": result_tier, "net_outcome": net_outcome, "net_mgp": payout - CACTPOT_COST}
-                    conn.execute(
+                    history_id = conn.execute(
                         "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'mini_cactpot',?,?,?, ?,?)",
                         (twitch_id, CACTPOT_COST, payout, f"sum_{total}", json.dumps(details, separators=(",", ":")), now),
-                    )
+                    ).lastrowid
+                    if net_outcome == "loss":
+                        # Read in reverse paid-ticket settlement order. A draw or
+                        # win stops the streak, other Saucer games do not affect it.
+                        paid = conn.execute(
+                            "SELECT wager,payout FROM gold_saucer_history WHERE player_id=? "
+                            "AND game='mini_cactpot' AND wager>0 ORDER BY created_at DESC,id DESC LIMIT 5",
+                            (twitch_id,),
+                        ).fetchall()
+                        if len(paid) == 5 and all(int(row['payout']) < int(row['wager']) for row in paid):
+                            award_settlement(conn, self.data, twitch_id, f"cactpot:{history_id}", {
+                                "event": "saucer_round_settled", "settled": True,
+                                "game": "mini_cactpot", "paid_net_loss": True,
+                                "record_id": "longest_cactpot_loss_streak", "record_value": 5,
+                            })
                     result = GameResult.success(f"Mini Cactpot — line total {total}. You won {payout:,} MGP!", cactpot_sum=total, cactpot_payout=payout, result_tier=result_tier)
             self._gold_saucer_attach_achievements(twitch_id, result)
             result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
@@ -13704,7 +13875,8 @@ class CrystalGuildEngine:
                 "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",
                 (twitch_id, item_id, quantity),
             )
-            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'trading_post_buy')", (twitch_id, -total))
+            purchase_id = conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'trading_post_buy')", (twitch_id, -total)).lastrowid
+            self._moment_purchase_sql(conn, twitch_id, purchase_id, total, source="trading_post_buy")
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'item',?,?,'trading_post_buy')", (twitch_id, item_id, quantity))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?,'gil','gil',?,'trading_post_sale')", (seller_id, payout))
             fresh = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
@@ -13846,7 +14018,8 @@ class CrystalGuildEngine:
                 "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity",
                 (twitch_id, item["id"], quantity),
             )
-            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil', 'gil', ?, 'portal_shop')", (twitch_id, -cost))
+            purchase_id = conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,'portal_shop')", (twitch_id, -cost)).lastrowid
+            self._moment_purchase_sql(conn, twitch_id, purchase_id, cost, source="portal_shop")
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, 'portal_shop')", (twitch_id, item["id"], quantity))
             result = GameResult.success(
                 f"Purchased {item['name']} x{quantity} for {cost:,} gil from your current shop rotation.",
@@ -15130,7 +15303,18 @@ class CrystalGuildEngine:
         damage = max(0, int(damage))
         if use_limit:
             damage = self._apply_raid_limit(pid, meta, damage, limit_users)
+        boss_hp_before = int(self.active_boss.get("current_hp", 0))
+        adds_before = bool(self._raid_live_adds(self.active_boss))
         dealt, _ = self._raid_apply_enemy_damage(damage)
+        if not adds_before and boss_hp_before > 0 and int(self.active_boss.get("current_hp", 0)) == 0 and damage > 0:
+            meta["_moment_raid_final_blow"] = True
+            meta["_moment_finishing_hit"] = {
+                "event": "combat_finishing_blow", "settled": True,
+                "direct_hit": True, "target_defeated": True,
+                "poison_active_at_hit": bool(has_status(meta.get("statuses", {}), "poison")),
+                "damage_dealt": int(damage), "target_hp_before_hit": boss_hp_before,
+                "target_max_hp": max(1, int(self.active_boss.get("max_hp", 1))),
+            }
         meta["damage"] = int(meta.get("damage", 0)) + dealt
         meta["best_hit"] = max(int(meta.get("best_hit", 0)), dealt)
         return dealt
@@ -15176,6 +15360,7 @@ class CrystalGuildEngine:
                 if target and int(target.get("hp", 0)) <= 0:
                     target["hp"] = max(1, int(int(target["max_hp"]) * float(effect.get("fraction", 0.30))))
                     target["ko_counted"] = False
+                    target["_moment_revived_during_raid"] = True
                     parts.append(f"revives {target['name']}")
             elif et == "cleanse":
                 row = meta if recipient == "self" or not target else target
@@ -15231,7 +15416,7 @@ class CrystalGuildEngine:
                 revived=0
                 for row in targets:
                     if row and int(row.get("hp",0))<=0 and int(row.get("max_hp",0))>0:
-                        row["hp"]=max(1,int(int(row["max_hp"])*float(effect.get("fraction",0.30)))); row["ko_counted"]=False; revived += 1
+                        row["hp"]=max(1,int(int(row["max_hp"])*float(effect.get("fraction",0.30)))); row["ko_counted"]=False; row["_moment_revived_during_raid"]=True; revived += 1
                 if revived: used=True; parts.append(f"revives {revived} hero")
             elif et == "cleanse":
                 removed=[]; allowed=set(effect.get("statuses",[])) or None; count=99 if effect.get("all_harmful") else int(effect.get("count",1))
@@ -16247,6 +16432,7 @@ class CrystalGuildEngine:
             return GameResult.fail(f"Nobody joined the raid against {boss_name}. The boss leaves offended but otherwise thriving.")
         self.active_boss["state"] = "combat"
         self.active_boss["round"] = 0
+        self.active_boss["moment_party_size_at_start"] = len(self.raid_roster)
         combatants = self._initialize_raid_combat()
         if combatants <= 0:
             return self._finish_raid(False, reason="No raid participants are able to fight.")
@@ -16623,6 +16809,7 @@ class CrystalGuildEngine:
             return GameResult.fail("You need a Phoenix Down to revive another hero.")
         self._change_item(reviver_id,"phoenix_down",-1,"raid_revive")
         target["hp"]=max(1,int(target["max_hp"]*0.30)); target["ko_counted"]=False
+        target["_moment_revived_during_raid"] = True
         self._save_hp(target_pid,target["hp"])
         self.db.execute("UPDATE players SET raid_revives=raid_revives+1 WHERE twitch_id=?",(reviver_id,))
         self._update_raid_overlay()
@@ -16793,6 +16980,39 @@ class CrystalGuildEngine:
                     conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)",(pid,share,f"boss:{boss['id']}"))
                     conn.execute("INSERT INTO player_boss_clears(player_id,boss_id,clears,best_damage,last_cleared_at) VALUES (?,?,1,?,CURRENT_TIMESTAMP) ON CONFLICT(player_id,boss_id) DO UPDATE SET clears=clears+1,best_damage=MAX(best_damage,excluded.best_damage),last_cleared_at=CURRENT_TIMESTAMP",(pid,boss["id"],meta.get("damage",0)))
                     raid_trophies = reconcile_player_trophies(conn, str(pid), source=f"raid:{boss['id']}")
+                    raid_key = self._raid_instance_id(boss)
+                    living_count = sum(1 for row in self.raid_roster.values() if int(row.get("hp", 0)) > 0)
+                    player_alive = int(meta.get("hp", 0)) > 0
+                    award_settlement(conn, self.data, str(pid), f"raid:{raid_key}:{pid}:final", {
+                        "event": "raid_victory", "settled": True,
+                        "player_alive": player_alive,
+                        "party_size_at_start": int(boss.get("moment_party_size_at_start", len(self.raid_roster))),
+                        "living_party_count": living_count,
+                        "player_contribution_eligible": int(share) > 0,
+                        "player_revived_during_raid": bool(meta.get("_moment_revived_during_raid")),
+                        "player_dealt_final_blow": bool(meta.get("_moment_raid_final_blow")),
+                    })
+                    if player_alive:
+                        award_settlement(conn, self.data, str(pid), f"raid:{raid_key}:{pid}:survival", {
+                            "event": "combat_victory", "settled": True,
+                            "player_alive": True, "final_hp": int(meta.get("hp", 0)),
+                        })
+                        best_record(conn, str(pid), "closest_victory", int(meta["hp"]),
+                                    f"raid:{raid_key}:{pid}:survival", lower_is_better=True,
+                                    context={"boss": str(boss.get("name") or "Raid boss")})
+                    if meta.get("_moment_finishing_hit"):
+                        award_settlement(conn, self.data, str(pid), f"raid:{raid_key}:{pid}:finisher",
+                                         meta["_moment_finishing_hit"])
+                    # A boss's *actual* effective combat level must be present.
+                    # A recommended level or published threat tier is not evidence.
+                    actual_boss_level = boss.get("effective_level")
+                    if (player_alive and len(self.raid_roster) == 1 and not meta.get("merc_contract")
+                            and type(actual_boss_level) is int):
+                        award_settlement(conn, self.data, str(pid), f"raid:{raid_key}:{pid}:solo_boss", {
+                            "event": "solo_boss_victory", "settled": True,
+                            "player_alive": True, "solo_encounter": True, "merc_assisted": False,
+                            "boss_effective_level_gap": int(actual_boss_level) - int(p["level"]),
+                        })
                 won_items=[]
                 for drop in boss.get("drops",[]):
                     if self.rng.random()<=drop.get("chance",0):

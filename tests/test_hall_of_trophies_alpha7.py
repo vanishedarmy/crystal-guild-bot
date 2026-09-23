@@ -28,12 +28,12 @@ class HallOfTrophiesAlpha7Tests(unittest.TestCase):
         return {r["trophy_id"] for r in self.conn.execute("SELECT trophy_id FROM player_trophies WHERE player_id=?", (self.player,))}
 
     def test_catalog_contract_and_schema(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 22)
-        self.assertEqual(self.db.schema_version(), 22)
-        self.assertEqual(len(TROPHY_CATALOG), 30)
-        self.assertEqual(len({t["id"] for t in TROPHY_CATALOG}), 30)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
+        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(len(TROPHY_CATALOG), 32)
+        self.assertEqual(len({t["id"] for t in TROPHY_CATALOG}), 32)
         self.assertEqual(Counter(t["category"] for t in TROPHY_CATALOG), {
-            "world_events": 11, "raids": 5, "hunts": 4, "triple_triad": 4, "fellowship": 6,
+            "world_events": 12, "raids": 6, "hunts": 4, "triple_triad": 4, "fellowship": 6,
         })
 
     def test_world_events_require_exact_variant_history_and_reconcile_idempotently(self):

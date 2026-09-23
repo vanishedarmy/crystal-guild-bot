@@ -1,0 +1,98 @@
+[
+  {
+    "id": "moment_title_technically_alive",
+    "name": "Too Stubborn to Die",
+    "description": "Finished a fight with one heartbeat to spare.",
+    "category": "Combat",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_a_toxic_relationship",
+    "name": "Walking Biohazard",
+    "description": "A little poison was never going to stop the killing blow.",
+    "category": "Combat",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_money_well_wasted",
+    "name": "Financially Irresponsible",
+    "description": "The expensive potion worked. Briefly.",
+    "category": "Comedy",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_a_little_too_close",
+    "name": "We Meant to Do That",
+    "description": "A masterclass in winning by almost losing.",
+    "category": "World Events",
+    "rarity": "epic",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_five_cactpot_losses",
+    "name": "MGP Donor",
+    "description": "A committed supporter of the Gold Saucer economy.",
+    "category": "Gold Saucer",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_overkill_enthusiast",
+    "name": "Subtle as a Meteor",
+    "description": "Was asked to deal with a monster. Chose a geological event.",
+    "category": "Combat",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_early_checkout",
+    "name": "Early Checkout",
+    "description": "Your battle plan had a surprisingly brief opening chapter.",
+    "category": "Comedy",
+    "rarity": "uncommon",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_against_better_judgment",
+    "name": "Poor Life Choices",
+    "description": "Some warnings are apparently optional.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_last_one_standing",
+    "name": "Apparently the Tank",
+    "description": "Your comrades would like to know how you managed that.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_retail_therapy",
+    "name": "Gil Comes, Gil Goes",
+    "description": "The merchant was delighted. Your purse was not.",
+    "category": "Economy",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_should_have_packed_a_tent",
+    "name": "Should've Packed a Tent",
+    "description": "The Guild strongly recommends better travel planning.",
+    "category": "Ventures",
+    "rarity": "rare",
+    "source": "Moment"
+  },
+  {
+    "id": "moment_title_back_on_the_payroll",
+    "name": "Back on the Payroll",
+    "description": "Rejoined the fight just in time to take the credit.",
+    "category": "Raids",
+    "rarity": "epic",
+    "source": "Moment"
+  }
+]

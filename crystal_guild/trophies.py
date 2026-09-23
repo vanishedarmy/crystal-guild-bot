@@ -37,6 +37,8 @@ TROPHY_CATALOG: tuple[dict[str, Any], ...] = (
     {"id":"fellowship_airship_3","category":"fellowship","name":"Skybound Berth","description":"A model of the completed Airship Dock and the journeys it made possible.","art":"/trophies/a1/fellowship/skybound-berth.webp","requirement":"Contribute to Airship Dock Lv. 3 before its completion.","unlock":{"kind":"fellowship_project","project_id":"airship_dock_t3","facility_id":"airship_dock","tier":3}},
     {"id":"fellowship_annex","category":"fellowship","name":"Kupo Expansion Permit","description":"A cheerful permit commemorating construction of the Moogle Emporium Annex.","art":"/trophies/a1/fellowship/kupo-expansion-permit.webp","requirement":"Contribute to the Moogle Emporium Annex before its completion.","unlock":{"kind":"fellowship_project","project_id":"emporium_annex_t1","facility_id":"emporium_annex","tier":1}},
     {"id":"fellowship_trading_post","category":"fellowship","name":"Merchant's Bell","description":"The market bell rung for those who helped establish the Moogle Trading Post.","art":"/trophies/a1/fellowship/merchants-bell.webp","requirement":"Contribute to the Moogle Trading Post before its completion.","unlock":{"kind":"fellowship_project","project_id":"trading_post_t1","facility_id":"trading_post","tier":1}},
+    {"id":"moment_trophy_world_event_close_call","category":"world_events","name":"The Close Call","description":"Three cracked rubies recall a World Event victory nobody expected to survive.","art":"/trophies/a2/moments/world-event-close-call.webp","locked_art":"/trophies/a2/moments/world-event-close-call-locked.webp","secret":True,"requirement":"Survive a World Event with every surviving ally at 10% HP or less.","unlock":{"kind":"moment","id":"moment_a_little_too_close"}},
+    {"id":"moment_trophy_raid_last_survivor","category":"raids","name":"The Last Standing","description":"A lone shield remembers the adventurer who was still standing when the Raid ended.","art":"/trophies/a2/moments/raid-last-survivor.webp","locked_art":"/trophies/a2/moments/raid-last-survivor-locked.webp","secret":True,"requirement":"Be the only surviving adventurer when a qualifying Raid boss falls.","unlock":{"kind":"moment","id":"moment_last_one_standing"}},
 )
 
 TROPHIES_BY_ID = {row["id"]: row for row in TROPHY_CATALOG}
@@ -62,6 +64,11 @@ def _has_clear(conn: sqlite3.Connection, table: str, id_column: str, player_id: 
 def _qualifies(conn: sqlite3.Connection, player_id: str, trophy: dict[str, Any]) -> bool:
     unlock = trophy["unlock"]
     kind = str(unlock["kind"])
+    if kind == "moment":
+        return bool(conn.execute(
+            "SELECT 1 FROM player_moment_unlocks WHERE player_id=? AND moment_id=? LIMIT 1",
+            (player_id, str(unlock["id"])),
+        ).fetchone())
     if kind == "world_event":
         return _has_clear(conn, "player_world_event_clears", "world_event_id", player_id, str(unlock["id"]))
     if kind == "raid_clear":

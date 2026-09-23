@@ -44,7 +44,7 @@ class GoldSaucerAlpha1H2Tests(unittest.TestCase):
             conn.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES ('100','mini_cactpot',10,1080,'sum_21','{}',?)", (now+2,))
             conn.execute("UPDATE player_gold_saucer SET slots_spins=2,slots_wins=2,cactpot_plays=1,cactpot_wins=1,lifetime_earned=lifetime_earned+1500,lifetime_spent=lifetime_spent+40 WHERE player_id='100'")
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
-        self.assertEqual(self.db.schema_version(), 22)
+        self.assertEqual(self.db.schema_version(), 23)
         self.assertEqual(state["records"]["slots_triples"], 1)
         self.assertEqual(state["records"]["slots_pairs"], 1)
         self.assertEqual(state["records"]["cactpot_high_rolls"], 1)

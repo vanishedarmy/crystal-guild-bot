@@ -1,3 +1,10 @@
+## v1.9.0 Alpha 10 — Records & Moments
+
+- Expanded Personal Records and 12 once-only Moments, seven secret Titles, two Hall trophies and 16 individually packaged game images.
+- Persisted schema 23 achievement/event receipts with replay protection and verified historical backfill.
+- Spoiler-safe hosted/Portal projection, discovery notifications, responsive Records UI and new Player Guide chapter.
+- Existing Bestiary, career/Trial records, trophy ownership and previous gameplay progression are preserved.
+
 # Crystal Guild — Release History (Condensed)
 
 Only major release milestones appear here. Historical hotfix reports and obsolete per-version audits are omitted from deployable source packages; original released archives remain available separately.

@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history; version 21 adds the seasonal-event framework; version 22 adds durable Bestiary mastery receipts and Research Points.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history; version 21 adds the seasonal-event framework; version 22 adds durable Bestiary mastery receipts and Research Points; version 23 adds once-only per-player Moment receipts and event-derived Personal Records.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 22
+DATABASE_SCHEMA_VERSION = 23
 
 
 class Database:
@@ -1303,6 +1303,56 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_bestiary_mastery_player
                     ON player_bestiary_mastery(player_id, mastered_at DESC, monster_id);
                     INSERT INTO schema_migrations(version,name) VALUES (22,'bestiary_research_mastery');
+                    COMMIT;
+                    """
+                )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v23 = bool(
+            self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=23").fetchone()
+        )
+        if not already_v23:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(23)
+            try:
+                self.conn.executescript(
+                    """
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_moment_unlocks (
+                        player_id TEXT NOT NULL,
+                        moment_id TEXT NOT NULL,
+                        title_id TEXT NOT NULL,
+                        event_key TEXT NOT NULL,
+                        event_type TEXT NOT NULL,
+                        evidence_json TEXT NOT NULL,
+                        earned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        awarded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        historical INTEGER NOT NULL DEFAULT 0 CHECK(historical IN (0,1)),
+                        PRIMARY KEY (player_id, moment_id),
+                        UNIQUE (player_id, event_key, moment_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_moments_by_player
+                    ON player_moment_unlocks(player_id, awarded_at DESC);
+                    CREATE TABLE IF NOT EXISTS player_moment_reconciliation (
+                        player_id TEXT PRIMARY KEY,
+                        reconciled_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS player_record_events (
+                        player_id TEXT NOT NULL,
+                        record_id TEXT NOT NULL,
+                        best_value INTEGER NOT NULL CHECK(best_value >= 0),
+                        event_key TEXT NOT NULL,
+                        context_json TEXT NOT NULL DEFAULT '{}',
+                        occurred_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (player_id, record_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (23,'records_moments_persistence');
                     COMMIT;
                     """
                 )

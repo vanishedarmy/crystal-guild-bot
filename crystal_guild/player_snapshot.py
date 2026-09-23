@@ -16,6 +16,9 @@ from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAI
 from .data import GameData
 from .bestiary_progress import progress_for
 from .gold_saucer import gold_saucer_record_value
+from .personal_records import project_personal_records
+from .moments import public_moments_view
+from .trophies import TROPHY_CATALOG, TROPHIES_BY_ID
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
@@ -1298,6 +1301,23 @@ class PortalRepository:
                         "equipped": title["name"] == equipped_name,
                     }
                 )
+            # Reserved Moment Titles are not part of the public legacy catalog.
+            # Reveal only a title whose Moment was genuinely settled for THIS player
+            # and whose ownership was committed to player_titles.
+            owned_moment_titles = {
+                str(row["title_id"]) for row in conn.execute(
+                    "SELECT title_id FROM player_moment_unlocks WHERE player_id=?", (player_id,)
+                ).fetchall()
+            }
+            for title_id in owned_moment_titles & earned_titles.keys() & self.data.moment_titles.keys():
+                title = self.data.moment_titles[title_id]
+                titles.append({
+                    "id": title_id, "name": title["name"], "description": title["description"],
+                    "category": title.get("category", "Moments"),
+                    "rarity": title.get("rarity", "common"), "source": "Moment",
+                    "unlocked": True, "unlocked_at": earned_titles[title_id],
+                    "equipped": title["name"] == equipped_name,
+                })
             rarity_order = {"legendary": 0, "epic": 1, "rare": 2, "uncommon": 3, "common": 4}
             titles.sort(key=lambda t: (not t["unlocked"], rarity_order.get(t["rarity"], 9), t["name"].lower()))
             return {
@@ -1308,7 +1328,7 @@ class PortalRepository:
                     "points": earned_points,
                     "points_total": total_points,
                     "categories": category_summary,
-                    "titles_unlocked": len(earned_titles),
+                    "titles_unlocked": sum(1 for title in titles if title["unlocked"]),
                     "titles_total": len(titles),
                     "equipped_title": equipped_name,
                 },
@@ -1331,8 +1351,35 @@ class PortalRepository:
                 # Upgrade-order compatibility while a schema-19 database is
                 # waiting for the Bot's additive schema-20 migration.
                 rows = []
+            owned_ids = {str(row["trophy_id"]) for row in rows}
+            # These two secret Hall slots are filled from authoritative Moment
+            # trophy receipts. Names, triggers, IDs and art stay server-side
+            # until the actual trophy is owned by THIS player.
+            moment_slots = []
+            for position, trophy in enumerate(
+                (row for row in TROPHY_CATALOG if row["unlock"]["kind"] == "moment"), start=1
+            ):
+                if trophy["id"] in owned_ids:
+                    moment_slots.append({
+                        "id": trophy["id"], "name": trophy["name"],
+                        "description": trophy["description"],
+                        "category": trophy["category"],
+                        "requirement": trophy["requirement"],
+                        "art": trophy["art"], "locked_art": trophy["locked_art"],
+                        "secret": True, "earned": True,
+                    })
+                else:
+                    moment_slots.append({
+                        "id": f"sealed_trophy_slot_{position:02d}",
+                        "name": "Undiscovered Trophy",
+                        "description": "Its story has yet to be written.",
+                        "category": "mystery", "requirement": None,
+                        "art": None, "locked_art": None,
+                        "secret": True, "earned": False,
+                    })
             return {
                 "player": self._public_identity(player),
+                "moment_slots": moment_slots,
                 "unlocked": [
                     {
                         "id": str(row["trophy_id"]),
@@ -1625,7 +1672,43 @@ class PortalRepository:
                 "bosses": bosses,
                 "trial_summary": trial_summary,
                 "trials": trials,
+                "personal_records": project_personal_records(conn, str(player_id), self.data, stats),
+                "moments": self._moments_for_player(conn, str(player_id)),
             }
+
+    def _moments_for_player(self, conn: sqlite3.Connection, player_id: str) -> dict[str, Any]:
+        """Read-only, spoiler-safe projection. Never invoke award or reconciliation here."""
+        owned = {
+            str(row["moment_id"]): row for row in conn.execute(
+                "SELECT moment_id,title_id,earned_at,historical FROM player_moment_unlocks "
+                "WHERE player_id=?", (player_id,),
+            ).fetchall()
+            if row["moment_id"] in self.data.moments
+        }
+        entries = public_moments_view(self.data.moments, self.data.moment_titles, set(owned))
+        actual_trophies = {
+            str(row["trophy_id"]) for row in conn.execute(
+                "SELECT trophy_id FROM player_trophies WHERE player_id=? AND trophy_id LIKE 'moment_trophy_%'",
+                (player_id,),
+            ).fetchall()
+        }
+        for entry in entries:
+            unlock = owned.get(entry["id"])
+            entry["unlocked_at"] = unlock["earned_at"] if unlock else None
+            entry["historical"] = bool(unlock["historical"]) if unlock else False
+            candidate_id = entry.pop("trophy_candidate_id", None)
+            # A trophy label appears only after a verified Moment *and* its own
+            # durable Hall receipt. Unowned secret slots never expose an ID.
+            if unlock and candidate_id in actual_trophies:
+                trophy = TROPHIES_BY_ID[candidate_id]
+                entry["trophy_reward"] = {"id": candidate_id, "name": trophy["name"]}
+            else:
+                entry["trophy_reward"] = None
+        return {
+            "summary": {"unlocked": len(owned), "total": len(self.data.moments)},
+            "entries": entries,
+            "scope_note": "Moments are awarded once, after an adventure has actually finished.",
+        }
 
     def _find_player(self, conn: sqlite3.Connection, key: str) -> sqlite3.Row | None:
         clean = unquote(key).strip()

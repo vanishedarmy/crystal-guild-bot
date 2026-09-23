@@ -46,9 +46,9 @@ class TrailsRaidsBeta2Tests(unittest.TestCase):
         return self.game.active_boss
 
     def test_beta2_identity_keeps_schema10_protocol25(self):
-        self.assertEqual(__version__, "1.9.0-bestiary-alpha9")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 22)
-        self.assertEqual(self.db.schema_version(), 22)
+        self.assertEqual(__version__, "1.9.0-records-moments-alpha10")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
+        self.assertEqual(self.db.schema_version(), 23)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
 
     def test_overlay_reports_action_readiness_without_private_ids(self):

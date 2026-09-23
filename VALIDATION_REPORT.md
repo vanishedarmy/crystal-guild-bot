@@ -1,18 +1,32 @@
-# Crystal Guild v1.9.0 Alpha 9 — Bestiary Discovery Validation
+# Crystal Guild — Records & Moments Alpha 10 Validation
 
-Baseline: v1.9.0 Alpha 8 Halloween Individual Artwork Hotfix 3. Local database schema: **22**. Hosted sync schema: **1**. Portal Action protocol: **37**.
+**Scope:** cumulative Steps 1–7 based on v1.9.0 Alpha 9 Player Language Hotfix 1; new release identity `1.9.0-records-moments-alpha10`.
 
-## Release gates
+## Source-level regression
 
-- Bot unittest regression suite: **835/835 passed** (including eight new historical-migration, isolation, lock, threshold and idempotency tests).
-- Hosted Web/API unittest suite: **81/81 passed**.
-- Frontend source/history Node suite: **723/778 passed**. The **55 remaining failures are identical by name to the 55 existing Step 5 baseline failures**, with no new failure names; they are not counted as passing.
-- Bestiary artwork audit: **169/169 required image files valid and decodable** (112 core + 37 bosses + 10 World Event variants + five seasonal unlocked + five seasonal locked). Five new Expedition-boss WebPs are 512×768.
-- Direct frontend static-asset references: **192/192 present**.
-- Schema migration: simulated pre-existing schema 21 to schema 22, including automatic verified backup and preservation of historical defeats and archived seasonal progress, passed.
-- Bot masteries and research points: once-only per `(player_id,monster_id)`, isolation between players, and no rewards for external encounter records, passed.
-- Old Bestiary history and seasonal edition-scoped records are not reset.
+| Gate | Result |
+| --- | --- |
+| Full Bot unittest suite | **894/894 passed** |
+| Hosted Web/API unittest suite | **85/85 passed** |
+| Full frontend Node suite | **748/805 passed, 57 failed** |
+| Frontend Step 6 failure-name comparison | **57/57 inherited, zero newly failing names** |
+| Focused Records/Moments Steps 4–7 frontend checks | **22/22 passed** |
+| Newly introduced Step 7 frontend checks | **7/7 passed** |
+| Release identity | Alpha 10 matches Bot, hosted API, Guide metadata, Web and package metadata |
+| Local database schema | **23**, no new Step 7 migration |
+| Hosted sync / Portal Action protocol | **1 / 37**, unchanged |
+| Individual Moment/Trophy assets | **16/16 individual WebPs**, matching Step 5 SHA-256; matching independent PNGs available in standalone pack |
 
-## Not covered by this source validation
+## Explicit limitations
 
-The source package intentionally excludes `node_modules`; a real Vite production bundle and a deployed-browser walkthrough were not run in this workspace. Install pinned dependencies and run `npm run build` in the deployment environment and validate the Portal on staging before replacing a live installation. Existing frontend test failures remain unresolved. No material-drop bonus was enabled.
+The 57 outstanding frontend assertions are identical by test name to the Step 6 baseline. Many refer to older release identities or historical frontend/layout contracts; none are counted as passing. Newly modified current-release assertions were updated to Alpha 10 while preserving earlier feature and asset verification. A fully passing frontend regression suite is **not** established.
+
+The current runtime lacks installed React/Vite dependencies and cannot access the npm registry (`EAI_AGAIN`). Consequently a dependency-installed Vite production bundle and actual deployed desktop/mobile React browser walkthrough could **not** be completed here. A static responsive CSS/source audit and targeted frontend regression checks passed; this does not substitute for real browser verification on staging. Do not treat these source-level gates as proof of production readiness.
+
+## Release identity and migration
+
+Local schema **23**; existing schema 22 is migrated with an automatic verified `pre_schema_23_*` backup. Existing Bestiary, career/Trial records, Titles, seasonal records, Guild economy and Hall of Trophies ownership are preserved. Historical Moments are awarded **only** for verified saved single purchases and five consecutive paid Mini Cactpot losses. No older combat/Hunt/Raid/World Event Moment is guessed from aggregated totals.
+
+## Recommended deployment gate
+
+Install pinned Web dependencies in an environment with registry access and run `npm run build`; run full Node/hosted suites on the exact deployed source; validate owned/unowned secret Moments, Trophy Hall, Records cards, Player Guide and responsive mobile layout against a staging environment. Preserve all actual SQLite databases, Twitch tokens, `.env`, `overlay/state.json` and hosted secrets. Only replace production with matching Alpha 10 Bot/Web after the staging walkthrough and the inherited test-failure assessment are acceptable to you.

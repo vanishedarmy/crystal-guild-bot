@@ -1,7 +1,9 @@
-Crystal Guild v1.9.0 Alpha 9 — Bestiary Discovery
-Runtime/frontend: 1.9.0-bestiary-alpha9
-Local DB schema 22 | Hosted sync schema 1 | Portal Action protocol 37
+Crystal Guild v1.9.0 Alpha 10 — Records & Moments
+Runtime/frontend: 1.9.0-records-moments-alpha10
+Local DB schema 23 | Hosted sync schema 1 | Portal Action protocol 37
 
-A unified 164-record research Bestiary with progressive dossier reveals, retroactive once-only mastery seals/research points for core monsters, Hunt and Expedition research, and read-only Raid/World Event/Seasonal records. Five standalone Expedition boss portraits replace the board-extracted images.
-Existing defeat counts, Hall of Trophies, seasonal editions, saved progress, Twitch tokens and credentials must be preserved. Existing local databases upgrade through schema 22 with a verified pre-migration backup; no player reset.
-Deploy matching Alpha 9 Bot and Web releases together. The Halloween event remains disabled until explicitly enabled by the owner.
+The existing Records page now has 15 expanded personal bests and 12 unusual Moments, with seven secrets, cosmetic Titles, separate badge art and two exceptional Hall of Trophies displays. Original career, Trial, rivalry and boss records remain intact; qualifying historical Gil purchases and paid Mini Cactpot streaks can be recognized only when persisted evidence proves them.
+
+Preserve existing player data, Bestiary discoveries, trophy ownership, seasonal editions, credentials and runtime volumes. An existing schema-22 database upgrades automatically to schema 23 with a verified pre-migration backup. Never run an old schema-22 Bot against a migrated database without restoring the matching old database.
+
+Deploy matching Alpha 10 Bot + Web together. The Web source does not contain node_modules or a production dist. Install pinned dependencies, build Vite, and smoke-test the Portal on staging before replacing the live service. Halloween stays disabled until the owner activates it.

@@ -1,45 +1,15 @@
-# Alpha 8 Hotfix 3 → Alpha 9 Bestiary Discovery
+# Upgrade to v1.9.0 Alpha 10 — Records & Moments
 
-1. Stop the matching Bot and Web services after backing up the live database, .env, credentials and persistent overlay state.
-2. Upgrade the Bot and Web together using the Alpha 9 complete archives or the exact Alpha 8 Hotfix 3 → Alpha 9 patch.
-3. Start the Bot to run verified automatic schema migration 21→22 (or upgrade older schemas in sequence). No player reset is needed.
-4. Confirm both runtime/frontend report 1.9.0-bestiary-alpha9, local schema 22, hosted sync schema 1, and Portal Action protocol 37.
-5. Confirm old Bestiary defeats, one-time mastery rewards, Hall trophies and seasonal editions remain intact. Halloween stays disabled unless owner-enabled.
-6. If validation fails, restore the stopped previous Bot/Web pair and your preserved pre-migration database backup; do not run older code against an upgraded live database.
+**Direct incremental patch baseline:** v1.9.0 Alpha 9 — Player Language Hotfix 1, with matching Bot/Web source. If your live release differs, use the Alpha 10 Complete or matching Web/Bot source archives instead of applying the patch onto an unknown build.
 
----
+1. Stop the Bot and Web. Back up the actual live SQLite database, `.env`, Twitch token store, `overlay/state.json` and all hosted secrets and mounted persistent volumes. Verify that backups can be restored.
+2. For the small patch, overlay its `Bot/` and `Web/` paths onto that **exact** Language Hotfix 1 baseline. For a complete install, deploy the matching full Alpha 10 Bot and Web trees. Do not replace the old live DB or your environment files with packaged examples.
+3. Install Web/frontend dependencies using the deployment's package manager from `package.json`; run `npm run build` in a network-enabled, dependency-installed build environment. This source package intentionally omits `node_modules` and generated `dist`.
+4. Run Bot/hosted regression checks, then restart the hosted Web/API and the Bot. Existing local schema 22 automatically upgrades to schema 23 and generates a verified `pre_schema_23_*` backup on Bot startup. Older schema versions migrate through their normal sequential steps.
+5. Confirm both services report `1.9.0-records-moments-alpha10`, local schema 23, hosted sync 1 and Portal Action protocol 37. Verify the main profile, Records, Moments (owned and secret entries), Titles, Hall of Trophies and Player Guide in desktop and mobile browsers.
+6. Test one long-existing account with proven Cactpot/purchase history and a brand-new account. No other historical Moments may be inferred. Confirm all 16 separate WebP art paths load and no secret metadata leaks in the relevant per-player API responses.
+7. If anything fails before replacing production, restore the matched old Bot/Web and **their** pre-migration database together. Never run an old schema-22 Bot against a live schema-23 DB.
 
-## Previous upgrade instructions (historical)
+Historical upgrade note: legacy releases migrate in order (including local schema 17 → 18 during Merc Recruitment and the automatic `pre_schema_21` backup during the seasonal event upgrade) before reaching schema 23. These steps retain the previously verified data-preservation behavior.
 
-# Crystal Guild v1.9.0 Alpha 8 — Seasonal Event Framework Upgrade Guide
-
-Upgrade directly from **v1.9.0 Alpha 7 — Hall of Trophies** by deploying the matching Alpha 8 Bot and Web packages together.
-
-## Compatibility
-- Runtime/frontend: `1.9.0-seasonal-events-alpha8`
-- Local database schema: **21**
-- Hosted sync schema: **1**
-- Portal Action protocol: **37**
-- Database migration required: **Yes — automatic 20 → 21**
-- Player reset required: **No**
-
-The schema-21 migration adds reusable seasonal-event editions, player event progress, daily objective claims, exact seasonal monster clears, reward ownership, event trophies, and idempotent action receipts. A verified `pre_schema_21_<timestamp>.db` backup is created before migration.
-
-## Deployment
-1. Preserve the live database, Twitch token storage, `.env`, hosted secrets, and persistent-disk files.
-2. Stop the paired Alpha 7 Bot and Web services.
-3. Deploy the matching Alpha 8 Web and Bot packages (or apply the Alpha 7 → Alpha 8 overlay patch).
-4. Start the Web service, then the Bot worker.
-5. Confirm runtime/frontend `1.9.0-seasonal-events-alpha8`.
-6. Confirm local schema **21**, hosted sync **1**, and Portal Action protocol **37**.
-7. Open **Adventurer Profile → Seasonal Event** and verify **Night of the Hollow Crystal** appears.
-8. Confirm the event initially reports **Disabled**. Seasonal monsters, the Hollow Warden, Moonlit Tokens, objectives, and seasonal shop rewards must not activate until the owner enables or schedules the event.
-9. In **Streamer Control Center → Seasonal Event Control**, use the owner control to enable, pause/resume, disable, or select scheduled operation.
-
-No player reset or manual event seeding is required.
-
-## Older database lineage
-Older installations continue through their existing verified migrations before Alpha 8: schema **17 → 18** Merc recruitment, **18 → 19** Trading Post, **19 → 20** Hall of Trophies, then **20 → 21** Seasonal Event Framework. Each structural step preserves verified backup behavior.
-
-## Maintenance update: Alpha 8 package cleanup Hotfix 1
-Already running Alpha 8? **No migration or protocol change.** Deploy the cleaned matching Bot/Web packages, or overlay the cleanup patch **and apply its deletion manifest** so previously deployed obsolete files are actually removed. Back up the existing installation/database/secrets first; the deletion list is restricted to superseded documentation and duplicate static art. Do not delete any database, token, `.env`, or overlay-state file.
+No economy rebalance, player wipe, new hosted sync version or Portal write action. Halloween remains disabled unless manually enabled.

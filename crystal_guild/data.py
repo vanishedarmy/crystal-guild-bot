@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .bestiary_research import validate_research_overlay
+from .moments import validate_moment_catalog
 
 
 class GameData:
@@ -17,6 +18,11 @@ class GameData:
         self.dungeons = self._load_map("dungeons.json")
         self.items = self._load_map("items.json")
         self.achievements = self._load_map("achievements.json")
+        # Step 2: staged-only Moments. Kept OUT of the live achievements and
+        # titles registries until verified settlement tracking is in place;
+        # merging them now would reveal secret Titles before they are earned.
+        self.moments = self._load_map("moments.json")
+        self.moment_titles = self._load_map("moment_titles.json")
         self.bosses = self._load_map("bosses.json")
         self.hunts = self._load_map("hunts.json")
         self.quests = self._load_map("quests.json")
@@ -671,6 +677,11 @@ class GameData:
             self.bestiary_research,
             monsters=self.monsters, regions=self.regions,
             expeditions=self.expedition_regions, hunts=self.hunts,
+        ))
+
+        errors.extend(validate_moment_catalog(
+            self.moments, self.moment_titles,
+            self.achievements, self.titles,
         ))
 
         return errors

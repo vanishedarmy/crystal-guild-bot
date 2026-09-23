@@ -1,0 +1,497 @@
+[
+  {
+    "id": "moment_technically_alive",
+    "name": "Technically Alive",
+    "description": "Win a battle with exactly 1 HP left. The healers would like a word.",
+    "category": "Combat",
+    "tier": "silver",
+    "secret": true,
+    "trigger": "combat_victory",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_alive",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "final_hp",
+          "op": "eq",
+          "value": 1
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_technically_alive",
+      "badge_id": "moment_badge_technically_alive"
+    },
+    "sealed_hint": "The line between victory and disaster is thinner than you think."
+  },
+  {
+    "id": "moment_a_toxic_relationship",
+    "name": "A Toxic Relationship",
+    "description": "Land the finishing blow while poisoned. Apparently, spite is medicinal.",
+    "category": "Combat",
+    "tier": "silver",
+    "secret": false,
+    "trigger": "combat_finishing_blow",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "direct_hit",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "target_defeated",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "poison_active_at_hit",
+          "op": "eq",
+          "value": true
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_a_toxic_relationship",
+      "badge_id": "moment_badge_a_toxic_relationship"
+    }
+  },
+  {
+    "id": "moment_money_well_wasted",
+    "name": "Money Well Wasted",
+    "description": "Use a restorative item worth at least 1,000 Gil on yourself, then get KO’d by the very next enemy action before you can act again.",
+    "category": "Comedy",
+    "tier": "silver",
+    "secret": true,
+    "trigger": "combat_player_ko",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_knocked_out",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "self_item_consumed",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "item_targeted_self",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "self_item_restorative",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "self_item_shop_price_gil",
+          "op": "gte",
+          "value": 1000
+        },
+        {
+          "field": "same_battle",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "ko_source",
+          "op": "eq",
+          "value": "enemy_attack"
+        },
+        {
+          "field": "next_hostile_action_caused_ko",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "player_actions_since_item",
+          "op": "eq",
+          "value": 0
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_money_well_wasted",
+      "badge_id": "moment_badge_money_well_wasted"
+    }
+  },
+  {
+    "id": "moment_a_little_too_close",
+    "name": "A Little Too Close",
+    "description": "Clear a World Event with at least two survivors and every survivor at 10% HP or below, before any post-battle healing.",
+    "category": "World Events",
+    "tier": "gold",
+    "secret": true,
+    "trigger": "world_event_victory",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_alive",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "participant_count",
+          "op": "gte",
+          "value": 2
+        },
+        {
+          "field": "living_party_count",
+          "op": "gte",
+          "value": 2
+        },
+        {
+          "field": "highest_survivor_hp_pct_raw",
+          "op": "lte",
+          "value": 10.0
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_a_little_too_close",
+      "badge_id": "moment_badge_a_little_too_close",
+      "trophy_candidate_id": "moment_trophy_world_event_close_call"
+    }
+  },
+  {
+    "id": "moment_five_cactpot_losses",
+    "name": "The House Sends Another Letter",
+    "description": "Lose five paid Mini Cactpot tickets in a row. The attendants have started a collection for you.",
+    "category": "Gold Saucer",
+    "tier": "silver",
+    "secret": true,
+    "trigger": "saucer_round_settled",
+    "condition": {
+      "type": "record_threshold",
+      "record_id": "longest_cactpot_loss_streak",
+      "rules": [
+        {
+          "field": "game",
+          "op": "eq",
+          "value": "mini_cactpot"
+        },
+        {
+          "field": "paid_net_loss",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "record_id",
+          "op": "eq",
+          "value": "longest_cactpot_loss_streak"
+        },
+        {
+          "field": "record_value",
+          "op": "gte",
+          "value": 5
+        }
+      ]
+    },
+    "backfill": "verified_saved_history",
+    "reward": {
+      "title_id": "moment_title_five_cactpot_losses",
+      "badge_id": "moment_badge_five_cactpot_losses"
+    },
+    "sealed_hint": "The Saucer keeps very careful accounts."
+  },
+  {
+    "id": "moment_overkill_enthusiast",
+    "name": "Overkill Enthusiast",
+    "description": "Defeat an enemy with a direct hit at least ten times its remaining HP. It must have started with at least 100 HP.",
+    "category": "Combat",
+    "tier": "silver",
+    "secret": false,
+    "trigger": "combat_finishing_blow",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "direct_hit",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "target_defeated",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "target_hp_before_hit",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "field": "target_max_hp",
+          "op": "gte",
+          "value": 100
+        },
+        {
+          "field": "damage_dealt",
+          "op": "gte_multiple",
+          "other_field": "target_hp_before_hit",
+          "multiplier": 10
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_overkill_enthusiast",
+      "badge_id": "moment_badge_overkill_enthusiast"
+    }
+  },
+  {
+    "id": "moment_early_checkout",
+    "name": "Not My Finest Hour",
+    "description": "Get KO’d by the first hostile action of a fight before taking a single action yourself.",
+    "category": "Comedy",
+    "tier": "bronze",
+    "secret": true,
+    "trigger": "combat_player_ko",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_knocked_out",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "ko_source",
+          "op": "eq",
+          "value": "enemy_attack"
+        },
+        {
+          "field": "first_hostile_action_of_encounter",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "player_actions_completed",
+          "op": "eq",
+          "value": 0
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_early_checkout",
+      "badge_id": "moment_badge_early_checkout"
+    }
+  },
+  {
+    "id": "moment_against_better_judgment",
+    "name": "Against Better Judgment",
+    "description": "Win a solo boss encounter at least ten effective boss levels above your own, without Merc assistance.",
+    "category": "Hunts",
+    "tier": "gold",
+    "secret": false,
+    "trigger": "solo_boss_victory",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_alive",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "solo_encounter",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "merc_assisted",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "field": "boss_effective_level_gap",
+          "op": "gte",
+          "value": 10
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_against_better_judgment",
+      "badge_id": "moment_badge_against_better_judgment"
+    }
+  },
+  {
+    "id": "moment_last_one_standing",
+    "name": "The Last One Standing",
+    "description": "Be the sole surviving player when a Raid boss falls. At least three players must have begun the Raid, and you must qualify for its rewards.",
+    "category": "Raids",
+    "tier": "gold",
+    "secret": true,
+    "trigger": "raid_victory",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_alive",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "party_size_at_start",
+          "op": "gte",
+          "value": 3
+        },
+        {
+          "field": "living_party_count",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "field": "player_contribution_eligible",
+          "op": "eq",
+          "value": true
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_last_one_standing",
+      "badge_id": "moment_badge_last_one_standing",
+      "trophy_candidate_id": "moment_trophy_raid_last_survivor"
+    }
+  },
+  {
+    "id": "moment_retail_therapy",
+    "name": "Retail Therapy",
+    "description": "Spend at least 25,000 Gil on one qualifying shop or Trading Post purchase. Crafting fees do not count.",
+    "category": "Economy",
+    "tier": "silver",
+    "secret": false,
+    "trigger": "purchase_settled",
+    "condition": {
+      "type": "record_threshold",
+      "record_id": "biggest_purchase",
+      "rules": [
+        {
+          "field": "qualifying_shop_purchase",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "single_transaction",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "record_id",
+          "op": "eq",
+          "value": "biggest_purchase"
+        },
+        {
+          "field": "record_value",
+          "op": "gte",
+          "value": 25000
+        }
+      ]
+    },
+    "backfill": "verified_saved_history",
+    "reward": {
+      "title_id": "moment_title_retail_therapy",
+      "badge_id": "moment_badge_retail_therapy"
+    }
+  },
+  {
+    "id": "moment_should_have_packed_a_tent",
+    "name": "Should Have Packed a Tent",
+    "description": "Complete a Venture alive with no consumables used and no more than 10% HP remaining before recovery.",
+    "category": "Ventures",
+    "tier": "silver",
+    "secret": false,
+    "trigger": "venture_completed",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "successful",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "player_alive",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "final_hp_pct_pre_recovery_raw",
+          "op": "lte",
+          "value": 10.0
+        },
+        {
+          "field": "consumables_used",
+          "op": "eq",
+          "value": 0
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_should_have_packed_a_tent",
+      "badge_id": "moment_badge_should_have_packed_a_tent"
+    }
+  },
+  {
+    "id": "moment_back_on_the_payroll",
+    "name": "Back on the Payroll",
+    "description": "Get revived during a Raid, then land the finishing blow on its boss in the same Raid.",
+    "category": "Raids",
+    "tier": "gold",
+    "secret": true,
+    "trigger": "raid_victory",
+    "condition": {
+      "type": "event_facts",
+      "rules": [
+        {
+          "field": "player_alive",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "party_size_at_start",
+          "op": "gte",
+          "value": 2
+        },
+        {
+          "field": "player_revived_during_raid",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "player_dealt_final_blow",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "player_contribution_eligible",
+          "op": "eq",
+          "value": true
+        }
+      ]
+    },
+    "backfill": "none",
+    "reward": {
+      "title_id": "moment_title_back_on_the_payroll",
+      "badge_id": "moment_badge_back_on_the_payroll"
+    }
+  }
+]

@@ -1,3 +1,21 @@
+# Crystal Guild v1.9.0 Alpha 10 — Records & Moments
+
+The Adventurer's Ledger expands the existing Records page with 15 personal records across combat, Gil, World Events, Ventures, Raids and the Gold Saucer. A new 12-Moment collection rewards unlikely feats, narrow escapes and spectacular misjudgments with illustrated badges and cosmetic Titles. Seven Moment identities stay hidden until earned; two also receive independent Hall of Trophies rewards.
+
+- Six collapsible Personal Records chapters, server-authored bests and dates where saved evidence exists.
+- Own-once Moments with exactly-once reward receipts and per-player repair on restart.
+- Spoiler-safe server projections: no secret names, unlock rules, Titles or badge URLs before ownership.
+- Fresh-discovery notices on the Records page; older verified achievements are not mislabeled as newly earned.
+- Player Guide chapter, What's New and narrow-screen Records card improvements.
+- 12 standalone badge WebPs and four standalone earned/locked trophy WebPs. All 16 images remain independent; the separate artwork pack has a matching PNG of each.
+- Historical backfill only from verified paid Mini Cactpot streaks and qualifying Gil purchases. No guessed old battle or Raid achievements, no player reset and no stat/economy balance changes.
+
+**Compatibility:** local SQLite schema 23 (migration from 22 creates verified backup), hosted sync schema 1, Portal Action protocol 37. Deploy matching Web and Bot together from the Language Hotfix 1 baseline; source-only Web requires a Vite production build in a dependency-installed environment. Preserve database, secrets, token storage and persistent volumes. Validate browser and deployed runtime on staging first.
+
+---
+
+## Previous release
+
 # Crystal Guild v1.9.0 Alpha 9 — Bestiary Discovery
 
 - Reworked the Portal Bestiary with responsive research cards, searchable and filterable dossiers, progress bars, habitats, lore and discovery-stage visibility.

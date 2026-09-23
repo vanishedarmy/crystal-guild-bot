@@ -6,7 +6,7 @@ title Crystal Guild v1.9.0 Alpha 6 - World Events
 :menu
 cls
 echo ============================================================
-echo              CRYSTAL GUILD v1.9.0 ALPHA 9 - BESTIARY DISCOVERY
+echo              CRYSTAL GUILD v1.9.0 ALPHA 10 - RECORDS & MOMENTS
 echo                    BOT CONTROL PANEL
 echo ============================================================
 echo.

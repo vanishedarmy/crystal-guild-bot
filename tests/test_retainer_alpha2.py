@@ -33,9 +33,9 @@ class RetainerServiceAlpha2Tests(unittest.TestCase):
         return self.game.portal_retainer_state("100").data["retainer_state"]
 
     def test_alpha2_contract_and_history_schema(self):
-        self.assertEqual(__version__, "1.9.0-bestiary-alpha9")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 22)
-        self.assertEqual(self.db.schema_version(), 22)
+        self.assertEqual(__version__, "1.9.0-records-moments-alpha10")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
+        self.assertEqual(self.db.schema_version(), 23)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='retainer_history'"))
         self.assertEqual(self.state()["history"], [])
