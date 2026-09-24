@@ -41,8 +41,8 @@ class DungeonsAlpha2Tests(unittest.TestCase):
 
     def test_alpha2_keeps_schema10_and_advances_protocol24(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
-        self.assertEqual(self.db.schema_version(), 23)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 37)
+        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 38)
 
     def test_board_exposes_two_dungeons_with_route_choices(self):
         board = self.game._dungeon_board_state("142")

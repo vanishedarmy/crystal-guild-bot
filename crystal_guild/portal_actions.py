@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 37
+ACTION_PROTOCOL_VERSION = 38
 
 
 class PortalActionWorker:
@@ -440,6 +440,12 @@ class PortalActionWorker:
         if action_type == "START_REST":
             result = self.game.portal_start_rest(twitch_id, str(action.get("id") or ""), stream_live=self._stream_live())
             return self._game_result(result)
+        if action_type == "CAMP_EAT_MEAL":
+            return self._game_result(self.game.portal_camp_eat_meal(twitch_id, str(action.get("id") or "")))
+        if action_type == "CAMP_SET_PREPARATION":
+            return self._game_result(self.game.portal_camp_choose_preparation(
+                twitch_id, str(payload.get("preparation") or ""), str(action.get("id") or "")
+            ))
         if action_type == "FELLOWSHIP_STATE":
             result = self.game.portal_fellowship_state(twitch_id)
             return self._game_result(result)

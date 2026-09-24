@@ -1,15 +1,12 @@
-# Upgrade to v1.9.0 Alpha 10 — Records & Moments
+# Upgrade to Crystal Guild v1.9.0 Alpha 12 — Camp & Recovery
 
-**Direct incremental patch baseline:** v1.9.0 Alpha 9 — Player Language Hotfix 1, with matching Bot/Web source. If your live release differs, use the Alpha 10 Complete or matching Web/Bot source archives instead of applying the patch onto an unknown build.
+Starting baseline: complete matching Alpha 11 Mobile Combat HUD (`1.9.0-mobile-combat-hud-alpha11`). This Alpha 12 archive includes all source trees and public assets; you need nothing else to assemble them.
 
-1. Stop the Bot and Web. Back up the actual live SQLite database, `.env`, Twitch token store, `overlay/state.json` and all hosted secrets and mounted persistent volumes. Verify that backups can be restored.
-2. For the small patch, overlay its `Bot/` and `Web/` paths onto that **exact** Language Hotfix 1 baseline. For a complete install, deploy the matching full Alpha 10 Bot and Web trees. Do not replace the old live DB or your environment files with packaged examples.
-3. Install Web/frontend dependencies using the deployment's package manager from `package.json`; run `npm run build` in a network-enabled, dependency-installed build environment. This source package intentionally omits `node_modules` and generated `dist`.
-4. Run Bot/hosted regression checks, then restart the hosted Web/API and the Bot. Existing local schema 22 automatically upgrades to schema 23 and generates a verified `pre_schema_23_*` backup on Bot startup. Older schema versions migrate through their normal sequential steps.
-5. Confirm both services report `1.9.0-records-moments-alpha10`, local schema 23, hosted sync 1 and Portal Action protocol 37. Verify the main profile, Records, Moments (owned and secret entries), Titles, Hall of Trophies and Player Guide in desktop and mobile browsers.
-6. Test one long-existing account with proven Cactpot/purchase history and a brand-new account. No other historical Moments may be inferred. Confirm all 16 separate WebP art paths load and no secret metadata leaks in the relevant per-player API responses.
-7. If anything fails before replacing production, restore the matched old Bot/Web and **their** pre-migration database together. Never run an old schema-22 Bot against a live schema-23 DB.
+1. Back up local Bot SQLite, hosted Web SQLite and secrets outside the application tree. Test with a copy first.
+2. Extract once. Deploy matching `Bot/` and `Web/` source simultaneously. Bot schema 23→24 automatically creates a verified backup before migration; hosted sync stays **1**; action protocol increases to **38** on both sides.
+3. From `Web/frontend/`, run `npm ci` then `npm run build` with the pinned lockfile. Assets are already in `public/` inside this complete archive. Do not reuse any earlier `dist` bundle.
+4. Reuse your own existing environment files and mounted player database; never overwrite with a test DB. Stage-test the Camp UI, meal timer, two rations from the crafting recipe, free preparation switching, actual Solo Venture buffs and old mobile combat controls. Promote together after smoke testing.
 
-Historical upgrade note: legacy releases migrate in order (including local schema 17 → 18 during Merc Recruitment and the automatic `pre_schema_21` backup during the seasonal event upgrade) before reaching schema 23. These steps retain the previously verified data-preservation behavior.
+Changes: Trail Rations +10% Solo damage (45-minute departure window), scout +10% Solo XP/JP, gear check +8% Solo damage, supplies 10% post-victory HP/resources, and direct existing Potion/Tent and timed Camp. No durability economy and no effects on other modes.
 
-No economy rebalance, player wipe, new hosted sync version or Portal write action. Halloween remains disabled unless manually enabled.
+Rollback: take the Bot and Web releases back to Alpha 11 **with the pre-migration local schema 23 backup**. Do not boot an older Bot against a schema-24 DB.

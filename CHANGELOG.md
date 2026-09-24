@@ -1,3 +1,14 @@
+## v1.9.0 Alpha 12 — Camp & Recovery
+- Trail Rations: purchasable or craftable one-run +10% Solo Venture damage, 45-minute departure timer, once-only consumption.
+- One saved free pre-Venture plan: scout (+10% XP/JP), gear check (+8% damage), or supplies (+10% post-combat HP/MP/AP).
+- Camp interface offers direct Potion/Tent recovery and retains original timed Camp. No new equipment durability.
+- Local schema 24 with verified backup, hosted sync 1 unchanged, Portal Action protocol 38; matching Bot/Web releases, Player Guide and tests updated.
+
+## v1.9.0 Alpha 11 — Mobile Combat HUD
+- Mobile-only presentation hardening: viewport-anchored quick combat actions and dynamically measured Ability/Item drawers across Solo Ventures, Dungeons, Expeditions, stream Ventures, Raids and World Events.
+- Live HP/resource readouts and existing authoritative action callbacks are unchanged; no combat balance, player records, schema, hosted sync or Portal Action protocol changes.
+- Previous Alpha 10 Records & Moments features and all artwork carry forward.
+
 ## v1.9.0 Alpha 10 — Records & Moments
 
 - Expanded Personal Records and 12 once-only Moments, seven secret Titles, two Hall trophies and 16 individually packaged game images.

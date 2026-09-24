@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history; version 21 adds the seasonal-event framework; version 22 adds durable Bestiary mastery receipts and Research Points; version 23 adds once-only per-player Moment receipts and event-derived Personal Records.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history; version 21 adds the seasonal-event framework; version 22 adds durable Bestiary mastery receipts and Research Points; version 23 adds once-only per-player Moment receipts and event-derived Personal Records; version 24 adds saved meal and next-Solo-Venture preparation selections.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 23
+DATABASE_SCHEMA_VERSION = 24
 
 
 class Database:
@@ -1356,6 +1356,28 @@ class Database:
                     COMMIT;
                     """
                 )
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        already_v24 = bool(self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=24").fetchone())
+        if not already_v24:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(24)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_camp_preparations (
+                        player_id TEXT PRIMARY KEY,
+                        meal_until INTEGER NOT NULL DEFAULT 0 CHECK(meal_until >= 0),
+                        prep_id TEXT NOT NULL DEFAULT '',
+                        updated_at INTEGER NOT NULL DEFAULT 0,
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (24,'camp_preparations');
+                    COMMIT;
+                """)
                 self.conn.commit()
             except Exception:
                 self.conn.rollback()

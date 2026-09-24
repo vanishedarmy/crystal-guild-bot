@@ -591,5 +591,26 @@
       "item_id": "void_charm",
       "quantity": 1
     }
+  },
+  {
+    "id": "trail_rations",
+    "name": "Trail Rations",
+    "known_by_default": true,
+    "min_level": 1,
+    "gil": 20,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 1
+      },
+      {
+        "item_id": "potion",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "trail_rations",
+      "quantity": 2
+    }
   }
 ]

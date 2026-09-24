@@ -39,7 +39,7 @@ class FellowshipTests(unittest.TestCase):
         self.assertEqual(snapshot["level_label"], "LVL 1")
         self.assertFalse(member["founding_member"])
         self.assertEqual(member["rank"]["name"], "Recruit")
-        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(self.db.schema_version(), 24)
 
     def test_duplicate_activity_event_does_not_double_award_renown(self):
         first = self.game.fellowship_system.record_activity("1", "venture_complete", event_key="venture:once")
@@ -205,7 +205,7 @@ class FellowshipMigrationTests(unittest.TestCase):
 
             db = Database(path)
             try:
-                self.assertEqual(db.schema_version(), 23)
+                self.assertEqual(db.schema_version(), 24)
                 player = db.one("SELECT level,xp,gil,current_hp,current_mp,current_ap FROM players WHERE twitch_id='100'")
                 self.assertEqual(tuple(player), (17, 4321, 9876, 81, 7, 9))
                 member = db.one("SELECT founding_member,renown FROM fellowship_members WHERE player_id='100'")

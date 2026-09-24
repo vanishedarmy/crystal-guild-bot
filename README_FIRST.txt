@@ -1,9 +1,6 @@
-Crystal Guild v1.9.0 Alpha 10 — Records & Moments
-Runtime/frontend: 1.9.0-records-moments-alpha10
-Local DB schema 23 | Hosted sync schema 1 | Portal Action protocol 37
+Crystal Guild v1.9.0 Alpha 12 — Camp & Recovery
+Runtime: 1.9.0-camp-recovery-alpha12 | local SQLite schema 24 | hosted sync 1 | Portal Action protocol 38
 
-The existing Records page now has 15 expanded personal bests and 12 unusual Moments, with seven secrets, cosmetic Titles, separate badge art and two exceptional Hall of Trophies displays. Original career, Trial, rivalry and boss records remain intact; qualifying historical Gil purchases and paid Mini Cactpot streaks can be recognized only when persisted evidence proves them.
+This Bot release adds persisted meal/preparation state and Solo Venture-only bonus snapshots. New craftable and purchasable Trail Rations, three free preparations, and existing timed Camp/Potion/Tent remain server-authoritative. No equipment durability changes. Existing Alpha 11 mobile combat and Alpha 10 Records & Moments are preserved.
 
-Preserve existing player data, Bestiary discoveries, trophy ownership, seasonal editions, credentials and runtime volumes. An existing schema-22 database upgrades automatically to schema 23 with a verified pre-migration backup. Never run an old schema-22 Bot against a migrated database without restoring the matching old database.
-
-Deploy matching Alpha 10 Bot + Web together. The Web source does not contain node_modules or a production dist. Install pinned dependencies, build Vite, and smoke-test the Portal on staging before replacing the live service. Halloween stays disabled until the owner activates it.
+Pair this Bot with the same Alpha 12 Web source and Web/frontend/public. Back up live state and credentials before deployment; the 23→24 migration makes a verified backup before changing schema. Run the database integrity/recovery drill on a copy before staging. See RELEASE_NOTES.md and UPGRADE_GUIDE.md.

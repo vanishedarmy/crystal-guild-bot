@@ -54,7 +54,7 @@ class WayfarerSoloVentureTests(unittest.TestCase):
         return state
 
     def test_schema_five_persists_solo_runs_and_migrates_schema_four_with_backup(self):
-        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(self.db.schema_version(), 24)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='solo_expeditions'"))
         self.db.close()
 

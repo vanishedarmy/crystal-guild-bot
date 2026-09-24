@@ -151,7 +151,7 @@ class BestiaryHardeningStep6(unittest.TestCase):
             conn.execute("DELETE FROM schema_migrations WHERE version IN (22,23)")
             self.assertEqual(conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 21)
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(self.db.schema_version(), 24)
         backup = self.db.pre_migration_backup_path
         self.assertIsNotNone(backup)
         self.assertTrue(backup.is_file())

@@ -29,7 +29,7 @@ class HallOfTrophiesAlpha7Tests(unittest.TestCase):
 
     def test_catalog_contract_and_schema(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
-        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(self.db.schema_version(), 24)
         self.assertEqual(len(TROPHY_CATALOG), 32)
         self.assertEqual(len({t["id"] for t in TROPHY_CATALOG}), 32)
         self.assertEqual(Counter(t["category"] for t in TROPHY_CATALOG), {

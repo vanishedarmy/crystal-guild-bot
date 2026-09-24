@@ -1,57 +1,6 @@
-Crystal Guild v1.9.0 Alpha 10 — Records & Moments
-Runtime/frontend: 1.9.0-records-moments-alpha10 | local schema 23 | hosted sync 1 | Portal Action protocol 37
-Carried forward: Bestiary Discovery, Seasonal Events, Hall of Trophies, Moogle Trading Post, World Events.
-12 illustrated Moment badges + 4 earned/locked trophy states, all separate files.
-Compact package inventory (full integrity list included in release MANIFEST.json).
-
-.env.example
-.gitignore
-.python-version
-CHANGELOG.md
-COMBAT_DEVELOPER_GUIDE.md
-COMBAT_GUIDE.md
-CRYSTAL_GUILD_CONTROL_PANEL.bat
-FULL_SETUP_README.md
-GAME_DESIGN.md
-MANUAL_TEST_CHECKLIST.md
-PORTAL_ACTIONS_SETUP.md
-README.md
-README_FIRST.txt
-RELEASE_NOTES.md
-RENDER_CLOUD_SETUP.md
-SIMPLE_RENDER_SETUP.md
-TITLE_EXPANSION.md
-UPGRADE_GUIDE.md
-VALIDATION_REPORT.md
-VERSION.txt
-WEB_SYNC_SETUP.md
-WORLD_EVENTS.md
-backup_database.bat
-generate_portal_sync_key.bat
-generate_portal_sync_key.py
-open_twitch_authorization.bat
-prepare_render_migration.py
-pyproject.toml
-render.yaml
-requirements.txt
-resolve_twitch_ids.bat
-resolve_twitch_ids.py
-run_bot.bat
-run_bot.py
-run_cloud_preflight.py
-run_maintenance.bat
-run_maintenance.py
-run_overlay.bat
-run_overlay.py
-run_portal_sync.bat
-run_portal_sync.py
-run_recovery_drill.bat
-run_selftest.bat
-run_simulator.bat
-run_simulator.py
-run_stress_test.bat
-run_stress_test.py
-setup_windows.bat
-test_portal_sync.bat
-upgrade_crystal_guild.bat
-upgrade_crystal_guild.py
+Crystal Guild v1.9.0 Alpha 12 — Camp & Recovery
+Release: 1.9.0-camp-recovery-alpha12 | Bot DB 24 | hosted sync 1 | Portal Actions 38
+- Authoritative Bot gameplay code, persisted Camp preparation migration, item and crafting data, tests
+- Preserved previous systems including Moogle Trading Post, Records & Moments and Mobile Combat HUD integrations
+- Paired with matching Alpha 12 Web and complete optimized public assets in outer ZIP
+Read README_FIRST.txt / UPGRADE_GUIDE.md / RELEASE_NOTES.md. Generated source checksums: outer SOURCE_SHA256.txt.

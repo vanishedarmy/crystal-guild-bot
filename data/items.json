@@ -8308,5 +8308,15 @@
     "unsellable": true,
     "gear_family": "tome",
     "description": "Zenith form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+  },
+  {
+    "id": "trail_rations",
+    "name": "Trail Rations",
+    "type": "consumable",
+    "rarity": "common",
+    "price": 95,
+    "shop": true,
+    "shop_level": 1,
+    "description": "A warm camp meal. At Camp, eat one to gain +10% damage throughout your next Solo Venture if begun within 45 minutes. One meal can be queued at a time."
   }
 ]

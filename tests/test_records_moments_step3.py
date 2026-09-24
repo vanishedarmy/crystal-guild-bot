@@ -68,7 +68,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         return facts
 
     def test_schema_23_additive_and_independent_existing_tables(self):
-        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(self.db.schema_version(), 24)
         for table in ("player_moment_unlocks", "player_moment_reconciliation", "player_record_events",
                       "player_bestiary_mastery", "player_titles"):
             self.assertIsNotNone(self.db.one("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)))
@@ -333,7 +333,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
                 conn.execute(f"DROP TABLE {table}")
             conn.execute("DELETE FROM schema_migrations WHERE version=23")
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 23)
+        self.assertEqual(self.db.schema_version(), 24)
         self.assertIsNotNone(self.db.pre_migration_backup_path)
         self.assertIn("pre_schema_23_", self.db.pre_migration_backup_path.name)
         with sqlite3.connect(self.db.pre_migration_backup_path) as backup:

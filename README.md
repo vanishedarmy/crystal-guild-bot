@@ -1,13 +1,7 @@
-# Crystal Guild — Bot (v1.9.0 Alpha 8)
+# Crystal Guild — Bot (v1.9.0 Alpha 11 — Mobile Combat HUD)
 
-Twitch/chat and gameplay authority for Crystal Guild. Deploy this package with the matching Alpha 8 Web/Portal package.
+Gameplay-authoritative Twitch/chat runtime; deploy with the matching Alpha 11 Web source and public assets. This release changes only the release stamp and companion documentation on the Bot: the existing combat rules and action protocol are untouched.
 
-**Runtime:** `1.9.0-seasonal-events-alpha8` · **Local schema:** 21 · **Hosted sync:** 1 · **Portal Action protocol:** 37. No player reset.
+**Runtime:** `1.9.0-mobile-combat-hud-alpha11` · **Local schema:** 23 · **Hosted sync:** 1 · **Portal Action protocol:** 37. No player-data migration from Alpha 10.
 
-**Upgrading Alpha 8 installations:** this cleanup hotfix changes documentation and static art only; it does not require a migration or configuration changes. See `UPGRADE_GUIDE.md` for removing obsolete files from an existing directory.
-
-**Other upgrades:** preserve the live database, Twitch tokens, `.env` and persistent secrets. The database automatically applies sequential migrations, with a verified backup before schema 21.
-
-**Key guides:** `FULL_SETUP_README.md` (new installations), `RENDER_CLOUD_SETUP.md` (Render), `WEB_SYNC_SETUP.md` (hosted synchronization), `PORTAL_ACTIONS_SETUP.md` (action authority), `MANUAL_TEST_CHECKLIST.md` (verification). See `CHANGELOG.md` for the condensed release history and `RELEASE_NOTES.md` for current features.
-
-Halloween content is **disabled by default**; enable it from the Streamer Control Center when ready.
+Keep the actual live database, runtime volumes, token files and `.env` files intact. Follow `UPGRADE_GUIDE.md` for the matched Alpha 10-to-11 source upgrade; use `FULL_SETUP_README.md`, `RENDER_CLOUD_SETUP.md` and `WEB_SYNC_SETUP.md` for deployment details. The Halloween edition remains disabled until deliberately enabled.

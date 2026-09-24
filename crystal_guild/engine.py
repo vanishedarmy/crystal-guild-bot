@@ -2159,6 +2159,10 @@ class CrystalGuildEngine:
             combatants, _, _ = self._initialize_active_combat(encounter)
             if combatants == 0:
                 return GameResult.fail("Solo Venture cannot continue while your hero is unable to fight.")
+            hero = roster[str(twitch_id)]
+            bonus = (0.10 if expedition.get("camp_meal") else 0) + (0.08 if expedition.get("camp_preparation") == "sharpen" else 0)
+            if bonus:
+                hero["effects"]["damage_mult"] = float(hero["effects"].get("damage_mult", 0)) + bonus
             encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
             expedition["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(roster)}
         finally:
@@ -2179,6 +2183,10 @@ class CrystalGuildEngine:
         jp_factor = jp_reward_factor(p["level"], job_level, monster["level"])
         xp = max(5, int(monster["xp"] * level_factor * multiplier * self.rng.uniform(0.92, 1.08)))
         jp = self.fellowship_system.apply_jp_bonus(max(2, int(monster["jp"] * jp_factor * multiplier * self.rng.uniform(0.95, 1.10))))
+        run = self._solo_expedition_load(twitch_id) or {}
+        if run.get("camp_preparation") == "scout":
+            xp = max(5, int(round(xp * 1.10)))
+            jp = max(2, int(round(jp * 1.10)))
         gil = max(1, int(monster["gil"] * level_factor * multiplier * self.rng.uniform(0.85, 1.18)))
         job = self.data.jobs[p["current_job"]]
         effects = self._effects(twitch_id, p["current_job"])
@@ -2353,6 +2361,14 @@ class CrystalGuildEngine:
         return GameResult.success(f"ROUND {round_no} — {round_summary(log)}", solo_expedition_round=True, round_log=list(log))
 
     def _finish_solo_stage_victory(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
+        if expedition.get("camp_preparation") == "supplies":
+            for key in ("hp", "mp", "ap"):
+                maximum = int(meta.get(f"max_{key}", 0))
+                if maximum > 0:
+                    recovered = min(maximum - int(meta.get(key, 0)), max(1, int(maximum * 0.10)))
+                    if recovered > 0:
+                        meta[key] = int(meta.get(key, 0)) + recovered
+                        log.append(f"Packed supplies restore {recovered} {key.upper()}.")
         self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
         rewards = self._solo_roll_stage_rewards(twitch_id, monster, int(expedition.get("stage", 1)))
         self.fellowship_system.record_activity(
@@ -2408,6 +2424,8 @@ class CrystalGuildEngine:
             "last_round": copy.deepcopy(expedition.get("last_round")), "last_stage": copy.deepcopy(expedition.get("last_stage")),
             "can_press_on": str(expedition.get("status")) == "choice" and stage < SOLO_EXPEDITION_MAX_STAGES,
             "can_return": str(expedition.get("status")) == "choice", "can_retreat": str(expedition.get("status")) == "combat",
+            "camp_meal": bool(expedition.get("camp_meal")),
+            "camp_preparation": str(expedition.get("camp_preparation") or ""),
         }
         if str(expedition.get("status")) == "choice" and (expedition.get("event") or {}).get("type") == "treasure":
             payload["treasure"] = copy.deepcopy((expedition.get("event") or {}).get("item"))
@@ -2446,24 +2464,30 @@ class CrystalGuildEngine:
             return GameResult.fail(f"Solo Venture ready in {self._format_seconds(remaining)}.")
         p = self._player(twitch_id)
         now = int(time.time())
+        plan = self._camp_plan_row(twitch_id)
+        active_meal = plan["meal_until"] > now
+        selected_prep = plan["prep_id"] if plan["prep_id"] in self._CAMP_PREPARATIONS else ""
         merc_contract = self._merc_claim_for_mission(twitch_id, "venture")
         expedition = {
             "version": 1, "started_at": now, "updated_at": now, "stage": 1, "max_stages": SOLO_EXPEDITION_MAX_STAGES,
             "region_id": str(p["current_region"]), "status": "event", "secured": {"xp": 0, "jp": 0}, "secured_loot": [],
             "spoils": {"gil": 0, "items": []}, "history": [], "round_history": [], "event": None, "combat": None,
             "merc_contract": merc_contract,
+            "camp_meal": bool(active_meal), "camp_preparation": selected_prep,
         }
         self._set_cooldown(twitch_id, "solo_venture", SOLO_VENTURE_COOLDOWN_SECONDS)
         self.db.execute("UPDATE players SET ventures=ventures+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (twitch_id,))
         self.db.update_record_stats(twitch_id, {"solo_ventures": 1})
         self._solo_expedition_save(twitch_id, expedition)
         result = self._solo_begin_stage(twitch_id, expedition)
-        if not result.ok and merc_contract:
-            # If stage initialization failed before play actually began, do not
-            # strand the paid Merc reservation in a consumed state.
+        if not result.ok:
+            # Do not consume the meal/plan or strand a Merc if stage setup fails.
             self._solo_expedition_delete(twitch_id)
-            self._merc_restore_claimed_contract(twitch_id, merc_contract, reason="solo_venture_setup")
-            result.data["merc_state"] = self.portal_merc_state(twitch_id).data.get("merc_state", {})
+            if merc_contract:
+                self._merc_restore_claimed_contract(twitch_id, merc_contract, reason="solo_venture_setup")
+                result.data["merc_state"] = self.portal_merc_state(twitch_id).data.get("merc_state", {})
+        elif active_meal or selected_prep:
+            self.db.execute("""UPDATE player_camp_preparations SET meal_until=0,prep_id='',updated_at=? WHERE player_id=?""", (now, str(twitch_id)))
         return result
 
     @_state_guard
@@ -9632,6 +9656,7 @@ class CrystalGuildEngine:
                 "duration_seconds": int(self._effective_camp_seconds_for_stream(stream_live)),
                 "base_duration_seconds": int(CAMP_REST_ONLINE_SECONDS if stream_live is True else CAMP_REST_OFFLINE_SECONDS),
                 "stream_live": bool(stream_live is True),
+                "preparation": self._camp_plan_public(twitch_id, now),
                 "hp": max(0, int(p["current_hp"] or 0)),
                 "max_hp": int(max_hp),
                 "mp": max(0, int(camp_resources.get("mp", 0))),
@@ -10351,6 +10376,80 @@ class CrystalGuildEngine:
 
     def portal_start_rest(self, twitch_id: str, action_id: str, *, stream_live: bool | None = None) -> GameResult:
         return self._portal_recovery_mutation(twitch_id, action_id, lambda: self.rest(twitch_id, stream_live=stream_live))
+
+    # ---------- Camp & Recovery: one meal and one next-Solo-Venture plan ----------
+    _CAMP_PREPARATIONS = {
+        "scout": {"label": "Scout the Route", "description": "+10% secured XP and JP from your next Solo Venture."},
+        "sharpen": {"label": "Check Your Gear", "description": "+8% damage during your next Solo Venture; no equipment durability or fees."},
+        "supplies": {"label": "Pack Supplies", "description": "Restore 10% HP and current Job resources after each victory in your next Solo Venture."},
+    }
+
+    def _camp_plan_row(self, twitch_id: str) -> dict[str, Any]:
+        row = self.db.one("SELECT meal_until,prep_id FROM player_camp_preparations WHERE player_id=?", (str(twitch_id),))
+        return {"meal_until": int(row["meal_until"] or 0), "prep_id": str(row["prep_id"] or "")} if row else {"meal_until": 0, "prep_id": ""}
+
+    def _camp_plan_reason(self, twitch_id: str) -> str:
+        if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+            return "Finish your active encounter or raid before preparing at Camp."
+        if self._solo_expedition_load(twitch_id) or self._expedition_load(twitch_id) or self._dungeon_load(twitch_id):
+            return "Return from your current adventure before preparing at Camp."
+        if str(twitch_id) in self.active_hunts:
+            return "Your hero must return from their Hunt before preparing at Camp."
+        return ""
+
+    def _camp_plan_public(self, twitch_id: str, now: int | None = None) -> dict[str, Any]:
+        now = int(time.time()) if now is None else int(now)
+        row = self._camp_plan_row(twitch_id)
+        prep_id = row["prep_id"] if row["prep_id"] in self._CAMP_PREPARATIONS else ""
+        return {
+            "meal_until": row["meal_until"] if row["meal_until"] > now else 0,
+            "rations_owned": self._inventory_qty(twitch_id, "trail_rations"),
+            "tent_owned": self._inventory_qty(twitch_id, "tent"),
+            "potion_owned": self._inventory_qty(twitch_id, "potion"),
+            "preparation": prep_id,
+            "can_prepare": not bool(self._camp_plan_reason(twitch_id)),
+            "reason": self._camp_plan_reason(twitch_id),
+        }
+
+    def _camp_eat_meal(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        reason = self._camp_plan_reason(twitch_id)
+        if reason:
+            return GameResult.fail(reason)
+        now = int(time.time())
+        if self._camp_plan_row(twitch_id)["meal_until"] > now:
+            return GameResult.fail("Your meal is already prepared for the next Solo Venture. No need to eat another.")
+        if self._inventory_qty(twitch_id, "trail_rations") < 1:
+            return GameResult.fail("You need Trail Rations. Craft some at the Forge or purchase them in the shop.")
+        self._change_item(twitch_id, "trail_rations", -1, "camp_meal")
+        until = now + 45 * 60
+        self.db.execute("""INSERT INTO player_camp_preparations(player_id,meal_until,updated_at)
+            VALUES (?,?,?) ON CONFLICT(player_id) DO UPDATE SET meal_until=excluded.meal_until,updated_at=excluded.updated_at""",
+            (str(twitch_id), until, now))
+        return GameResult.success("Trail Rations eaten. +10% damage for your next Solo Venture started within 45 minutes; the bonus lasts the entire run.")
+
+    def _camp_choose_preparation(self, twitch_id: str, prep_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        reason = self._camp_plan_reason(twitch_id)
+        if reason:
+            return GameResult.fail(reason)
+        if prep_id not in self._CAMP_PREPARATIONS:
+            return GameResult.fail("Choose Scout the Route, Check Your Gear, or Pack Supplies.")
+        if self._camp_plan_row(twitch_id)["prep_id"] == prep_id:
+            return GameResult.success(f"{self._CAMP_PREPARATIONS[prep_id]['label']} is already selected.")
+        self.db.execute("""INSERT INTO player_camp_preparations(player_id,prep_id,updated_at)
+            VALUES (?,?,?) ON CONFLICT(player_id) DO UPDATE SET prep_id=excluded.prep_id,updated_at=excluded.updated_at""",
+            (str(twitch_id), prep_id, int(time.time())))
+        return GameResult.success(f"Next Solo Venture: {self._CAMP_PREPARATIONS[prep_id]['label']}. Only one preparation is active; you can switch before departing.")
+
+    def portal_camp_eat_meal(self, twitch_id: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self._camp_eat_meal(twitch_id))
+
+    def portal_camp_choose_preparation(self, twitch_id: str, prep_id: str, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(twitch_id, action_id, lambda: self._camp_choose_preparation(twitch_id, prep_id))
+
 
     def _portal_fellowship_state_data(self, twitch_id: str) -> dict[str, Any]:
         """Return live, contribution-safe Fellowship state for the signed-in player.

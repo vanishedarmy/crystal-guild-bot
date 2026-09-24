@@ -22,7 +22,7 @@ REPO = ROOT.parent
 
 class ReleaseReadinessTests(unittest.TestCase):
     def test_release_identity_is_bestiary_alpha9_without_hosted_sync_schema_break(self):
-        self.assertEqual(__version__, "1.9.0-records-moments-alpha10")
+        self.assertEqual(__version__, "1.9.0-camp-recovery-alpha12")
         self.assertEqual(SYNC_VERSION, "1.1.17-seasonal")
         self.assertEqual(SNAPSHOT_VERSION, "1.1.17-seasonal")
 
@@ -39,7 +39,7 @@ class ReleaseReadinessTests(unittest.TestCase):
                 self.assertEqual(report["journal_mode"], "wal")
                 self.assertGreaterEqual(report["busy_timeout_ms"], 1000)
                 self.assertEqual(report["players"], 1)
-                self.assertEqual(db.schema_version(), 23)
+                self.assertEqual(db.schema_version(), 24)
                 self.assertIsNotNone(db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='portal_adventure_results'"))
             finally:
                 db.close()
@@ -100,8 +100,8 @@ class ReleaseReadinessTests(unittest.TestCase):
         notes = (ROOT / "RELEASE_NOTES.md").read_text(encoding="utf-8")
         history = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         manifest = (ROOT / "PACKAGE_MANIFEST.txt").read_text(encoding="utf-8")
-        self.assertIn("v1.9.0 Alpha 10", notes)
-        self.assertIn("1.9.0-records-moments-alpha10", manifest)
+        self.assertIn("v1.9.0 Alpha 12", notes)
+        self.assertIn("1.9.0-camp-recovery-alpha12", manifest)
         self.assertIn("Moogle Trading Post", manifest)
         self.assertIn("package cleanup Hotfix 1", history)
         self.assertFalse((ROOT / "FINALIZATION_AUDIT.md").exists())
