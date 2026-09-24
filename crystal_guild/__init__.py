@@ -1,1 +1,1 @@
-__version__ = "1.9.0-trading-post-qol-alpha13"
+__version__ = "1.9.1-performance-hardening"

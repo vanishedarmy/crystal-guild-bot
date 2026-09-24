@@ -6313,17 +6313,23 @@ class CrystalGuildEngine:
         valid = False
         ids: list[str] = []
         if row and not force_refresh:
+            # Old or interrupted deployments can leave malformed cached JSON or
+            # nullable rotation metadata. Repair the personal rotation instead
+            # of letting SHOP_STATE fail and strand the frontend in loading.
             try:
-                ids = list(json.loads(row["stock_json"]))
-            except (TypeError, ValueError, json.JSONDecodeError):
+                parsed = json.loads(row["stock_json"])
+                ids = parsed if isinstance(parsed, list) and all(isinstance(value, str) for value in parsed) else []
+                valid = (
+                    int(row["expires_at"]) > now
+                    and row["job_id"] == p["current_job"]
+                    and int(row["level_at_roll"]) == int(p["level"])
+                    and len(ids) == stock_limit
+                    and len(set(ids)) == len(ids)
+                    and all(item_id in self.data.items for item_id in ids)
+                )
+            except (TypeError, ValueError, OverflowError):
                 ids = []
-            valid = (
-                int(row["expires_at"]) > now
-                and row["job_id"] == p["current_job"]
-                and int(row["level_at_roll"]) == int(p["level"])
-                and len(ids) == stock_limit
-                and all(item_id in self.data.items for item_id in ids)
-            )
+                valid = False
         if not valid:
             ids = self._roll_shop_stock(p)
             expires = now + self.fellowship_system.effective_shop_refresh_seconds(self.shop_refresh_seconds)
