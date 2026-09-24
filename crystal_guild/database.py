@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS runtime_state (
 -- persistent Fellowship Airship state, upgrades, mission participation, and mission history; version 10 adds
 -- persistent per-player Dungeon runs and Dungeon clear/failure progress; version 11 adds
 -- Gold Saucer accounts, persistent Mini Cactpot tickets, and play history; version 12 adds
--- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history; version 21 adds the seasonal-event framework; version 22 adds durable Bestiary mastery receipts and Research Points; version 23 adds once-only per-player Moment receipts and event-derived Personal Records; version 24 adds saved meal and next-Solo-Venture preparation selections.
+-- persistent Gold Saucer Monster Toss game state; version 13 adds persistent Triple Triad collection, deck, records, and active match state; version 14 adds the personal Retainer Service and one persistent procurement assignment per player; version 15 adds targeted Retainer procurement history; version 16 adds authoritative per-player equipment Favorites for cross-device Portal sync; version 17 adds persistent Hero Mercenary contracts and contract history. Hotfix 3 expands the active contract table to one slot per Merc mission type while retaining schema version 17; version 18 adds permanent Merc recruitment records for expansion Heroes; version 19 adds the Fellowship Trading Post listing ledger; version 20 adds permanent Hall of Trophies ownership and exact World Event clear history; version 21 adds the seasonal-event framework; version 22 adds durable Bestiary mastery receipts and Research Points; version 23 adds once-only per-player Moment receipts and event-derived Personal Records; version 24 adds saved meal and next-Solo-Venture preparation selections; version 25 adds a persistent Trading Post item watchlist and sold-ledger indexes.
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 24
+DATABASE_SCHEMA_VERSION = 25
 
 
 class Database:
@@ -1376,6 +1376,34 @@ class Database:
                         FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
                     );
                     INSERT INTO schema_migrations(version,name) VALUES (24,'camp_preparations');
+                    COMMIT;
+                """)
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # Alpha 13: persisted item watchlist. Sales history reuses the original
+        # immutable Trading Post sold-listing ledger (no historical guessing).
+        already_v25 = bool(self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=25").fetchone())
+        if not already_v25:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(25)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS trading_post_watchlist (
+                        player_id TEXT NOT NULL,
+                        item_id TEXT NOT NULL,
+                        created_at INTEGER NOT NULL,
+                        PRIMARY KEY (player_id,item_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_trading_post_recent_sold
+                    ON trading_post_listings(status,sold_at DESC,item_id);
+                    CREATE INDEX IF NOT EXISTS idx_trading_post_sold_by_item
+                    ON trading_post_listings(item_id,status,sold_at DESC);
+                    INSERT INTO schema_migrations(version,name) VALUES (25,'trading_post_watchlist_and_sales_history');
                     COMMIT;
                 """)
                 self.conn.commit()

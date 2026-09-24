@@ -1,3 +1,8 @@
+# Changelog
+
+## v1.9.0 Alpha 13 — Trading Post QoL
+Character-saved 30-item watchlist, completed-sales 30-day weighted-price history, owned counts while browsing, price context after at least three sales, and a stock- and fee-checked quick relist. Schema 25 / Portal protocol 39.
+
 ## v1.9.0 Alpha 12 — Camp & Recovery
 - Trail Rations: purchasable or craftable one-run +10% Solo Venture damage, 45-minute departure timer, once-only consumption.
 - One saved free pre-Venture plan: scout (+10% XP/JP), gear check (+8% damage), or supplies (+10% post-combat HP/MP/AP).

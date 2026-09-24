@@ -75,7 +75,7 @@ class MercServiceHotfix3Tests(unittest.TestCase):
         info = self.db.all("PRAGMA table_info(player_merc_contracts)")
         pk = [r["name"] for r in sorted(info, key=lambda r: int(r["pk"] or 0)) if int(r["pk"] or 0) > 0]
         self.assertEqual(pk, ["player_id", "mission_type"])
-        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(self.db.schema_version(), 25)
 
 
 if __name__ == "__main__":

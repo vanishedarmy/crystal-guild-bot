@@ -117,6 +117,8 @@ TRADING_POST_LISTING_SECONDS = 48 * 60 * 60
 TRADING_POST_MAX_QUANTITY = 99
 TRADING_POST_MAX_UNIT_PRICE = 1_000_000
 TRADING_POST_ACTIVE_LIMIT = 24
+TRADING_POST_WATCH_LIMIT = 30
+TRADING_POST_HISTORY_SECONDS = 30 * 24 * 60 * 60
 
 from .gold_saucer import (
     WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP, DAILY_REWARD_MGP as SAUCER_DAILY_REWARD_MGP,
@@ -13778,6 +13780,8 @@ class CrystalGuildEngine:
                 sale_tax_rate=TRADING_POST_SALE_TAX_RATE,
                 listing_seconds=TRADING_POST_LISTING_SECONDS,
                 listings=[], my_listings=[], eligible_items=[], gil=int(p["gil"]), combat_locked=False,
+                owned_quantities={}, watchlist=[], watch_limit=TRADING_POST_WATCH_LIMIT,
+                catalog_items=[], price_stats={}, recent_sales=[], history_days=30, watchlist_market={},
             )
 
         now = int(time.time())
@@ -13792,7 +13796,7 @@ class CrystalGuildEngine:
             own_rows = conn.execute(
                 "SELECT l.*,p.username AS seller_username,p.display_name AS seller_name "
                 "FROM trading_post_listings l JOIN players p ON p.twitch_id=l.seller_id "
-                "WHERE l.seller_id=? ORDER BY l.created_at DESC,l.id DESC LIMIT 24",
+                "WHERE l.seller_id=? ORDER BY l.created_at DESC,l.id DESC LIMIT 48",
                 (twitch_id,),
             ).fetchall()
             equipment = conn.execute(
@@ -13814,6 +13818,61 @@ class CrystalGuildEngine:
                 "SELECT COUNT(*) AS n FROM trading_post_listings WHERE seller_id=? AND status='active' AND expires_at>?",
                 (twitch_id, now),
             ).fetchone()
+            watch_rows = conn.execute(
+                "SELECT item_id FROM trading_post_watchlist WHERE player_id=? ORDER BY created_at DESC,item_id LIMIT ?",
+                (twitch_id, TRADING_POST_WATCH_LIMIT),
+            ).fetchall()
+            # Fetch exact watched-item counts/minimums across the entire active
+            # ledger, even when its listing was outside the latest 200 rows.
+            watch_market_rows = conn.execute(
+                "SELECT l.item_id,COUNT(*) AS listing_count,MIN(l.unit_price) AS min_asking_price "
+                "FROM trading_post_listings l JOIN trading_post_watchlist w "
+                "ON w.item_id=l.item_id AND w.player_id=? "
+                "WHERE l.status='active' AND l.expires_at>? GROUP BY l.item_id",
+                (twitch_id, now),
+            ).fetchall()
+            watch_best_rows = conn.execute(
+                "SELECT l.*,p.username AS seller_username,p.display_name AS seller_name "
+                "FROM trading_post_watchlist w JOIN trading_post_listings l ON l.id=("
+                "SELECT t.id FROM trading_post_listings t WHERE t.item_id=w.item_id "
+                "AND t.status='active' AND t.expires_at>? "
+                "ORDER BY t.unit_price ASC,t.created_at DESC,t.id DESC LIMIT 1) "
+                "JOIN players p ON p.twitch_id=l.seller_id WHERE w.player_id=?",
+                (now,twitch_id),
+            ).fetchall()
+            # Prices are based on completed transactions only, not asking prices.
+            # Weight by units; limit the lookback to 30 days to avoid stale quotes.
+            price_rows = conn.execute(
+                "SELECT item_id,COUNT(*) AS sale_count,SUM(quantity) AS units_sold,"
+                "ROUND(SUM(unit_price * quantity) * 1.0 / SUM(quantity),2) AS average_price,"
+                "MIN(unit_price) AS low_price,MAX(unit_price) AS high_price,MAX(sold_at) AS last_sold_at "
+                "FROM trading_post_listings WHERE status='sold' AND sold_at>=? "
+                "GROUP BY item_id",
+                (now - TRADING_POST_HISTORY_SECONDS,),
+            ).fetchall()
+            recent_rows = conn.execute(
+                "SELECT item_id,quantity,unit_price,sold_at FROM trading_post_listings "
+                "WHERE status='sold' AND sold_at>=? ORDER BY sold_at DESC,id DESC LIMIT 36",
+                (now - TRADING_POST_HISTORY_SECONDS,),
+            ).fetchall()
+
+        owned_quantities = {str(row["item_id"]): max(0,int(row["quantity"] or 0)) for row in inv_rows}
+        catalog_items = sorted(({
+            "id": item_id, "name": str(item.get("name") or item_id.replace("_", " ").title()),
+            "type": str(item.get("type") or "item"), "rarity": str(item.get("rarity") or "common"),
+        } for item_id,item in self.data.items.items() if self._trading_post_item_allowed(item)),
+            key=lambda entry: (str(entry["name"]).lower(), str(entry["id"])))
+        price_stats = {str(row["item_id"]): {
+            "sale_count": int(row["sale_count"]), "units_sold": int(row["units_sold"]),
+            "average_price": float(row["average_price"]), "low_price": int(row["low_price"]),
+            "high_price": int(row["high_price"]), "last_sold_at": int(row["last_sold_at"]),
+        } for row in price_rows}
+        recent_sales = [{
+            "item_id": str(row["item_id"]),
+            "item_name": str(self.data.items.get(str(row["item_id"]), {}).get("name") or str(row["item_id"]).replace("_", " ").title()),
+            "quantity": int(row["quantity"]), "unit_price": int(row["unit_price"]),
+            "sold_at": int(row["sold_at"]),
+        } for row in recent_rows]
 
         eligible_items: list[dict[str, Any]] = []
         for inv in inv_rows:
@@ -13852,9 +13911,74 @@ class CrystalGuildEngine:
             active_limit=TRADING_POST_ACTIVE_LIMIT,
             active_count=int(active_count_row["n"] if active_count_row else 0),
             combat_locked=combat_locked,
-            listings=[self._trading_post_listing_payload(row, viewer_id=twitch_id) for row in rows],
+            listings=[self._trading_post_listing_payload(row, viewer_id=twitch_id)
+                      for row in list(rows) + [extra for extra in watch_best_rows
+                                               if int(extra["id"]) not in {int(r["id"]) for r in rows}]],
+            watchlist_market={str(row["item_id"]): {
+                "listing_count": int(row["listing_count"]), "min_asking_price": int(row["min_asking_price"]),
+            } for row in watch_market_rows},
             my_listings=[self._trading_post_listing_payload(row, viewer_id=twitch_id) for row in own_rows],
             eligible_items=eligible_items,
+            owned_quantities=owned_quantities,
+            watchlist=[str(row["item_id"]) for row in watch_rows],
+            watch_limit=TRADING_POST_WATCH_LIMIT,
+            catalog_items=catalog_items,
+            price_stats=price_stats,
+            recent_sales=recent_sales,
+            history_days=30,
+        )
+
+    def portal_trading_post_watch(self, twitch_id: str, item_id: str, watched: bool, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        if not self.fellowship_system.trading_post_unlocked():
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("The Moogle Trading Post is not built yet."))
+        item_id = str(item_id)
+        if not self._trading_post_item_allowed(self.data.items.get(item_id)):
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("That item is not eligible for the Trading Post watchlist."))
+        if not isinstance(watched, bool):
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Watchlist selection must be true or false."))
+        now = int(time.time())
+        with self.db.tx() as conn:
+            replay = self._portal_action_replay_sql(conn, action_id)
+            if replay is not None:
+                return replay
+            if not conn.execute("SELECT 1 FROM players WHERE twitch_id=?", (twitch_id,)).fetchone():
+                result = self._need_recruit()
+            elif watched:
+                exists = conn.execute("SELECT 1 FROM trading_post_watchlist WHERE player_id=? AND item_id=?", (twitch_id,item_id)).fetchone()
+                count = conn.execute("SELECT COUNT(*) AS n FROM trading_post_watchlist WHERE player_id=?", (twitch_id,)).fetchone()
+                if not exists and int(count["n"] or 0) >= TRADING_POST_WATCH_LIMIT:
+                    result = GameResult.fail(f"You can watch at most {TRADING_POST_WATCH_LIMIT} items.")
+                else:
+                    conn.execute("INSERT OR IGNORE INTO trading_post_watchlist(player_id,item_id,created_at) VALUES (?,?,?)", (twitch_id,item_id,now))
+                    result = GameResult.success("Item added to your watchlist.", item_id=item_id, watched=True)
+            else:
+                conn.execute("DELETE FROM trading_post_watchlist WHERE player_id=? AND item_id=?", (twitch_id,item_id))
+                result = GameResult.success("Item removed from your watchlist.", item_id=item_id, watched=False)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
+    def portal_trading_post_history(self, twitch_id: str, item_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        if not self.fellowship_system.trading_post_unlocked():
+            return GameResult.fail("The Moogle Trading Post is not built yet.")
+        item_id = str(item_id)
+        item = self.data.items.get(item_id)
+        if not self._trading_post_item_allowed(item):
+            return GameResult.fail("That item is not eligible for Trading Post history.")
+        since = int(time.time()) - TRADING_POST_HISTORY_SECONDS
+        rows = self.db.all(
+            "SELECT quantity,unit_price,sold_at FROM trading_post_listings "
+            "WHERE status='sold' AND item_id=? AND sold_at>=? ORDER BY sold_at DESC,id DESC LIMIT 12",
+            (item_id,since),
+        )
+        return GameResult.success("Recent completed sales.", item_id=item_id,
+            item_name=str(item.get("name") or item_id.replace("_", " ").title()),
+            history_days=30,
+            sales=[{"quantity":int(row["quantity"]),"unit_price":int(row["unit_price"]),"sold_at":int(row["sold_at"])} for row in rows],
         )
 
     def portal_trading_post_list(self, twitch_id: str, item_id: str, quantity: int, unit_price: int, action_id: str) -> GameResult:

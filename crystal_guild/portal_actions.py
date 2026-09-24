@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 38
+ACTION_PROTOCOL_VERSION = 39
 
 
 class PortalActionWorker:
@@ -306,7 +306,7 @@ class PortalActionWorker:
                 "display_name": display_name,
             }
         passive_state_actions = {
-            "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "RECOVERY_STATE", "FELLOWSHIP_STATE",
+            "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "TRADING_POST_HISTORY", "RECOVERY_STATE", "FELLOWSHIP_STATE",
             "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE", "SEASONAL_STATE",
             "SET_GEAR_FAVORITES",
         }
@@ -398,6 +398,19 @@ class PortalActionWorker:
             return self._game_result(result)
         if action_type == "TRADING_POST_STATE":
             result = self.game.portal_trading_post_state(twitch_id)
+            return self._game_result(result)
+        if action_type == "TRADING_POST_WATCH":
+            item_id = str(payload.get("item_id") or "").strip()
+            watched = payload.get("watched")
+            if not item_id or not isinstance(watched, bool):
+                return False, "Trading Post watchlist request is invalid.", {}
+            result = self.game.portal_trading_post_watch(twitch_id, item_id, watched, str(action.get("id") or ""))
+            return self._game_result(result)
+        if action_type == "TRADING_POST_HISTORY":
+            item_id = str(payload.get("item_id") or "").strip()
+            if not item_id:
+                return False, "Trading Post history requires an item.", {}
+            result = self.game.portal_trading_post_history(twitch_id, item_id)
             return self._game_result(result)
         if action_type == "TRADING_POST_LIST":
             item_id = str(payload.get("item_id") or "").strip()

@@ -41,9 +41,9 @@ class DungeonsAlpha1Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_schema10_and_protocol24_are_current(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
-        self.assertEqual(self.db.schema_version(), 24)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 38)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
+        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeons'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_dungeon_progress'"))
 

@@ -33,10 +33,10 @@ class GoldSaucerAlpha1Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_advances_only_local_schema_and_portal_protocol(self):
-        self.assertEqual(__version__, "1.9.0-camp-recovery-alpha12")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
-        self.assertEqual(self.db.schema_version(), 24)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 38)
+        self.assertEqual(__version__, "1.9.0-trading-post-qol-alpha13")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
+        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         for table in ("player_gold_saucer", "gold_saucer_cactpot", "gold_saucer_history"):
             self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,)))
 

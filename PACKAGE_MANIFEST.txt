@@ -1,3 +1,8 @@
+Crystal Guild Alpha 13 — Moogle Trading Post QoL
+Release 1.9.0-trading-post-qol-alpha13 | Bot DB schema 25 | Hosted sync 1 | Protocol 39
+Included in complete Alpha13 source package with all public assets. See START_HERE.md and RELEASE_NOTES.md.
+
+Previous manifest (historical):
 Crystal Guild v1.9.0 Alpha 12 — Camp & Recovery
 Release: 1.9.0-camp-recovery-alpha12 | Bot DB 24 | hosted sync 1 | Portal Actions 38
 - Authoritative Bot gameplay code, persisted Camp preparation migration, item and crafting data, tests

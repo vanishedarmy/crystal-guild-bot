@@ -198,8 +198,8 @@ class Step6RecordsMomentsHardeningTests(unittest.TestCase):
             conn.execute("DELETE FROM schema_migrations WHERE version=23")
         self.db.close()
         self.db = Database(self.path)
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
-        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
+        self.assertEqual(self.db.schema_version(), 25)
         backup = self.db.pre_migration_backup_path
         self.assertTrue(backup and backup.is_file())
         self.assertIn("pre_schema_23_", backup.name)
@@ -214,7 +214,7 @@ class Step6RecordsMomentsHardeningTests(unittest.TestCase):
         self.db.close()
         self.db = Database(self.path)
         self.assertIsNone(self.db.pre_migration_backup_path)
-        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(self.db.schema_version(), 25)
 
     def test_reading_records_does_not_reconcile_rewards_or_reveal_other_user(self):
         with self.db.tx() as conn:

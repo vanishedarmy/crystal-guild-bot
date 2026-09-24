@@ -40,9 +40,9 @@ class EliteMercs182Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_and_elite_registry(self):
-        self.assertEqual(__version__, "1.9.0-camp-recovery-alpha12")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 23)
-        self.assertEqual(ACTION_PROTOCOL_VERSION, 38)
+        self.assertEqual(__version__, "1.9.0-trading-post-qol-alpha13")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
+        self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         state = self.game.portal_merc_state("100").data["merc_state"]
         self.assertEqual(len(state["heroes"]), 18)
         self.assertEqual(state["registry"], {"recruited": 6, "total": 18})

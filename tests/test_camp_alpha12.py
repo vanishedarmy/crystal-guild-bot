@@ -27,10 +27,10 @@ class CampAlpha12Tests(unittest.TestCase):
 
     def worker_action(self, kind, payload, action_id):
         return self.worker._execute({'id': action_id, 'type': kind, 'payload': payload,
-                                     'twitch_id': '123', 'username': 'van', 'protocol_version': 38})
+                                     'twitch_id': '123', 'username': 'van', 'protocol_version': 39})
 
     def test_schema_and_craftable_or_purchasable_meal(self):
-        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(self.db.schema_version(), 25)
         self.assertEqual(self.game.data.items['trail_rations']['shop'], True)
         recipe = self.game.data.recipes['trail_rations']
         self.assertEqual(recipe['output'], {'item_id': 'trail_rations', 'quantity': 2})
@@ -57,7 +57,7 @@ class CampAlpha12Tests(unittest.TestCase):
         self.assertEqual(self.game._inventory_qty('123', 'trail_rations'), 1)
         self.db.close()
         self.db = Database(Path(self.tmp.name) / 'guild.db')
-        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(self.db.schema_version(), 25)
         self.assertEqual(self.db.one('SELECT meal_until FROM player_camp_preparations WHERE player_id=?', ('123',))['meal_until'], until)
 
     def test_preparation_switches_and_rejects_unknown_ids(self):
@@ -139,12 +139,16 @@ class CampAlpha12Tests(unittest.TestCase):
         with connect(path) as connection:
             connection.execute('DROP TABLE player_camp_preparations')
             connection.execute('DELETE FROM schema_migrations WHERE version=24')
+            connection.execute('DROP TABLE trading_post_watchlist')
+            connection.execute('DROP INDEX idx_trading_post_recent_sold')
+            connection.execute('DROP INDEX idx_trading_post_sold_by_item')
+            connection.execute('DELETE FROM schema_migrations WHERE version=25')
         self.db = Database(path)
-        self.assertEqual(self.db.schema_version(), 24)
+        self.assertEqual(self.db.schema_version(), 25)
         self.assertIsNotNone(self.db.one('SELECT twitch_id FROM players WHERE twitch_id=?', ('123',)))
-        backup = Path(self.db.pre_migration_backup_path)
-        self.assertTrue(backup.exists(), backup)
-        with connect(backup) as connection:
+        backups = sorted((path.parent / 'backups').glob('pre_schema_24_*.db'))
+        self.assertTrue(backups, "The schema-24 migration must create a verified backup")
+        with connect(backups[-1]) as connection:
             self.assertEqual(connection.execute('SELECT MAX(version) FROM schema_migrations').fetchone()[0], 23)
             self.assertEqual(connection.execute('SELECT COUNT(*) FROM players').fetchone()[0], 1)
 
