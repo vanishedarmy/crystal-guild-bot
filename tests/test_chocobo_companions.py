@@ -70,7 +70,7 @@ class ChocoboCompanionTests(unittest.TestCase):
         self.assertTrue(self.game.register_chocobo(player_id, name).ok)
 
     def test_schema_six_and_stable_project_are_additive(self):
-        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobos'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobo_traits'"))
         project = PROJECTS["chocobo_stable_t1"]

@@ -1,3 +1,11 @@
+## v1.9.3 — Guild Initiatives
+
+- Shared, verified objective accounting on Fellowship event receipts, with unique payout records, bounded progress storage and schema 26 migration with verified backup.
+- Three independently rotating weekly Fellowship Contracts, with contribution reports and one-time guild-wide rewards for the membership present at completion.
+- Three daily and three weekly optional personal Guild Board objectives; earned Gil/material rewards and occasional level-suitable shop equipment (Mythril Ore fallback).
+- Hosted Web Guild Board player module, public Fellowship Contracts cards, mobile styling, release identity/cache revision and Player Guide update.
+- Existing Trading Post, Relic Arsenal and What's New hotfixes retained. Source-only merge; rebuild Web/frontend after applying.
+
 # Changelog
 
 ## v1.9.0 Alpha 13 — Trading Post QoL

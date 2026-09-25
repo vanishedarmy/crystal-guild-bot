@@ -38,9 +38,9 @@ class RetainerServiceAlpha1Tests(unittest.TestCase):
         return self.game.portal_retainer_state("100").data["retainer_state"]
 
     def test_alpha1_contract_schema_protocol_and_default_retainer(self):
-        self.assertEqual(__version__, "1.9.0-trading-post-qol-alpha13")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
-        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(__version__, "1.9.3-guild-initiatives")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         state = self.state()
         self.assertEqual(state["retainer"]["name"], "Guild Retainer")

@@ -17,7 +17,7 @@ from .config import load_dotenv
 from .player_snapshot import PortalRepository
 
 
-SYNC_VERSION = "1.1.17-seasonal"
+SYNC_VERSION = "1.9.3-guild-initiatives"
 LOGGER = logging.getLogger("CrystalGuild.PortalSync")
 SCHEMA_VERSION = 1
 MODULES = (
@@ -29,6 +29,7 @@ MODULES = (
     "relics",
     "achievements",
     "records",
+    "guild_board",
     "trophies",
     "seasonal",
 )
@@ -100,6 +101,7 @@ class PortalSyncClient:
             "relics": self.repository.relics,
             "achievements": self.repository.achievements,
             "records": self.repository.records,
+            "guild_board": self.repository.guild_board,
             "trophies": getattr(self.repository, "trophies", lambda _username: {"player": {}, "unlocked": []}),
             "seasonal": getattr(self.repository, "seasonal", lambda _username: {"player": {}, "seasonal": {"state":"disabled"}}),
         }

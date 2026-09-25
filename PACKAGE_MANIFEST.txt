@@ -1,3 +1,9 @@
+Crystal Guild v1.9.3 — Guild Initiatives incremental merge
+Release 1.9.3-guild-initiatives | Bot DB schema 26 | Hosted sync 1 | Protocol 39
+Contains changed/new source, migration, tests and guide files only. Public artwork, secrets and live databases are not packaged.
+Requires installed Alpha 13 with v1.9.1 and v1.9.2 overlays already applied.
+
+Previous release manifests (historical):
 Crystal Guild Alpha 13 — Moogle Trading Post QoL
 Release 1.9.0-trading-post-qol-alpha13 | Bot DB schema 25 | Hosted sync 1 | Protocol 39
 Included in complete Alpha13 source package with all public assets. See START_HERE.md and RELEASE_NOTES.md.

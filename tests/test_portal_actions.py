@@ -667,12 +667,16 @@ class PortalActionWorkerTests(unittest.TestCase):
         first = self.worker._execute(action)
         self.assertTrue(first[0])
         self.assertEqual(self.game._upgrade_level("100", "hunters_axe"), 1)
-        self.assertEqual(self.game._inventory_qty("100", "iron_ore"), 3)
+        from crystal_guild.guild_initiatives import DAILIES, daily_period_key, selected
+        daily_economy = next(row for row in selected(DAILIES, daily_period_key()) if row["category"] == "economy")
+        # Completing the optional daily Forge objective adds its 1 Ore reward.
+        expected_ore = 3 + (1 if daily_economy["id"] == "daily_forges" else 0)
+        self.assertEqual(self.game._inventory_qty("100", "iron_ore"), expected_ore)
         replay = self.worker._execute(action)
         self.assertTrue(replay[0])
         self.assertEqual(replay[2], first[2])
         self.assertEqual(self.game._upgrade_level("100", "hunters_axe"), 1)
-        self.assertEqual(self.game._inventory_qty("100", "iron_ore"), 3)
+        self.assertEqual(self.game._inventory_qty("100", "iron_ore"), expected_ore)
 
         self.game.encounter_roster["100"] = {"hp": 100}
         blocked = self.worker._execute(self.action(id="pa_forge_combat", type="FORGE_ITEM", payload={"item_id": "hunters_axe"}))

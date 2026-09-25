@@ -1,3 +1,19 @@
+# Crystal Guild v1.9.3 — Guild Initiatives
+
+This incremental source release merges into the already-installed Alpha 13 + v1.9.1 + v1.9.2 codebase. It adds three rotating weekly Fellowship Contracts and three daily plus three weekly optional individual Guild Board objectives. Each verified gameplay event contributes once to all applicable objectives. Completion rewards deliver automatically and are transaction-guarded against duplicates.
+
+**Reset schedule:** Daily 00:00 UTC; weekly and Fellowship Contracts Monday 00:00 UTC. **Eligible events:** combat victories and Hunts, completed craft/forge actions, and completed Ventures/Expeditions. Ore-gathering is intentionally excluded until an authoritative ore-gathering event exists.
+
+**Rewards:** Guild-wide Gil/material payouts to all members present at contract completion; individual Gil/material payouts and weekly optional suitable shop gear, with a two-Mythril-Ore alternative if no level-suitable modest-price gear exists. No manual claiming.
+
+**Migration:** Local Bot schema 25 → 26 adds four objective progress/receipt tables and a small periodic maintenance table. Before upgrading an existing database, the engine creates its normal verified migration backup. Old player progress, inventory, Trading Post transactions, Relics and existing Fellowship projects remain untouched. Expired objective rows are pruned weekly (daily records after 45 days; weekly/communal records after 18 weeks); permanent transaction and Fellowship event audit records remain.
+
+**Protocol:** Existing Portal Action protocol 39, existing sync schema 1. Bot and hosted Web must both deploy v1.9.3. The Guild Board is a new read-only hosted player snapshot module; Fellowship Contracts appear in the existing shared Fellowship snapshot. The server/browser release markers have been updated to invalidate stale assets.
+
+**Distribution:** This is ONE final changed-files merge for an existing Alpha13 installation with subsequent 1.9.1 and 1.9.2 patches already merged. It does NOT include the ~200 MB unchanged public artwork library, an initialized database, private configuration, or a prebuilt frontend bundle. Run `npm ci` and `npm run build` in `Web/frontend/` after merging; see BUILD_GUILD_INITIATIVES_1_9_3.cmd. Do not use the old 1.9.2 compiled frontend. Test on staging, back up the live DB and restart the Bot and hosted Web together.
+
+## Previous Alpha13 release notes (historical)
+
 # Crystal Guild v1.9.0 Alpha 13 — Trading Post QoL
 
 This is a complete source release built on the verified Alpha 12 Camp & Recovery baseline. The archive contains matching Bot, hosted Web, React/Vite frontend and all 954 public assets already correctly nested at `Web/frontend/public/`. No assets need to be downloaded or merged separately.

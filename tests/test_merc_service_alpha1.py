@@ -38,9 +38,9 @@ class MercServiceAlpha1Tests(unittest.TestCase):
         self.db.close(); self.temp.cleanup()
 
     def test_release_contract_and_roster(self):
-        self.assertEqual(__version__, "1.9.0-trading-post-qol-alpha13")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
-        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(__version__, "1.9.3-guild-initiatives")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         state = self.game.portal_merc_state("100").data["merc_state"]
         self.assertEqual(state["proprietor"], MERC_PROPRIETOR)

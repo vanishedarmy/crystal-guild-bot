@@ -195,14 +195,13 @@ class Step6RecordsMomentsHardeningTests(unittest.TestCase):
         with self.db.tx() as conn:
             for table in ("player_moment_unlocks", "player_record_events", "player_moment_reconciliation"):
                 conn.execute(f"DROP TABLE {table}")
-            conn.execute("DELETE FROM schema_migrations WHERE version=23")
+            conn.execute("DELETE FROM schema_migrations WHERE version>=23")
         self.db.close()
         self.db = Database(self.path)
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
-        self.assertEqual(self.db.schema_version(), 25)
-        backup = self.db.pre_migration_backup_path
-        self.assertTrue(backup and backup.is_file())
-        self.assertIn("pre_schema_23_", backup.name)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(self.db.schema_version(), 26)
+        backup = sorted((self.path.parent / "backups").glob("pre_schema_23_*.db"))[-1]
+        self.assertTrue(backup.is_file())
         with sqlite3.connect(backup) as old:
             self.assertEqual(old.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 22)
             self.assertEqual(old.execute("SELECT gil FROM players WHERE twitch_id='1'").fetchone()[0], 321321)
@@ -214,7 +213,7 @@ class Step6RecordsMomentsHardeningTests(unittest.TestCase):
         self.db.close()
         self.db = Database(self.path)
         self.assertIsNone(self.db.pre_migration_backup_path)
-        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(self.db.schema_version(), 26)
 
     def test_reading_records_does_not_reconcile_rewards_or_reveal_other_user(self):
         with self.db.tx() as conn:

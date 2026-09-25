@@ -1,1 +1,1 @@
-__version__ = "1.9.2-relic-arsenal-overhaul"
+__version__ = "1.9.3-guild-initiatives"

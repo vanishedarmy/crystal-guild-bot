@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 25
+DATABASE_SCHEMA_VERSION = 26
 
 
 class Database:
@@ -1404,6 +1404,67 @@ class Database:
                     CREATE INDEX IF NOT EXISTS idx_trading_post_sold_by_item
                     ON trading_post_listings(item_id,status,sold_at DESC);
                     INSERT INTO schema_migrations(version,name) VALUES (25,'trading_post_watchlist_and_sales_history');
+                    COMMIT;
+                """)
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # Guild Initiatives: new events reuse fellowship_events' authoritative,
+        # already-idempotent event_key. Objective mutations and payouts commit in
+        # the very same DB transaction as the corresponding gameplay outcome.
+        already_v26 = bool(self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=26").fetchone())
+        if not already_v26:
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(26)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS guild_initiative_contracts (
+                        period_key TEXT NOT NULL,
+                        objective_id TEXT NOT NULL,
+                        target INTEGER NOT NULL CHECK(target > 0),
+                        progress INTEGER NOT NULL DEFAULT 0 CHECK(progress >= 0),
+                        completed_at TEXT,
+                        PRIMARY KEY (period_key, objective_id)
+                    );
+                    CREATE TABLE IF NOT EXISTS guild_initiative_contributions (
+                        period_key TEXT NOT NULL,
+                        objective_id TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        amount INTEGER NOT NULL DEFAULT 0 CHECK(amount >= 0),
+                        PRIMARY KEY (period_key, objective_id, player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS guild_initiative_player_progress (
+                        player_id TEXT NOT NULL,
+                        scope TEXT NOT NULL CHECK(scope IN ('daily','weekly')),
+                        period_key TEXT NOT NULL,
+                        objective_id TEXT NOT NULL,
+                        target INTEGER NOT NULL CHECK(target > 0),
+                        progress INTEGER NOT NULL DEFAULT 0 CHECK(progress >= 0),
+                        completed_at TEXT,
+                        PRIMARY KEY (player_id, scope, period_key, objective_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS guild_initiative_rewards (
+                        scope TEXT NOT NULL CHECK(scope IN ('contract','daily','weekly')),
+                        period_key TEXT NOT NULL,
+                        objective_id TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        awarded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (scope, period_key, objective_id, player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_initiatives_contributions_player
+                    ON guild_initiative_contributions(player_id, period_key);
+                    CREATE INDEX IF NOT EXISTS idx_initiatives_rewards_player
+                    ON guild_initiative_rewards(player_id, awarded_at DESC);
+                    CREATE TABLE IF NOT EXISTS guild_initiative_maintenance (
+                        week_key TEXT PRIMARY KEY
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (26,'guild_initiatives');
                     COMMIT;
                 """)
                 self.conn.commit()

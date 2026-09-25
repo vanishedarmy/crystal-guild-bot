@@ -17,12 +17,13 @@ from .data import GameData
 from .bestiary_progress import progress_for
 from .gold_saucer import gold_saucer_record_value
 from .personal_records import project_personal_records
+from .guild_initiatives import contract_view, board_view
 from .moments import public_moments_view
 from .trophies import TROPHY_CATALOG, TROPHIES_BY_ID
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
-SNAPSHOT_VERSION = "1.1.17-seasonal"
+SNAPSHOT_VERSION = "1.9.3-guild-initiatives"
 
 
 class PortalRepository:
@@ -300,6 +301,7 @@ class PortalRepository:
                     "active_project": None, "available_projects": [], "facilities": [],
                     "guild_board": {"facility_count": 7, "built_count": 0, "complete_count": 0, "airship_dock_locked": False},
                     "orders": {"period": weekly_period_key(), "orders": [], "completed": 0, "total": 0, "weekly_bonus": dict(WEEKLY_ORDER_SET_REWARD)},
+                    "contracts": {"period": weekly_period_key(), "objectives": [], "completed": 0, "total": 3},
                     "deeds": [], "deeds_complete": 0, "leaders": [], "recent_activity": [],
                     "totals": {"gil_donated": 0, "materials_donated": 0},
                     "expedition_board_complete": False, "rank_ladder": GUILD_RANKS,
@@ -462,6 +464,7 @@ class PortalRepository:
                 "active_project": active_project, "available_projects": available, "facilities": facilities,
                 "guild_board": {"facility_count": len(facilities), "built_count": sum(1 for item in facilities if int(item["level"]) > 0), "complete_count": sum(1 for item in facilities if int(item["level"]) >= int(item["max_level"])), "airship_dock_locked": False},
                 "orders": {"period": period, "orders": order_items, "completed": sum(1 for item in order_items if item["complete"]), "total": len(order_items), "weekly_bonus": dict(WEEKLY_ORDER_SET_REWARD)},
+                "contracts": contract_view(conn),
                 "deeds": deed_items, "deeds_complete": sum(1 for item in deed_items if item["complete"]),
                 "leaders": leaders, "recent_activity": activity,
                 "totals": {"gil_donated": int(totals["gil"] if totals else 0), "materials_donated": int(totals["materials"] if totals else 0)},
@@ -469,6 +472,14 @@ class PortalRepository:
                 "effects": effects, "services": services, "airship": airship,
                 "legacy": legacy_snapshot_from_connection(conn),
             }
+
+    def guild_board(self, key: str) -> dict[str, Any] | None:
+        """Public personal objectives. Never expose Twitch IDs in hosted snapshots."""
+        with self.connect() as conn:
+            player = self._find_player(conn, key)
+            if not player:
+                return None
+            return {"player": self._public_identity(player), "board": board_view(conn, str(player["twitch_id"]))}
 
     def overview(self, key: str) -> dict[str, Any] | None:
         with self.connect() as conn:

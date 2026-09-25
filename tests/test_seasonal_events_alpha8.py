@@ -14,7 +14,7 @@ class SeasonalEventsAlpha8Tests(unittest.TestCase):
         self.pid="100"; self.conn.execute("INSERT INTO players(twitch_id,username,display_name) VALUES (?,?,?)",(self.pid,"van","Van")); self.conn.commit()
     def tearDown(self): self.db.close(); self.tmp.cleanup()
     def test_schema_and_disabled_default(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION,25); self.assertEqual(self.db.schema_version(),25)
+        self.assertEqual(DATABASE_SCHEMA_VERSION,26); self.assertEqual(self.db.schema_version(),26)
         state=event_state(self.conn); self.assertEqual(state["edition_id"],EDITION_ID); self.assertEqual(state["state"],"disabled"); self.assertFalse(state["active"])
     def test_manual_control_and_seasonal_collection(self):
         set_event_control(self.conn,enabled=True,paused=False,activation_mode="manual")

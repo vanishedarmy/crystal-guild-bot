@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DungeonsProductionReleaseTests(unittest.TestCase):
     def test_final_identity_and_frozen_contract(self):
-        self.assertEqual(__version__, "1.9.0-trading-post-qol-alpha13")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
+        self.assertEqual(__version__, "1.9.3-guild-initiatives")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         self.assertEqual(len(GameData(ROOT / "data").dungeons), 4)
 

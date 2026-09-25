@@ -44,7 +44,7 @@ class GearFavoritesAuthorityTests(unittest.TestCase):
         }
 
     def test_portal_favorites_persist_in_player_database_and_snapshot(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
         ok, message, data = self.worker._execute(
             self.action("pa_favorites_1", ["hunters_axe", "chain_mail", "hunters_axe"])
         )

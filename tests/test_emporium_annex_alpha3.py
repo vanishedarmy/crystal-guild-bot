@@ -32,9 +32,9 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_release_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.9.0-trading-post-qol-alpha13")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 25)
-        self.assertEqual(self.db.schema_version(), 25)
+        self.assertEqual(__version__, "1.9.3-guild-initiatives")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         annex = self.db.one("SELECT tier FROM fellowship_facilities WHERE facility_id='emporium_annex'")
         self.assertIsNotNone(annex)

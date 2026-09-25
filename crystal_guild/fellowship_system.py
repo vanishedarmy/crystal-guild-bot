@@ -6,6 +6,7 @@ import time
 from typing import Any
 
 from .trophies import reconcile_player_trophies
+from .guild_initiatives import progress_event
 
 from .fellowship import (
     AIRSHIP_MISSIONS,
@@ -1145,7 +1146,15 @@ class FellowshipSystem:
                 self._progress_orders(conn, player_id, activity, amount)
                 self._progress_deeds(conn, player_id, activity, amount)
                 self._progress_airship_mission(conn, player_id, activity, amount)
-            return self._finalize_progress(player_id, old_level, old_rank)
+                # Must remain after the freshly inserted fellowship_events receipt
+                # and inside the same transaction as Guild progress and rewards.
+                if player_id:
+                    initiative_notes = progress_event(conn, self.data, player_id, self._activity_semantics(activity), amount, timestamp=time.time())
+                else:
+                    initiative_notes = []
+            else:
+                initiative_notes = []
+            return [*self._finalize_progress(player_id, old_level, old_rank), *initiative_notes]
 
     def _progress_project_activity(self, conn: Any, player_id: str | None, activity: str, amount: int) -> None:
         state = conn.execute("SELECT active_project_id FROM fellowship_state WHERE singleton_id=1").fetchone()
