@@ -17,6 +17,10 @@ from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
 ACTION_PROTOCOL_VERSION = 39
+# A broken or unexpectedly large read-only response must never prevent the
+# sequential Bot worker from reaching queued purchases, sales or combat.
+ISOLATED_SHOP_READS = {"SHOP_STATE", "TRADING_POST_STATE", "TRADING_POST_HISTORY"}
+MAX_SAFE_READ_RESULT_BYTES = 500 * 1024  # smaller than the paired Web 512 KiB cap
 
 
 class PortalActionWorker:
@@ -138,13 +142,30 @@ class PortalActionWorker:
                 continue
             action_type = str(action.get("type") or "").strip().upper()
             twitch_id = str(action.get("twitch_id") or "").strip()
-            track_titles = action_type not in {"RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT", "SET_GEAR_FAVORITES"}
-            title_before = self._player_title_ids(twitch_id) if track_titles else set()
-            ok, message, data = self._execute(action)
-            if ok:
-                self._stage_notable_portal_result(action, message, data)
-                if track_titles:
-                    self._stage_new_title_announcement(action, title_before)
+            track_titles = action_type not in {
+                "RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT", "SET_GEAR_FAVORITES",
+                *ISOLATED_SHOP_READS,
+            }
+            try:
+                title_before = self._player_title_ids(twitch_id) if track_titles else set()
+                ok, message, data = self._execute(action)
+                if action_type in ISOLATED_SHOP_READS:
+                    result_size = len(json.dumps({"ok": ok, "message": message, "data": data},
+                        separators=(",", ":"), sort_keys=True, ensure_ascii=False).encode("utf-8"))
+                    if result_size > MAX_SAFE_READ_RESULT_BYTES:
+                        raise ValueError(f"{action_type} exceeded the safe Portal response size ({result_size} bytes)")
+                if ok:
+                    self._stage_notable_portal_result(action, message, data)
+                    if track_titles:
+                        self._stage_new_title_announcement(action, title_before)
+            except Exception:
+                if action_type not in ISOLATED_SHOP_READS:
+                    # Mutations retain their existing lease-retry/idempotency
+                    # semantics. Do not acknowledge a potentially committed
+                    # purchase or sale as failed after an unexpected exception.
+                    raise
+                LOGGER.exception("Unable to prepare read-only Portal action %s; continuing with the queue", action_type)
+                ok, message, data = False, "The shop or Trading Post could not load. Please retry after the Bot and Web services are updated.", {}
             result = {
                 "protocol_version": ACTION_PROTOCOL_VERSION,
                 "id": str(action.get("id") or ""),
@@ -155,6 +176,18 @@ class PortalActionWorker:
             }
             action_id = str(action.get("id") or "")
             try:
+                self._post("/api/actions/result", result)
+            except RuntimeError as exc:
+                # Mixed-version deployments can still have the old 64 KiB Web
+                # limit. Acknowledge this passive action with a small failure
+                # so its lease cannot strand subsequent shop mutations.
+                if action_type not in ISOLATED_SHOP_READS or not any(
+                    marker in str(exc).lower() for marker in ("too large", "http 413", "request entity too large")
+                ):
+                    self._post_ack_notifications.pop(action_id, None)
+                    raise
+                LOGGER.warning("Read-only %s result rejected by the Web relay: %s", action_type, exc)
+                result.update(ok=False, message="The Web service rejected this Trading Post response. Deploy the matching Web hotfix and retry.", data={})
                 self._post("/api/actions/result", result)
             except Exception:
                 self._post_ack_notifications.pop(action_id, None)
