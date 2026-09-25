@@ -3,7 +3,7 @@
     "id": "gae_bolg",
     "name": "Gae Bolg",
     "job_id": "dragoon",
-    "description": "A three-stage relic weapon questline for Dragoon.",
+    "description": "A lance shaped for those who meet danger in the open sky. Its three forms trace a Dragoon’s passage from practiced leaps to the resolve of a legend.",
     "stages": [
       {
         "stage": 1,
@@ -106,7 +106,7 @@
     "id": "excalibur",
     "name": "Excalibur",
     "job_id": "paladin",
-    "description": "A three-stage relic weapon questline for Paladin.",
+    "description": "An oath given an edge: a Paladin’s blade that carries the promise to stand between danger and those who cannot stand alone.",
     "stages": [
       {
         "stage": 1,
@@ -209,7 +209,7 @@
     "id": "apocalypse",
     "name": "Apocalypse",
     "job_id": "darkknight",
-    "description": "A three-stage relic weapon questline for Darkknight.",
+    "description": "A blade from the edge of fallen kingdoms. Its path asks a Dark Knight to command the shadows without surrendering to them.",
     "stages": [
       {
         "stage": 1,
@@ -312,7 +312,7 @@
     "id": "godhand",
     "name": "Godhand",
     "job_id": "monk",
-    "description": "A three-stage relic weapon questline for Monk.",
+    "description": "An expression of the Monk’s relentless discipline. Each stage refines a weapon meant to follow the speed and purpose of its wielder.",
     "stages": [
       {
         "stage": 1,
@@ -415,7 +415,7 @@
     "id": "masamune",
     "name": "Masamune",
     "job_id": "samurai",
-    "description": "A three-stage relic weapon questline for Samurai.",
+    "description": "A blade spoken of in the quietest dueling halls. Every stage reflects the Samurai’s search for precision, patience, and a decisive strike.",
     "stages": [
       {
         "stage": 1,
@@ -518,7 +518,7 @@
     "id": "stardust_rod",
     "name": "Stardust Rod",
     "job_id": "blackmage",
-    "description": "A three-stage relic weapon questline for Blackmage.",
+    "description": "A staff imagined from the embers of distant stars. Its growing radiance mirrors the Black Mage’s command of dangerous arcane power.",
     "stages": [
       {
         "stage": 1,
@@ -621,7 +621,7 @@
     "id": "nirvana",
     "name": "Nirvana",
     "job_id": "whitemage",
-    "description": "A three-stage relic weapon questline for Whitemage.",
+    "description": "A staff that honors the hands that heal after battle. Its awakening reflects a White Mage’s patience, courage, and steady light.",
     "stages": [
       {
         "stage": 1,
@@ -724,7 +724,7 @@
     "id": "last_knife",
     "name": "Last Knife",
     "job_id": "thief",
-    "description": "A three-stage relic weapon questline for Thief.",
+    "description": "A compact weapon with a far-reaching reputation. In a Thief’s hands, its finest edge is timing rather than size.",
     "stages": [
       {
         "stage": 1,
@@ -827,7 +827,7 @@
     "id": "bravura",
     "name": "Bravura",
     "job_id": "warrior",
-    "description": "A three-stage relic weapon questline for Warrior.",
+    "description": "An axe built for the Warrior who presses onward when the battle turns grim. Each form records another test of endurance.",
     "stages": [
       {
         "stage": 1,
@@ -930,7 +930,7 @@
     "id": "murgleis",
     "name": "Murgleis",
     "job_id": "redmage",
-    "description": "A three-stage relic weapon questline for Red Mage.",
+    "description": "An elegant duelist’s weapon, poised between blade-work and spellcraft. Its three stages follow the Red Mage’s pursuit of balance.",
     "stages": [
       {
         "stage": 1,
@@ -1033,7 +1033,7 @@
     "id": "yoshimitsu",
     "name": "Yoshimitsu",
     "job_id": "ninja",
-    "description": "A three-stage relic weapon questline for Ninja.",
+    "description": "A weapon for the practiced shadow. Its refinement rewards a Ninja’s restraint, speed, and the wisdom to strike unseen.",
     "stages": [
       {
         "stage": 1,
@@ -1136,7 +1136,7 @@
     "id": "veil_of_wiyu",
     "name": "Veil of Wiyu",
     "job_id": "summoner",
-    "description": "A three-stage relic weapon questline for Summoner.",
+    "description": "An ancient tome whose pages are marked with names from beyond the veil. Its growing resonance reflects the Summoner’s bond with otherworldly allies.",
     "stages": [
       {
         "stage": 1,
@@ -1239,7 +1239,7 @@
     "id": "almace",
     "name": "Almace",
     "job_id": "bluemage",
-    "description": "A three-stage relic weapon questline for Blue Mage.",
+    "description": "A blade for the restless student of monsters and magic. Its evolution mirrors the Blue Mage’s habit of turning every encounter into a lesson.",
     "stages": [
       {
         "stage": 1,
@@ -1342,7 +1342,7 @@
     "id": "chronos",
     "name": "Chronos",
     "job_id": "timemage",
-    "description": "A three-stage relic weapon questline for Time Mage.",
+    "description": "A curious relic marked with circles and fragments of old calendars. Its three forms recall a Time Mage’s study of the space between moments.",
     "stages": [
       {
         "stage": 1,
@@ -1445,7 +1445,7 @@
     "id": "artemis_bow",
     "name": "Artemis Bow",
     "job_id": "bard",
-    "description": "A three-stage relic weapon questline for Bard.",
+    "description": "A bow that seems to hum before the arrow flies. Its awakening follows the Bard’s rhythm through danger, memory, and triumph.",
     "stages": [
       {
         "stage": 1,
@@ -1548,7 +1548,7 @@
     "id": "armageddon",
     "name": "Armageddon",
     "job_id": "machinist",
-    "description": "A three-stage relic weapon questline for Machinist.",
+    "description": "A formidable instrument of invention and precision. Its changing form reflects the Machinist’s conviction that ingenuity belongs on the battlefield.",
     "stages": [
       {
         "stage": 1,
@@ -1651,7 +1651,7 @@
     "id": "guttler",
     "name": "Guttler",
     "job_id": "beastmaster",
-    "description": "A three-stage relic weapon questline for Beastmaster.",
+    "description": "A rugged weapon worn smooth by the wilderness. Each stage honors the Beastmaster’s understanding of creatures both fierce and familiar.",
     "stages": [
       {
         "stage": 1,
@@ -1754,7 +1754,7 @@
     "id": "astral_codex",
     "name": "Astral Codex",
     "job_id": "sage",
-    "description": "A three-stage relic weapon questline for Sage.",
+    "description": "A scholar’s armament written in star charts and careful calculations. Its evolution follows the Sage’s path from observation to mastery.",
     "stages": [
       {
         "stage": 1,

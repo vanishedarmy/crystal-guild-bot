@@ -993,39 +993,187 @@ class PortalRepository:
             }
 
     def relics(self, key: str) -> dict[str, Any] | None:
+        """Relic catalog and live progress; fixed number of indexed player reads.
+
+        Preserve the legacy ``stages`` string list for existing consumers.  The
+        richer ``path`` includes published stage requirements and reward stats,
+        while readiness is calculated only for the player's *next* stage.
+        """
         with self.connect() as conn:
             player = self._find_player(conn, key)
             if not player:
                 return None
-            rows = conn.execute(
-                "SELECT relic_id, stage, completed_at FROM player_relics WHERE player_id=?",
-                (player["twitch_id"],),
-            ).fetchall()
-            progress = {row["relic_id"]: row for row in rows}
+            player_id = player["twitch_id"]
+            progress = {
+                row["relic_id"]: row for row in conn.execute(
+                    "SELECT relic_id,stage,completed_at FROM player_relics WHERE player_id=?",
+                    (player_id,),
+                )
+            }
+            # Read each source just once.  18 Relics x 3 stages should not
+            # become hundreds of per-material/per-Hunt SQLite queries.
+            job_levels = {
+                row["job_id"]: int(row["level"] or 0) for row in conn.execute(
+                    "SELECT job_id,level FROM player_jobs WHERE player_id=?", (player_id,),
+                )
+            }
+            inventory = {
+                row["item_id"]: int(row["quantity"] or 0) for row in conn.execute(
+                    "SELECT item_id,quantity FROM inventory WHERE player_id=?", (player_id,),
+                )
+            }
+            kills = {
+                row["monster_id"]: int(row["defeats"] or 0) for row in conn.execute(
+                    "SELECT monster_id,defeats FROM bestiary WHERE player_id=?", (player_id,),
+                )
+            }
+            hunt_clears = {
+                row["hunt_id"]: int(row["clears"] or 0) for row in conn.execute(
+                    "SELECT hunt_id,clears FROM player_hunts WHERE player_id=?", (player_id,),
+                )
+            }
+            unique_ranks: dict[str, int] = {}
+            for hunt_id, clears in hunt_clears.items():
+                hunt = self.data.hunts.get(hunt_id)
+                if hunt and clears > 0:
+                    rank = str(hunt["rank"])
+                    unique_ranks[rank] = unique_ranks.get(rank, 0) + 1
+
+            def requirement_info(req: dict[str, Any]) -> dict[str, Any]:
+                kind = req["type"]
+                amount = int(req.get("amount", 1))
+                if kind == "character_level":
+                    label = "Character level"
+                    current = int(player["level"])
+                elif kind == "job_level":
+                    job_id = str(req.get("job_id") or "")
+                    job = self.data.jobs.get(job_id, {})
+                    label = f"{job.get('name', 'Job')} Job level"
+                    current = int(job_levels.get(job_id, 0))
+                elif kind == "monster_kills":
+                    monster_id = str(req.get("monster_id") or "")
+                    monster = self.data.monsters.get(monster_id, {})
+                    label = f"Defeat {monster.get('name', 'monster')}"
+                    current = int(kills.get(monster_id, 0))
+                elif kind == "hunt_clear":
+                    hunt_id = str(req.get("hunt_id") or "")
+                    hunt = self.data.hunts.get(hunt_id, {})
+                    label = f"Clear {hunt.get('name', 'Hunt')}"
+                    current = int(hunt_clears.get(hunt_id, 0))
+                elif kind == "hunt_rank_clears":
+                    rank = str(req.get("rank") or "")
+                    label = f"Unique {rank}-Rank Hunts cleared"
+                    current = int(unique_ranks.get(rank, 0))
+                else:
+                    # New requirement types should not be falsely marked as met.
+                    label = kind.replace("_", " ").capitalize()
+                    current = 0
+                return {
+                    "type": kind,
+                    "label": label,
+                    "current": current,
+                    "required": amount,
+                    "met": current >= amount,
+                }
+
+            def reward_info(item_id: str) -> dict[str, Any]:
+                item = self.data.items.get(item_id) or {}
+                return {
+                    "id": item_id,
+                    "name": item.get("name", item_id.replace("_", " ").title()),
+                    "rarity": item.get("rarity", "relic"),
+                    "min_level": int(item.get("min_level", 1)),
+                    "bonuses": dict(item.get("bonuses") or {}),
+                    "allowed_jobs": list(item.get("allowed_jobs") or []),
+                    "allowed_job_names": [self.data.jobs.get(job_id, {}).get("name", job_id) for job_id in (item.get("allowed_jobs") or [])],
+                    "description": item.get("description") or "",
+                    "element": item.get("element"),
+                    "on_hit_status": item.get("on_hit_status"),
+                    "lifesteal": item.get("lifesteal"),
+                    "owned": int(inventory.get(item_id, 0)),
+                }
+
             relics = []
             for relic in self.data.relics.values():
                 row = progress.get(relic["id"])
-                stage = int(row["stage"]) if row else 0
                 total = len(relic.get("stages", []))
-                job = self.data.jobs.get(relic["job_id"])
-                reward = None
-                if stage > 0 and stage <= total:
-                    reward_id = relic["stages"][stage - 1].get("reward_item")
-                    reward = self.data.items.get(reward_id)
-                relics.append(
-                    {
-                        "id": relic["id"],
-                        "name": relic["name"],
-                        "job": job["name"] if job else relic["job_id"],
-                        "stage": stage,
-                        "total_stages": total,
-                        "completed": stage >= total,
-                        "completed_at": row["completed_at"] if row else None,
-                        "current_reward": reward["name"] if reward else None,
-                        "stages": [s["name"] for s in relic.get("stages", [])],
-                    }
-                )
-            return {"player": self._public_identity(player), "relics": relics}
+                stage = min(max(int(row["stage"] or 0), 0), total) if row else 0
+                job = self.data.jobs.get(relic["job_id"]) or {}
+                job_level = int(job_levels.get(relic["job_id"], 0))
+                path = []
+                for index, step in enumerate(relic.get("stages", [])):
+                    requirements = [requirement_info(req) for req in step.get("requirements", [])]
+                    cost = step.get("cost") or {}
+                    gil = int(cost.get("gil", 0))
+                    seals = int(cost.get("hunt_seals", 0))
+                    materials = []
+                    for entry in cost.get("items", []):
+                        material_id = str(entry["item_id"])
+                        required = int(entry["quantity"])
+                        owned = int(inventory.get(material_id, 0))
+                        material = self.data.items.get(material_id) or {}
+                        materials.append({
+                            "id": material_id,
+                            "name": material.get("name", material_id.replace("_", " ").title()),
+                            "required": required,
+                            "owned": owned,
+                            "met": owned >= required,
+                        })
+                    costs_met = (int(player["gil"]) >= gil
+                                 and int(player["hunt_seals"]) >= seals
+                                 and all(entry["met"] for entry in materials))
+                    earned = index < stage
+                    current = index == stage and stage < total
+                    path.append({
+                        "number": index + 1,
+                        "name": step["name"],
+                        "state": "completed" if earned else "current" if current else "upcoming",
+                        "requirements": requirements,
+                        "requirements_met": all(req["met"] for req in requirements),
+                        "cost": {
+                            "gil": {"required": gil, "owned": int(player["gil"]), "met": int(player["gil"]) >= gil},
+                            "hunt_seals": {"required": seals, "owned": int(player["hunt_seals"]), "met": int(player["hunt_seals"]) >= seals},
+                            "materials": materials,
+                        },
+                        "costs_met": costs_met,
+                        "ready": bool(current and costs_met and all(req["met"] for req in requirements)),
+                        "reward": reward_info(step["reward_item"]),
+                    })
+                ready = bool(stage < total and path[stage]["ready"])
+                status = ("complete" if stage >= total else "ready" if ready
+                          else "not_started" if stage == 0 else "in_progress")
+                current_reward = path[stage - 1]["reward"]["name"] if stage else None
+                relics.append({
+                    "id": relic["id"],
+                    "name": relic["name"],
+                    "description": relic.get("description") or "",
+                    "job": job.get("name", relic["job_id"]),
+                    "job_id": relic["job_id"],
+                    "job_level": job_level,
+                    "stage": stage,
+                    "total_stages": total,
+                    "completed": stage >= total,
+                    "completed_at": row["completed_at"] if row else None,
+                    "status": status,
+                    "ready": ready,
+                    "current_reward": current_reward,
+                    "next_stage": path[stage]["name"] if stage < total else None,
+                    "final_reward": path[-1]["reward"] if path else None,
+                    "stages": [s["name"] for s in relic.get("stages", [])],
+                    "path": path,
+                })
+            return {
+                "player": self._public_identity(player),
+                "summary": {
+                    "total": len(relics),
+                    "complete": sum(int(r["completed"]) for r in relics),
+                    "ready": sum(int(r["ready"]) for r in relics),
+                    "in_progress": sum(int(r["status"] == "in_progress") for r in relics),
+                    "earned_stages": sum(r["stage"] for r in relics),
+                    "total_stages": sum(r["total_stages"] for r in relics),
+                },
+                "relics": relics,
+            }
 
     def _achievement_value(self, conn: sqlite3.Connection, player: sqlite3.Row, condition: dict[str, Any]) -> int:
         player_id = player["twitch_id"]

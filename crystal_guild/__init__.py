@@ -1,1 +1,1 @@
-__version__ = "1.9.1-performance-hardening"
+__version__ = "1.9.2-relic-arsenal-overhaul"
