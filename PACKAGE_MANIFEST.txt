@@ -1,17 +1,39 @@
-Crystal Guild v1.9.3 — Guild Initiatives incremental merge
-Release 1.9.3-guild-initiatives | Bot DB schema 26 | Hosted sync 1 | Protocol 39
-Contains changed/new source, migration, tests and guide files only. Public artwork, secrets and live databases are not packaged.
-Requires installed Alpha 13 with v1.9.1 and v1.9.2 overlays already applied.
+Crystal Guild 1.9.4 — Crafting Reforged, changed-files merge
+Requires Alpha13 + 1.9.1 + 1.9.2 + complete 1.9.3 Guild Initiatives/Camp update.
+Bot schema 26; hosted sync schema 1; Portal protocol 39.
+FRONTEND BUILD REQUIRED: npm ci && npm run build in Web/frontend.
+Only edited/added paths are included; no existing public image tree or player data.
 
-Previous release manifests (historical):
-Crystal Guild Alpha 13 — Moogle Trading Post QoL
-Release 1.9.0-trading-post-qol-alpha13 | Bot DB schema 25 | Hosted sync 1 | Protocol 39
-Included in complete Alpha13 source package with all public assets. See START_HERE.md and RELEASE_NOTES.md.
-
-Previous manifest (historical):
-Crystal Guild v1.9.0 Alpha 12 — Camp & Recovery
-Release: 1.9.0-camp-recovery-alpha12 | Bot DB 24 | hosted sync 1 | Portal Actions 38
-- Authoritative Bot gameplay code, persisted Camp preparation migration, item and crafting data, tests
-- Preserved previous systems including Moogle Trading Post, Records & Moments and Mobile Combat HUD integrations
-- Paired with matching Alpha 12 Web and complete optimized public assets in outer ZIP
-Read README_FIRST.txt / UPGRADE_GUIDE.md / RELEASE_NOTES.md. Generated source checksums: outer SOURCE_SHA256.txt.
+Path | SHA-256 | Size (bytes)
+Bot/VERSION.txt | 039deba59c6f9d5102d11a361a4898f792d4382c0cc817747abc48e3ee483468 | 24
+Bot/CHANGELOG.md | 9bf664b983b0c75694986afb9a0f2c34387c4a429444718f7216d405c7748d81 | 5271
+Bot/RELEASE_NOTES.md | fcc4b8764580ebccded6b18ef82091c38e6e8314b976736a68d77fe675afcab2 | 9887
+Bot/crystal_guild/__init__.py | beeb464f9c1c9f65cb24cb21155427a6a9d23200cbebc637bddd563f89cfac47 | 40
+Bot/crystal_guild/crafting_catalog.py | 0d9b287b34e41a7c1ec8b3159f1799978975f33e52d0e6b8620ec8be69eae5c7 | 3106
+Bot/crystal_guild/data.py | b1dc789a4dc8ae1252a57f0a3660777e44748925cc596a78652970dd7981ef3a | 43189
+Bot/crystal_guild/engine.py | ef3f7186d1eca0b8df1bb86d17870ab0a264d4e0becffbac9c02d6bd900280f7 | 1072228
+Bot/crystal_guild/player_snapshot.py | 4b4da7b17c13c12c7cdd8725663a3de513642288f07ef4fd713891eac39d98bf | 111967
+Bot/crystal_guild/portal_actions.py | e30d8ae806c95a68cdbb32df03a1c4d7e45a5ef64a31d31de39de55d988bc3bf | 59057
+Bot/crystal_guild/portal_sync.py | 04b32f487cdf981fb8cdf5adfb1b69711aa78b4fe52313862f67ee36b7c6375d | 22013
+Bot/data/recipes.json | 5294929d5c05aa96985d77a79aab8b3220b971251c2f90f27938c778bc45e864 | 91028
+Bot/tests/test_crafting_194.py | 8beea02d023873816cec15393a16f8a246808d322919d87c51b8fe633a64cb79 | 6698
+Bot/tests/test_item_expansion.py | 85c29bb5d5085db4560740e7272e2c9402d814edb925a00ba9dca4922d5c250c | 8053
+Web/VERSION.txt | 039deba59c6f9d5102d11a361a4898f792d4382c0cc817747abc48e3ee483468 | 24
+Web/crystal_guild/__init__.py | beeb464f9c1c9f65cb24cb21155427a6a9d23200cbebc637bddd563f89cfac47 | 40
+Web/crystal_guild/hosted_portal.py | b14449dda003ef25e53e0dabdfaf39a56ab9ea90705c6e9a17127fad991d8f96 | 152458
+Web/frontend/package.json | a0b2943dbb0373aa735d960a3f51b3e04472a22d74a55e893f0b6cbc8dd8b6f9 | 573
+Web/frontend/package-lock.json | 627fa430f5864b20259372bd719c67b6bf93f0c5f84957024d853568a5d66e98 | 29347
+Web/frontend/public/guide-body.html | 19c5920b133670f4705efa4ea50b525aadc9cf914b2eda5682f4a9b3265ea65a | 112058
+Web/frontend/public/guide-data.json | 0ee847a1b477e0d881daba3ca4b8c30d0a1a498590d7e8d01b8aa7bcf08db892 | 468388
+Web/frontend/src/api/auth.js | c7a7e63acb7a914ce9d36f4a46424536d9d36898ca1ffdfa0cb85d41440d0691 | 18773
+Web/frontend/src/player/Blacksmith.jsx | da82ffe78a7328bf754c9b5d99102893ff93d4d8e654846587748e6cad089559 | 24499
+Web/frontend/src/player/CraftingWorkbench.jsx | 493e04db50a414859d993e16b6fe7decf94552d422768c97715a43146deb7581 | 13237
+Web/frontend/src/player/whatsNewData.js | a63e848d84c038a4927862d15d8e5668d9b835a6b56ee4c76f787c3896512508 | 84063
+Web/frontend/src/styles/crafting-194.css | 699b58b37b40f48cd10105d1836d00dfd72955940f0e06352f2acbebfc876f70 | 10334
+Web/frontend/src/utils/craftingFilters.js | c4211100250b306b77e720e7bb4b927db1ebd547c83dcf55637e6a25e7704a45 | 1910
+Web/frontend/src/version.js | 55fc25dea90b49571a2aade6278f0c65683dd15b8663be097ed8bb342faa1141 | 269
+Web/frontend/tests/crafting194.test.mjs | c05997d3655230b56c08711a5a274769840c41c029946d9e57631e8ff5b6dbdf | 3138
+Web/frontend/tests/itemCatalog.test.mjs | f63bded9edcd7287e67bcc468b83c5f134316a25a1c352b2a90878f750112c7c | 5309
+BUILD_CRYSTAL_GUILD_1_9_4.cmd | 87a8edb1b8444231c254fb494c4ef138864733f3b558c393be7afd6d216aa3d8 | 410
+BUILD_CRYSTAL_GUILD_1_9_4.sh | 479e537a6703b920efc90339b72e388550e05abdb89492716530850b4fd52ded | 314
+RELEASE_NOTES_1_9_4.md | b3dbda5fe660d5c4aeb4d6adff08f0c6af3e542c0644ca73bc820bcbd3126a98 | 4042

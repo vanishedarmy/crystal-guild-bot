@@ -17,7 +17,7 @@ from .config import load_dotenv
 from .player_snapshot import PortalRepository
 
 
-SYNC_VERSION = "1.9.3-guild-initiatives"
+SYNC_VERSION = "1.9.4-crafting-reforged"
 LOGGER = logging.getLogger("CrystalGuild.PortalSync")
 SCHEMA_VERSION = 1
 MODULES = (

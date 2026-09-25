@@ -18,7 +18,8 @@
     "output": {
       "item_id": "antidote",
       "quantity": 3
-    }
+    },
+    "category": "field"
   },
   {
     "id": "field_hi_potion",
@@ -39,7 +40,8 @@
     "output": {
       "item_id": "hi_potion",
       "quantity": 1
-    }
+    },
+    "category": "field"
   },
   {
     "id": "echo_herb_bundle",
@@ -60,7 +62,8 @@
     "output": {
       "item_id": "echo_herbs",
       "quantity": 3
-    }
+    },
+    "category": "field"
   },
   {
     "id": "stamina_draught_mix",
@@ -81,7 +84,8 @@
     "output": {
       "item_id": "stamina_draught",
       "quantity": 1
-    }
+    },
+    "category": "field"
   },
   {
     "id": "ether_distillation",
@@ -102,7 +106,8 @@
     "output": {
       "item_id": "ether",
       "quantity": 1
-    }
+    },
+    "category": "field"
   },
   {
     "id": "hi_potion_batch",
@@ -119,7 +124,8 @@
     "output": {
       "item_id": "hi_potion",
       "quantity": 2
-    }
+    },
+    "category": "field"
   },
   {
     "id": "iron_tonic_mix",
@@ -140,7 +146,8 @@
     "output": {
       "item_id": "iron_tonic",
       "quantity": 1
-    }
+    },
+    "category": "field"
   },
   {
     "id": "smoke_bomb_kit",
@@ -161,7 +168,8 @@
     "output": {
       "item_id": "smoke_bomb",
       "quantity": 1
-    }
+    },
+    "category": "field"
   },
   {
     "id": "ether_bundle",
@@ -182,7 +190,8 @@
     "output": {
       "item_id": "ether",
       "quantity": 2
-    }
+    },
+    "category": "field"
   },
   {
     "id": "remedy_kit",
@@ -211,7 +220,8 @@
     "output": {
       "item_id": "remedy",
       "quantity": 1
-    }
+    },
+    "category": "field"
   },
   {
     "id": "thieves_gloves",
@@ -236,7 +246,8 @@
     "output": {
       "item_id": "thieves_gloves",
       "quantity": 1
-    }
+    },
+    "category": "accessories"
   },
   {
     "id": "flame_tongue",
@@ -261,7 +272,8 @@
     "output": {
       "item_id": "flame_tongue",
       "quantity": 1
-    }
+    },
+    "category": "weapons"
   },
   {
     "id": "icebrand",
@@ -286,7 +298,8 @@
     "output": {
       "item_id": "icebrand",
       "quantity": 1
-    }
+    },
+    "category": "weapons"
   },
   {
     "id": "mythril_knuckles",
@@ -311,7 +324,8 @@
     "output": {
       "item_id": "mythril_knuckles",
       "quantity": 1
-    }
+    },
+    "category": "weapons"
   },
   {
     "id": "black_robe",
@@ -336,7 +350,8 @@
     "output": {
       "item_id": "black_robe",
       "quantity": 1
-    }
+    },
+    "category": "armor"
   },
   {
     "id": "white_robe",
@@ -361,7 +376,8 @@
     "output": {
       "item_id": "white_robe",
       "quantity": 1
-    }
+    },
+    "category": "armor"
   },
   {
     "id": "thunder_spear",
@@ -386,7 +402,8 @@
     "output": {
       "item_id": "thunder_spear",
       "quantity": 1
-    }
+    },
+    "category": "weapons"
   },
   {
     "id": "artisan_hammer",
@@ -412,7 +429,8 @@
     "output": {
       "item_id": "artisan_hammer",
       "quantity": 1
-    }
+    },
+    "category": "accessories"
   },
   {
     "id": "morbol_lash",
@@ -437,7 +455,8 @@
     "output": {
       "item_id": "morbol_lash",
       "quantity": 1
-    }
+    },
+    "category": "weapons"
   },
   {
     "id": "crystal_cuirass",
@@ -462,7 +481,8 @@
     "output": {
       "item_id": "crystal_cuirass",
       "quantity": 1
-    }
+    },
+    "category": "armor"
   },
   {
     "id": "crystal_focus",
@@ -487,7 +507,8 @@
     "output": {
       "item_id": "crystal_focus",
       "quantity": 1
-    }
+    },
+    "category": "accessories"
   },
   {
     "id": "magitek_edge",
@@ -512,7 +533,8 @@
     "output": {
       "item_id": "magitek_edge",
       "quantity": 1
-    }
+    },
+    "category": "weapons"
   },
   {
     "id": "dragon_mail",
@@ -538,7 +560,8 @@
     "output": {
       "item_id": "dragon_mail",
       "quantity": 1
-    }
+    },
+    "category": "armor"
   },
   {
     "id": "adamant_guard",
@@ -564,7 +587,8 @@
     "output": {
       "item_id": "adamant_guard",
       "quantity": 1
-    }
+    },
+    "category": "armor"
   },
   {
     "id": "void_charm",
@@ -590,7 +614,8 @@
     "output": {
       "item_id": "void_charm",
       "quantity": 1
-    }
+    },
+    "category": "accessories"
   },
   {
     "id": "trail_rations",
@@ -611,6 +636,4058 @@
     "output": {
       "item_id": "trail_rations",
       "quantity": 2
-    }
+    },
+    "category": "field"
+  },
+  {
+    "id": "field_potion_pair",
+    "name": "Field Potion Pair",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 1,
+    "gil": 30,
+    "materials": [
+      {
+        "item_id": "wolf_fang",
+        "quantity": 1
+      },
+      {
+        "item_id": "fish_scale",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "potion",
+      "quantity": 2
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_eye_drops",
+    "name": "Clear-Sight Drops",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 2,
+    "gil": 35,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 1
+      },
+      {
+        "item_id": "imp_wing",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "eye_drops",
+      "quantity": 2
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_antidote_mix",
+    "name": "Antidote Field Mix",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 3,
+    "gil": 40,
+    "materials": [
+      {
+        "item_id": "ochu_vine",
+        "quantity": 1
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "antidote",
+      "quantity": 2
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_phoenix_down",
+    "name": "Phoenix Down Binding",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 9,
+    "gil": 135,
+    "materials": [
+      {
+        "item_id": "imp_wing",
+        "quantity": 3
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 2
+      },
+      {
+        "item_id": "potion",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "phoenix_down",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_chronos_tear",
+    "name": "Chronos Tear Distillation",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 8,
+    "gil": 90,
+    "materials": [
+      {
+        "item_id": "cockatrice_pinion",
+        "quantity": 2
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 1
+      },
+      {
+        "item_id": "echo_herbs",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "chronos_tear",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_smelling_salts",
+    "name": "Reviving Salts",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 8,
+    "gil": 100,
+    "materials": [
+      {
+        "item_id": "imp_wing",
+        "quantity": 2
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 1
+      },
+      {
+        "item_id": "potion",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "smelling_salts",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_mega_potion",
+    "name": "Mega-Potion Refinement",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 19,
+    "gil": 180,
+    "materials": [
+      {
+        "item_id": "potion",
+        "quantity": 2
+      },
+      {
+        "item_id": "fish_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ochu_vine",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mega_potion",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_x_potion",
+    "name": "X-Potion Concentrate",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 27,
+    "gil": 400,
+    "materials": [
+      {
+        "item_id": "hi_potion",
+        "quantity": 2
+      },
+      {
+        "item_id": "crystal_shard",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "x_potion",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_hi_ether",
+    "name": "Hi-Ether Distillation",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 320,
+    "materials": [
+      {
+        "item_id": "ether",
+        "quantity": 2
+      },
+      {
+        "item_id": "crystal_shard",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "hi_ether",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_turbo_ether",
+    "name": "Turbo-Ether Infusion",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 45,
+    "gil": 1100,
+    "materials": [
+      {
+        "item_id": "hi_ether",
+        "quantity": 2
+      },
+      {
+        "item_id": "crystal_core",
+        "quantity": 1
+      },
+      {
+        "item_id": "magitek_capacitor",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "turbo_ether",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_warriors_tonic",
+    "name": "Warrior's Tonic",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 350,
+    "materials": [
+      {
+        "item_id": "stamina_draught",
+        "quantity": 2
+      },
+      {
+        "item_id": "iron_ore",
+        "quantity": 2
+      },
+      {
+        "item_id": "gigas_brace",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "warriors_tonic",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_heros_brew",
+    "name": "Hero's Brew",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 45,
+    "gil": 1150,
+    "materials": [
+      {
+        "item_id": "warriors_tonic",
+        "quantity": 2
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      },
+      {
+        "item_id": "crystal_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "heros_brew",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "camp_tent_bundle",
+    "name": "Expedition Tent",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 18,
+    "gil": 300,
+    "materials": [
+      {
+        "item_id": "trail_rations",
+        "quantity": 2
+      },
+      {
+        "item_id": "hi_potion",
+        "quantity": 1
+      },
+      {
+        "item_id": "ether",
+        "quantity": 1
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "tent",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_panacea",
+    "name": "Panacea Refinement",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 48,
+    "gil": 1150,
+    "materials": [
+      {
+        "item_id": "remedy",
+        "quantity": 2
+      },
+      {
+        "item_id": "magic_pot_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "crystal_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "panacea",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_swiftwater",
+    "name": "Swiftwater Extract",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 18,
+    "gil": 200,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "swiftwater",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_regen_tonic",
+    "name": "Regeneration Tonic",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 18,
+    "gil": 220,
+    "materials": [
+      {
+        "item_id": "ochu_vine",
+        "quantity": 2
+      },
+      {
+        "item_id": "ether",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "regen_tonic",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_war_horn",
+    "name": "Battlefield War Horn",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 240,
+    "materials": [
+      {
+        "item_id": "wolf_fang",
+        "quantity": 5
+      },
+      {
+        "item_id": "iron_ore",
+        "quantity": 2
+      },
+      {
+        "item_id": "gigas_brace",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "war_horn",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_mages_incense",
+    "name": "Mage's Incense",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 250,
+    "materials": [
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 2
+      },
+      {
+        "item_id": "echo_herbs",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "mages_incense",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_arctic_wind",
+    "name": "Arctic Wind Flask",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 15,
+    "gil": 200,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 5
+      },
+      {
+        "item_id": "chimera_scale",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "arctic_wind",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_lightning_marble",
+    "name": "Charged Marble",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 15,
+    "gil": 220,
+    "materials": [
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 2
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "lightning_marble",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_water_gem",
+    "name": "Water Gem Resonance",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 27,
+    "gil": 370,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 6
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "water_gem",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_earth_drum",
+    "name": "Earth Drum Assembly",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 27,
+    "gil": 340,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "antlion_mandible",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "earth_drum",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_shadow_gem",
+    "name": "Shadow Gem Infusion",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 44,
+    "gil": 1100,
+    "materials": [
+      {
+        "item_id": "demon_horn",
+        "quantity": 2
+      },
+      {
+        "item_id": "void_essence",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "shadow_gem",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_elixir",
+    "name": "Elixir Synthesis",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 62,
+    "gil": 2800,
+    "materials": [
+      {
+        "item_id": "magic_pot_shard",
+        "quantity": 2
+      },
+      {
+        "item_id": "rift_crystal",
+        "quantity": 2
+      },
+      {
+        "item_id": "remedy",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "elixir",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "field_megalixir",
+    "name": "Megalixir Synthesis",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 8500,
+    "materials": [
+      {
+        "item_id": "elixir",
+        "quantity": 2
+      },
+      {
+        "item_id": "absolute_crystal",
+        "quantity": 2
+      },
+      {
+        "item_id": "magic_pot_shard",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "megalixir",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "camp_trail_rations_bulk",
+    "name": "Trail Ration Supply Cache",
+    "category": "field",
+    "known_by_default": true,
+    "min_level": 7,
+    "gil": 90,
+    "materials": [
+      {
+        "item_id": "fish_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      },
+      {
+        "item_id": "potion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "trail_rations",
+      "quantity": 6
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_bronze_waraxe",
+    "name": "Bronze Waraxe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 120,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "bronze_waraxe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_steel_greataxe",
+    "name": "Steel Greataxe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 330,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "steel_greataxe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_rune_axe",
+    "name": "Rune Axe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 710,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "rune_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_adamant_axe",
+    "name": "Adamant Axe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1210,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "adamant_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_darksteel_axe",
+    "name": "Darksteel Axe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1800,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "darksteel_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_demon_axe",
+    "name": "Demon Axe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2490,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "demon_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_titan_axe",
+    "name": "Titan Axe Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3810,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_iron_dirk",
+    "name": "Iron Dirk Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "iron_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_silver_knife",
+    "name": "Silver Knife Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 310,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "silver_knife",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_orichalcum_knife",
+    "name": "Orichalcum Knife Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 690,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "orichalcum_knife",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_platinum_stiletto",
+    "name": "Platinum Stiletto Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1200,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "platinum_stiletto",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_shadow_dirk",
+    "name": "Shadow Dirk Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1810,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "shadow_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_zwill_crossblade",
+    "name": "Zwill Crossblade Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2480,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "zwill_crossblade",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_platinum_dirk",
+    "name": "Platinum Dirk Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3800,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_iron_pistol",
+    "name": "Iron Pistol Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 120,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "iron_pistol",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_steel_revolver",
+    "name": "Steel Revolver Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 330,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "steel_revolver",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_revolver",
+    "name": "Mythril Revolver Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 710,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_revolver",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_aether_carbine",
+    "name": "Aether Carbine Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1220,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "aether_carbine",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_magitek_rifle",
+    "name": "Magitek Rifle Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1810,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "magitek_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_machina_repeater",
+    "name": "Machina Repeater Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2500,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "machina_repeater",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_cerulean_rifle",
+    "name": "Cerulean Rifle Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3820,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_maple_harp",
+    "name": "Maple Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "maple_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_rosewood_harp",
+    "name": "Rosewood Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 310,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "rosewood_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_dream_harp",
+    "name": "Dream Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 690,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "dream_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_rune_harp",
+    "name": "Rune Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1190,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "rune_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_celestial_harp",
+    "name": "Celestial Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1820,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "celestial_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_apollo_harp",
+    "name": "Apollo Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2480,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "apollo_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_seraph_harp",
+    "name": "Seraph Harp Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3800,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_iron_katana",
+    "name": "Iron Katana Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 120,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "iron_katana",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_osafune",
+    "name": "Osafune Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 330,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "osafune",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_kotetsu",
+    "name": "Kotetsu Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 710,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "kotetsu",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_genji_katana",
+    "name": "Genji Katana Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1210,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "genji_katana",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_murakumo",
+    "name": "Murakumo Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1820,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "murakumo",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_murasame",
+    "name": "Murasame Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2500,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "murasame",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_heavens_cloud",
+    "name": "Heaven's Cloud Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3820,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_brass_knuckles",
+    "name": "Brass Knuckles Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "brass_knuckles",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_steel_cesti",
+    "name": "Steel Cesti Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 300,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "steel_cesti",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_claws",
+    "name": "Mythril Claws Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 680,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_diamond_knuckles",
+    "name": "Diamond Knuckles Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1190,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "diamond_knuckles",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_hell_claws",
+    "name": "Hell Claws Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1830,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "hell_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_kaiser_knuckles",
+    "name": "Kaiser Knuckles Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2470,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "kaiser_knuckles",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_dragon_claws",
+    "name": "Dragon Claws Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3790,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_iron_rapier",
+    "name": "Iron Rapier Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "iron_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_foil",
+    "name": "Mythril Foil Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 320,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_foil",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_coral_rapier",
+    "name": "Coral Rapier Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 700,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "coral_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_spellblade_rapier",
+    "name": "Spellblade Rapier Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1200,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "spellblade_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_diamond_rapier",
+    "name": "Diamond Rapier Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1840,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "diamond_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_enhancer",
+    "name": "Enhancer Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2490,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "enhancer",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_crystal_rapier",
+    "name": "Crystal Rapier Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3810,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_bronze_lance",
+    "name": "Bronze Lance Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "bronze_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_steel_lance",
+    "name": "Steel Lance Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 320,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "steel_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_wyvern_spear",
+    "name": "Wyvern Spear Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 700,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "wyvern_spear",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_dragonbone_spear",
+    "name": "Dragonbone Spear Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1210,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "dragonbone_spear",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_dragon_spear",
+    "name": "Dragon Spear Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1840,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "dragon_spear",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_holy_lance",
+    "name": "Holy Lance Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2490,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "holy_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_dragon_lance",
+    "name": "Dragon Lance Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3810,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_elm_staff",
+    "name": "Elm Staff Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "elm_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_silver_staff",
+    "name": "Silver Staff Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 310,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "silver_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_sage_rod",
+    "name": "Sage Rod Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 700,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "sage_rod",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_high_mage_staff",
+    "name": "High Mage Staff Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1200,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "high_mage_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_sage_staff",
+    "name": "Sage Staff Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1850,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "sage_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_magus_staff",
+    "name": "Magus Staff Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2490,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "magus_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_astral_staff",
+    "name": "Astral Staff Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3810,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_tempered_shortsword",
+    "name": "Tempered Shortsword Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "tempered_shortsword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_steel_longsword",
+    "name": "Steel Longsword Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 310,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "steel_longsword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_sword",
+    "name": "Mythril Sword Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 670,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_platinum_blade",
+    "name": "Platinum Blade Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1200,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "platinum_blade",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_rune_blade",
+    "name": "Rune Blade Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1850,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "rune_blade",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_defender_blade",
+    "name": "Defender Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2540,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "defender_blade",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_crystal_sword",
+    "name": "Crystal Sword Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3890,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 4
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_willow_wand",
+    "name": "Willow Wand Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 110,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wolf_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "willow_wand",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_silver_wand",
+    "name": "Silver Wand Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 310,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "bomb_fragment",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "silver_wand",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_wand",
+    "name": "Mythril Wand Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 700,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 4
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      },
+      {
+        "item_id": "magitek_scrap",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_wand",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_crystal_wand",
+    "name": "Crystal Wand Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1200,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 6
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "crystal_wand",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_magus_wand",
+    "name": "Magus Wand Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1860,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ahriman_lens",
+        "quantity": 2
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "magus_wand",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_stardust_wand",
+    "name": "Stardust Wand Assembly",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2490,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 3
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "stardust_wand",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_scale_coat",
+    "name": "Scale Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 100,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "bone_chip",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "scale_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_bronze_hauberk",
+    "name": "Bronze Hauberk Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 100,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "bone_chip",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "bronze_hauberk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_leather_jerkin",
+    "name": "Leather Jerkin Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 100,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "bone_chip",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "leather_jerkin",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_cotton_robe",
+    "name": "Cotton Robe Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 5,
+    "gil": 100,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "bone_chip",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "cotton_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_brigand_coat",
+    "name": "Brigand Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 280,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "cockatrice_pinion",
+        "quantity": 3
+      },
+      {
+        "item_id": "ochu_vine",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "brigand_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_iron_cuirass",
+    "name": "Iron Cuirass Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 290,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "cockatrice_pinion",
+        "quantity": 3
+      },
+      {
+        "item_id": "ochu_vine",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "iron_cuirass",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_scouts_vest",
+    "name": "Scout's Vest Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 280,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "cockatrice_pinion",
+        "quantity": 3
+      },
+      {
+        "item_id": "ochu_vine",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "scouts_vest",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_linen_robe",
+    "name": "Linen Robe Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 280,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "cockatrice_pinion",
+        "quantity": 3
+      },
+      {
+        "item_id": "ochu_vine",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "linen_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_coat",
+    "name": "Mythril Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 630,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "lamia_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_cuirass",
+    "name": "Mythril Cuirass Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 620,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "lamia_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_cuirass",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mythril_plate",
+    "name": "Mythril Plate Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 640,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "lamia_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mythril_plate",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_ninja_garb",
+    "name": "Ninja Garb Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 620,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "lamia_scale",
+        "quantity": 3
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ninja_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_runic_coat",
+    "name": "Runic Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1100,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "runic_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_platinum_plate",
+    "name": "Platinum Plate Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1110,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "platinum_plate",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_duelists_garb",
+    "name": "Duelist's Garb Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1090,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "duelists_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_high_mage_robe",
+    "name": "High Mage Robe Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 1100,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 5
+      },
+      {
+        "item_id": "ironclad_plate",
+        "quantity": 2
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "high_mage_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_wyrmhide_coat",
+    "name": "Wyrmhide Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1660,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "wyrmhide_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_darksteel_plate",
+    "name": "Darksteel Plate Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1660,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "darksteel_plate",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_shadow_garb",
+    "name": "Shadow Garb Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1660,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "shadow_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_sage_robe",
+    "name": "Sage Robe Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 40,
+    "gil": 1660,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 5
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 3
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "sage_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_aegis_coat",
+    "name": "Aegis Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2220,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "aegis_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_crystal_plate",
+    "name": "Crystal Plate Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2230,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "crystal_plate",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_shadow_weave",
+    "name": "Shadow Weave Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2210,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "shadow_weave",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_sorcerers_robe",
+    "name": "Sorcerer's Robe Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 50,
+    "gil": 2210,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 7
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "sorcerers_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_crystal_coat",
+    "name": "Crystal Coat Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3420,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 4
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_adamant_plate_shop",
+    "name": "Adamant Plate Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3430,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 4
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_black_garb",
+    "name": "Black Garb Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3410,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 4
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_oracle_robe",
+    "name": "Oracle Robe Tailoring",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 65,
+    "gil": 3410,
+    "materials": [
+      {
+        "item_id": "rift_crystal",
+        "quantity": 3
+      },
+      {
+        "item_id": "dragon_scale",
+        "quantity": 4
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_power_wrist",
+    "name": "Power Wrist Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 240,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "power_wrist",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_magic_ring",
+    "name": "Magic Ring Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 240,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "magic_ring",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_knights_gauntlet",
+    "name": "Knight's Gauntlet Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 260,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "knights_gauntlet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_thiefs_gloves",
+    "name": "Thief's Gloves Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 260,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "thiefs_gloves",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mage_earring",
+    "name": "Mage Earring Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 260,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mage_earring",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_dragoon_boots",
+    "name": "Dragoon Boots Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 25,
+    "gil": 860,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "dragoon_boots",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_bardic_charm",
+    "name": "Bardic Charm Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 25,
+    "gil": 810,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "bardic_charm",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_machinists_goggles",
+    "name": "Machinist's Goggles Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 25,
+    "gil": 840,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "machinists_goggles",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_star_pendant",
+    "name": "Star Pendant Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 230,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "star_pendant",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_silver_pendant",
+    "name": "Silver Pendant Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 240,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      },
+      {
+        "item_id": "imp_wing",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "silver_pendant",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_blindfold",
+    "name": "Blindfold Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 12,
+    "gil": 240,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      },
+      {
+        "item_id": "imp_wing",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "blindfold",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_chronos_charm",
+    "name": "Chronos Charm Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 22,
+    "gil": 490,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "lamia_scale",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "chronos_charm",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_steadfast_charm",
+    "name": "Steadfast Charm Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 24,
+    "gil": 510,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "chimera_scale",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "steadfast_charm",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_ward_ring",
+    "name": "Ward Ring Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 28,
+    "gil": 620,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "ancient_cloth",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "ward_ring",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_guard_belt",
+    "name": "Guard Belt Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 260,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "guard_belt",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_spirit_charm",
+    "name": "Spirit Charm Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 10,
+    "gil": 260,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "goblin_medallion",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "spirit_charm",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_speed_boots",
+    "name": "Speed Boots Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 14,
+    "gil": 300,
+    "materials": [
+      {
+        "item_id": "iron_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "speed_boots",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_sniper_eye",
+    "name": "Sniper Eye Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 20,
+    "gil": 490,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 2
+      },
+      {
+        "item_id": "coeurl_whisker",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "sniper_eye",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_critical_band",
+    "name": "Critical Band Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 22,
+    "gil": 530,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 3
+      },
+      {
+        "item_id": "lamia_scale",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "critical_band",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_knights_crest",
+    "name": "Knight’s Crest Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 730,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "knights_crest",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mages_crest",
+    "name": "Mage’s Crest Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 730,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mages_crest",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_warriors_crest",
+    "name": "Warrior’s Crest Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 30,
+    "gil": 730,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "wyvern_scale",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "warriors_crest",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_mana_charm",
+    "name": "Mana Charm Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 35,
+    "gil": 840,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 4
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "mana_charm",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_adrenaline_charm",
+    "name": "Adrenaline Charm Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 35,
+    "gil": 840,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 4
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "adrenaline_charm",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_crystal_guard",
+    "name": "Crystal Guard Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 45,
+    "gil": 1670,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 6
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "crystal_guard",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_sages_emblem",
+    "name": "Sage’s Emblem Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 45,
+    "gil": 1670,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 6
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "sages_emblem",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
+  },
+  {
+    "id": "workbench_champions_emblem",
+    "name": "Champion’s Emblem Setting",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 45,
+    "gil": 1670,
+    "materials": [
+      {
+        "item_id": "crystal_shard",
+        "quantity": 6
+      },
+      {
+        "item_id": "dragon_fang",
+        "quantity": 2
+      },
+      {
+        "item_id": "behemoth_hide",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "champions_emblem",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.4"
   }
 ]

@@ -14,6 +14,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
+from .crafting_catalog import CATEGORIES, recipe_category, recipe_subcategory
 from .active_battle import (
     action_priority,
     FULL_RESOURCE_SENTINEL,
@@ -10726,8 +10727,14 @@ class CrystalGuildEngine:
             return "Return from your Expedition before resynthesizing equipment."
         return ""
 
-    def _portal_crafting_state_data(self, twitch_id: str) -> dict[str, Any]:
-        """Return live Blacksmith recipe, material, and forge readiness state."""
+    def _portal_crafting_state_data(self, twitch_id: str, *, mode: str = "legacy") -> dict[str, Any]:
+        """Return live Blacksmith readiness; richer 1.9.4 metadata is opt-in.
+
+        Legacy mode retains the small original 1.9.3 payload for clients already
+        deployed. The Reforged client explicitly requests the full expanded
+        recipe index and per-ingredient acquisition hints.
+        """
+        is_reforged = mode == "reforged"
         p = self._player(twitch_id)
         if not p:
             return {}
@@ -10803,37 +10810,87 @@ class CrystalGuildEngine:
         resynthesis_count = max(0, int(resynthesis_count_row["total"] or 0)) if resynthesis_count_row else 0
 
         recipes: list[dict[str, Any]] = []
-        known_recipes = [recipe for recipe in self.data.recipes.values() if self._recipe_known(twitch_id, recipe)]
+        # One discovery lookup rather than a database round-trip per recipe.
+        unlocked_ids = {
+            str(row["recipe_id"])
+            for row in self.db.all("SELECT recipe_id FROM player_recipes WHERE player_id=?", (twitch_id,))
+        }
+        known_recipes = [
+            recipe for recipe in self.data.recipes.values()
+            if (recipe.get("known_by_default") or recipe["id"] in unlocked_ids)
+            and (is_reforged or not recipe.get("introduced_in"))
+        ]
         known_recipes.sort(key=lambda recipe: (int(recipe.get("min_level", 1) or 1), str(recipe.get("name") or "")))
+        category_totals = {category: {"known": 0, "total": 0, "craftable": 0} for category in CATEGORIES}
+        for recipe in self.data.recipes.values():
+            item = self.data.items.get(str((recipe.get("output") or {}).get("item_id") or ""), {})
+            cat = recipe_category(recipe, item)
+            category_totals[cat]["total"] += 1
+            if recipe.get("known_by_default") or recipe["id"] in unlocked_ids:
+                category_totals[cat]["known"] += 1
         for recipe in known_recipes:
             min_level = int(recipe.get("min_level", 1) or 1)
             gil_each = max(0, int(recipe.get("gil", 0) or 0))
             seals_each = max(0, int(recipe.get("seal_cost", 0) or 0))
             material_payload: list[dict[str, Any]] = []
             resource_cap = 20
+            missing_requirements: list[str] = []
             if level < min_level:
                 resource_cap = 0
+                missing_requirements.append(f"Character level {min_level} required")
             if gil_each > 0:
                 resource_cap = min(resource_cap, gil // gil_each)
+                if gil < gil_each:
+                    missing_requirements.append(f"Need {gil_each - gil:,} more Gil")
             if seals_each > 0:
                 resource_cap = min(resource_cap, seals // seals_each)
+                if seals < seals_each:
+                    missing_requirements.append(f"Need {seals_each - seals} more Hunt Seals")
             for material in recipe.get("materials", []):
                 item_id = str(material.get("item_id") or "")
                 need = max(1, int(material.get("quantity", 1) or 1))
                 owned = inventory.get(item_id, 0)
+                available = max(0, owned - (1 if item_id in equipped_ids else 0))
                 if item_id in self.data.items:
-                    resource_cap = min(resource_cap, owned // need)
-                    material_payload.append({
+                    resource_cap = min(resource_cap, available // need)
+                    material_row = {
                         "item_id": item_id,
                         "name": str(self.data.items[item_id].get("name") or item_id),
                         "quantity": need,
                         "owned": owned,
-                        "enough": owned >= need,
-                    })
+                        "enough": available >= need,
+                    }
+                    if is_reforged:
+                        material_row["type"] = str(self.data.items[item_id].get("type") or "material")
+                        material_row["rarity"] = str(self.data.items[item_id].get("rarity") or "common")
+                        material_row["reserved"] = 1 if item_id in equipped_ids else 0
+                        material_row["source_hints"] = self.data.crafting_sources.get(item_id, [])[:3]
+                    material_payload.append(material_row)
+                    if available < need:
+                        material_name = str(self.data.items[item_id].get("name") or item_id)
+                        if item_id in equipped_ids and owned >= need:
+                            missing_requirements.append(f"Unequip {material_name} before consuming your last copy")
+                        else:
+                            missing_requirements.append(f"Need {need - available} more {material_name}")
+            if combat_locked:
+                missing_requirements.append("Unavailable during combat or a raid")
             output = recipe.get("output") if isinstance(recipe.get("output"), dict) else {}
             output_id = str(output.get("item_id") or "")
             output_item = self.data.items.get(output_id, {})
-            recipes.append({
+            category = recipe_category(recipe, output_item)
+            can_craft = bool(not combat_locked and resource_cap >= 1)
+            if can_craft:
+                category_totals[category]["craftable"] += 1
+            output_payload = {
+                "item_id": output_id,
+                "name": str(output_item.get("name") or output_id),
+                "quantity": max(1, int(output.get("quantity", 1) or 1)),
+                "type": str(output_item.get("type") or "item"),
+                "rarity": str(output_item.get("rarity") or "common"),
+                "description": str(output_item.get("description") or ""),
+                "owned": inventory.get(output_id, 0),
+            }
+            recipe_payload = {
                 "id": str(recipe.get("id") or ""),
                 "name": str(recipe.get("name") or "Recipe"),
                 "min_level": min_level,
@@ -10841,18 +10898,23 @@ class CrystalGuildEngine:
                 "gil_each": gil_each,
                 "seals_each": seals_each,
                 "materials": material_payload,
-                "output": {
-                    "item_id": output_id,
-                    "name": str(output_item.get("name") or output_id),
-                    "quantity": max(1, int(output.get("quantity", 1) or 1)),
-                    "type": str(output_item.get("type") or "item"),
-                    "rarity": str(output_item.get("rarity") or "common"),
-                    "description": str(output_item.get("description") or ""),
-                    "owned": inventory.get(output_id, 0),
-                },
+                "output": output_payload,
                 "max_quantity": max(0, min(20, int(resource_cap))),
-                "craftable": bool(not combat_locked and resource_cap >= 1),
-            })
+                "craftable": can_craft,
+            }
+            if is_reforged:
+                output_payload.update({
+                    "min_level": max(1, int(output_item.get("min_level", output_item.get("shop_level", 1)) or 1)),
+                    "gear_family": str(output_item.get("gear_family") or ""),
+                    "allowed_jobs": list(output_item.get("allowed_jobs") or []),
+                    "bonuses": dict(output_item.get("bonuses") or {}),
+                })
+                recipe_payload.update({
+                    "category": category,
+                    "subcategory": recipe_subcategory(output_item),
+                    "missing_requirements": missing_requirements,
+                })
+            recipes.append(recipe_payload)
 
         forge_rules: list[dict[str, Any]] = []
         for index, rule in enumerate(self.data.forge):
@@ -10880,7 +10942,8 @@ class CrystalGuildEngine:
             "level": level,
             "combat_locked": bool(combat_locked),
             "known_recipe_count": len(known_recipes),
-            "recipe_total": len(self.data.recipes),
+            "recipe_total": len(self.data.recipes) if is_reforged else sum(not r.get("introduced_in") for r in self.data.recipes.values()),
+            **({"recipe_categories": category_totals} if is_reforged else {}),
             "recipes": recipes,
             "forge_rules": forge_rules,
             "forge_max": len(self.data.forge),
@@ -10890,12 +10953,12 @@ class CrystalGuildEngine:
             "resynthesis_lock_reason": resynthesis_lock,
         }
 
-    def portal_crafting_state(self, twitch_id: str) -> GameResult:
+    def portal_crafting_state(self, twitch_id: str, *, mode: str = "legacy") -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
         return GameResult.success(
             "Guild Blacksmith options ready.",
-            crafting_state=self._portal_crafting_state_data(twitch_id),
+            crafting_state=self._portal_crafting_state_data(twitch_id, mode=mode),
         )
 
     def _portal_crafting_result(self, action_id: str, result: GameResult, twitch_id: str) -> GameResult:
@@ -10945,6 +11008,14 @@ class CrystalGuildEngine:
                 missing.append(f"{total_gil:,} Gil ({int(fresh['gil'] or 0):,} owned)")
             if int(fresh["hunt_seals"] or 0) < total_seals:
                 missing.append(f"{total_seals} Hunt Seals ({int(fresh['hunt_seals'] or 0)} owned)")
+            equipment = conn.execute(
+                "SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?", (twitch_id,)
+            ).fetchone()
+            equipped_ids = {str(value) for value in (
+                equipment["weapon_id"] if equipment else None,
+                equipment["armor_id"] if equipment else None,
+                equipment["accessory_id"] if equipment else None,
+            ) if value}
             for material in recipe.get("materials", []):
                 item_id = str(material.get("item_id") or "")
                 need = max(1, int(material.get("quantity", 1) or 1)) * quantity
@@ -10952,6 +11023,8 @@ class CrystalGuildEngine:
                 owned = max(0, int(row["quantity"] or 0)) if row else 0
                 if owned < need:
                     missing.append(f"{self.data.items.get(item_id, {}).get('name', item_id)} x{need} ({owned} owned)")
+                elif item_id in equipped_ids and owned - need < 1:
+                    missing.append(f"Unequip {self.data.items.get(item_id, {}).get('name', item_id)} before consuming your last copy")
             if missing:
                 result = GameResult.fail("Cannot craft — " + "; ".join(missing[:6]))
                 self._portal_action_store_sql(conn, action_id, result)
@@ -17480,11 +17553,21 @@ class CrystalGuildEngine:
             missing.append(f"{gil:,} gil ({p['gil']:,} owned)")
         if p["hunt_seals"] < seals:
             missing.append(f"{seals} Hunt Seals ({p['hunt_seals']} owned)")
+        equipment = self.db.one(
+            "SELECT weapon_id,armor_id,accessory_id FROM equipment WHERE player_id=?", (player_id,)
+        )
+        equipped_ids = {str(value) for value in (
+            equipment["weapon_id"] if equipment else None,
+            equipment["armor_id"] if equipment else None,
+            equipment["accessory_id"] if equipment else None,
+        ) if value}
         for mat in recipe.get("materials", []):
             need = mat["quantity"] * quantity
             have = self._inventory_qty(player_id, mat["item_id"])
             if have < need:
                 missing.append(f"{self.data.items[mat['item_id']]['name']} x{need} ({have} owned)")
+            elif mat["item_id"] in equipped_ids and have - need < 1:
+                missing.append(f"Unequip {self.data.items[mat['item_id']]['name']} before consuming your last copy")
         return not missing, missing
 
     def _forge_bonus_per_level(self) -> float:

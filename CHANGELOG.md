@@ -1,3 +1,12 @@
+## v1.9.4 — Crafting Reforged
+
+- Expand the recipe catalog from 26 to 183, adding 157 recipes spanning field items, weapons, armor, and accessories; original recipes and earned discoveries remain intact.
+- Rebuild the signed-in Crafting Workbench with category filters, ingredient search, source hints, batch previews, favorite recipes, compact/comfortable text, high contrast, keyboard support, and phone-friendly layout.
+- Keep server-authoritative, replay-safe inventory spending and the existing 20-batch cap. Equipped last copies are reserved from crafting consumption.
+- Preserve the existing Forge, resynthesis and 1.9.3 Guild Initiatives systems. Legacy Portal clients continue receiving the original small recipe payload; only the new Workbench requests the expanded catalog.
+- Update Guide recipe data and release labels. No schema or Portal Action protocol migration is required (schema 26, protocol 39).
+- Source-only merge: Web/frontend must be rebuilt with `npm ci && npm run build` after applying.
+
 ## v1.9.3 — Guild Initiatives
 
 - Shared, verified objective accounting on Fellowship event receipts, with unique payout records, bounded progress storage and schema 26 migration with verified backup.

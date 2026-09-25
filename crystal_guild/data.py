@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .crafting_catalog import CATEGORIES, build_source_index, recipe_category
 from .bestiary_research import validate_research_overlay
 from .moments import validate_moment_catalog
 
@@ -28,6 +29,7 @@ class GameData:
         self.quests = self._load_map("quests.json")
         self.titles = self._load_map("titles.json")
         self.recipes = self._load_map("recipes.json")
+        self.crafting_sources = build_source_index(self)
         self.relics = self._load_map("relics.json")
         self.seal_shop = self._load_map("seal_shop.json")
         self.forge = sorted(self._load_list("forge.json"), key=lambda r: r["level"])
@@ -544,10 +546,36 @@ class GameData:
             require(self.titles, rewards.get("title"), f"quest {quest['id']} reward")
 
         for recipe in self.recipes.values():
-            for material in recipe.get("materials", []):
-                require(self.items, material.get("item_id"), f"recipe {recipe['id']} material")
+            where = f"recipe {recipe['id']}"
+            if not str(recipe.get("name") or "").strip():
+                errors.append(f"{where}: missing name")
+            if not 1 <= int(recipe.get("min_level", 0) or 0) <= 100:
+                errors.append(f"{where}: min_level must be within 1..100")
+            for cost_key in ("gil", "seal_cost"):
+                if int(recipe.get(cost_key, 0) or 0) < 0:
+                    errors.append(f"{where}: {cost_key} must be non-negative")
+            materials = recipe.get("materials", [])
+            if not isinstance(materials, list) or not materials:
+                errors.append(f"{where}: at least one ingredient is required")
+                materials = []
+            ingredient_ids: set[str] = set()
+            for material in materials:
+                item_id = str(material.get("item_id") or "")
+                require(self.items, item_id, f"{where} material")
+                if item_id in ingredient_ids:
+                    errors.append(f"{where}: repeated ingredient {item_id!r}")
+                ingredient_ids.add(item_id)
+                if int(material.get("quantity", 0) or 0) < 1:
+                    errors.append(f"{where}: ingredient quantity must be positive")
             output = recipe.get("output", {})
-            require(self.items, output.get("item_id"), f"recipe {recipe['id']} output")
+            output_id = str(output.get("item_id") or "")
+            require(self.items, output_id, f"{where} output")
+            if int(output.get("quantity", 0) or 0) < 1:
+                errors.append(f"{where}: output quantity must be positive")
+            if output_id in self.items and recipe.get("category") is not None:
+                expected_category = recipe_category({}, self.items[output_id])
+                if recipe["category"] not in CATEGORIES or recipe["category"] != expected_category:
+                    errors.append(f"{where}: category does not match output type")
 
         for relic in self.relics.values():
             require(self.jobs, relic.get("job_id"), f"relic {relic['id']} job")

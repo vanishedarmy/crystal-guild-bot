@@ -1,3 +1,34 @@
+# Crystal Guild v1.9.4 — Crafting Reforged
+
+**Changed-files merge** for an installation already containing Alpha 13, v1.9.1, v1.9.2, and the final v1.9.3 Guild Initiatives/Camp hotfixes. It is not a complete replacement for the Bot, hosted Web, or ~200 MB existing public artwork library.
+
+## What's new
+
+- **183 recipes, 157 additions:** 37 field-item, 82 weapon, 33 armor, and 31 accessory recipes. All 33 current consumables have at least one recipe, and existing 26 recipes remain intact. Seven existing discoverable recipes remain earned rather than unlocked by default.
+- **Accessible Crafting Workbench:** keyboard-navigation and assistive labels, search for recipes/ingredients/jobs, category/subcategory/readiness/favorites filters, large touch controls, responsive mobile directory/details, clear missing-requirement explanations, material acquisition hints drawn from actual game source tables, comfortable/compact text, and high-contrast styling.
+- **Equipment crafting:** craftable weapons, armor, and accessories use established item IDs, equip levels, classes and bonuses. The Forge and resynthesis stay independent.
+- **Batch and safety:** up to 20 crafts per action; the existing transaction guard rechecks materials, Gil, Hunt Seals, character level, and last equipped copy. Identical repeated requests cannot duplicate a craft. Crafting feeds the existing personal and Fellowship verified event systems.
+- **Compatibility:** No change to Bot SQLite schema **26**, Portal Action protocol **39**, or hosted snapshot schema **1**. Original Portal clients retain the original compact recipe-state contract; the new Web workbench explicitly requests the Reforged view.
+- **Guide and release markers:** Guide recipe index updated to 183 and all active Bot/Web/frontend version identifiers refreshed to 1.9.4. Existing Camp/Trail Rations artwork and gameplay remain intact.
+
+## Installation
+
+1. Back up the persistent Bot SQLite database and your existing Alpha 13 installation. Stop the Bot and hosted Web before merging.
+2. Extract `Crystal_Guild_1.9.4_CRAFTING_REFORGED_MERGE.zip` **over the existing Alpha 13 installation root**. Preserve all untouched files, configured secrets and the live data volume. Do not extract a second nested `Bot/` or `Web/` directory.
+3. **Frontend source has changed and MUST be rebuilt.** Run `BUILD_CRYSTAL_GUILD_1_9_4.cmd` (Windows) or the included `.sh` alternative from the installation root. Both install dependencies using `npm ci`, then run `npm run build` within `Web/frontend`. Deploy its freshly generated `dist` with the updated hosted Web; old 1.9.3 compiled assets cannot display the new workbench.
+4. Start Bot and hosted Web together and hard-refresh the browser (asset revision `1.9.4-crafting-reforged`). Verify `CRAFTING_STATE` succeeds in the player Blacksmith, then test a low-level field recipe and a piece of gear in staging before enabling live crafting.
+
+## Verification status
+
+- Recipe/item IDs and source data validation: all pass (183 recipes, 436 existing items).
+- Bot targeted regression: 97 passing tests including Portal actions, idempotent batch crafting, equipped gear protection, resynthesis, Guild Initiatives and item catalog.
+- Frontend relevant regression: 34 passing Node tests (crafting filters, accessibility hooks, Blacksmith/Portal and item/Guide integration).
+- TypeScript JSX parser accepted both modified components; CSS reduced-motion/focus/responsive hooks are covered by tests.
+- The historic full frontend suite contains many obsolete tests that assert superseded v1.2–v1.9.3 release strings and the retired pre-1.9.4 recipe grid. In the reconstructed latest baseline it runs with 78 legacy assertion failures; the 1.9.4-specific/relevant selection passes.
+- A production Vite build **could not be performed in this runtime** because the exact npm packages were not present offline and registry installation timed out. A local `npm ci && npm run build` is required; do not reuse older compiled assets or describe this archive as prebuilt.
+
+## Earlier release history
+
 # Crystal Guild v1.9.3 — Guild Initiatives
 
 This incremental source release merges into the already-installed Alpha 13 + v1.9.1 + v1.9.2 codebase. It adds three rotating weekly Fellowship Contracts and three daily plus three weekly optional individual Guild Board objectives. Each verified gameplay event contributes once to all applicable objectives. Completion rewards deliver automatically and are transaction-guarded against duplicates.

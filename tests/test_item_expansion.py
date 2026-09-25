@@ -42,8 +42,8 @@ class ItemExpansionTests(unittest.TestCase):
         self.game.active_encounter["monster_max_hp"] = 5000
         return opened.data["encounter_id"]
 
-    def test_catalog_expands_to_435_items_and_validates(self):
-        self.assertEqual(len(self.data.items), 435)
+    def test_catalog_expands_to_436_items_and_validates(self):
+        self.assertEqual(len(self.data.items), 436)
         self.data.validate_or_raise()
 
     def test_potion_ladder_is_locked_to_fixed_recovery_values(self):

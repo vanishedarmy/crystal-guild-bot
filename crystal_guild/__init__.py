@@ -1,1 +1,1 @@
-__version__ = "1.9.3-guild-initiatives"
+__version__ = "1.9.4-crafting-reforged"
