@@ -13,7 +13,14 @@ TOKEN_NAME = "Moonlit Tokens"
 TOKEN_DAILY_KILL_CAP = 5
 TOKEN_PER_SEASONAL_KILL = 3
 HOLLOW_WARDEN_FIRST_CLEAR_TOKENS = 15
-SEASONAL_REPLACEMENT_CHANCE = 0.15
+# Per *combat encounter*, not per completed Venture. Solo Ventures retain
+# their independent Encounter/Treasure stage roll. The small five-point
+# difference keeps stream encounters slightly more seasonal without making
+# the Portal-only version feel unusually rare.
+SOLO_VENTURE_SEASONAL_CHANCE = 0.25
+STREAM_VENTURE_SEASONAL_CHANCE = 0.30
+# Retain the old public name for compatibility with existing integrations.
+SEASONAL_REPLACEMENT_CHANCE = STREAM_VENTURE_SEASONAL_CHANCE
 HOLLOW_WARDEN_WORLD_EVENT_WEIGHT = 0.25
 
 # The event is intentionally installed disabled. Owner controls may enable it

@@ -155,6 +155,7 @@ from .trophies import TROPHY_CATALOG, reconcile_player_trophies, record_world_ev
 from .seasonal_events import (
     EDITION_ID as SEASONAL_EDITION_ID, SEASONAL_VARIANTS, HOLLOW_WARDEN,
     HOLLOW_WARDEN_WORLD_EVENT_WEIGHT, SEASONAL_REPLACEMENT_CHANCE,
+    SOLO_VENTURE_SEASONAL_CHANCE,
     event_state as seasonal_event_state, seasonal_monster, player_progress as seasonal_player_progress,
     public_snapshot as seasonal_public_snapshot, award_seasonal_kill, award_adventure as seasonal_award_adventure,
     award_warden_clear, buy_reward as seasonal_buy_reward, set_event_control as seasonal_set_event_control,
@@ -2097,6 +2098,34 @@ class CrystalGuildEngine:
         weights = self._encounter_variety_weights(str(p["twitch_id"]), str(region.get("id") or "region"), candidates, weights)
         return self.rng.choices(candidates, weights=weights, k=1)[0] if candidates else None
 
+    def _roll_seasonal_venture_variant(self, *, max_monster_level: int, chance: float) -> dict[str, Any] | None:
+        """Roll an active-event replacement for either type of Venture.
+
+        Filter by the mode's existing enemy-level ceiling *before* rolling so
+        ineligible event monsters cannot silently reduce the published odds.
+        Never change an encounter when the seasonal event is disabled, paused,
+        or outside its scheduled window.
+        """
+        try:
+            with self.db.tx() as conn:
+                if not seasonal_event_state(conn).get("active"):
+                    return None
+            eligible = [
+                variant for variant in SEASONAL_VARIANTS
+                if (base := self.data.monsters.get(variant["base_monster_id"]))
+                and int(base.get("level", 1)) <= max_monster_level
+            ]
+            if not eligible or self.rng.random() >= chance:
+                return None
+            previous = str(getattr(self, "_last_seasonal_variant", "") or "")
+            alternatives = [variant for variant in eligible if variant["id"] != previous] or eligible
+            variant = copy.deepcopy(self.rng.choice(alternatives))
+            self._last_seasonal_variant = variant["id"]
+            return variant
+        except Exception:
+            LOGGER.exception("Unable to roll seasonal Venture variant; keeping the normal monster.")
+            return None
+
     def _solo_begin_stage(self, twitch_id: str, expedition: dict[str, Any]) -> GameResult:
         p = self._player(twitch_id)
         if not p:
@@ -2151,6 +2180,14 @@ class CrystalGuildEngine:
                 self.db.execute("UPDATE players SET ventures=MAX(0,ventures-1) WHERE twitch_id=?", (twitch_id,))
                 self.db.update_record_stats(twitch_id, {"solo_ventures": -1})
             return GameResult.fail(f"No level-appropriate Solo Venture monsters are available in {region['name']} right now.")
+        seasonal_variant = self._roll_seasonal_venture_variant(
+            max_monster_level=int(p["level"]) + SOLO_VENTURE_MAX_LEVEL_ABOVE_PLAYER,
+            chance=SOLO_VENTURE_SEASONAL_CHANCE,
+        )
+        if seasonal_variant:
+            monster = seasonal_monster(
+                self.data.monsters[seasonal_variant["base_monster_id"]], seasonal_variant
+            )
         encounter = {
             "id": int(expedition.get("started_at", time.time())) * 10 + stage,
             "kind": "solo_expedition",
@@ -2159,6 +2196,11 @@ class CrystalGuildEngine:
             "region_id": str(region["id"]),
             "created_at": int(time.time()),
             "starter_id": str(twitch_id),
+            **({
+                "seasonal_event_id": SEASONAL_EDITION_ID,
+                "seasonal_variant_id": seasonal_variant["id"],
+                "monster_override": monster,
+            } if seasonal_variant else {}),
         }
         roster = {str(twitch_id): {"name": p["display_name"], "username": p["username"], "job_id": p["current_job"]}}
         if isinstance(expedition.get("merc_contract"), dict):
@@ -2239,6 +2281,17 @@ class CrystalGuildEngine:
             event_key=f"solo_expedition:{twitch_id}:{int(expedition.get('started_at', 0))}",
         )
         chocobo_notes = self._award_chocobo_xp(twitch_id, 8 + stage * 4)
+        seasonal_notes: list[str] = []
+        try:
+            with self.db.tx() as conn:
+                if seasonal_event_state(conn).get("active"):
+                    achieved = seasonal_award_adventure(conn, str(twitch_id))
+                    seasonal_notes.extend(
+                        f"Seasonal objective complete: {obj['name']} (+{int(obj['reward'])} Moonlit Tokens)"
+                        for obj in achieved
+                    )
+        except Exception:
+            LOGGER.exception("Unable to record completed seasonal Solo Venture objective")
         achievements = self._check_achievements(twitch_id)
         secured = expedition.get("secured") or {}
         item_labels = [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in items]
@@ -2254,7 +2307,7 @@ class CrystalGuildEngine:
                 "loot": [*secured_loot, *item_labels], "secured_loot": secured_loot, "fellowship_renown": renown, "achievements": [str(x) for x in achievements[:4]],
             },
             "history": list(expedition.get("history") or [])[-8:],
-            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2]]],
+            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2], *seasonal_notes]],
             "player": self._solo_result_vitals(twitch_id),
             "cooldown_seconds": SOLO_VENTURE_COOLDOWN_SECONDS,
             "interactive": True,
@@ -2407,14 +2460,28 @@ class CrystalGuildEngine:
         )
         self.db.update_record_stats(twitch_id, {"active_actions": int(meta.get("actions", 0)), "active_abilities": int(meta.get("abilities_used", 0)), "active_items": int(meta.get("items_used", 0)), "active_defends": int(meta.get("defends", 0))})
         achievements = self._check_achievements(twitch_id)
+        seasonal_notes: list[str] = []
+        variant_id = str(((expedition.get("combat") or {}).get("encounter") or {}).get("seasonal_variant_id") or "")
+        seasonal_award: dict[str, Any] = {}
+        if variant_id:
+            with self.db.tx() as conn:
+                seasonal_award = award_seasonal_kill(conn, str(twitch_id), variant_id)
+            if int(seasonal_award.get("tokens", 0)):
+                seasonal_notes.append(f"+{int(seasonal_award['tokens'])} Moonlit Tokens")
+            seasonal_notes.extend(f"TROPHY UNLOCKED — {name}" for name in seasonal_award.get("trophies", []))
         expedition["last_stage"] = {"type": "victory", "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])}, "rounds": round_no, "rewards": rewards, "achievements": achievements[:4], "merc": self._merc_public_result(meta)}
+        if variant_id:
+            expedition["last_stage"]["seasonal"] = {"variant_id": variant_id, **seasonal_award}
         expedition["last_round"] = {"round": round_no, "events": list(log), "summary": round_summary(log)}
         expedition.setdefault("history", []).append({"stage": int(expedition.get("stage", 1)), "type": "victory", "label": f"Defeated {monster['name']}"})
+        if seasonal_notes:
+            expedition.setdefault("history", []).append({"stage": int(expedition.get("stage", 1)), "type": "seasonal_reward", "label": "; ".join(seasonal_notes)})
         expedition["combat"] = None; expedition["event"] = {"type": "victory", "monster_id": str(monster["id"])}; expedition["status"] = "choice"
         if int(expedition.get("stage", 1)) >= SOLO_EXPEDITION_MAX_STAGES:
             return self._solo_bank_spoils(twitch_id, expedition, outcome="complete")
         return GameResult.success(
             f"STAGE {int(expedition.get('stage', 1))} VICTORY — {monster['name']} defeated. +{rewards['xp']} XP / +{rewards['jp']} JP secured; {rewards['gil']} Gil added to expedition spoils.",
+            *seasonal_notes,
             solo_expedition_stage_complete=True,
         )
 
@@ -2444,10 +2511,10 @@ class CrystalGuildEngine:
         roster = combat.get("roster") or {}
         meta = roster.get(str(twitch_id)) if isinstance(roster, dict) else None
         if encounter and meta:
-            monster = self.data.monsters.get(str(encounter.get("monster_id"))) or {}
+            monster = self._encounter_monster(encounter)
             payload["combat"] = {
                 "round": int(encounter.get("round", 1)),
-                "enemy": {"id": str(monster.get("id") or ""), "name": str(monster.get("name") or "Unknown Enemy"), "level": int(monster.get("level", 1)), "hp": int(encounter.get("monster_hp", 0)), "max_hp": int(encounter.get("monster_max_hp", 0)), "statuses": status_text(encounter.get("monster_statuses", {}), limit=3), "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action")},
+                "enemy": {"id": str(monster.get("id") or ""), "name": str(monster.get("name") or "Unknown Enemy"), "level": int(monster.get("level", 1)), "art": str(monster.get("art") or ""), "seasonal_variant_id": str(encounter.get("seasonal_variant_id") or ""), "hp": int(encounter.get("monster_hp", 0)), "max_hp": int(encounter.get("monster_max_hp", 0)), "statuses": status_text(encounter.get("monster_statuses", {}), limit=3), "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action")},
                 "player": {"name": str(meta.get("name") or "Hero"), "job_id": str(meta.get("job_id") or ""), "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"), "hp": int(meta.get("hp", 0)), "max_hp": int(meta.get("max_hp", 0)), "mp": int(meta.get("mp", 0)), "max_mp": int(meta.get("max_mp", 0)), "ap": int(meta.get("ap", 0)), "max_ap": int(meta.get("max_ap", 0)), "statuses": status_text(meta.get("statuses", {}), limit=4)},
                 "abilities": self._solo_ability_rows(meta), "items": self._solo_owned_battle_items(twitch_id, meta),
             }
@@ -2802,20 +2869,12 @@ class CrystalGuildEngine:
             k=1,
         )[0]
         monster = self._encounter_monster(encounter)
-        seasonal_variant = None
-        try:
-            with self.db.tx() as conn:
-                season = seasonal_event_state(conn)
-            if season.get("active") and self.rng.random() < SEASONAL_REPLACEMENT_CHANCE:
-                eligible_variants = [v for v in SEASONAL_VARIANTS if int(self.data.monsters[v["base_monster_id"]]["level"]) <= max_monster_level]
-                if eligible_variants:
-                    previous_variant = str(getattr(self, "_last_seasonal_variant", "") or "")
-                    choices = [v for v in eligible_variants if v["id"] != previous_variant] or eligible_variants
-                    seasonal_variant = copy.deepcopy(self.rng.choice(choices))
-                    monster = seasonal_monster(self.data.monsters[seasonal_variant["base_monster_id"]], seasonal_variant)
-                    self._last_seasonal_variant = seasonal_variant["id"]
-        except Exception:
-            LOGGER.exception("Unable to apply seasonal Venture rotation; continuing with the normal encounter.")
+        seasonal_variant = self._roll_seasonal_venture_variant(
+            max_monster_level=max_monster_level,
+            chance=SEASONAL_REPLACEMENT_CHANCE,
+        )
+        if seasonal_variant:
+            monster = seasonal_monster(self.data.monsters[seasonal_variant["base_monster_id"]], seasonal_variant)
         now = time.time()
         self._encounter_seq += 1
         encounter_id = self._encounter_seq
