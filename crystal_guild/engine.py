@@ -246,6 +246,13 @@ def _state_guard(method):
                         ) + 1
                         after["revision"] = self._runtime_revision
                         self._persist_runtime_state(after)
+                        # Publish the committed round's public view after every live
+                        # Raid state change, including queued actions. Previously the
+                        # OBS overlay missed actions until the next combat tick.
+                        if (self.active_boss and before is not None and
+                                (after.get("active_boss") != before.get("active_boss") or
+                                 after.get("raid_roster") != before.get("raid_roster"))):
+                            self._update_raid_overlay()
                     return result
             except Exception:
                 if before is not None:
@@ -17413,6 +17420,85 @@ class CrystalGuildEngine:
                 chosen=phase
         return chosen
 
+    @staticmethod
+    def _raid_overlay_statuses(statuses: Any) -> list[dict[str, Any]]:
+        """Project active combat statuses without leaking internal effect payloads."""
+        if not isinstance(statuses, dict):
+            return []
+        rows: list[dict[str, Any]] = []
+        for status_id, row in statuses.items():
+            token = str(status_id or "").strip().lower().replace("-", "_")
+            if not token or len(token) > 32 or not all(ch.isalnum() or ch == "_" for ch in token):
+                continue
+            if not isinstance(row, dict):
+                continue
+            try:
+                turns = max(0, min(99, int(row.get("turns", 0))))
+            except (TypeError, ValueError, OverflowError):
+                continue
+            if turns:
+                rows.append({"id": token, "turns": turns})
+            if len(rows) >= 12:
+                break
+        return rows
+
+    def _raid_overlay_action(self, meta: dict[str, Any], boss: dict[str, Any]) -> tuple[str, str, str, bool]:
+        """Resolve queued ability/item labels to names, never public player IDs."""
+        if not self._raid_action_ready_for_next_round(meta, boss):
+            return "", "", "", False
+        action = meta.get("action") or {}
+        kind = str(action.get("kind") or "").lower()
+        if kind == "ability":
+            catalog = self.data.active_abilities.get(meta.get("job_id"), [])
+            ability = next((row for row in catalog if row.get("id") == action.get("ability_id")), None)
+            label = str((ability or {}).get("name") or "Ability")
+        elif kind == "item":
+            item = self.data.items.get(action.get("item_id"))
+            label = str((item or {}).get("name") or "Item")
+        else:
+            label = {"attack": "Attack", "defend": "Defend", "limit": "Limit Break"}.get(kind, "Queued Action")
+        target_id = str(action.get("target_id") or "")
+        if target_id == "boss":
+            target = str(boss.get("name") or "Boss")
+        elif target_id == "party":
+            target = "Raid Party"
+        elif target_id:
+            target = str(self.raid_roster.get(target_id, {}).get("name") or "Ally")
+        else:
+            target = ""
+        return label[:56], kind[:24], target[:80], True
+
+    def _raid_overlay_member(self, meta: dict[str, Any], boss: dict[str, Any]) -> dict[str, Any]:
+        hp = max(0, int(meta.get("hp") or 0))
+        max_hp = max(1, int(meta.get("max_hp") or 1))
+        restrained = bool(meta.get("restrained"))
+        rally = str(boss.get("state") or "") == "rally"
+        label, action_kind, target, ready = self._raid_overlay_action(meta, boss)
+        if hp <= 0:
+            state = "KO"
+        elif restrained:
+            state = "RESTRAINED"
+        elif rally:
+            state = "JOINED"
+        else:
+            state = "READY" if ready else "WAITING"
+        max_mp = max(0, int(meta.get("max_mp") or 0))
+        max_ap = max(0, int(meta.get("max_ap") or 0))
+        resource = "MP" if max_mp > 0 else ("AP" if max_ap > 0 else "")
+        max_resource = max_mp if resource == "MP" else max_ap if resource == "AP" else 0
+        current_resource = min(max_resource, max(0, int(meta.get(resource.lower()) or 0))) if resource else 0
+        job = self.data.jobs.get(meta.get("job_id")) or {}
+        return {
+            "name": str(meta.get("name") or "Adventurer")[:80],
+            "role": self._raid_role_label(meta),
+            "job": str(job.get("name") or "Adventurer")[:40],
+            "hp": min(hp, max_hp), "max_hp": max_hp,
+            "resource": resource, "resource_value": current_resource,
+            "resource_max": max_resource,
+            "state": state, "action": label, "action_kind": action_kind,
+            "target": target, "statuses": self._raid_overlay_statuses(meta.get("statuses")),
+        }
+
     def _overlay_payload(self, active: bool = True, status: str | None = None, boss_override: dict[str, Any] | None = None) -> dict[str, Any]:
         boss=boss_override or self.active_boss
         if not boss:
@@ -17439,6 +17525,10 @@ class CrystalGuildEngine:
             "signature":boss.get("signature","Cataclysm"), "raiders":len(self.raid_roster), "alive":sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0),
             "ready_actions":ready_actions, "actionable_raiders":len(actionable),
             "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":top_rows,
+            "members":[self._raid_overlay_member(m, boss) for m in list(self.raid_roster.values())[:64]],
+            "boss_statuses":self._raid_overlay_statuses(boss.get("statuses")),
+            "rally_closes_at":int(boss.get("closes_at") or 0) if boss.get("state")=="rally" else 0,
+            "rounds_to_enrage":max(0,int(boss["enrage_round"])-int(boss.get("round",0))) if boss.get("enrage_round") is not None else None,
             "adds":[{"name":str(row.get("name") or "Add"), "hp":max(0,int(row.get("current_hp",0))), "max_hp":max(1,int(row.get("max_hp",1)))} for row in self._raid_live_adds(boss)[:4]],
             "mechanic":self._raid_public_mechanic(boss.get("mechanic")), "last_mechanic":self._raid_public_mechanic(boss.get("last_mechanic")),
             "next_round_at":boss.get("next_round_at"), "updated_at":int(time.time()),
