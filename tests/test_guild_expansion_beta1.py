@@ -19,23 +19,23 @@ class GuildExpansionBeta1Tests(unittest.TestCase):
             "airship_dock_t2": (100_000, 35, 6),
             "airship_dock_t3": (170_000, 55, 9),
         }
-        for project_id, (gil, coins, raids) in expected.items():
+        for project_id, (gil, coins, hunts) in expected.items():
             req = {row["key"]: int(row["target"]) for row in PROJECTS[project_id]["requirements"]}
             self.assertEqual(req["gil"], gil)
             self.assertEqual(req["item:ancient_coin"], coins)
-            self.assertEqual(req["activity:raid_clear"], raids)
+            self.assertEqual(req["activity:hunt_win"], hunts)
 
         airship = {row["key"]: int(row["target"]) for row in PROJECTS["crystal_guild_airship"]["requirements"]}
         self.assertEqual(airship["gil"], 140_000)
         self.assertEqual(airship["item:mythril_ore"], 35)
         self.assertEqual(airship["item:wyvern_scale"], 18)
         self.assertEqual(airship["item:elemental_crystal"], 20)
-        self.assertEqual(airship["activity:raid_clear"], 6)
+        self.assertEqual(airship["activity:hunt_win"], 6)
 
     def test_airship_upgrade_requirements_scale_by_material_rarity(self):
         # Tier III demonstrates the intended curve: artifact tracks require fewer
         # pieces than common-material tracks, while all tracks share the same
-        # tuned Gil/raid requirement.
+        # tuned Gil/offline Hunt requirement.
         hull = {row["key"]: int(row["target"]) for row in PROJECTS["airship_hull_t3"]["requirements"]}
         core = {row["key"]: int(row["target"]) for row in PROJECTS["airship_crystal_core_t3"]["requirements"]}
         engine = {row["key"]: int(row["target"]) for row in PROJECTS["airship_engine_t3"]["requirements"]}
@@ -48,7 +48,7 @@ class GuildExpansionBeta1Tests(unittest.TestCase):
         self.assertEqual(survey["item:elemental_crystal"], 10)
         for req in (hull, core, engine, cargo, survey):
             self.assertEqual(req["gil"], 95_000)
-            self.assertEqual(req["activity:raid_clear"], 2)
+            self.assertEqual(req["activity:hunt_win"], 2)
 
     def test_weekly_order_rewards_remain_unchanged(self):
         self.assertEqual(WEEKLY_ORDER_SET_REWARD, {"guild_renown": 500, "personal_gil": 1000, "personal_renown": 50})

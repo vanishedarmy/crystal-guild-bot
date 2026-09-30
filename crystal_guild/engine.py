@@ -17419,8 +17419,8 @@ class CrystalGuildEngine:
                 fellowship_raid_notes.extend(self.fellowship_system.record_activity(
                     pid, "raid_win", event_key=f"raid_win:{boss['id']}:{boss.get('closes_at',0)}:{pid}"
                 ))
-            # Guild construction and shared raid-count milestones advance once per
-            # resolved victory, not once for every member of the raid roster.
+            # Optional shared Raid records advance once per resolved victory, not once
+            # for every member of the Raid roster. Guild upgrades are offline-capable.
             fellowship_raid_notes.extend(self.fellowship_system.record_shared_activity(
                 "raid_clear", event_key=f"raid_clear:{raid_key}"
             ))

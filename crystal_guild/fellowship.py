@@ -59,7 +59,7 @@ FACILITIES: dict[str, dict[str, Any]] = {
             "Guild project capacity maximized",
         ],
         "material": "ancient_coin",
-        "activity": "raid_clear",
+        "activity": "hunt_win",
     },
     "infirmary": {
         "name": "Infirmary",
@@ -181,7 +181,7 @@ FACILITIES: dict[str, dict[str, Any]] = {
             "Grand Airship Dock enables Tier III Airship upgrades.",
         ],
         "benefits": ["Airship construction berth established", "Tier II Airship upgrades enabled", "Tier III Airship upgrades enabled"],
-        "material": "ancient_coin", "activity": "raid_clear",
+        "material": "ancient_coin", "activity": "hunt_win",
     },
 }
 
@@ -231,15 +231,15 @@ AIRSHIP_MISSIONS = [
     },
     {
         "id": "crystal_resonance", "name": "Crystal Resonance Survey", "required_core": 1,
-        "duration_hours": 42, "target": 20, "activities": {"expedition_complete": 1, "raid_win": 1},
+        "duration_hours": 42, "target": 20, "activities": {"expedition_complete": 1, "hunt_win": 1},
         "guild_renown": 1000, "personal_gil": 1200, "personal_renown": 45,
-        "description": "Map unstable crystal currents using Expedition discoveries and raid-combat telemetry.",
+        "description": "Map unstable crystal currents using Expedition discoveries and Hunt field reports.",
     },
     {
         "id": "relic_recovery", "name": "Relic Recovery", "required_core": 2,
-        "duration_hours": 48, "target": 24, "activities": {"raid_participation": 1, "expedition_complete": 2},
+        "duration_hours": 48, "target": 24, "activities": {"hunt_win": 1, "expedition_complete": 2},
         "guild_renown": 1250, "personal_gil": 1500, "personal_renown": 55,
-        "description": "Back a difficult recovery operation with raid deployments and deep Expedition fieldwork.",
+        "description": "Back a difficult recovery operation with Hunt patrols and deep Expedition fieldwork.",
     },
 ]
 
@@ -256,18 +256,18 @@ def _project_requirements(facility_id: str, tier: int) -> list[dict[str, Any]]:
     facility = FACILITIES[facility_id]
     if facility_id == "airship_dock":
         # Beta 1 balance pass: the Dock remains a major late-Guild investment,
-        # but the Alpha raid/Ancient Coin stack pushed ordinary communities into
+        # but the Alpha live-event/Ancient Coin stack pushed ordinary communities into
         # a multi-month stall before they could meaningfully improve the Airship.
         dock_targets = {
             1: (60_000, 25, 4, 7),
             2: (100_000, 35, 6, 8),
             3: (170_000, 55, 9, 9),
         }
-        gil_target, coin_target, raid_target, level_req = dock_targets[tier]
+        gil_target, coin_target, hunt_target, level_req = dock_targets[tier]
         return [
             {"key": "gil", "kind": "gil", "asset_id": "gil", "target": gil_target, "label": "Gil"},
             {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": coin_target, "label": "Ancient Coin"},
-            {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": raid_target, "label": "Guild raids won"},
+            {"key": "activity:hunt_win", "kind": "activity", "asset_id": "hunt_win", "target": hunt_target, "label": "Hunts won"},
             {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": level_req, "label": "Fellowship LVL"},
         ]
     if facility_id == "emporium_annex":
@@ -397,7 +397,7 @@ PROJECTS["expedition_board"] = {
     "requirements": [
         {"key": "gil", "kind": "gil", "asset_id": "gil", "target": 200_000, "label": "Gil"},
         {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 100, "label": "Ancient Coin"},
-        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 5, "label": "Guild raids won"},
+        {"key": "activity:hunt_win", "kind": "activity", "asset_id": "hunt_win", "target": 5, "label": "Hunts won"},
         {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 6, "label": "Fellowship LVL"},
     ],
 }
@@ -452,11 +452,12 @@ COMMUNITY_PROJECTS: dict[str, dict[str, Any]] = {
         ],
     },
     "raid_preparedness": {
-        "id": "raid_preparedness", "facility_id": "community", "tier": 0, "level": 0, "name": "Raid Preparedness", "project_type": "guild_objective",
-        "description": "Prove the Fellowship can repeatedly field a raid-ready force.",
+        # Keep the project ID for save compatibility; the live-Raid gate was removed in v1.9.4.8.
+        "id": "raid_preparedness", "facility_id": "community", "tier": 0, "level": 0, "name": "Battle Preparedness", "project_type": "guild_objective",
+        "description": "Prove the Fellowship can repeatedly field a battle-ready force through ordinary combat.",
         "required_level": 5, "reward_renown": 600,
         "requirements": [
-            {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 8, "label": "Guild raids won"},
+            {"key": "activity:combat_victory", "kind": "activity", "asset_id": "combat_victory", "target": 8, "label": "Combat victories"},
         ],
     },
 }
@@ -477,14 +478,14 @@ PROJECTS["crystal_guild_airship"] = {
         {"key": "item:wyvern_scale", "kind": "item", "asset_id": "wyvern_scale", "target": 18, "label": "Wyvern Scale"},
         {"key": "item:elemental_crystal", "kind": "item", "asset_id": "elemental_crystal", "target": 20, "label": "Elemental Crystal"},
         {"key": "item:ancient_coin", "kind": "item", "asset_id": "ancient_coin", "target": 10, "label": "Ancient Coin"},
-        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": 6, "label": "Guild raids won"},
+        {"key": "activity:hunt_win", "kind": "activity", "asset_id": "hunt_win", "target": 6, "label": "Hunts won"},
         {"key": "fellowship_level", "kind": "level", "asset_id": "level", "target": 8, "label": "Fellowship LVL"},
     ],
 }
 
 def _airship_upgrade_requirements(upgrade_id: str, tier: int) -> list[dict[str, Any]]:
     # Track-specific materials keep each improvement thematic while the common
-    # Gil/raid requirements preserve the communal construction loop.
+    # Gil/activity requirements preserve the communal construction loop without live-stream gates.
     material = {
         "hull": "adamantite",
         "engine": "magitek_capacitor",
@@ -504,11 +505,11 @@ def _airship_upgrade_requirements(upgrade_id: str, tier: int) -> list[dict[str, 
         qty = (3, 5, 8)[tier - 1]
     else:
         qty = (4, 7, 10)[tier - 1]
-    raids = (1, 2, 2)[tier - 1]
+    hunts = (1, 2, 2)[tier - 1]
     return [
         {"key": "gil", "kind": "gil", "asset_id": "gil", "target": gil, "label": "Gil"},
         {"key": f"item:{material}", "kind": "item", "asset_id": material, "target": qty, "label": material.replace("_", " ").title()},
-        {"key": "activity:raid_clear", "kind": "activity", "asset_id": "raid_clear", "target": raids, "label": "Guild raids won"},
+        {"key": "activity:hunt_win", "kind": "activity", "asset_id": "hunt_win", "target": hunts, "label": "Hunts won"},
     ]
 
 for _upgrade_id, _upgrade in AIRSHIP_UPGRADES.items():
@@ -525,11 +526,11 @@ for _upgrade_id, _upgrade in AIRSHIP_UPGRADES.items():
 
 ORDER_DEFINITIONS = [
     {"id": "into_the_wilds", "name": "Into the Wilds", "activity": "venture_complete", "target": 75, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Complete Ventures together."},
-    {"id": "monster_hunters", "name": "Monster Hunters", "activity": "combat_victory", "target": 40, "renown": 350, "personal_gil": 500, "personal_renown": 25, "description": "Win battles across encounters, Hunts, Ventures, Expeditions, Dungeons, World Events, or Raids."},
+    {"id": "monster_hunters", "name": "Monster Hunters", "activity": "combat_victory", "target": 40, "renown": 350, "personal_gil": 500, "personal_renown": 25, "description": "Win battles across encounters, Hunts, Ventures, Expeditions, Dungeons, or World Events."},
     {"id": "bounty_board", "name": "Bounty Board", "activity": "hunt_win", "target": 15, "renown": 400, "personal_gil": 600, "personal_renown": 25, "description": "Defeat Hunt marks."},
     {"id": "hammer_and_tongs", "name": "Hammer & Tongs", "activity": "craft_forge", "target": 35, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Craft items or complete forge upgrades."},
     {"id": "treasure_seekers", "name": "Treasure Seekers", "activity": "treasure", "target": 25, "renown": 300, "personal_gil": 500, "personal_renown": 25, "description": "Discover Venture treasure chests."},
-    {"id": "stand_together", "name": "Stand Together", "activity": "raid_participation", "target": 20, "renown": 450, "personal_gil": 750, "personal_renown": 30, "description": "Participate in resolved Guild raids."},
+    {"id": "stand_together", "name": "Stand Together", "activity": "expedition_complete", "target": 20, "renown": 450, "personal_gil": 750, "personal_renown": 30, "description": "Complete 20 Expeditions together."},
 ]
 
 WEEKLY_ORDER_SET_REWARD = {"guild_renown": 500, "personal_gil": 1000, "personal_renown": 50}
@@ -539,7 +540,7 @@ DEEDS = [
     {"id": "road_warriors", "name": "Road Warriors", "activity": "venture_complete", "target": 1_000, "renown": 750, "description": "Complete 1,000 Ventures."},
     {"id": "treasure_hunters", "name": "Treasure Hunters", "activity": "treasure", "target": 250, "renown": 600, "description": "Find 250 Venture treasure chests."},
     {"id": "bounty_board", "name": "Bounty Board", "activity": "hunt_win", "target": 100, "renown": 600, "description": "Defeat 100 Hunt marks."},
-    {"id": "giant_killers", "name": "Giant Killers", "activity": "raid_clear", "target": 25, "renown": 1_000, "description": "Win 25 Guild raids."},
+    {"id": "giant_killers", "name": "Frontier Veterans", "activity": "expedition_complete", "target": 25, "renown": 1_000, "description": "Complete 25 Expeditions."},
     {"id": "master_artisans", "name": "Master Artisans", "activity": "craft", "target": 500, "renown": 650, "description": "Craft 500 items."},
     {"id": "tempered_steel", "name": "Tempered Steel", "activity": "forge", "target": 500, "renown": 650, "description": "Complete 500 forge upgrades."},
     {"id": "many_paths", "name": "Many Paths", "activity": "job_mastery", "target": 25, "renown": 750, "description": "Master 25 Jobs across the Fellowship."},
@@ -555,7 +556,7 @@ LEGACY_ACCOMPLISHMENTS = [
     {"id": "grand_fellowship", "name": "Grand Fellowship", "metric": "major_facilities_complete", "target": 5, "renown": 1000, "trophy": "Crystal Guild Banner", "description": "Raise every major Guild facility to Lv. 3."},
     {"id": "million_gil_guild", "name": "A Million Gil Later", "metric": "gil_donated", "target": 1_000_000, "renown": 750, "trophy": "Golden Ledger", "description": "Contribute 1,000,000 Gil to Fellowship projects."},
     {"id": "frontier_cartographers", "name": "Frontier Cartographers", "metric": "expeditions_completed", "target": 100, "renown": 750, "trophy": "Frontier Map Wall", "description": "Complete 100 Expeditions across the Fellowship."},
-    {"id": "raid_vanguard", "name": "Raid Vanguard", "metric": "raids_won", "target": 100, "renown": 900, "trophy": "Vanguard Crest", "description": "Win 100 Guild raids."},
+    {"id": "raid_vanguard", "name": "Battle Vanguard", "metric": "monster_victories", "target": 100, "renown": 900, "trophy": "Vanguard Crest", "description": "Defeat 100 monsters through ordinary Guild adventures."},
     {"id": "skybound_company", "name": "Skybound Company", "metric": "airship_built", "target": 1, "renown": 300, "trophy": "Airship Commission Plaque", "description": "Complete the Crystal Guild Airship."},
     {"id": "veteran_crew", "name": "Veteran Crew", "metric": "airship_missions_completed", "target": 25, "renown": 750, "trophy": "Veteran Crew Pennant", "description": "Complete 25 successful Airship missions."},
     {"id": "master_shipwrights", "name": "Master Shipwrights", "metric": "airship_upgrade_tiers", "target": 15, "renown": 1000, "trophy": "Master Shipwright Model", "description": "Complete every Airship upgrade track through Tier III."},
@@ -579,6 +580,7 @@ def legacy_metric_values(conn: Any) -> dict[str, int]:
         "gil_donated": int(totals["gil"] if totals else 0),
         "expeditions_completed": int(event_totals.get("expedition_complete", 0)),
         "raids_won": int(event_totals.get("raid_clear", 0)),
+        "monster_victories": int(event_totals.get("monster_victory", 0)) + int(event_totals.get("encounter_win", 0)) + int(event_totals.get("hunt_win", 0)),
         "airship_built": 1 if airship and int(airship["built"] or 0) else 0,
         "airship_missions_completed": int(airship["missions_completed"] or 0) if airship else 0,
         "airship_upgrade_tiers": int(upgrade_total["n"] if upgrade_total else 0),

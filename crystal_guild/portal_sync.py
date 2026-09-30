@@ -162,7 +162,7 @@ class PortalSyncClient:
             return None
         allowed = {
             "active", "status", "boss", "tier", "encounter_type", "encounter_name", "hp", "max_hp", "round", "phase",
-            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "adds", "mechanic", "last_mechanic", "members", "boss_statuses", "rally_closes_at", "rounds_to_enrage", "ready_actions", "actionable_raiders", "next_round_at", "updated_at",
+            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "adds", "mechanic", "last_mechanic", "next_round_at", "updated_at",
         }
         overlay = {key: raw[key] for key in allowed if key in raw}
         top = overlay.get("top")
@@ -192,53 +192,6 @@ class PortalSyncClient:
             ]
         else:
             overlay["adds"] = []
-        def clean_statuses(rows: Any) -> list[dict[str, Any]]:
-            if not isinstance(rows, list):
-                return []
-            cleaned = []
-            for row in rows[:12]:
-                if not isinstance(row, dict):
-                    continue
-                status_id = str(row.get("id") or "").lower()[:32]
-                if not status_id or not all(ch.isalnum() or ch == "_" for ch in status_id):
-                    continue
-                turns = max(0, min(99, int(row.get("turns") or 0)))
-                if turns:
-                    cleaned.append({"id": status_id, "turns": turns})
-            return cleaned
-
-        raw_members = overlay.get("members")
-        if isinstance(raw_members, list):
-            clean_members = []
-            for row in raw_members[:64]:
-                if not isinstance(row, dict):
-                    continue
-                clean_members.append({
-                    "name": str(row.get("name") or "Adventurer")[:80],
-                    "role": str(row.get("role") or "DPS")[:24],
-                    "job": str(row.get("job") or "Adventurer")[:40],
-                    "hp": max(0, int(row.get("hp") or 0)),
-                    "max_hp": max(1, int(row.get("max_hp") or 1)),
-                    "resource": str(row.get("resource") or "")[:2],
-                    "resource_value": max(0, int(row.get("resource_value") or 0)),
-                    "resource_max": max(0, int(row.get("resource_max") or 0)),
-                    "state": str(row.get("state") or "WAITING")[:12],
-                    "action": str(row.get("action") or "")[:56],
-                    "action_kind": str(row.get("action_kind") or "")[:24],
-                    "target": str(row.get("target") or "")[:80],
-                    "statuses": clean_statuses(row.get("statuses")),
-                })
-            overlay["members"] = clean_members
-        else:
-            overlay.pop("members", None)
-        if "boss_statuses" in overlay:
-            overlay["boss_statuses"] = clean_statuses(overlay["boss_statuses"])
-        for key in ("ready_actions", "actionable_raiders", "rally_closes_at"):
-            if key in overlay:
-                overlay[key] = max(0, int(overlay.get(key) or 0))
-        if overlay.get("rounds_to_enrage") is not None:
-            overlay["rounds_to_enrage"] = max(0, int(overlay["rounds_to_enrage"]))
-
         for field in ("mechanic", "last_mechanic"):
             mechanic = overlay.get(field)
             if not isinstance(mechanic, dict):

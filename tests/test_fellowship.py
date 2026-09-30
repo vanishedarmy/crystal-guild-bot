@@ -113,27 +113,34 @@ class FellowshipTests(unittest.TestCase):
         ambiguous = self.game.set_fellowship_project("Guild")
         self.assertFalse(ambiguous.ok)
 
-    def test_guild_hall_projects_use_shared_raid_clears_not_project_completion(self):
+    def test_guild_hall_projects_use_offline_hunts_not_live_raid_clears(self):
         project = self.game.fellowship_system.project_snapshot("guild_hall_t2")
         reqs = {req["key"]: req for req in project["requirements"]}
-        self.assertIn("activity:raid_clear", reqs)
-        self.assertEqual(reqs["activity:raid_clear"]["target"], 3)
-        self.assertEqual(reqs["activity:raid_clear"]["label"], "Guild raids won")
+        self.assertIn("activity:hunt_win", reqs)
+        self.assertEqual(reqs["activity:hunt_win"]["target"], 3)
+        self.assertEqual(reqs["activity:hunt_win"]["label"], "Hunts won")
+        self.assertNotIn("activity:raid_clear", reqs)
         self.assertNotIn("activity:project_complete", reqs)
 
         self.db.execute("UPDATE fellowship_state SET level=2,renown=1000 WHERE singleton_id=1")
         self.assertTrue(self.game.set_fellowship_project("guild_hall").ok)
         for idx in range(2):
-            self.game.fellowship_system.record_shared_activity("raid_clear", event_key=f"guild-hall-raid:{idx}")
+            self.game.fellowship_system.record_activity("1", "hunt_win", event_key=f"guild-hall-hunt:{idx}")
         active = self.game.fellowship_system.project_snapshot()
-        raid_req = next(req for req in active["requirements"] if req["key"] == "activity:raid_clear")
-        self.assertEqual(raid_req["current"], 2)
+        hunt_req = next(req for req in active["requirements"] if req["key"] == "activity:hunt_win")
+        self.assertEqual(hunt_req["current"], 2)
 
-        # A duplicate shared raid event never advances construction twice.
-        self.game.fellowship_system.record_shared_activity("raid_clear", event_key="guild-hall-raid:1")
+        # Live Raid clears are optional content and no longer advance this upgrade gate.
+        self.game.fellowship_system.record_shared_activity("raid_clear", event_key="guild-hall-raid:optional")
         active = self.game.fellowship_system.project_snapshot()
-        raid_req = next(req for req in active["requirements"] if req["key"] == "activity:raid_clear")
-        self.assertEqual(raid_req["current"], 2)
+        hunt_req = next(req for req in active["requirements"] if req["key"] == "activity:hunt_win")
+        self.assertEqual(hunt_req["current"], 2)
+
+        # Duplicate offline events never advance construction twice.
+        self.game.fellowship_system.record_activity("1", "hunt_win", event_key="guild-hall-hunt:1")
+        active = self.game.fellowship_system.project_snapshot()
+        hunt_req = next(req for req in active["requirements"] if req["key"] == "activity:hunt_win")
+        self.assertEqual(hunt_req["current"], 2)
 
     def test_expedition_board_unlocks_at_lvl6_hall1_and_completes_as_board_not_hall_upgrade(self):
         # Hall Tier 1 is the established baseline; LVL 5 is still too early.
@@ -148,13 +155,13 @@ class FellowshipTests(unittest.TestCase):
         self.assertEqual(board["required_hall_tier"], 1)
         reqs = {req["key"]: req for req in board["requirements"]}
         self.assertEqual(reqs["fellowship_level"]["target"], 6)
-        self.assertEqual(reqs["activity:raid_clear"]["target"], 5)
+        self.assertEqual(reqs["activity:hunt_win"]["target"], 5)
 
         self.assertTrue(self.game.set_fellowship_project("expedition_board").ok)
         self.db.execute("UPDATE fellowship_project_progress SET current=200000 WHERE project_id='expedition_board' AND requirement_key='gil'")
         self.db.execute("UPDATE fellowship_project_progress SET current=100 WHERE project_id='expedition_board' AND requirement_key='item:ancient_coin'")
         for idx in range(5):
-            self.game.fellowship_system.record_shared_activity("raid_clear", event_key=f"board-raid:{idx}")
+            self.game.fellowship_system.record_activity("1", "hunt_win", event_key=f"board-hunt:{idx}")
 
         state = self.db.one("SELECT expedition_board_complete,active_project_id FROM fellowship_state WHERE singleton_id=1")
         hall = self.db.one("SELECT tier FROM fellowship_facilities WHERE facility_id='guild_hall'")

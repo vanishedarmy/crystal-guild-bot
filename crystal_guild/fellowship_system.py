@@ -46,6 +46,24 @@ ACTIVITY_RENOWN = {
 }
 
 
+# Offline Progression hotfix removes live-stream-only gates from Fellowship construction and
+# Airship upgrades. These aliases preserve partial progress from projects that
+# were already underway before the requirement keys changed. Old rows are kept
+# as harmless audit history; the new offline key receives the same progress.
+OFFLINE_PROJECT_REQUIREMENT_MIGRATIONS = {
+    **{f"guild_hall_t{tier}": ("activity:raid_clear", "activity:hunt_win") for tier in range(2, 6)},
+    **{f"airship_dock_t{tier}": ("activity:raid_clear", "activity:hunt_win") for tier in range(1, 4)},
+    "expedition_board": ("activity:raid_clear", "activity:hunt_win"),
+    "raid_preparedness": ("activity:raid_clear", "activity:combat_victory"),
+    "crystal_guild_airship": ("activity:raid_clear", "activity:hunt_win"),
+    **{
+        f"airship_{upgrade_id}_t{tier}": ("activity:raid_clear", "activity:hunt_win")
+        for upgrade_id in AIRSHIP_UPGRADES
+        for tier in range(1, 4)
+    },
+}
+
+
 def _project_query_key(value: Any) -> str:
     """Normalize human-facing project labels for streamer selection.
 
@@ -73,6 +91,7 @@ class FellowshipSystem:
         self.db = db
         self.data = data
         self._seed_static_rows()
+        self._migrate_offline_project_requirements()
         self._settle_legacy_accomplishments()
 
     def _seed_static_rows(self) -> None:
@@ -90,6 +109,31 @@ class FellowshipSystem:
                     (deed["id"], 0, int(deed["target"])),
                 )
         self._ensure_orders()
+
+    def _migrate_offline_project_requirements(self) -> None:
+        """Carry partial progress from former Raid-gated construction into offline goals."""
+        with self.db.tx() as conn:
+            for project_id, (old_key, new_key) in OFFLINE_PROJECT_REQUIREMENT_MIGRATIONS.items():
+                project = PROJECTS.get(project_id)
+                if not project:
+                    continue
+                requirement = next((row for row in project.get("requirements", []) if row.get("key") == new_key), None)
+                if not requirement:
+                    continue
+                old = conn.execute(
+                    "SELECT current FROM fellowship_project_progress WHERE project_id=? AND requirement_key=?",
+                    (project_id, old_key),
+                ).fetchone()
+                if not old:
+                    continue
+                carried = min(max(0, int(old["current"] or 0)), max(1, int(requirement.get("target", 1))))
+                if carried <= 0:
+                    continue
+                conn.execute(
+                    "INSERT INTO fellowship_project_progress(project_id,requirement_key,current) VALUES (?,?,?) "
+                    "ON CONFLICT(project_id,requirement_key) DO UPDATE SET current=MAX(fellowship_project_progress.current,excluded.current)",
+                    (project_id, new_key, carried),
+                )
 
     def ensure_member(self, player_id: str, *, founding: bool = False) -> None:
         self.db.execute(
