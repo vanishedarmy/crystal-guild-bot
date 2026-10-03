@@ -13,9 +13,20 @@ class SeasonalEventsAlpha8Tests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory(); self.db=Database(Path(self.tmp.name)/"guild.db"); self.conn=self.db.conn
         self.pid="100"; self.conn.execute("INSERT INTO players(twitch_id,username,display_name) VALUES (?,?,?)",(self.pid,"van","Van")); self.conn.commit()
     def tearDown(self): self.db.close(); self.tmp.cleanup()
-    def test_schema_and_disabled_default(self):
+    def test_schema_and_halloween_2026_live_schedule(self):
         self.assertEqual(DATABASE_SCHEMA_VERSION,26); self.assertEqual(self.db.schema_version(),26)
-        state=event_state(self.conn); self.assertEqual(state["edition_id"],EDITION_ID); self.assertEqual(state["state"],"disabled"); self.assertFalse(state["active"])
+        state=event_state(self.conn, now=1790985600.0)  # 2026-10-03T00:00:00Z
+        self.assertEqual(state["edition_id"],EDITION_ID); self.assertEqual(state["state"],"active"); self.assertTrue(state["active"])
+        self.assertEqual(state["activation_mode"],"scheduled")
+        self.assertEqual(state["ends_at"],"2026-11-02T23:59:59Z")
+
+    def test_live_schedule_migration_only_runs_once(self):
+        self.conn.execute("UPDATE seasonal_event_instances SET enabled=0,activation_mode='manual',paused=1,config_json='{}' WHERE edition_id=?", (EDITION_ID,))
+        state=event_state(self.conn, now=1790985600.0)
+        self.assertTrue(state["active"]); self.assertEqual(state["activation_mode"],"scheduled")
+        set_event_control(self.conn, enabled=False, paused=False, activation_mode="manual")
+        state2=event_state(self.conn, now=1790985600.0)
+        self.assertFalse(state2["active"]); self.assertEqual(state2["state"],"disabled")
     def test_manual_control_and_seasonal_collection(self):
         set_event_control(self.conn,enabled=True,paused=False,activation_mode="manual")
         self.assertTrue(event_state(self.conn)["active"])

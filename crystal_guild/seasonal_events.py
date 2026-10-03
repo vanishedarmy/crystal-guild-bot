@@ -14,27 +14,30 @@ TOKEN_DAILY_KILL_CAP = 5
 TOKEN_PER_SEASONAL_KILL = 3
 HOLLOW_WARDEN_FIRST_CLEAR_TOKENS = 15
 # Per *combat encounter*, not per completed Venture. Solo Ventures retain
-# their independent Encounter/Treasure stage roll. The small five-point
-# difference keeps stream encounters slightly more seasonal without making
-# the Portal-only version feel unusually rare.
-SOLO_VENTURE_SEASONAL_CHANCE = 0.25
-STREAM_VENTURE_SEASONAL_CHANCE = 0.30
+# their independent Encounter/Treasure stage roll. Off-stream/Solo Ventures
+# now use a stronger event presence, while Stream/Rally Ventures retain a
+# modest five-point advantage so live encounters still feel slightly richer.
+SOLO_VENTURE_SEASONAL_CHANCE = 0.35
+STREAM_VENTURE_SEASONAL_CHANCE = 0.40
 # Retain the old public name for compatibility with existing integrations.
 SEASONAL_REPLACEMENT_CHANCE = STREAM_VENTURE_SEASONAL_CHANCE
 HOLLOW_WARDEN_WORLD_EVENT_WEIGHT = 0.25
 
-# The event is intentionally installed disabled. Owner controls may enable it
-# manually or switch to the prefilled Halloween 2026 schedule.
+# Halloween 2026 is now the live edition. Existing installs receive this
+# schedule once via EVENT_CONFIG_REVISION, after which owner controls remain
+# authoritative and are not overwritten on later state reads.
+EVENT_CONFIG_REVISION = 2
 DEFAULT_EVENT_CONFIG = {
     "event_id": EVENT_ID,
     "edition_id": EDITION_ID,
     "name": EVENT_NAME,
-    "enabled": False,
-    "activation_mode": "manual",
+    "enabled": True,
+    "activation_mode": "scheduled",
     "starts_at": "2026-10-01T00:00:00Z",
     "ends_at": "2026-11-02T23:59:59Z",
     "redemption_ends_at": "2026-11-05T23:59:59Z",
     "paused": False,
+    "config_revision": EVENT_CONFIG_REVISION,
 }
 
 SEASONAL_VARIANTS = (
@@ -110,13 +113,31 @@ def _parse_iso(value: str | None) -> float:
 
 
 def ensure_event_row(conn) -> None:
+    payload = json.dumps(DEFAULT_EVENT_CONFIG, separators=(",", ":"))
     conn.execute(
         "INSERT OR IGNORE INTO seasonal_event_instances(event_id,edition_id,enabled,activation_mode,starts_at,ends_at,redemption_ends_at,paused,config_json) VALUES (?,?,?,?,?,?,?,?,?)",
-        (EVENT_ID, EDITION_ID, 0, "manual", DEFAULT_EVENT_CONFIG["starts_at"], DEFAULT_EVENT_CONFIG["ends_at"], DEFAULT_EVENT_CONFIG["redemption_ends_at"], 0, json.dumps(DEFAULT_EVENT_CONFIG, separators=(",", ":"))),
+        (EVENT_ID, EDITION_ID, 1, "scheduled", DEFAULT_EVENT_CONFIG["starts_at"], DEFAULT_EVENT_CONFIG["ends_at"], DEFAULT_EVENT_CONFIG["redemption_ends_at"], 0, payload),
     )
+    row = conn.execute("SELECT config_json FROM seasonal_event_instances WHERE edition_id=?", (EDITION_ID,)).fetchone()
+    stored_revision = 0
+    if row:
+        try:
+            stored_revision = int((json.loads(str(row["config_json"] or "{}")) or {}).get("config_revision", 0) or 0)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            stored_revision = 0
+    if stored_revision < EVENT_CONFIG_REVISION:
+        # One-time live-edition migration for existing installs. This promotes
+        # the previously disabled/manual Halloween row into the requested live
+        # schedule, but the revision marker prevents later manual pause/off
+        # controls from being silently undone.
+        conn.execute(
+            "UPDATE seasonal_event_instances SET enabled=1,activation_mode='scheduled',starts_at=?,ends_at=?,redemption_ends_at=?,paused=0,config_json=?,updated_at=CURRENT_TIMESTAMP WHERE edition_id=?",
+            (DEFAULT_EVENT_CONFIG["starts_at"], DEFAULT_EVENT_CONFIG["ends_at"], DEFAULT_EVENT_CONFIG["redemption_ends_at"], payload, EDITION_ID),
+        )
 
 
 def event_state(conn, now: float | None = None) -> dict[str, Any]:
+    ensure_event_row(conn)
     row = conn.execute("SELECT * FROM seasonal_event_instances WHERE edition_id=?", (EDITION_ID,)).fetchone()
     now = float(time.time() if now is None else now)
     if not row:

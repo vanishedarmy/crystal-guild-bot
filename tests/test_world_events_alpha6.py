@@ -11,6 +11,7 @@ from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine
 from crystal_guild.encounter_daemon import EncounterDaemon
 from crystal_guild.world_events import WORLD_EVENTS, WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST
+from crystal_guild.seasonal_events import set_event_control
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -36,6 +37,11 @@ class WorldEventsAlpha6Tests(unittest.TestCase):
             self.assertTrue(self.game.choose_job(pid, job).ok)
             self.db.execute("UPDATE players SET level=? WHERE twitch_id=?", (level, pid))
             self.game.choose_job(pid, job)
+        # These tests validate the ordinary World Event director. Keep the
+        # now-live Halloween edition disabled here so a Hollow Warden roll does
+        # not replace the generic catalog fixture.
+        with self.db.tx() as conn:
+            set_event_control(conn, enabled=False, paused=False, activation_mode="manual")
 
     def tearDown(self) -> None:
         self.db.close()

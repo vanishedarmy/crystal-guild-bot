@@ -36,6 +36,10 @@ class SeasonalVentures1946Tests(unittest.TestCase):
         self.db.execute("UPDATE players SET level=25 WHERE twitch_id='42'")
         p = self.game._player("42")
         self.db.execute("UPDATE players SET current_hp=? WHERE twitch_id='42'", (self.game._max_hp(p),))
+        # Most Venture tests explicitly opt into the event so inactive-state
+        # behavior stays deterministic now that Halloween 2026 defaults live.
+        with self.db.tx() as conn:
+            set_event_control(conn, enabled=False, paused=False, activation_mode="manual")
 
     def tearDown(self):
         self.db.close()
@@ -52,12 +56,12 @@ class SeasonalVentures1946Tests(unittest.TestCase):
         return self.game._solo_expedition_load("42")
 
     def test_balanced_probability_per_encounter(self):
-        self.assertEqual(SOLO_VENTURE_SEASONAL_CHANCE, 0.25)
-        self.assertEqual(STREAM_VENTURE_SEASONAL_CHANCE, 0.30)
+        self.assertEqual(SOLO_VENTURE_SEASONAL_CHANCE, 0.35)
+        self.assertEqual(STREAM_VENTURE_SEASONAL_CHANCE, 0.40)
         self.assertEqual(SEASONAL_REPLACEMENT_CHANCE, STREAM_VENTURE_SEASONAL_CHANCE)
         self.activate()
-        # A 27% roll is a stream replacement, but not a solo replacement.
-        with patch.object(self.game.rng, "random", return_value=0.27):
+        # A 37% roll is a stream replacement, but not a solo replacement.
+        with patch.object(self.game.rng, "random", return_value=0.37):
             self.assertIsNone(self.game._roll_seasonal_venture_variant(max_monster_level=40, chance=SOLO_VENTURE_SEASONAL_CHANCE))
             self.assertIsNotNone(self.game._roll_seasonal_venture_variant(max_monster_level=40, chance=STREAM_VENTURE_SEASONAL_CHANCE))
 
