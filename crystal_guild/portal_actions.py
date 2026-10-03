@@ -52,6 +52,10 @@ class PortalActionWorker:
         self.verify_tls = bool(verify_tls)
         self.notify_result = notify_result
         self.wake_encounter = wake_encounter
+        # Assigned by the integrated Bot runtime once the Portal sync worker is
+        # constructed. Seasonal mutations use it to publish fresh player
+        # snapshots immediately instead of waiting for the next polling interval.
+        self.wake_sync: Callable[[], None] | None = None
         self.subscription_lookup = subscription_lookup
         self.stream_live_lookup = stream_live_lookup
         self.owner_id = str(owner_id or "").strip()
@@ -164,6 +168,20 @@ class PortalActionWorker:
                 # game-action layer as well as in the hosted submission queue.
                 LOGGER.exception("Unable to acknowledge Portal action %s", action.get("id"))
                 raise
+            # Seasonal controls and purchases alter state that the player-facing
+            # Portal consumes. Wake the snapshot worker only after the hosted
+            # action acknowledgement succeeds, so the Web mirror converges at
+            # once and cannot remain stuck on a pre-command DISABLED snapshot.
+            seasonal_command = False
+            if action_type == "STREAMER_COMMAND":
+                payload = action.get("payload") if isinstance(action.get("payload"), dict) else {}
+                seasonal_command = str(payload.get("command") or "").strip().lower().lstrip("!") == "seasonalevent"
+            if ok and self.wake_sync is not None and (seasonal_command or action_type == "SEASONAL_BUY"):
+                try:
+                    self.wake_sync()
+                except Exception:
+                    LOGGER.exception("Unable to wake Portal sync after Seasonal action %s", action_id)
+
             pending = self._post_ack_notifications.pop(action_id, [])
             if pending and self.notify_result is not None:
                 for announcement in pending:
@@ -903,7 +921,12 @@ class PortalActionWorker:
         if command == "seasonalevent":
             mode = str(argument or "status").strip().lower()
             if mode in {"on", "enable", "start"}:
-                return self._game_result(self.game.seasonal_event_control(enabled=True, paused=False))
+                # The quick Streamer toggle is for the currently scheduled live
+                # edition. Re-enable scheduled mode as well so an old manual
+                # configuration cannot accidentally leave Halloween running
+                # without its Nov. 2 cutoff. Advanced controls can still switch
+                # to manual explicitly afterward.
+                return self._game_result(self.game.seasonal_event_control(enabled=True, paused=False, activation_mode="scheduled"))
             if mode in {"off", "disable", "end"}:
                 return self._game_result(self.game.seasonal_event_control(enabled=False, paused=False))
             if mode == "pause":

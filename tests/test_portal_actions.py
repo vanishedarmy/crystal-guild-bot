@@ -154,6 +154,40 @@ class PortalActionWorkerTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn("not authorized", message.lower())
 
+    def test_seasonal_streamer_toggle_restores_schedule_and_wakes_player_sync(self):
+        from crystal_guild.seasonal_events import event_state, set_event_control
+
+        with self.db.tx() as conn:
+            set_event_control(conn, enabled=False, paused=False, activation_mode="manual")
+        wakes = []
+        worker = PortalActionWorker(
+            self.game, "https://guild.example", "sync-key", owner_id="100"
+        )
+        worker.wake_sync = lambda: wakes.append("sync")
+        action = self.action(
+            id="pa_stream_seasonal_on", type="STREAMER_COMMAND",
+            payload={"command": "seasonalevent", "argument": "on"},
+        )
+
+        def fake_post(path, payload):
+            if path == "/api/actions/claim":
+                return {"ok": True, "protocol_version": ACTION_PROTOCOL_VERSION, "actions": [action]}
+            if path == "/api/actions/result":
+                self.assertTrue(payload["ok"])
+                self.assertEqual(payload["data"]["seasonal"]["activation_mode"], "scheduled")
+                self.assertEqual(payload["data"]["seasonal"]["ends_at"], "2026-11-02T23:59:59Z")
+                return {"ok": True}
+            raise AssertionError(path)
+
+        worker._post = fake_post
+        self.assertEqual(worker.poll_once(), 1)
+        self.assertEqual(wakes, ["sync"])
+        with self.db.tx() as conn:
+            state = event_state(conn)
+        self.assertTrue(state["enabled"])
+        self.assertEqual(state["activation_mode"], "scheduled")
+        self.assertEqual(state["ends_at"], "2026-11-02T23:59:59Z")
+
     def test_h9_portal_spawn_boss_posts_rally_to_chat_only_while_live_after_ack(self):
         def run(live: bool, action_id: str):
             announcements = []

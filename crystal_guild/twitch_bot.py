@@ -1067,6 +1067,7 @@ def main() -> None:
             player_prepare=game.reconcile_player_progress,
         )
         portal_sync = PortalSyncWorker(sync_client)
+        portal_actions.wake_sync = portal_sync.wake
     elif settings.cloud_runtime:
         LOGGER.warning("Cloud runtime has in-process Portal sync disabled or Portal credentials are missing.")
 
