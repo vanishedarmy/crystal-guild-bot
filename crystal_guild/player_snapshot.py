@@ -622,6 +622,8 @@ class PortalRepository:
                         "id": item["id"],
                         "name": item["name"],
                         "type": item.get("type", "item"),
+                        "description": str(item.get("description") or ""),
+                        "use": item.get("use"),
                         "rarity": item.get("rarity", "common"),
                         "quantity": int(row["quantity"]),
                         "equipped": item["id"] in equipped,

@@ -6,6 +6,8 @@ import time
 from datetime import datetime, timezone
 from typing import Any
 
+from .supply_cache import SPOOKY_CACHE_DESCRIPTION
+
 EVENT_ID = "night_of_the_hollow_crystal"
 EDITION_ID = "halloween_2026"
 EVENT_NAME = "Night of the Hollow Crystal"
@@ -64,7 +66,7 @@ HOLLOW_WARDEN = {
 }
 
 SHOP = (
-    {"id":"spooky_supply_cache","name":"Spooky Supply Cache","cost":10,"kind":"cache","art":"/seasonal/halloween-2026/spooky-supply-cache.webp","repeatable":True},
+    {"id":"spooky_supply_cache","name":"Spooky Supply Cache","cost":10,"kind":"cache","description":SPOOKY_CACHE_DESCRIPTION,"art":"/seasonal/halloween-2026/spooky-supply-cache.webp","repeatable":True},
     {"id":"nightwatcher","name":"Nightwatcher","cost":30,"kind":"title","title_id":"nightwatcher","art":"/seasonal/halloween-2026/nightwatcher.webp","repeatable":False},
     {"id":"haunted_candle","name":"Haunted Candle","cost":40,"kind":"keepsake","art":"/seasonal/halloween-2026/haunted-candle.webp","repeatable":False},
     {"id":"hollow_crystal_display","name":"Hollow Crystal Display","cost":60,"kind":"hall_decoration","art":"/seasonal/halloween-2026/hollow-crystal-display.webp","repeatable":False},
@@ -322,10 +324,14 @@ def buy_reward(conn, player_id: str, reward_id: str) -> tuple[bool, str, dict[st
         return False, f"You need {reward['cost']} {TOKEN_NAME}; you have {p['tokens']}.", {}
     conn.execute("UPDATE player_seasonal_event_progress SET tokens=tokens-?,updated_at=CURRENT_TIMESTAMP WHERE player_id=? AND edition_id=?", (int(reward["cost"]),str(player_id),EDITION_ID))
     conn.execute("INSERT INTO player_seasonal_reward_claims(player_id,edition_id,reward_id,quantity,claimed_at) VALUES (?,?,?,1,CURRENT_TIMESTAMP) ON CONFLICT(player_id,edition_id,reward_id) DO UPDATE SET quantity=quantity+1,claimed_at=CURRENT_TIMESTAMP", (str(player_id),EDITION_ID,reward["id"]))
+    if reward["kind"] == "cache":
+        conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,1) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+1", (str(player_id),reward["id"]))
+        conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, 1, 'seasonal_cache_purchase')", (str(player_id),reward["id"]))
     if reward["kind"] == "title":
         conn.execute("INSERT OR IGNORE INTO player_titles(player_id,title_id,unlocked_at) VALUES (?,?,CURRENT_TIMESTAMP)", (str(player_id),str(reward["title_id"])))
     trophies = reconcile_trophies(conn, player_id)
-    return True, f"Moonlit Emporium — acquired {reward['name']} for {reward['cost']} {TOKEN_NAME}.", {"reward_id":reward["id"],"trophies":trophies}
+    hint = " Open it from Inventory when you are ready." if reward["kind"] == "cache" else ""
+    return True, f"Moonlit Emporium — acquired {reward['name']} for {reward['cost']} {TOKEN_NAME}.{hint}", {"reward_id":reward["id"],"trophies":trophies}
 
 
 def public_snapshot(conn, player_id: str) -> dict[str, Any]:

@@ -14,6 +14,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
+from .supply_cache import SPOOKY_CACHE_ID, roll_spooky_cache
 from .emporium import STAPLES, eligible_stock, guild_commerce, purchase_price, shop_context
 from .crafting_catalog import CATEGORIES, recipe_category, recipe_subcategory
 from .active_battle import (
@@ -1370,6 +1371,11 @@ class CrystalGuildEngine:
             return GameResult.fail(f"You do not own {item['name']}.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("Wait until you are outside the active encounter or raid before using field items.")
+
+        if item["id"] == SPOOKY_CACHE_ID:
+            if str(target_query or "").strip():
+                return GameResult.fail("Open this cache for yourself from your own Inventory.")
+            return self._open_spooky_cache(twitch_id)
 
         target_id = str(twitch_id)
         target = actor
@@ -3628,7 +3634,7 @@ class CrystalGuildEngine:
         matches: list[tuple[int, dict[str, Any], str]] = []
         for item in self.data.items.values():
             use = item.get("use")
-            if not isinstance(use, dict) or item.get("id") == "tent":
+            if not isinstance(use, dict) or item.get("id") == "tent" or not use.get("battle", True):
                 continue
             for key in {item.get("id", ""), item.get("name", "")}:
                 token = normalize_action_text(str(key))
@@ -6602,6 +6608,8 @@ class CrystalGuildEngine:
             effects = list(use.get("effects") or [])
             field_usable = bool(use.get("field"))
             cleanse_effect = any(effect.get("type") == "cleanse" for effect in effects)
+            if item_id == SPOOKY_CACHE_ID:
+                continue
             if not field_usable and not cleanse_effect:
                 continue
 
@@ -6714,6 +6722,7 @@ class CrystalGuildEngine:
             "camp_until": camp_until if camp_remaining > 0 else 0,
             "camp_remaining": camp_remaining,
             "combat_locked": bool(combat_locked),
+            "cache_open_reason": self._camp_plan_reason(twitch_id),
             "active_statuses": active_statuses,
             "items": items,
             "recommended_item_id": recommendation["id"] if recommendation else None,
@@ -10397,6 +10406,7 @@ class CrystalGuildEngine:
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
+    @_state_guard
     def portal_use_field_item(
         self,
         twitch_id: str,
@@ -18375,6 +18385,30 @@ class CrystalGuildEngine:
             conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=MAX(0, quantity+excluded.quantity)", (player_id, item_id, amount))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, ?)", (player_id, item_id, amount, source))
 
+    def _open_spooky_cache(self, player_id: str) -> GameResult:
+        # The caller holds the authoritative state guard. Consumption, grant,
+        # transaction history and Portal receipt share one atomic transaction.
+        with self.db.tx() as conn:
+            consumed = conn.execute(
+                "UPDATE inventory SET quantity=quantity-1 WHERE player_id=? AND item_id=? AND quantity>0",
+                (str(player_id), SPOOKY_CACHE_ID),
+            )
+            if consumed.rowcount != 1:
+                return GameResult.fail("You do not own a Spooky Supply Cache.")
+            reward = roll_spooky_cache(self.rng)
+            if reward["kind"] == "gil":
+                amount = int(reward["amount"])
+                conn.execute("UPDATE players SET gil=gil+?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (amount, str(player_id)))
+                conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil', 'gil', ?, 'spooky_cache_open')", (str(player_id), amount))
+                label = f"{amount:,} Gil"
+            else:
+                item = self.data.items[reward["item_id"]]
+                self._change_item(str(player_id), item["id"], 1, "spooky_cache_open")
+                reward["name"] = item["name"]
+                label = f"1 {item['name']} ({reward['rarity'].title()})"
+            conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, -1, 'spooky_cache_open')", (str(player_id), SPOOKY_CACHE_ID))
+            return GameResult.success(f"SPOOKY SUPPLY CACHE — opened one cache and found {label}!", cache_reward=reward)
+
     def _inventory_qty(self, player_id: str, item_id: str) -> int:
         row = self.db.one("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (player_id, item_id))
         return int(row["quantity"]) if row else 0
@@ -18684,6 +18718,7 @@ class CrystalGuildEngine:
             snapshot = seasonal_public_snapshot(conn, str(twitch_id))
         return GameResult.success(seasonal=snapshot)
 
+    @_state_guard
     def portal_seasonal_buy(self, twitch_id: str, reward_id: str, action_id: str = "") -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
@@ -18694,16 +18729,6 @@ class CrystalGuildEngine:
                 return GameResult(bool(payload.get("ok")), list(payload.get("messages") or []), dict(payload.get("data") or {}))
         with self.db.tx() as conn:
             ok, message, data = seasonal_buy_reward(conn, str(twitch_id), str(reward_id))
-            if ok and str(reward_id) == "spooky_supply_cache":
-                cache_contents = (("potion", 3), ("ether", 1), ("antidote", 2))
-                for item_id, quantity in cache_contents:
-                    conn.execute(
-                        "INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) "
-                        "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",
-                        (str(twitch_id), item_id, quantity),
-                    )
-                data = {**data, "cache_contents": [{"item_id": item_id, "quantity": quantity} for item_id, quantity in cache_contents]}
-                message += " Cache contents: 3 Potions, 1 Ether, 2 Antidotes."
             snapshot = seasonal_public_snapshot(conn, str(twitch_id))
             data = {**data, "seasonal": snapshot}
             if action_id:

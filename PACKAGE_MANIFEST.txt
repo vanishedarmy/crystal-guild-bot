@@ -1,4 +1,4 @@
-Crystal Guild v1.9.6 — Triple Triad Expanded with Regional Moogle Emporium Rework: complete Bot inventory
+Crystal Guild v1.9.6 — Triple Triad Expanded with Regional Emporium and Spooky Inventory Caches: complete Bot inventory
 Path | SHA-256 | Bytes
 Bot/.env.example | fff97b62fb7d86d8e250511bb9e4b8b97523af072124ea7bcfd175a1adb6fbb9 | 1707
 Bot/.gitignore | 2687ef19fd8b75ddaf10b516366333f88f13228453f4ecc22a562a66b8f862b0 | 208
@@ -39,13 +39,13 @@ Bot/crystal_guild/cloud_runtime.py | f7d91e7b591d247a441ceec09ce35048d5ad5bd158a
 Bot/crystal_guild/config.py | b71606ffdc25786ad4fb6a6bd43e24bf6200a376042d081a95b1176d996df273 | 7264
 Bot/crystal_guild/crafting_catalog.py | 0d9b287b34e41a7c1ec8b3159f1799978975f33e52d0e6b8620ec8be69eae5c7 | 3106
 Bot/crystal_guild/daily_provisions.py | ac39f5ec72edad2376295947c477e4ed7500bff91ee4b608f17a069b8777675a | 7843
-Bot/crystal_guild/data.py | b1dc789a4dc8ae1252a57f0a3660777e44748925cc596a78652970dd7981ef3a | 43189
+Bot/crystal_guild/data.py | d96f666b9afc366d6c952ddec8ba6cb123ae9b9ae500d0b67396a76267297853 | 43725
 Bot/crystal_guild/database.py | 6dbce6ca421055d8c0c06b74089dedf51949256e262d3188199ce085c7a2ca82 | 96863
 Bot/crystal_guild/dungeons.py | a2e041764ddd2f2f05ff11294d2f89c1a2c683e9a106dd389ff0ae49af9d0f79 | 590
 Bot/crystal_guild/emporium.py | 1f14dc129e989ac0826fc35422f0495fb34b64d5d3704939136ea4dfa92016b0 | 3409
 Bot/crystal_guild/encounter_daemon.py | 98a175f68e506a95a2d623553a5b5ea2312ab005c5268c3a9dddadceadd9517f | 26601
 Bot/crystal_guild/enemy_combat.py | 34cf65a9bea96d22750d775f9438704f970fc38431d6913e771ff40702a795ee | 2928
-Bot/crystal_guild/engine.py | b2ca8728e496b52b30b9a9038e5ab26ce9a4670d8cc08cc961dc4210fdf4f0ef | 1084746
+Bot/crystal_guild/engine.py | 6230270529a13d642ac9cd55897afb96a56ce3954d1c8ffb84c427990351a1b8 | 1086155
 Bot/crystal_guild/expeditions.py | 08d02bb0d82612fc1a20aa025a7e03445099973ebe2c6929192a58766166e8bf | 5108
 Bot/crystal_guild/fellowship.py | 0dd9cf26a319bf8592d7aaf7d4720de3a4736038ebad05b1b1afd330fc211042 | 39981
 Bot/crystal_guild/fellowship_system.py | f9043fc90eb4008171c31811df18eca176ba1d9ca71660fcd40d569bce54d3e7 | 86799
@@ -56,14 +56,15 @@ Bot/crystal_guild/mercenary.py | f2db44d0b4ebf3dfe481636835967e7d8c797ccb45e1bc0
 Bot/crystal_guild/moments.py | 6fed638967dac84ccefec846594a5466897887c4f05d16bae5ddf2045882603e | 13010
 Bot/crystal_guild/moments_progress.py | 668a213540f472a0633426d8bfeb57d43ecee0a8c00fdb36722098528682868a | 14930
 Bot/crystal_guild/personal_records.py | e20ffac838e0ed5308ed68c65143e5078ccdfc268a84452a0d3099598b98a6cd | 11694
-Bot/crystal_guild/player_snapshot.py | 85ecc94513e7fccda6d5fdd0799ab1f57bbc6f8d42b4388a438d3ad0cb2bf2f7 | 112002
+Bot/crystal_guild/player_snapshot.py | 69c7bddece3dd1e60e8835a2cdb2b8c33664380c2737a4741fbca73b486283bb | 112125
 Bot/crystal_guild/portal_actions.py | 60c78ea924b8168d3ea4a2dc2f21f26a6e59b87d0ba63d489fb1c9681b02b73a | 60661
 Bot/crystal_guild/portal_sync.py | a6caa4215b3485476b0d8c8b958ad22c11e0ef2d7e1b3c45f2939e9a9ea5013f | 22017
 Bot/crystal_guild/retainer.py | ff1fd33914c0477a44b01e7d34a648ee9847b42db4ad48e0caaefbf1a33eb306 | 7408
-Bot/crystal_guild/seasonal_events.py | ad1dcbc4aa2a50433cf6c9af3dd5585feaf4839ffcc5acbc218d346fb8ffbc83 | 22847
+Bot/crystal_guild/seasonal_events.py | cb092553e647737a4c58392bdcffdb76bbe07d54250870ba49e1294bcf2b8dcc | 23438
 Bot/crystal_guild/simulator.py | 204598b9c04984d625e109ebc8b9d431cf0c6084d1e020b30908768bf16aa961 | 8831
 Bot/crystal_guild/stream_status.py | a58fd082b9cd32b86e24eedd4270bb28effed55f22f54c4cb3af6793d7515e5d | 7471
 Bot/crystal_guild/subscription_status.py | 61b0d39d52a2a9e4595549a7d96e46c21a1f4942549d2407973672a4317b84ac | 6899
+Bot/crystal_guild/supply_cache.py | 809c0583102e7a7600cebd9073e211e728661a4d3ef241bbba1f7a519a104390 | 1263
 Bot/crystal_guild/time_format.py | d55b7e88ed426424b722ff47914ae06a3324345817ac117f7718b0d80c5fa9d1 | 980
 Bot/crystal_guild/token_store.py | 34221c3d2484bbb0bac48ac6b285acd1933ca1b49a1cf922ef54f0d185bb8714 | 8168
 Bot/crystal_guild/triple_triad.py | ae9227e690a2222901cc09dc455139f4a01c121a190679965381b152608e4234 | 6978
@@ -81,7 +82,7 @@ Bot/data/enemy_profiles.json | 2fe9839c243778125665c4116e562d0f96cf7cc55ad677c35
 Bot/data/expedition_regions.json | 54c2a9049873dbed86de38bc210c667ab35b408b7526b6f95bc2f1a164e7e248 | 29029
 Bot/data/forge.json | 258b1354e12e8dada89858372b3f7e1d4337bec5e337833d41397126caa003d1 | 843
 Bot/data/hunts.json | 9fac57d0f967d6d4ef03d8ccd2c15caa98234b36acc38afd24320ee19e0a86d5 | 7534
-Bot/data/items.json | ec6094eed878608b395b47eeca35cb65e6c9b236a9ce9972454fc49fecc34a45 | 169630
+Bot/data/items.json | 2f95c50d93ed3cc050ec3b2f888488da7bb6f52d796b8bf3e8744a5c3ac2d8f2 | 170292
 Bot/data/jobs.json | 4c1a797ea6715f78faf9cc7d9640ef41069c2f57f48f7d15649a644680b625d7 | 30663
 Bot/data/moment_titles.json | 7d5d9832a79700a40050931ae9bf7002d4358af62901a0b266b41dae0dbbb846 | 2800
 Bot/data/moments.json | 60d18e9498a65f109129c094b00cb4adba30478aa4e5e490c72c2eef1ba817d7 | 12620
@@ -181,7 +182,7 @@ Bot/tests/test_guild_initiatives_193.py | f6025dde757ada494ebd33c229c91b680d2bcf
 Bot/tests/test_hall_of_trophies_alpha7.py | f70ae8e3cc15944b38a292f598be8d431d2a8117aecee9a0b4d644c858ff9b00 | 4661
 Bot/tests/test_hardening_191.py | 612e180870108c256dcef2abe062be66a4547578c05c593c251274c6d30341b5 | 2425
 Bot/tests/test_help_system.py | 3d8985e2578c6af90b9ac74589daa0142f8fb7245dc722d5b89f30672c9ba940 | 712
-Bot/tests/test_item_expansion.py | 85c29bb5d5085db4560740e7272e2c9402d814edb925a00ba9dca4922d5c250c | 8053
+Bot/tests/test_item_expansion.py | dbfffee1296a8025674c5f6e66dd3471478dd5143470dbba37e4f122e5f8b6ec | 8053
 Bot/tests/test_item_progression.py | f12fa41fab3bece3c877dbfc5a29018fa536dea1e299db4fbabe1d69fe9df303 | 2175
 Bot/tests/test_item_usage_copy_hotfix2.py | 40fdf56b9bb6ed4b22f21815b0cd12d6c7dc136085be4d7643a95656334c0cb1 | 1466
 Bot/tests/test_job_resource_switching.py | 1e335344d827e4e355d42d0b045bf433123afa56717fd6dcbe7374f3a4cdbfe2 | 5021
@@ -219,6 +220,7 @@ Bot/tests/test_retainer_alpha2.py | 947ac498bf952a95eb9d33fc0ad5e37a78ab3c3bf7da
 Bot/tests/test_seasonal_events_alpha8.py | ab97993e4704e68b9461c71bf6cde3445ac93593cd6b820ae36c6935d653fb03 | 4037
 Bot/tests/test_seasonal_venture_1946.py | 2d7f863a3e9e222037a91c1d4ee8a0231413ae0d723d84de92d686a87f091e02 | 9192
 Bot/tests/test_setup.py | ce43595f9cb1140f4c0646ff552fd6737be675e905adc0a48f61e66518e43bfe | 3082
+Bot/tests/test_spooky_inventory_cache.py | 394b90a7ac6f6aee31bab72b271b3dbad66bdb19f0146c3c1125f77af005e5d0 | 9006
 Bot/tests/test_stream_status.py | 0012d86e17f1b53019d6e348c3724dd5fbdfa9c52db536ac3fe349dbe2b3a1ae | 3820
 Bot/tests/test_subscription_status.py | d8eda459029167ed8c4810e27761e2cd086686fd92a06d915fdbcd0d86543d2f | 7768
 Bot/tests/test_task_completion_hardening_hotfix5.py | 84483906a7c95d3bbfb28a36dce23a1882fcee6efb4278e655e877a75ae6bc9f | 7470
