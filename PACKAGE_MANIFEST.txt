@@ -1,4 +1,4 @@
-Crystal Guild v1.9.6 — Triple Triad Expanded: complete Bot source and built-output inventory
+Crystal Guild v1.9.6 — Triple Triad Expanded with Progression Hotfix 1: complete Bot inventory
 Path | SHA-256 | Bytes
 Bot/.env.example | fff97b62fb7d86d8e250511bb9e4b8b97523af072124ea7bcfd175a1adb6fbb9 | 1707
 Bot/.gitignore | 2687ef19fd8b75ddaf10b516366333f88f13228453f4ecc22a562a66b8f862b0 | 208
@@ -234,6 +234,7 @@ Bot/tests/test_trails_raids_beta1.py | 53309f716afd05bfb62f3836ab2a21f769e1b0dcb
 Bot/tests/test_trails_raids_beta2.py | 5cf1f86963138c7e919773b366afb2498b690b86ae7d38780a94a046e60052b3 | 6150
 Bot/tests/test_trails_raids_beta3.py | 38b1ee19cc2b8e62c414932638d53c4d83e229f7e8a3a17f9c3bd7f19dcf5a7a | 5142
 Bot/tests/test_trails_raids_rc1.py | 16a33f35a1cb3b8d0bb692431cde309d688fcc1bf9e34fe91dfa99d73db95ef5 | 4615
+Bot/tests/test_triple_triad_hosted_ladder.py | 10470199f1b16a469f3e310fa1f304575141650a90a424d854199353237f27c8 | 8169
 Bot/tests/test_triple_triad_rework.py | 053baa84c2dd3dc0d41719925c6a22eff4cf676f2a4afb7abe0435926f5512b7 | 7207
 Bot/tests/test_wayfarer.py | 4f7b4558400fb68b64d9addee4a861b9dc73743bfaff210abd057cac4f64f83e | 14890
 Bot/tests/test_world_events_alpha6.py | c64d2bd8d03c57efa1dbda650bd7e36f190f1f798b3313b5585f1a5ab17a565d | 8474
