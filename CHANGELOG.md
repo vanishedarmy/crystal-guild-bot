@@ -1,3 +1,11 @@
+## v1.9.6 — Triple Triad Expanded
+
+- Expand Triple Triad to 45 cards, ten opponents and five circuits, with gentler novice play and five dedicated UI sections.
+- Integrate all thirty approved card faces; preserve the original fifteen cards, saved decks, records and active matches.
+- Align Bot, hosted Web and Portal release labels; refresh Overview What's New and include rebuilt frontend output.
+- Remove audited superseded static files and provide hash-checked incremental-install cleanup.
+- Database schema 26, hosted sync 1 and Portal Action protocol 39 stay unchanged.
+
 ## v1.9.4 — Crafting Reforged
 
 - Expand the recipe catalog from 26 to 183, adding 157 recipes spanning field items, weapons, armor, and accessories; original recipes and earned discoveries remain intact.

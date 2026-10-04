@@ -121,6 +121,10 @@ TRADING_POST_ACTIVE_LIMIT = 24
 TRADING_POST_WATCH_LIMIT = 30
 TRADING_POST_HISTORY_SECONDS = 30 * 24 * 60 * 60
 
+from .triple_triad import (
+    TRIPLE_TRIAD_STARTER_COLLECTION, triple_triad_progress,
+    triple_triad_recent_misses, triple_triad_power,
+)
 from .gold_saucer import (
     WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP, DAILY_REWARD_MGP as SAUCER_DAILY_REWARD_MGP,
     CACTPOT_COST, CACTPOT_COOLDOWN_SECONDS, CACTPOT_LINES, CACTPOT_PAYOUTS,
@@ -11324,12 +11328,38 @@ class CrystalGuildEngine:
         return conn.execute("SELECT * FROM player_gold_saucer WHERE player_id=?", (twitch_id,)).fetchone()
 
     def _triple_triad_ensure_profile_sql(self, conn: Any, twitch_id: str) -> Any:
-        starter = json.dumps(list(TRIPLE_TRIAD_STARTER_DECK), separators=(",", ":"))
+        starter = json.dumps(list(TRIPLE_TRIAD_STARTER_COLLECTION), separators=(",", ":"))
         conn.execute(
             "INSERT OR IGNORE INTO player_triple_triad(player_id,collection_json,deck_json) VALUES (?,?,?)",
-            (twitch_id, starter, starter),
+            (twitch_id, starter, json.dumps(list(TRIPLE_TRIAD_STARTER_DECK))),
         )
-        return conn.execute("SELECT * FROM player_triple_triad WHERE player_id=?", (twitch_id,)).fetchone()
+        profile = conn.execute("SELECT * FROM player_triple_triad WHERE player_id=?", (twitch_id,)).fetchone()
+        raw_owned = self._gold_saucer_json(profile["collection_json"], [])
+        owned = list(dict.fromkeys(str(c) for c in (raw_owned if isinstance(raw_owned, list) else []) if str(c) in TRIPLE_TRIAD_CARDS_BY_ID))
+        upgraded = list(dict.fromkeys(owned + list(TRIPLE_TRIAD_STARTER_COLLECTION)))
+        raw_deck = self._gold_saucer_json(profile["deck_json"], [])
+        deck = [str(c) for c in raw_deck] if isinstance(raw_deck, list) else []
+        valid_deck = len(deck) == 5 and len(set(deck)) == 5 and all(c in upgraded for c in deck)
+        if owned != upgraded or not valid_deck:
+            conn.execute("UPDATE player_triple_triad SET collection_json=?,deck_json=?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
+                         (json.dumps(upgraded), json.dumps(deck if valid_deck else list(TRIPLE_TRIAD_STARTER_DECK)), twitch_id))
+            profile = conn.execute("SELECT * FROM player_triple_triad WHERE player_id=?", (twitch_id,)).fetchone()
+        marker = conn.execute("SELECT 1 FROM gold_saucer_history WHERE player_id=? AND game='triad_collection' LIMIT 1", (twitch_id,)).fetchone()
+        if not marker:
+            pending = conn.execute("SELECT match_id,opponent_id FROM gold_saucer_triple_triad WHERE player_id=? AND state='active'", (twitch_id,)).fetchone()
+            snapshot = {"quantities": {c: 1 for c in upgraded}, "catalog_revision": 2}
+            if pending:
+                snapshot.update({"pending_match_id": pending["match_id"], "pending_cost": {"saucer_attendant": 20, "card_shark": 30, "crystal_master": 45}.get(pending["opponent_id"], 0)})
+            conn.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triad_collection',0,0,'upgrade',?,?)", (twitch_id, json.dumps(snapshot), int(time.time())))
+        return profile
+
+    def _triple_triad_history_sql(self, conn: Any, twitch_id: str) -> list[dict[str, Any]]:
+        rows = conn.execute("SELECT game,outcome,details_json FROM gold_saucer_history WHERE player_id=? AND game IN ('triple_triad','triad_circuit','triad_collection') ORDER BY id", (twitch_id,)).fetchall()
+        history = []
+        for r in rows:
+            details = self._gold_saucer_json(r["details_json"], {})
+            history.append({"game": r["game"], "outcome": r["outcome"], "details": details if isinstance(details, dict) else {}})
+        return history
 
     def _triple_triad_match_payload_sql(self, row: Any) -> dict[str, Any] | None:
         if not row:
@@ -11365,7 +11395,7 @@ class CrystalGuildEngine:
             "board": board,
             "player_hand": [saucer_triad_card_payload(card_id) for card_id in player_hand_ids],
             "npc_cards_remaining": len(npc_hand_ids),
-            "npc_hand": [saucer_triad_card_payload(card_id) for card_id in npc_hand_ids] if state == "resolved" else [],
+            "npc_hand": [saucer_triad_card_payload(card_id) for card_id in npc_hand_ids],
             "turn": str(row["turn"] or "player"),
             "result": str(row["result"] or "") if row["result"] else None,
             "player_score": int(player_score),
@@ -11401,20 +11431,25 @@ class CrystalGuildEngine:
         if active and int(row["started_at"] or 0) >= day_start:
             matches_today += 1
         wins = int(profile["wins"] or 0)
+        history = self._triple_triad_history_sql(conn, twitch_id)
+        if match:
+            match["rewards"] = next((h["details"] for h in reversed(history) if h["details"].get("match_id") == match["id"]), {})
+        progress = triple_triad_progress(history, wins)
+        circuits = {c["id"]: c for c in progress["circuits"]}
         opponents = []
         for opponent in TRIPLE_TRIAD_OPPONENTS:
-            unlocked = wins >= int(opponent["unlock_wins"])
+            circuit = circuits[opponent["circuit"]]
+            unlocked = circuit["unlocked"]
             cost = int(opponent["cost"])
             opponents.append({
-                "id": str(opponent["id"]),
-                "name": str(opponent["name"]),
-                "difficulty": str(opponent["difficulty"]),
-                "unlock_wins": int(opponent["unlock_wins"]),
-                "cost": cost,
-                "win_payout": int(opponent["win_payout"]),
-                "draw_payout": int(opponent["draw_payout"]),
-                "description": str(opponent["description"]),
+                **{k: opponent[k] for k in ("id", "name", "difficulty", "circuit", "unlock_wins", "cost", "win_payout", "draw_payout", "loss_payout", "description", "drop_chance", "draw_drop_chance")},
+                "circuit_name": circuit["name"],
+                "unlock_hint": "Clear the previous circuit (win against both opponents).",
+                "deck_power": triple_triad_power(opponent["deck"]),
+                "deck_cards": [saucer_triad_card_payload(card_id) for card_id in opponent["deck"]],
                 "reward_cards": [saucer_triad_card_payload(card_id) for card_id in opponent["rewards"]],
+                "wins": progress["victories"].get(opponent["id"], 0),
+                "wins_without_card": triple_triad_recent_misses(history, opponent["id"]),
                 "unlocked": unlocked,
                 "can_start": bool(unlocked and not active and matches_today < TRIPLE_TRIAD_DAILY_MATCHES and int(points) >= cost),
             })
@@ -11425,13 +11460,17 @@ class CrystalGuildEngine:
             "next_daily_reset_at": day_start + 86400,
             "rules": {
                 "name": "Open",
-                "description": "Higher adjacent side captures the lower side. Same, Plus, elemental, and regional modifiers are not enabled.",
+                "description": "Both hands are visible. A higher adjacent side captures the lower side; equal sides do not capture. Cards left in hand count toward the final score. Same, Plus and elemental modifiers are off.",
             },
             "collection": [
-                {**saucer_triad_card_payload(str(row["id"])), "owned": str(row["id"]) in collection, "in_deck": str(row["id"]) in deck}
+                {**saucer_triad_card_payload(str(row["id"])), "owned": str(row["id"]) in collection, "in_deck": str(row["id"]) in deck, "quantity": (max(1, progress["quantities"].get(str(row["id"]), 0)) if str(row["id"]) in collection else 0)}
                 for row in TRIPLE_TRIAD_CARDS
             ],
             "owned_count": len(collection),
+            "catalog_revision": 2,
+            "circuits": progress["circuits"],
+            "deck_power": triple_triad_power(deck),
+            "starter_count": len(TRIPLE_TRIAD_STARTER_COLLECTION),
             "total_cards": len(TRIPLE_TRIAD_CARDS),
             "deck": list(deck),
             "deck_cards": [saucer_triad_card_payload(card_id) for card_id in deck],
@@ -11463,17 +11502,26 @@ class CrystalGuildEngine:
             payout = int(opponent["draw_payout"])
         else:
             outcome = "loss"
-            payout = 0
-        collection = [str(value) for value in self._gold_saucer_json(profile["collection_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID]
-        collection = list(dict.fromkeys(collection))
+            payout = int(opponent["loss_payout"])
+        collection = list(dict.fromkeys(str(c) for c in self._gold_saucer_json(profile["collection_json"], []) if str(c) in TRIPLE_TRIAD_CARDS_BY_ID))
+        history = self._triple_triad_history_sql(conn, twitch_id)
         reward_card = None
-        if outcome == "win":
-            reward_card = next((str(card_id) for card_id in opponent["rewards"] if str(card_id) not in collection), None)
-            if reward_card:
+        guaranteed = outcome == "win" and triple_triad_recent_misses(history, opponent["id"]) >= 3
+        chance = float(opponent["drop_chance"] if outcome == "win" else opponent["draw_drop_chance"] if outcome == "draw" else 0)
+        if guaranteed or (chance > 0 and self.rng.random() < chance):
+            missing = [c for c in opponent["rewards"] if c not in collection]
+            reward_card = self.rng.choice(missing or list(opponent["rewards"]))
+            if reward_card not in collection:
                 collection.append(reward_card)
+        entry_cost = int(opponent["cost"])
+        for h in history:
+            if h["game"] == "triad_collection" and h["details"].get("pending_match_id") == str(match_row["match_id"]):
+                entry_cost = int(h["details"]["pending_cost"])
+                if outcome == "draw":
+                    payout = max(payout, entry_cost)
         old_streak = int(profile["current_streak"] or 0)
         new_streak = old_streak + 1 if outcome == "win" else 0
-        cost = int(opponent["cost"])
+        cost = entry_cost
         conn.execute(
             "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
             (payout, payout, twitch_id),
@@ -11497,6 +11545,9 @@ class CrystalGuildEngine:
         )
         details = {
             "match_id": str(match_row["match_id"]),
+            "catalog_revision": 2,
+            "payout": payout,
+            "guaranteed_card": guaranteed,
             "opponent_id": str(opponent["id"]),
             "opponent_name": str(opponent["name"]),
             "player_score": int(player_score),
@@ -11505,12 +11556,25 @@ class CrystalGuildEngine:
             "card_reward_name": str(TRIPLE_TRIAD_CARDS_BY_ID[reward_card]["name"]) if reward_card else None,
         }
         entry_started_at = int(match_row["started_at"] or now)
-        conn.execute(
+        history_entry = conn.execute(
             "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triple_triad',?,?,?,?,?)",
             (twitch_id, cost, payout, outcome, json.dumps(details, separators=(",", ":")), entry_started_at),
         )
+        # Award each cleared circuit once, in the same transaction as resolution.
+        progress = triple_triad_progress(self._triple_triad_history_sql(conn, twitch_id), int(profile["wins"]) + int(outcome == "win"))
+        circuit_bonus = 0
+        for circuit in progress["circuits"]:
+            if circuit["cleared"] and circuit["unlocked"] and not circuit["bonus_paid"]:
+                bonus = int(circuit["bonus"])
+                conn.execute("UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+? WHERE player_id=?", (bonus, bonus, twitch_id))
+                conn.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triad_circuit',0,?,'clear',?,?)", (twitch_id, bonus, json.dumps({"circuit": circuit["id"], "name": circuit["name"]}), now))
+                circuit_bonus += bonus
+        details["circuit_bonus"] = circuit_bonus
+        conn.execute("UPDATE gold_saucer_history SET details_json=? WHERE id=?", (json.dumps(details, separators=(",", ":")), history_entry.lastrowid))
         trophies = reconcile_player_trophies(conn, str(twitch_id), source=f"triple_triad:{outcome}")
         suffix = f" Card won: {details['card_reward_name']}." if reward_card else ""
+        if circuit_bonus:
+            suffix += f" Circuit clear bonus: {circuit_bonus} MGP."
         trophy_suffix = f" Trophy unlocked: {trophies[0]}." if trophies else ""
         result = GameResult.success(
             f"TRIPLE TRIAD — {outcome.upper()} {player_score}-{npc_score} vs {opponent['name']}. {payout} MGP awarded.{suffix}{trophy_suffix}",
@@ -11575,7 +11639,7 @@ class CrystalGuildEngine:
             }
         history_rows = conn.execute(
             "SELECT game,wager,payout,outcome,details_json,created_at FROM gold_saucer_history "
-            "WHERE player_id=? ORDER BY created_at DESC,id DESC LIMIT 8",
+            "WHERE player_id=? AND game!='triad_collection' ORDER BY created_at DESC,id DESC LIMIT 8",
             (twitch_id,),
         ).fetchall()
         history = []
@@ -12359,6 +12423,8 @@ class CrystalGuildEngine:
             ).fetchone()
             matches_today = int(today["n"] or 0) if today else 0
             wins = int(profile["wins"] or 0)
+            progress = triple_triad_progress(self._triple_triad_history_sql(conn, twitch_id), wins)
+            circuit = next(c for c in progress["circuits"] if c["id"] == opponent["circuit"])
             deck = [str(value) for value in self._gold_saucer_json(profile["deck_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID]
             owned = {str(value) for value in self._gold_saucer_json(profile["collection_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID}
             cost = int(opponent["cost"])
@@ -12366,8 +12432,8 @@ class CrystalGuildEngine:
                 result = GameResult.fail("Finish your active Triple Triad match before starting another one.")
             elif matches_today >= TRIPLE_TRIAD_DAILY_MATCHES:
                 result = GameResult.fail("You have used all Triple Triad entries for today. The card hall resets at 00:00 UTC.")
-            elif wins < int(opponent["unlock_wins"]):
-                result = GameResult.fail(f"{opponent['name']} unlocks after {int(opponent['unlock_wins'])} Triple Triad wins.")
+            elif not circuit["unlocked"]:
+                result = GameResult.fail("Clear the previous Triple Triad circuit by winning against both of its opponents.")
             elif len(deck) != 5 or len(set(deck)) != 5 or any(card_id not in owned for card_id in deck):
                 result = GameResult.fail("Save a valid five-card Triple Triad deck before starting a match.")
             elif int(account["points"] or 0) < cost:
@@ -12436,7 +12502,7 @@ class CrystalGuildEngine:
                         result, _details = self._triple_triad_resolve_sql(conn, twitch_id, match, board, player_hand, npc_hand, now)
                     else:
                         opponent = TRIPLE_TRIAD_OPPONENTS_BY_ID[str(match["opponent_id"])]
-                        npc_card, npc_cell = saucer_triad_npc_move(board, npc_hand, str(opponent["difficulty"]))
+                        npc_card, npc_cell = saucer_triad_npc_move(board, npc_hand, str(opponent["difficulty"]), str(match["match_id"]))
                         npc_captures = saucer_triad_place(board, npc_cell, npc_card, "npc")
                         npc_hand.remove(npc_card)
                         move_data["npc"] = {"card_id": npc_card, "cell": npc_cell, "captures": npc_captures}

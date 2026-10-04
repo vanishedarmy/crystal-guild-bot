@@ -23,7 +23,7 @@ from .trophies import TROPHY_CATALOG, TROPHIES_BY_ID
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
 
-SNAPSHOT_VERSION = "1.9.4-crafting-reforged"
+SNAPSHOT_VERSION = "1.9.6-triple-triad-expanded"
 
 
 class PortalRepository:

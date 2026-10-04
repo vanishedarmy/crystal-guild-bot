@@ -42,7 +42,7 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
         return self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
 
     def test_alpha5_contract_opens_triple_triad_with_schema_13_protocol_29(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
+        self.assertEqual(__version__, "1.9.6-triple-triad-expanded")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
         self.assertEqual(self.db.schema_version(), 26)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
@@ -51,7 +51,7 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
         self.assertEqual(attraction["status"], "open")
         triad = state["triple_triad"]
         self.assertEqual(triad["deck"], list(TRIPLE_TRIAD_STARTER_DECK))
-        self.assertEqual(triad["owned_count"], 5)
+        self.assertEqual(triad["owned_count"], 10)
         self.assertEqual(triad["daily_matches"], TRIPLE_TRIAD_DAILY_MATCHES)
         self.assertFalse(triad["active"])
 
@@ -105,7 +105,7 @@ class GoldSaucerAlpha5TripleTriadTests(unittest.TestCase):
     def test_daily_limit_and_opponent_unlock_gate(self):
         locked = self.game.portal_triad_start("100", "card_shark", "triad-locked")
         self.assertFalse(locked.ok)
-        self.assertIn("3 Triple Triad wins", " ".join(locked.messages))
+        self.assertIn("previous Triple Triad circuit", " ".join(locked.messages))
 
         now = int(time.time())
         for index in range(TRIPLE_TRIAD_DAILY_MATCHES):

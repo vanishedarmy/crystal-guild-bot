@@ -1,0 +1,774 @@
+{
+  "revision": 2,
+  "starter_collection": [
+    "chocobo",
+    "moogle",
+    "cactuar",
+    "bomb",
+    "flan",
+    "goblin",
+    "wolf",
+    "mandragora",
+    "imp",
+    "bat"
+  ],
+  "starter_deck": [
+    "chocobo",
+    "moogle",
+    "cactuar",
+    "bomb",
+    "flan"
+  ],
+  "daily_matches": 5,
+  "cards": [
+    {
+      "id": "chocobo",
+      "name": "Chocobo",
+      "rarity": 1,
+      "top": 3,
+      "right": 4,
+      "bottom": 2,
+      "left": 1,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/chocobo.webp"
+    },
+    {
+      "id": "moogle",
+      "name": "Moogle",
+      "rarity": 1,
+      "top": 2,
+      "right": 3,
+      "bottom": 4,
+      "left": 3,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/moogle.webp"
+    },
+    {
+      "id": "cactuar",
+      "name": "Cactuar",
+      "rarity": 1,
+      "top": 5,
+      "right": 2,
+      "bottom": 1,
+      "left": 5,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/cactuar.webp"
+    },
+    {
+      "id": "bomb",
+      "name": "Bomb",
+      "rarity": 1,
+      "top": 4,
+      "right": 2,
+      "bottom": 6,
+      "left": 2,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/bomb.webp"
+    },
+    {
+      "id": "flan",
+      "name": "Flan",
+      "rarity": 1,
+      "top": 1,
+      "right": 5,
+      "bottom": 4,
+      "left": 3,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/flan.webp"
+    },
+    {
+      "id": "tonberry",
+      "name": "Tonberry",
+      "rarity": 2,
+      "top": 6,
+      "right": 2,
+      "bottom": 5,
+      "left": 3,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/tonberry.webp"
+    },
+    {
+      "id": "coeurl",
+      "name": "Coeurl",
+      "rarity": 2,
+      "top": 4,
+      "right": 6,
+      "bottom": 3,
+      "left": 5,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/coeurl.webp"
+    },
+    {
+      "id": "ahriman",
+      "name": "Ahriman",
+      "rarity": 2,
+      "top": 5,
+      "right": 4,
+      "bottom": 6,
+      "left": 3,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/ahriman.webp"
+    },
+    {
+      "id": "malboro",
+      "name": "Malboro",
+      "rarity": 3,
+      "top": 6,
+      "right": 5,
+      "bottom": 5,
+      "left": 4,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/malboro.webp"
+    },
+    {
+      "id": "ifrit",
+      "name": "Ifrit",
+      "rarity": 3,
+      "top": 7,
+      "right": 5,
+      "bottom": 6,
+      "left": 6,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/ifrit.webp"
+    },
+    {
+      "id": "shiva",
+      "name": "Shiva",
+      "rarity": 3,
+      "top": 6,
+      "right": 7,
+      "bottom": 5,
+      "left": 6,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/shiva.webp"
+    },
+    {
+      "id": "ramuh",
+      "name": "Ramuh",
+      "rarity": 4,
+      "top": 7,
+      "right": 6,
+      "bottom": 7,
+      "left": 4,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/ramuh.webp"
+    },
+    {
+      "id": "leviathan",
+      "name": "Leviathan",
+      "rarity": 4,
+      "top": 8,
+      "right": 7,
+      "bottom": 5,
+      "left": 6,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/leviathan.webp"
+    },
+    {
+      "id": "bahamut",
+      "name": "Bahamut",
+      "rarity": 5,
+      "top": 8,
+      "right": 8,
+      "bottom": 7,
+      "left": 7,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/bahamut.webp"
+    },
+    {
+      "id": "odin",
+      "name": "Odin",
+      "rarity": 5,
+      "top": 9,
+      "right": 7,
+      "bottom": 8,
+      "left": 6,
+      "art": "/gold-saucer/rc2h1/triple-triad/cards/odin.webp"
+    },
+    {
+      "id": "goblin",
+      "name": "Goblin",
+      "rarity": 1,
+      "top": 4,
+      "right": 1,
+      "bottom": 2,
+      "left": 3,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/goblin.webp"
+    },
+    {
+      "id": "wolf",
+      "name": "Wolf",
+      "rarity": 1,
+      "top": 2,
+      "right": 4,
+      "bottom": 3,
+      "left": 1,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/wolf.webp"
+    },
+    {
+      "id": "mandragora",
+      "name": "Mandragora",
+      "rarity": 1,
+      "top": 3,
+      "right": 2,
+      "bottom": 1,
+      "left": 4,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/mandragora.webp"
+    },
+    {
+      "id": "imp",
+      "name": "Imp",
+      "rarity": 1,
+      "top": 1,
+      "right": 3,
+      "bottom": 4,
+      "left": 2,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/imp.webp"
+    },
+    {
+      "id": "bat",
+      "name": "Bat",
+      "rarity": 1,
+      "top": 4,
+      "right": 2,
+      "bottom": 3,
+      "left": 1,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/bat.webp"
+    },
+    {
+      "id": "skeleton",
+      "name": "Skeleton",
+      "rarity": 1,
+      "top": 5,
+      "right": 2,
+      "bottom": 3,
+      "left": 2,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/skeleton.webp"
+    },
+    {
+      "id": "spriggan",
+      "name": "Spriggan",
+      "rarity": 1,
+      "top": 2,
+      "right": 5,
+      "bottom": 2,
+      "left": 4,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/spriggan.webp"
+    },
+    {
+      "id": "sahagin",
+      "name": "Sahagin",
+      "rarity": 1,
+      "top": 3,
+      "right": 2,
+      "bottom": 5,
+      "left": 3,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/sahagin.webp"
+    },
+    {
+      "id": "hornet",
+      "name": "Hornet",
+      "rarity": 1,
+      "top": 5,
+      "right": 1,
+      "bottom": 3,
+      "left": 4,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/hornet.webp"
+    },
+    {
+      "id": "killer_fish",
+      "name": "Killer Fish",
+      "rarity": 1,
+      "top": 2,
+      "right": 4,
+      "bottom": 5,
+      "left": 2,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/killer_fish.webp"
+    },
+    {
+      "id": "mimic",
+      "name": "Mimic",
+      "rarity": 2,
+      "top": 6,
+      "right": 2,
+      "bottom": 4,
+      "left": 5,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/mimic.webp"
+    },
+    {
+      "id": "ochu",
+      "name": "Ochu",
+      "rarity": 2,
+      "top": 3,
+      "right": 6,
+      "bottom": 5,
+      "left": 3,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/ochu.webp"
+    },
+    {
+      "id": "basilisk",
+      "name": "Basilisk",
+      "rarity": 2,
+      "top": 5,
+      "right": 3,
+      "bottom": 6,
+      "left": 2,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/basilisk.webp"
+    },
+    {
+      "id": "cockatrice",
+      "name": "Cockatrice",
+      "rarity": 2,
+      "top": 6,
+      "right": 4,
+      "bottom": 2,
+      "left": 5,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/cockatrice.webp"
+    },
+    {
+      "id": "magitek_drone",
+      "name": "Magitek Drone",
+      "rarity": 2,
+      "top": 3,
+      "right": 5,
+      "bottom": 3,
+      "left": 6,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/magitek_drone.webp"
+    },
+    {
+      "id": "antlion",
+      "name": "Antlion",
+      "rarity": 2,
+      "top": 5,
+      "right": 2,
+      "bottom": 6,
+      "left": 4,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/antlion.webp"
+    },
+    {
+      "id": "magic_pot",
+      "name": "Magic Pot",
+      "rarity": 2,
+      "top": 2,
+      "right": 6,
+      "bottom": 4,
+      "left": 6,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/magic_pot.webp"
+    },
+    {
+      "id": "chimera",
+      "name": "Chimera",
+      "rarity": 3,
+      "top": 7,
+      "right": 3,
+      "bottom": 6,
+      "left": 5,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/chimera.webp"
+    },
+    {
+      "id": "gigas",
+      "name": "Gigas",
+      "rarity": 3,
+      "top": 6,
+      "right": 7,
+      "bottom": 2,
+      "left": 6,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/gigas.webp"
+    },
+    {
+      "id": "zu",
+      "name": "Zu",
+      "rarity": 3,
+      "top": 7,
+      "right": 5,
+      "bottom": 6,
+      "left": 3,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/zu.webp"
+    },
+    {
+      "id": "red_dragon",
+      "name": "Red Dragon",
+      "rarity": 3,
+      "top": 5,
+      "right": 7,
+      "bottom": 6,
+      "left": 3,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/red_dragon.webp"
+    },
+    {
+      "id": "iron_giant",
+      "name": "Iron Giant",
+      "rarity": 3,
+      "top": 7,
+      "right": 3,
+      "bottom": 5,
+      "left": 7,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/iron_giant.webp"
+    },
+    {
+      "id": "behemoth",
+      "name": "Behemoth",
+      "rarity": 4,
+      "top": 8,
+      "right": 4,
+      "bottom": 7,
+      "left": 6,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/behemoth.webp"
+    },
+    {
+      "id": "tonberry_king",
+      "name": "Tonberry King",
+      "rarity": 4,
+      "top": 4,
+      "right": 8,
+      "bottom": 6,
+      "left": 7,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/tonberry_king.webp"
+    },
+    {
+      "id": "crystal_golem",
+      "name": "Crystal Golem",
+      "rarity": 4,
+      "top": 7,
+      "right": 6,
+      "bottom": 8,
+      "left": 3,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/crystal_golem.webp"
+    },
+    {
+      "id": "garuda",
+      "name": "Garuda",
+      "rarity": 4,
+      "top": 8,
+      "right": 7,
+      "bottom": 3,
+      "left": 6,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/garuda.webp"
+    },
+    {
+      "id": "titan",
+      "name": "Titan",
+      "rarity": 4,
+      "top": 6,
+      "right": 4,
+      "bottom": 8,
+      "left": 7,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/titan.webp"
+    },
+    {
+      "id": "crystal_dragon",
+      "name": "Crystal Dragon",
+      "rarity": 5,
+      "top": 9,
+      "right": 5,
+      "bottom": 8,
+      "left": 7,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/crystal_dragon.webp"
+    },
+    {
+      "id": "omega_fragment",
+      "name": "Omega Fragment",
+      "rarity": 5,
+      "top": 8,
+      "right": 9,
+      "bottom": 4,
+      "left": 8,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/omega_fragment.webp"
+    },
+    {
+      "id": "void_avatar",
+      "name": "Void Avatar",
+      "rarity": 5,
+      "top": 10,
+      "right": 4,
+      "bottom": 8,
+      "left": 7,
+      "art": "/gold-saucer/expanded-196/triple-triad/cards/void_avatar.webp"
+    }
+  ],
+  "circuits": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "difficulty": "Novice",
+      "bonus": 100
+    },
+    {
+      "id": "bronze",
+      "name": "Bronze",
+      "difficulty": "Standard",
+      "bonus": 150
+    },
+    {
+      "id": "silver",
+      "name": "Silver",
+      "difficulty": "Skilled",
+      "bonus": 200
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "difficulty": "Expert",
+      "bonus": 250
+    },
+    {
+      "id": "crystal",
+      "name": "Crystal",
+      "difficulty": "Master",
+      "bonus": 350
+    }
+  ],
+  "opponents": [
+    {
+      "id": "saucer_attendant",
+      "name": "Saucer Attendant",
+      "circuit": "starter",
+      "difficulty": "Novice",
+      "unlock_wins": 0,
+      "cost": 10,
+      "win_payout": 100,
+      "draw_payout": 10,
+      "loss_payout": 5,
+      "drop_chance": 1,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "goblin",
+        "wolf",
+        "mandragora",
+        "imp",
+        "bat"
+      ],
+      "rewards": [
+        "skeleton",
+        "spriggan",
+        "sahagin"
+      ],
+      "description": "A welcoming table for learning captures and protecting corners."
+    },
+    {
+      "id": "chocobo_breeder",
+      "name": "Chocobo Breeder",
+      "circuit": "starter",
+      "difficulty": "Novice",
+      "unlock_wins": 0,
+      "cost": 10,
+      "win_payout": 100,
+      "draw_payout": 10,
+      "loss_payout": 5,
+      "drop_chance": 1,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "chocobo",
+        "wolf",
+        "bat",
+        "goblin",
+        "mandragora"
+      ],
+      "rewards": [
+        "hornet",
+        "killer_fish"
+      ],
+      "description": "Quick beasts with open defensive sides. A good first challenge."
+    },
+    {
+      "id": "moogle_dealer",
+      "name": "Moogle Dealer",
+      "circuit": "bronze",
+      "difficulty": "Standard",
+      "unlock_wins": 2,
+      "cost": 20,
+      "win_payout": 120,
+      "draw_payout": 20,
+      "loss_payout": 5,
+      "drop_chance": 1,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "moogle",
+        "spriggan",
+        "sahagin",
+        "bomb",
+        "flan"
+      ],
+      "rewards": [
+        "tonberry",
+        "ahriman",
+        "mimic",
+        "magic_pot",
+        "cockatrice"
+      ],
+      "description": "Odd little creatures, clever corners, and a few surprises."
+    },
+    {
+      "id": "guild_adventurer",
+      "name": "Guild Adventurer",
+      "circuit": "bronze",
+      "difficulty": "Standard",
+      "unlock_wins": 2,
+      "cost": 20,
+      "win_payout": 120,
+      "draw_payout": 20,
+      "loss_payout": 5,
+      "drop_chance": 1,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "tonberry",
+        "sahagin",
+        "hornet",
+        "skeleton",
+        "moogle"
+      ],
+      "rewards": [
+        "coeurl",
+        "ochu",
+        "basilisk",
+        "magitek_drone",
+        "antlion"
+      ],
+      "description": "A balanced deck that rewards steady placement."
+    },
+    {
+      "id": "card_shark",
+      "name": "Card Shark",
+      "circuit": "silver",
+      "difficulty": "Skilled",
+      "unlock_wins": 3,
+      "cost": 30,
+      "win_payout": 150,
+      "draw_payout": 30,
+      "loss_payout": 8,
+      "drop_chance": 0.75,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "tonberry",
+        "coeurl",
+        "ahriman",
+        "sahagin",
+        "mimic"
+      ],
+      "rewards": [
+        "malboro",
+        "ifrit",
+        "shiva",
+        "chimera"
+      ],
+      "description": "Looks for captures but leaves room for a well-placed counter."
+    },
+    {
+      "id": "monster_hunter",
+      "name": "Monster Hunter",
+      "circuit": "silver",
+      "difficulty": "Skilled",
+      "unlock_wins": 3,
+      "cost": 30,
+      "win_payout": 150,
+      "draw_payout": 30,
+      "loss_payout": 8,
+      "drop_chance": 0.75,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "gigas",
+        "cockatrice",
+        "antlion",
+        "spriggan",
+        "sahagin"
+      ],
+      "rewards": [
+        "gigas",
+        "zu",
+        "red_dragon",
+        "iron_giant"
+      ],
+      "description": "Heavy attack sides paired with exploitable weak edges."
+    },
+    {
+      "id": "tonberry_collector",
+      "name": "Tonberry Collector",
+      "circuit": "gold",
+      "difficulty": "Expert",
+      "unlock_wins": 6,
+      "cost": 40,
+      "win_payout": 200,
+      "draw_payout": 40,
+      "loss_payout": 10,
+      "drop_chance": 0.55,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "tonberry_king",
+        "ifrit",
+        "shiva",
+        "chimera",
+        "malboro"
+      ],
+      "rewards": [
+        "ramuh",
+        "leviathan",
+        "tonberry_king",
+        "behemoth"
+      ],
+      "description": "A dungeon collector who guards exposed edges carefully."
+    },
+    {
+      "id": "magitek_engineer",
+      "name": "Magitek Engineer",
+      "circuit": "gold",
+      "difficulty": "Expert",
+      "unlock_wins": 6,
+      "cost": 40,
+      "win_payout": 200,
+      "draw_payout": 40,
+      "loss_payout": 10,
+      "drop_chance": 0.55,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "crystal_golem",
+        "iron_giant",
+        "magic_pot",
+        "antlion",
+        "magitek_drone"
+      ],
+      "rewards": [
+        "crystal_golem",
+        "garuda",
+        "titan"
+      ],
+      "description": "Machines and giants built for deliberate defensive play."
+    },
+    {
+      "id": "crystal_master",
+      "name": "Crystal Master",
+      "circuit": "crystal",
+      "difficulty": "Master",
+      "unlock_wins": 8,
+      "cost": 45,
+      "win_payout": 240,
+      "draw_payout": 45,
+      "loss_payout": 12,
+      "drop_chance": 0.35,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "bahamut",
+        "ramuh",
+        "tonberry_king",
+        "iron_giant",
+        "mimic"
+      ],
+      "rewards": [
+        "bahamut",
+        "odin",
+        "crystal_dragon"
+      ],
+      "description": "An optional high-table challenge for a developed collection."
+    },
+    {
+      "id": "rift_scholar",
+      "name": "Rift Scholar",
+      "circuit": "crystal",
+      "difficulty": "Master",
+      "unlock_wins": 8,
+      "cost": 45,
+      "win_payout": 240,
+      "draw_payout": 45,
+      "loss_payout": 12,
+      "drop_chance": 0.35,
+      "draw_drop_chance": 0.2,
+      "deck": [
+        "void_avatar",
+        "crystal_golem",
+        "garuda",
+        "red_dragon",
+        "magic_pot"
+      ],
+      "rewards": [
+        "omega_fragment",
+        "void_avatar"
+      ],
+      "description": "An optional endgame table with powerful but vulnerable specialists."
+    }
+  ]
+}
