@@ -14,6 +14,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
+from .emporium import STAPLES, eligible_stock, guild_commerce, purchase_price, shop_context
 from .crafting_catalog import CATEGORIES, recipe_category, recipe_subcategory
 from .active_battle import (
     action_priority,
@@ -112,12 +113,9 @@ from .enemy_combat import (
 from .database import Database
 from .fellowship_system import FellowshipSystem
 
-TRADING_POST_LISTING_FEE_RATE = 0.02
-TRADING_POST_SALE_TAX_RATE = 0.05
 TRADING_POST_LISTING_SECONDS = 48 * 60 * 60
 TRADING_POST_MAX_QUANTITY = 99
 TRADING_POST_MAX_UNIT_PRICE = 1_000_000
-TRADING_POST_ACTIVE_LIMIT = 24
 TRADING_POST_WATCH_LIMIT = 30
 TRADING_POST_HISTORY_SECONDS = 30 * 24 * 60 * 60
 
@@ -6322,98 +6320,69 @@ class CrystalGuildEngine:
             pool.remove(pick)
         return chosen
 
+    def _emporium_context(self, p: Any) -> dict[str, Any]:
+        return shop_context(p, self.data.regions)
+
+    def _emporium_perks(self) -> dict[str, Any]:
+        return guild_commerce(self.fellowship_system.facility_tiers())
+
     def _roll_shop_stock(self, p: Any) -> list[str]:
-        """Build one personalized Moogle Emporium rotation for a player."""
-        job_id = p["current_job"]
-        level = int(p["level"])
-        stock_limit = self.fellowship_system.emporium_stock_slots()
-        eligible: list[dict[str, Any]] = []
-        for item in self.data.items.values():
-            if not item.get("shop"):
-                continue
-            if level < int(item.get("shop_level", 1)) or level < int(item.get("min_level", 1)):
-                continue
-            allowed = item.get("allowed_jobs")
-            if allowed and job_id not in allowed:
-                continue
-            eligible.append(item)
-
-        # Adventurers who have not chosen a Job only see supplies/general goods.
-        if job_id == "adventurer":
-            eligible = [i for i in eligible if i["type"] in {"consumable", "accessory"} and not i.get("allowed_jobs")]
-
-        by_type = {
-            kind: [i for i in eligible if i["type"] == kind]
-            for kind in ("weapon", "armor", "accessory", "consumable")
-        }
-        stock: list[dict[str, Any]] = []
-
-        # Core composition: class gear first, then recovery/support supplies.
-        for kind, count in (("weapon", 3), ("armor", 2), ("accessory", 1), ("consumable", 3)):
-            remaining = [i for i in by_type[kind] if i not in stock]
-            stock.extend(self._weighted_shop_sample(remaining, count, level, job_id))
-
-        # The Guild-funded Annex uses a fixed category expansion rather than a
-        # generic random pool: +2 Weapons, +4 Armor/Accessories, +6 Items.
-        if self.fellowship_system.emporium_annex_level() >= 1:
-            bonus = self.fellowship_system.emporium_annex_stock_bonus()
-            bonus_pools = {
-                "weapons": [i for i in eligible if i["type"] == "weapon"],
-                "armor": [i for i in eligible if i["type"] in {"armor", "accessory"}],
-                "items": [i for i in eligible if i["type"] == "consumable"],
-            }
-            for category in ("weapons", "armor", "items"):
-                remaining = [i for i in bonus_pools[category] if i not in stock]
-                stock.extend(self._weighted_shop_sample(remaining, int(bonus[category]), level, job_id))
-
-        # If a low-level character lacks enough eligible entries in one category,
-        # fill any remaining capacity from other eligible stock without duplicates.
-        if len(stock) < stock_limit:
-            remaining = [i for i in eligible if i not in stock]
-            stock.extend(self._weighted_shop_sample(remaining, stock_limit - len(stock), level, job_id))
-
-        return [item["id"] for item in stock[:stock_limit]]
+        """Regional gear, guaranteed staples and themed supplies within a modest cap."""
+        context = self._emporium_context(p)
+        eligible = eligible_stock(p, self.data.items, context)
+        by_id = {item["id"]: item for item in eligible}
+        stock = [by_id[item_id] for item_id in (*STAPLES, *context["featured_supplies"]) if item_id in by_id]
+        # Themes may include a staple; a listing appears only once.
+        stock = list({item["id"]: item for item in stock}.values())
+        slots = context["stock_slots"]
+        quotas = (("weapon", 3 if slots >= 16 else 2), ("armor", 3 if slots >= 16 else 2), ("accessory", 2))
+        level = min(int(p["level"]), context["stock_level_cap"])
+        for kind, count in quotas:
+            pool = [item for item in eligible if item["type"] == kind and item not in stock]
+            # Always offer the strongest local compatible gear, then vary alternatives.
+            pool.sort(key=lambda item: (int(item.get("shop_level", 1)), item["id"]), reverse=True)
+            if pool:
+                stock.append(pool.pop(0))
+                stock.extend(self._weighted_shop_sample(pool, count - 1, level, p["current_job"]))
+        remaining = [item for item in eligible if item not in stock]
+        stock.extend(self._weighted_shop_sample(remaining, max(0, slots - len(stock)), level, p["current_job"]))
+        return [item["id"] for item in stock[:slots]]
 
     def _shop_stock(self, twitch_id: str, force_refresh: bool = False) -> tuple[list[dict[str, Any]], int]:
         p = self._player(twitch_id)
         if not p:
             return [], 0
+        context = self._emporium_context(p)
         now = int(time.time())
-        row = self.db.one("SELECT * FROM player_shops WHERE player_id=?", (twitch_id,))
-        stock_limit = self.fellowship_system.emporium_stock_slots()
+        row = self.db.one("SELECT * FROM player_regional_shops WHERE player_id=? AND region_id=? AND job_id=?",
+                          (twitch_id, context["id"], p["current_job"]))
+        eligible_ids = {item["id"] for item in eligible_stock(p, self.data.items, context)}
+        expected_count = min(context["stock_slots"], len(eligible_ids))
+        required_ids = set((*STAPLES, *context["featured_supplies"])) & eligible_ids
         valid = False
         ids: list[str] = []
         if row and not force_refresh:
-            # Old or interrupted deployments can leave malformed cached JSON or
-            # nullable rotation metadata. Repair the personal rotation instead
-            # of letting SHOP_STATE fail and strand the frontend in loading.
             try:
                 parsed = json.loads(row["stock_json"])
                 ids = parsed if isinstance(parsed, list) and all(isinstance(value, str) for value in parsed) else []
-                valid = (
-                    int(row["expires_at"]) > now
-                    and row["job_id"] == p["current_job"]
-                    and int(row["level_at_roll"]) == int(p["level"])
-                    and len(ids) == stock_limit
-                    and len(set(ids)) == len(ids)
-                    and all(item_id in self.data.items for item_id in ids)
-                )
+                valid = (int(row["expires_at"]) > now
+                         and int(row["level_at_roll"]) == int(p["level"])
+                         and len(ids) == expected_count and len(set(ids)) == len(ids)
+                         and set(ids) <= eligible_ids and required_ids <= set(ids))
             except (TypeError, ValueError, OverflowError):
-                ids = []
                 valid = False
         if not valid:
             ids = self._roll_shop_stock(p)
             expires = now + self.fellowship_system.effective_shop_refresh_seconds(self.shop_refresh_seconds)
             self.db.execute(
-                "INSERT INTO player_shops(player_id,job_id,level_at_roll,stock_json,generated_at,expires_at) "
-                "VALUES (?,?,?,?,?,?) ON CONFLICT(player_id) DO UPDATE SET "
-                "job_id=excluded.job_id, level_at_roll=excluded.level_at_roll, stock_json=excluded.stock_json, "
-                "generated_at=excluded.generated_at, expires_at=excluded.expires_at",
-                (twitch_id, p["current_job"], int(p["level"]), json.dumps(ids), now, expires),
-            )
+                "INSERT INTO player_regional_shops(player_id,region_id,job_id,level_at_roll,stock_json,generated_at,expires_at) "
+                "VALUES (?,?,?,?,?,?,?) ON CONFLICT(player_id,region_id,job_id) DO UPDATE SET "
+                "level_at_roll=excluded.level_at_roll,stock_json=excluded.stock_json,"
+                "generated_at=excluded.generated_at,expires_at=excluded.expires_at",
+                (twitch_id, context["id"], p["current_job"], int(p["level"]), json.dumps(ids), now, expires))
         else:
             expires = int(row["expires_at"])
-        return [self.data.items[item_id] for item_id in ids if item_id in self.data.items], expires
+        return [self.data.items[item_id] for item_id in ids], expires
 
     def _find_shop_offer(self, twitch_id: str, query: str) -> tuple[dict[str, Any] | None, int]:
         stock, expires = self._shop_stock(twitch_id)
@@ -6438,9 +6407,10 @@ class CrystalGuildEngine:
         remaining = max(0, expires - int(time.time()))
         groups: dict[str, list[str]] = {"weapon": [], "armor": [], "accessory": [], "consumable": []}
         for slot, item in enumerate(stock, start=1):
-            groups.setdefault(item["type"], []).append(f"#{slot} {item['name']} {item['price']:,}g")
-        annex = self.fellowship_system.emporium_annex_level() >= 1
-        messages = [f"Moogle Emporium — {job} stock for Lv.{p['level']} | {len(stock)} slots{' · Annex OPEN' if annex else ''} | refresh {self._format_seconds(remaining)} | Buy with !buy <# or item> [qty]"]
+            groups.setdefault(item["type"], []).append(f"#{slot} {item['name']} {purchase_price(item, self._emporium_perks()):,}g")
+        context = self._emporium_context(p)
+        perks = self._emporium_perks()
+        messages = [f"Moogle Emporium — {context['region_name']} · {context['name']} | {job} Lv.{p['level']} | {len(stock)}/{context['stock_slots']} listings | Guild discount {int(perks['purchase_discount'] * 100)}% | refresh {self._format_seconds(remaining)} | !buy <# or item> [qty]"]
         gear_parts: list[str] = []
         if groups["weapon"]:
             gear_parts.append("Weapons — " + " | ".join(groups["weapon"]))
@@ -6482,7 +6452,7 @@ class CrystalGuildEngine:
             return GameResult.fail("That item is not in your current Moogle Emporium stock. Use !shop to see today's questionable business decisions.")
         if item["type"] in {"weapon", "armor", "accessory"} and quantity != 1:
             return GameResult.fail("Equipment is sold one at a time. The Moogle refuses to explain the inventory policy.")
-        cost = int(item["price"]) * quantity
+        cost = purchase_price(item, self._emporium_perks()) * quantity
         if p["gil"] < cost:
             return GameResult.fail(f"You need {cost:,} gil, but only have {p['gil']:,}. Kupo-poor.")
         with self.db.tx() as conn:
@@ -13876,7 +13846,10 @@ class CrystalGuildEngine:
                 "name": item["name"],
                 "type": item.get("type", "item"),
                 "rarity": item.get("rarity", "common"),
-                "price": int(item.get("price", 0) or 0),
+                "price": purchase_price(item, self._emporium_perks()),
+                "base_price": int(item.get("price", 0) or 0),
+                "bonuses": dict(item.get("bonuses") or {}),
+                "use": item.get("use"),
                 "owned": int(owned.get(item["id"], 0)),
                 "min_level": int(item.get("min_level", 1) or 1),
                 "allowed_job_ids": allowed_ids,
@@ -13894,11 +13867,13 @@ class CrystalGuildEngine:
             job_name=str(job.get("name", "Adventurer")),
             expires_at=int(expires),
             stock=[item_payload(item) for item in stock],
-            stock_slots=self.fellowship_system.emporium_stock_slots(),
+            stock_slots=self._emporium_context(p)["stock_slots"],
+            regional_shop=self._emporium_context(p),
+            guild_perks=self._emporium_perks(),
             annex_unlocked=self.fellowship_system.emporium_annex_level() >= 1,
-            annex_bonus_slots=12 if self.fellowship_system.emporium_annex_level() >= 1 else 0,
+            annex_bonus_slots=0,
             annex_bonus_by_category=self.fellowship_system.emporium_annex_stock_bonus(),
-            combat_locked=combat_locked,
+            combat_locked=combat_locked or bool(self._dungeon_load(twitch_id) or self._solo_expedition_load(twitch_id)),
         )
 
     def _trading_post_item_allowed(self, item: dict[str, Any] | None) -> bool:
@@ -13977,24 +13952,6 @@ class CrystalGuildEngine:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
-        unlocked = self.fellowship_system.trading_post_unlocked()
-        facility_project = next(
-            (project for project in self.fellowship_system.available_projects() if project.get("facility_id") == "trading_post"),
-            None,
-        )
-        if not unlocked:
-            return GameResult.success(
-                "The Moogle Trading Post has not been constructed yet.",
-                unlocked=False,
-                project=facility_project,
-                listing_fee_rate=TRADING_POST_LISTING_FEE_RATE,
-                sale_tax_rate=TRADING_POST_SALE_TAX_RATE,
-                listing_seconds=TRADING_POST_LISTING_SECONDS,
-                listings=[], my_listings=[], eligible_items=[], gil=int(p["gil"]), combat_locked=False,
-                owned_quantities={}, watchlist=[], watch_limit=TRADING_POST_WATCH_LIMIT,
-                catalog_items=[], price_stats={}, recent_sales=[], history_days=30, watchlist_market={},
-            )
-
         now = int(time.time())
         with self.db.tx() as conn:
             self._settle_trading_post_expired_sql(conn, now)
@@ -14114,12 +14071,13 @@ class CrystalGuildEngine:
         return GameResult.success(
             "Moogle Trading Post ready.",
             unlocked=True,
+            guild_perks=self._emporium_perks(),
             project=None,
             gil=int(p["gil"]),
-            listing_fee_rate=TRADING_POST_LISTING_FEE_RATE,
-            sale_tax_rate=TRADING_POST_SALE_TAX_RATE,
+            listing_fee_rate=self._emporium_perks()["listing_fee_rate"],
+            sale_tax_rate=self._emporium_perks()["sale_tax_rate"],
             listing_seconds=TRADING_POST_LISTING_SECONDS,
-            active_limit=TRADING_POST_ACTIVE_LIMIT,
+            active_limit=self._emporium_perks()["active_limit"],
             active_count=int(active_count_row["n"] if active_count_row else 0),
             combat_locked=combat_locked,
             listings=[self._trading_post_listing_payload(row, viewer_id=twitch_id)
@@ -14211,7 +14169,7 @@ class CrystalGuildEngine:
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("That item cannot be listed on the Trading Post."))
         now = int(time.time())
         total = unit_price * quantity
-        fee = max(1, int(math.ceil(total * TRADING_POST_LISTING_FEE_RATE)))
+        fee = max(1, int(math.ceil(total * self._emporium_perks()["listing_fee_rate"])))
         with self.db.tx() as conn:
             replay = self._portal_action_replay_sql(conn, action_id)
             if replay is not None:
@@ -14224,8 +14182,8 @@ class CrystalGuildEngine:
                 "SELECT COUNT(*) AS n FROM trading_post_listings WHERE seller_id=? AND status='active' AND expires_at>?",
                 (twitch_id, now),
             ).fetchone()
-            if active and int(active["n"] or 0) >= TRADING_POST_ACTIVE_LIMIT:
-                result = GameResult.fail(f"You already have {TRADING_POST_ACTIVE_LIMIT} active Trading Post listings.")
+            if active and int(active["n"] or 0) >= self._emporium_perks()["active_limit"]:
+                result = GameResult.fail(f"You already have {self._emporium_perks()['active_limit']} active Trading Post listings.")
                 self._portal_action_store_sql(conn, action_id, result); return result
             inv = conn.execute("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (twitch_id, item_id)).fetchone()
             owned = int(inv["quantity"] if inv else 0)
@@ -14294,7 +14252,7 @@ class CrystalGuildEngine:
             if int(buyer["gil"] or 0) < total:
                 result = GameResult.fail(f"You need {total:,} Gil to purchase this listing.")
                 self._portal_action_store_sql(conn, action_id, result); return result
-            tax = max(0, int(math.floor(total * TRADING_POST_SALE_TAX_RATE)))
+            tax = max(0, int(math.floor(total * self._emporium_perks()["sale_tax_rate"])))
             payout = max(0, total - tax)
             updated = conn.execute(
                 "UPDATE trading_post_listings SET status='sold',buyer_id=?,sold_at=?,payout_gil=?,tax_gil=? WHERE id=? AND status='active'",
@@ -14428,6 +14386,8 @@ class CrystalGuildEngine:
                 action_id,
                 GameResult.fail("Moogle Emporium purchases are locked while you are committed to an active encounter or raid."),
             )
+        if self._dungeon_load(twitch_id) or self._solo_expedition_load(twitch_id):
+            return self._portal_store_nonmutating_result(action_id, GameResult.fail("Return or retreat from your adventure before shopping for new supplies."))
         if quantity < 1 or quantity > 99:
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("Quantity must be between 1 and 99."))
         item, _ = self._find_shop_offer(twitch_id, str(item_id))
@@ -14438,7 +14398,7 @@ class CrystalGuildEngine:
             )
         if item["type"] in {"weapon", "armor", "accessory"} and quantity != 1:
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("Equipment is sold one at a time."))
-        cost = int(item.get("price", 0)) * quantity
+        cost = purchase_price(item, self._emporium_perks()) * quantity
         with self.db.tx() as conn:
             fresh = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
             gil = int(fresh["gil"] if fresh else 0)
@@ -14673,7 +14633,7 @@ class CrystalGuildEngine:
         effects = guild["effects"]
         return GameResult.success(
             "FELLOWSHIP FACILITIES — " + " | ".join(parts),
-            f"Current benefits: Forge -{int(effects['forge_discount']*100)}% Gil | Emporium {self.fellowship_system.emporium_stock_slots()} slots | Chocobo XP +{int(effects.get('chocobo_xp_bonus',0)*100)}% | Archive rare events +{effects.get('archive_rare_event_bonus',0)*100:.1f}% | Camp -{int(effects['camp_reduction']*100)}% | Shop refresh -{int(effects['shop_refresh_reduction']*100)}%.",
+            f"Current benefits: Forge -{int(effects['forge_discount']*100)}% Gil | Emporium -{int(self._emporium_perks()['purchase_discount']*100)}% Gil | Chocobo XP +{int(effects.get('chocobo_xp_bonus',0)*100)}% | Archive rare events +{effects.get('archive_rare_event_bonus',0)*100:.1f}% | Camp -{int(effects['camp_reduction']*100)}% | Shop refresh -{int(effects['shop_refresh_reduction']*100)}%.",
         )
 
     def fellowship_contributions(self, twitch_id: str) -> GameResult:
@@ -14880,7 +14840,7 @@ class CrystalGuildEngine:
         """
         cooldowns = self.db.one("SELECT COUNT(*) AS n FROM cooldowns")
         camps = self.db.one("SELECT COUNT(*) AS n FROM players WHERE camp_until > 0")
-        shops = self.db.one("SELECT COUNT(*) AS n FROM player_shops")
+        shops = self.db.one("SELECT COUNT(*) AS n FROM player_regional_shops")
         cooldown_count = int(cooldowns["n"] or 0) if cooldowns else 0
         camp_count = int(camps["n"] or 0) if camps else 0
         shop_count = int(shops["n"] or 0) if shops else 0
@@ -14891,6 +14851,7 @@ class CrystalGuildEngine:
         )
         # Removing cached shop rows makes the next !shop request roll fresh stock
         # immediately instead of waiting for the previous refresh deadline.
+        self.db.execute("DELETE FROM player_regional_shops")
         self.db.execute("DELETE FROM player_shops")
 
         active_note = " Active combat timers were left untouched." if (self.active_encounter or self.active_boss) else ""

@@ -51,9 +51,9 @@ class TradingPostAlpha1Tests(unittest.TestCase):
         return int(self.db.one("SELECT gil FROM players WHERE twitch_id=?", (player_id,))["gil"])
 
     def test_release_contract_and_schema(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(__version__, "1.9.6-triple-triad-expanded")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
+        self.assertEqual(self.db.schema_version(), 27)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='trading_post_listings'")
         self.assertIsNotNone(table)
@@ -73,18 +73,19 @@ class TradingPostAlpha1Tests(unittest.TestCase):
         public = self.game.fellowship_system.public_snapshot()
         facility = next(item for item in public["facilities"] if item["id"] == "trading_post")
         self.assertEqual(int(facility["level"]), 0)
-        self.assertFalse(public["services"]["trading_post"]["unlocked"])
+        self.assertTrue(public["services"]["trading_post"]["unlocked"])
 
-    def test_state_is_locked_until_fellowship_builds_post(self):
+    def test_state_is_open_and_construction_improves_services(self):
         locked = self.game.portal_trading_post_state("100")
         self.assertTrue(locked.ok)
-        self.assertFalse(locked.data["unlocked"])
+        self.assertTrue(locked.data["unlocked"])
+        self.assertEqual(locked.data["active_limit"], 6)
         self.assertEqual(locked.data["listings"], [])
         self.unlock()
         opened = self.game.portal_trading_post_state("100")
         self.assertTrue(opened.ok)
         self.assertTrue(opened.data["unlocked"])
-        self.assertEqual(opened.data["active_limit"], 24)
+        self.assertEqual(opened.data["active_limit"], 10)
         self.assertEqual(opened.data["listing_seconds"], 48 * 60 * 60)
 
     def test_listing_and_atomic_purchase_transfer_item_and_net_gil(self):
@@ -96,18 +97,18 @@ class TradingPostAlpha1Tests(unittest.TestCase):
         listed = self.game.portal_trading_post_list("100", "iron_ore", 4, 125, "list:1")
         self.assertTrue(listed.ok, listed.messages)
         listing_id = int(listed.data["listing_id"])
-        self.assertEqual(int(listed.data["listing_fee"]), 10)  # 2% of 500
+        self.assertEqual(int(listed.data["listing_fee"]), 5)  # Guild 1% of 500
         self.assertEqual(self.qty("100", "iron_ore"), 4)
-        self.assertEqual(self.gil("100"), seller_before - 10)
+        self.assertEqual(self.gil("100"), seller_before - 5)
 
         bought = self.game.portal_trading_post_buy("200", listing_id, "buy:1")
         self.assertTrue(bought.ok, bought.messages)
         self.assertEqual(int(bought.data["total_price"]), 500)
-        self.assertEqual(int(bought.data["sale_tax"]), 25)
-        self.assertEqual(int(bought.data["seller_payout"]), 475)
+        self.assertEqual(int(bought.data["sale_tax"]), 15)
+        self.assertEqual(int(bought.data["seller_payout"]), 485)
         self.assertEqual(self.qty("200", "iron_ore"), 4)
         self.assertEqual(self.gil("200"), buyer_before - 500)
-        self.assertEqual(self.gil("100"), seller_before - 10 + 475)
+        self.assertEqual(self.gil("100"), seller_before - 5 + 485)
         row = self.db.one("SELECT status,buyer_id,payout_gil,tax_gil FROM trading_post_listings WHERE id=?", (listing_id,))
         self.assertEqual(str(row["status"]), "sold")
         self.assertEqual(str(row["buyer_id"]), "200")

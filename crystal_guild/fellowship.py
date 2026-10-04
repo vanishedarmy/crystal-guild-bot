@@ -90,29 +90,29 @@ FACILITIES: dict[str, dict[str, Any]] = {
     },
     "emporium_annex": {
         "name": "Moogle Emporium Annex",
-        "description": "A compact Guild-funded storefront expansion that gives every adventurer more choices in each personal Moogle Emporium rotation.",
+        "description": "A Guild merchant agreement that lowers purchase prices at every regional Moogle counter.",
         "max_tier": 1,
         "max_level": 1,
         "guild_service": True,
         "level_benefits": [
-            "Annex stock is fixed at +2 Weapons, +4 Armor/Accessories, and +6 Items per personal rotation.",
+            "All regional Emporium purchases cost 10% less Gil. Stock access follows your world-map location.",
         ],
         "benefits": [
-            "Emporium Annex adds +2 Weapons, +4 Armor/Accessories, +6 Items",
+            "Regional Emporium purchases cost 10% less Gil",
         ],
         "material": "mythril_ore", "activity": "craft",
     },
     "trading_post": {
         "name": "Moogle Trading Post",
-        "description": "A Fellowship-built player market attached to the Moogle Emporium where adventurers can list eligible gear, materials, and supplies for one another.",
+        "description": "A Guild merchant desk that improves fees and listing capacity in the open player market.",
         "max_tier": 1,
         "max_level": 1,
         "guild_service": True,
         "level_benefits": [
-            "Player-to-player fixed-price listings unlock in the Moogle Emporium.",
+            "Trading Post listing fees fall from 2% to 1%, sale tax from 5% to 3%, and active listing capacity rises from 6 to 10.",
         ],
         "benefits": [
-            "Player Trading Post unlocked",
+            "Trading Post: 1% listing fee, 3% sale tax, 10 active listings",
         ],
         "material": "mythril_ore", "activity": "venture_complete",
     },

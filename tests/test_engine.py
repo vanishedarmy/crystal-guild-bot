@@ -138,7 +138,7 @@ class EngineTests(unittest.TestCase):
         self.db.execute("UPDATE players SET camp_until=? WHERE twitch_id='1'", (int(time.time()) + 600,))
         self.game.shop("1")
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM cooldowns")["n"], 3)
-        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_shops WHERE player_id='1'"))
+        self.assertIsNotNone(self.db.one("SELECT 1 FROM player_regional_shops WHERE player_id='1'"))
 
         result = self.game.reset_all_player_timers()
         self.assertTrue(result.ok, result.messages)
@@ -147,7 +147,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(result.data["shops_cleared"], 1)
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM cooldowns")["n"], 0)
         self.assertEqual(self.db.one("SELECT camp_until FROM players WHERE twitch_id='1'")["camp_until"], 0)
-        self.assertIsNone(self.db.one("SELECT 1 FROM player_shops WHERE player_id='1'"))
+        self.assertIsNone(self.db.one("SELECT 1 FROM player_regional_shops WHERE player_id='1'"))
         self.assertEqual(self.db.one("SELECT current_hp FROM players WHERE twitch_id='1'")["current_hp"], before_hp)
 
     def test_clear_all_adventures_clears_field_hunts_and_solo_without_touching_raid_or_cooldowns(self):

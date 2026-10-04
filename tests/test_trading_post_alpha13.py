@@ -33,8 +33,8 @@ class TradingPostAlpha13Tests(unittest.TestCase):
                         "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=inventory.quantity+excluded.quantity",(item,quantity))
 
     def test_schema_and_watchlist_persists_and_replays(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION,26)
-        self.assertEqual(self.db.schema_version(),26)
+        self.assertEqual(DATABASE_SCHEMA_VERSION,27)
+        self.assertEqual(self.db.schema_version(),27)
         self.assertEqual(ACTION_PROTOCOL_VERSION,39)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE name='trading_post_watchlist'"))
         self.give("iron_ore",5)
@@ -49,7 +49,7 @@ class TradingPostAlpha13Tests(unittest.TestCase):
         self.assertTrue(self.game.portal_trading_post_watch("100","iron_ore",True,"watch:three").ok)
         self.db.close()
         self.db=Database(self.path)
-        self.assertEqual(self.db.schema_version(),26)
+        self.assertEqual(self.db.schema_version(),27)
         self.assertEqual([r["item_id"] for r in self.db.all("SELECT item_id FROM trading_post_watchlist WHERE player_id='100'")],["iron_ore"])
 
     def test_limit_and_untradeable_rejection(self):
@@ -124,7 +124,7 @@ class TradingPostAlpha13Tests(unittest.TestCase):
         new=self.game.portal_trading_post_list("100","iron_ore",2,300,"relist-again")
         self.assertTrue(new.ok,new.messages)
         self.assertNotEqual(new.data["listing_id"],listing.data["listing_id"])
-        self.assertEqual(new.data["listing_fee"],12)
+        self.assertEqual(new.data["listing_fee"],6)
         same=self.game.portal_trading_post_list("100","iron_ore",2,300,"relist-again")
         self.assertTrue(same.ok)
         self.assertEqual(same.data["listing_id"],new.data["listing_id"])
@@ -143,7 +143,7 @@ class TradingPostAlpha13Tests(unittest.TestCase):
         con.execute("DELETE FROM schema_migrations WHERE version=25")
         con.commit();con.close()
         self.db=Database(self.path)
-        self.assertEqual(self.db.schema_version(),26)
+        self.assertEqual(self.db.schema_version(),27)
         self.assertTrue(self.db.pre_migration_backup_path and self.db.pre_migration_backup_path.exists())
         self.assertEqual(self.db.one("SELECT status,unit_price FROM trading_post_listings WHERE id=?",(sale.data["listing_id"],))["status"],"sold")
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM players")["n"],2)

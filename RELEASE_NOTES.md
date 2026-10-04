@@ -1,3 +1,5 @@
+**Includes Moogle Emporium Regional Rework.** Regional counters hold up to 12–18 listings; Guild construction now grants purchase discounts and market perks. Bot schema 27 adds regional caches with a verified migration backup. See `README_MOOGLE_EMPORIUM_REWORK.md`.
+
 # Crystal Guild v1.9.6 — Triple Triad Expanded
 
 Complete Bot + Web release based on the latest valid Seasonal Player Sync Fix Bot/Web packages and the completed Triple Triad rework. The abandoned Living World 1A/1B and site-wide Accessibility update are excluded. Apply Bot and Web together.
@@ -12,7 +14,7 @@ Complete Bot + Web release based on the latest valid Seasonal Player Sync Fix Bo
 6. Restart matching Bot and Web and refresh the Portal. Verify the header and Overview What's New show v1.9.6, then open Gold Saucer → Triple Triad.
 7. When merging into an older installation, old files can remain even though this ZIP excludes them. After verifying the update and closing/refreshing old Portal tabs, review them with `python cleanup_v1_9_6.py --root PATH_TO_INSTALL`; add `--apply` to remove only audited files whose hashes still match. For separate service roots, use `--bot-root BOT_PATH --web-root WEB_PATH`. A fresh extraction already contains no retired files.
 
-Bot database schema 26, hosted sync schema 1 and Portal Action protocol 39 are unchanged. No new database migration is introduced by this release. Your existing cards, valid decks, records, trophies and active matches remain compatible.
+Bot database schema 27 adds regional shop caches with a verified automatic migration backup. Hosted sync schema 1 and Portal Action protocol 39 remain unchanged. Your existing cards, valid decks, records, trophies and active matches remain compatible.
 
 The full package includes release notes, a SHA-256 package inventory, validation results, the obsolete-file audit and the cleanup helper. It does not include local caches, npm-installed dependencies, generated source PNGs, earlier downloads or live state. All required card artwork is included in both the source and built static trees.
 
@@ -24,7 +26,7 @@ The full package includes release notes, a SHA-256 package inventory, validation
 - Gentler novice opponents, visible hands, deterministic per-match responses, missing-card priority, duplicate quantities, and a guaranteed drop after three wins without a card at the same table.
 - Play, Deck, Collection, Opponents and Rules sections; search, ownership/rarity filters, reward sources and opponent deck previews.
 - Matching Bot, hosted Web and frontend release/cache labels, current package versions, release notes and Overview What's New.
-- Existing valid collections, decks, records, trophies and active matches remain compatible. Bot database schema stays 26, hosted sync schema stays 1 and Portal Action protocol stays 39. No new database migration is introduced by this release.
+- Existing valid collections, decks, records, trophies and active matches remain compatible. Bot database schema is 27; hosted sync schema stays 1 and Portal Action protocol stays 39. The regional cache migration preserves existing progression.
 - Latest pre-expansion Retainer, Overview, Chocobo Stable, Seasonal Event and player-toggle synchronization fixes remain included in the baseline. Ordinary Git/repository source and runtime files are preserved.
 
 ## File audit

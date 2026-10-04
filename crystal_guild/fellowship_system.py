@@ -5,6 +5,7 @@ import re
 import time
 from typing import Any
 
+from .emporium import guild_commerce
 from .trophies import reconcile_player_trophies
 from .guild_initiatives import progress_event
 
@@ -167,19 +168,17 @@ class FellowshipSystem:
         return max(0, min(1, int(self.facility_tiers().get("emporium_annex", 0))))
 
     def emporium_annex_stock_bonus(self) -> dict[str, int]:
-        if self.emporium_annex_level() < 1:
-            return {"weapons": 0, "armor": 0, "items": 0}
-        return {"weapons": 2, "armor": 4, "items": 6}
+        # Compatibility fields; stock is governed exclusively by world region.
+        return {"weapons": 0, "armor": 0, "items": 0}
 
     def emporium_stock_slots(self) -> int:
-        bonus = self.emporium_annex_stock_bonus()
-        return 9 + sum(bonus.values())
+        return 18  # Maximum regional capacity; individual counters may be smaller.
 
     def trading_post_level(self) -> int:
         return max(0, min(1, int(self.facility_tiers().get("trading_post", 0))))
 
     def trading_post_unlocked(self) -> bool:
-        return self.trading_post_level() >= 1
+        return True  # Construction improves fees/capacity; the market is always available.
 
     def major_facility_level(self, facility_id: str) -> int:
         config = FACILITIES.get(str(facility_id), {})
@@ -568,19 +567,15 @@ class FellowshipSystem:
             "chocobo_stable": {"level": stable_level, "xp_bonus": float(self.effects().get("chocobo_xp_bonus", 0.0))},
             "archive": {"level": archive_level, "rare_event_bonus": self.archive_rare_event_bonus()},
             "emporium_annex": {
-                "level": annex_level,
-                "unlocked": annex_level >= 1,
-                "base_stock_slots": 9,
-                "bonus_stock_slots": 12 if annex_level >= 1 else 0,
+                "level": annex_level, "unlocked": annex_level >= 1,
+                "purchase_discount": guild_commerce(self.facility_tiers())["purchase_discount"],
+                "stock_source": "world_region", "stock_slots": 18,
+                "base_stock_slots": 12, "bonus_stock_slots": 0,
                 "bonus_by_category": self.emporium_annex_stock_bonus(),
-                "stock_slots": self.emporium_stock_slots(),
             },
             "trading_post": {
-                "level": trading_post_level,
-                "unlocked": trading_post_level >= 1,
-                "listing_fee_rate": 0.02,
-                "sale_tax_rate": 0.05,
-                "listing_hours": 48,
+                "level": trading_post_level, "unlocked": True,
+                **guild_commerce(self.facility_tiers()), "listing_hours": 48,
             },
         }
 

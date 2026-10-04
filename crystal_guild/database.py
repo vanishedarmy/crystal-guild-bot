@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 26
+DATABASE_SCHEMA_VERSION = 27
 
 
 class Database:
@@ -1468,6 +1468,30 @@ class Database:
                     COMMIT;
                 """)
                 self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        if not self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=27").fetchone():
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(27)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS player_regional_shops (
+                        player_id TEXT NOT NULL,
+                        region_id TEXT NOT NULL,
+                        job_id TEXT NOT NULL,
+                        level_at_roll INTEGER NOT NULL,
+                        stock_json TEXT NOT NULL,
+                        generated_at INTEGER NOT NULL,
+                        expires_at INTEGER NOT NULL,
+                        PRIMARY KEY (player_id, region_id, job_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (27,'regional_moogle_emporium');
+                    COMMIT;
+                """)
             except Exception:
                 self.conn.rollback()
                 raise

@@ -13,6 +13,7 @@ from urllib.parse import unquote
 from .active_battle import FULL_RESOURCE_SENTINEL, battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
+from .emporium import guild_commerce
 from .data import GameData
 from .bestiary_progress import progress_for
 from .gold_saucer import gold_saucer_record_value
@@ -306,7 +307,7 @@ class PortalRepository:
                     "totals": {"gil_donated": 0, "materials_donated": 0},
                     "expedition_board_complete": False, "rank_ladder": GUILD_RANKS,
                     "effects": facility_effects({}),
-                    "services": {"workshop": {"level": 0, "forge_discount": 0.0}, "emporium_annex": {"level": 0, "unlocked": False, "stock_slots": 9}, "trading_post": {"level": 0, "unlocked": False, "listing_fee_rate": 0.02, "sale_tax_rate": 0.05, "listing_hours": 48}, "chocobo_stable": {"level": 0, "xp_bonus": 0.0}, "archive": {"level": 0, "rare_event_bonus": 0.0}},
+                    "services": {"workshop": {"level": 0, "forge_discount": 0.0}, "emporium_annex": {"level": 0, "unlocked": False, "stock_slots": 18, "purchase_discount": 0.0}, "trading_post": {"level": 0, "unlocked": True, **guild_commerce({}), "listing_hours": 48}, "chocobo_stable": {"level": 0, "xp_bonus": 0.0}, "archive": {"level": 0, "rare_event_bonus": 0.0}},
                     "airship": {"built": False, "dock_level": 0, "active_mission": None, "missions": [], "upgrades": [], "history": [], "missions_completed": 0, "missions_failed": 0},
                     "legacy": {"stage": 1, "stage_name": "Founding Hall", "completed": 0, "total": 10, "accomplishments": [], "decorations": [], "next_accomplishment": None},
                 }
@@ -432,8 +433,8 @@ class PortalRepository:
             services = {
                 "guild_hall": {"level": min(3, int(tiers.get("guild_hall", 0)))},
                 "workshop": {"level": min(3, int(tiers.get("workshop", 0))), "forge_discount": float(effects.get("forge_discount", 0.0))},
-                "emporium_annex": {"level": annex_level, "unlocked": annex_level >= 1, "stock_slots": 21 if annex_level >= 1 else 9},
-                "trading_post": {"level": trading_post_level, "unlocked": trading_post_level >= 1, "listing_fee_rate": 0.02, "sale_tax_rate": 0.05, "listing_hours": 48},
+                "emporium_annex": {"level": annex_level, "unlocked": annex_level >= 1, "stock_slots": 18, "purchase_discount": guild_commerce(tiers)["purchase_discount"]},
+                "trading_post": {"level": trading_post_level, "unlocked": True, **guild_commerce(tiers), "listing_hours": 48},
                 "chocobo_stable": {"level": min(3, int(tiers.get("chocobo_stable", 0))), "xp_bonus": float(effects.get("chocobo_xp_bonus", 0.0))},
                 "archive": {"level": min(3, int(tiers.get("archives", 0))), "rare_event_bonus": float(effects.get("archive_rare_event_bonus", 0.0))},
             }

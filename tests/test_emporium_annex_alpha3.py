@@ -32,9 +32,9 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_release_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(__version__, "1.9.6-triple-triad-expanded")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
+        self.assertEqual(self.db.schema_version(), 27)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         annex = self.db.one("SELECT tier FROM fellowship_facilities WHERE facility_id='emporium_annex'")
         self.assertIsNotNone(annex)
@@ -53,41 +53,32 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         self.assertEqual(targets["activity:craft"], 20)
         self.assertEqual(targets["fellowship_level"], 3)
 
-    def test_completion_expands_cached_rotations_with_fixed_category_bonus(self):
-        stock_before, _ = self.game._shop_stock("100")
-        self.assertEqual(len(stock_before), 9)
-        self.assertEqual(self.game.fellowship_system.emporium_stock_slots(), 9)
-
+    def test_annex_discounts_cached_rotation_without_changing_regional_capacity(self):
+        stock_before, expiry = self.game._shop_stock("100")
+        before = self.game.portal_shop_state("100").data
         self.db.execute("UPDATE fellowship_facilities SET tier=1 WHERE facility_id='emporium_annex'")
-        stock_after, _ = self.game._shop_stock("100")
-        self.assertEqual(self.game.fellowship_system.emporium_stock_slots(), 21)
-        self.assertEqual(len(stock_after), 21)
-        counts = {
-            "weapons": sum(1 for item in stock_after if item["type"] == "weapon"),
-            "armor": sum(1 for item in stock_after if item["type"] in {"armor", "accessory"}),
-            "items": sum(1 for item in stock_after if item["type"] == "consumable"),
-        }
-        self.assertEqual(counts, {"weapons": 5, "armor": 7, "items": 9})
-        cached = self.db.one("SELECT stock_json FROM player_shops WHERE player_id='100'")
-        self.assertIn(stock_after[-1]["id"], str(cached["stock_json"]))
+        stock_after, expiry_after = self.game._shop_stock("100")
+        self.assertEqual(stock_before, stock_after)
+        self.assertEqual(expiry, expiry_after)
+        after = self.game.portal_shop_state("100").data
+        self.assertEqual(before["stock_slots"], 12)
+        self.assertEqual(after["stock_slots"], 12)
+        for item in after["stock"]:
+            self.assertEqual(item["price"], item["base_price"] * 90 // 100)
 
-    def test_portal_shop_and_fellowship_services_report_annex_state(self):
+    def test_portal_shop_and_fellowship_services_report_annex_perks(self):
         closed = self.game.portal_shop_state("100")
-        self.assertTrue(closed.ok)
         self.assertFalse(closed.data["annex_unlocked"])
-        self.assertEqual(closed.data["stock_slots"], 9)
-
+        self.assertEqual(closed.data["guild_perks"]["purchase_discount"], 0)
         self.db.execute("UPDATE fellowship_facilities SET tier=1 WHERE facility_id='emporium_annex'")
         opened = self.game.portal_shop_state("100")
-        self.assertTrue(opened.ok)
         self.assertTrue(opened.data["annex_unlocked"])
-        self.assertEqual(opened.data["stock_slots"], 21)
-        self.assertEqual(opened.data["annex_bonus_slots"], 12)
-        self.assertEqual(opened.data["annex_bonus_by_category"], {"weapons": 2, "armor": 4, "items": 6})
+        self.assertEqual(opened.data["annex_bonus_slots"], 0)
+        self.assertEqual(opened.data["guild_perks"]["purchase_discount"], .10)
         services = self.game.fellowship_system.workshop_services_snapshot("100")["emporium_annex"]
         self.assertTrue(services["unlocked"])
-        self.assertEqual(services["stock_slots"], 21)
-        self.assertEqual(services["bonus_by_category"], {"weapons": 2, "armor": 4, "items": 6})
+        self.assertEqual(services["purchase_discount"], .10)
+        self.assertEqual(services["stock_source"], "world_region")
 
     def test_project_completion_constructs_annex_once(self):
         self.db.execute("UPDATE fellowship_state SET level=3,renown=5000 WHERE singleton_id=1")
