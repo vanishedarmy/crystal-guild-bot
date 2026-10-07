@@ -18407,7 +18407,7 @@ class CrystalGuildEngine:
                 reward["name"] = item["name"]
                 label = f"1 {item['name']} ({reward['rarity'].title()})"
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, -1, 'spooky_cache_open')", (str(player_id), SPOOKY_CACHE_ID))
-            return GameResult.success(f"SPOOKY SUPPLY CACHE — opened one cache and found {label}!", cache_reward=reward)
+            return GameResult.success(f"SPOOKY SUPPLY CACHE — opened one cache and found {label}!", cache_reward=reward, seasonal=seasonal_public_snapshot(conn, str(player_id)))
 
     def _inventory_qty(self, player_id: str, item_id: str) -> int:
         row = self.db.one("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?", (player_id, item_id))

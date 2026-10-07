@@ -7,7 +7,6 @@ from typing import Any
 from .crafting_catalog import CATEGORIES, build_source_index, recipe_category
 from .bestiary_research import validate_research_overlay
 from .moments import validate_moment_catalog
-from .supply_cache import SPOOKY_CACHE_ID, SPOOKY_CACHE_TIERS
 
 
 class GameData:
@@ -397,11 +396,7 @@ class GameData:
                     )
 
         harmful_statuses = {"vulnerable", "weaken", "slow", "stun", "poison", "silence", "blind"}
-        valid_item_use_effects = {"heal_hp", "restore_mp", "restore_ap", "revive", "cleanse", "status", "damage", "open_cache"}
-
-        for _, _, pool in SPOOKY_CACHE_TIERS:
-            for reward_id in pool:
-                require(self.items, reward_id, "Spooky cache reward")
+        valid_item_use_effects = {"heal_hp", "restore_mp", "restore_ap", "revive", "cleanse", "status", "damage"}
 
         for item in self.items.values():
             if item.get("type") not in valid_item_types:
@@ -433,9 +428,6 @@ class GameData:
                         if effect_type not in valid_item_use_effects:
                             errors.append(f"item {item['id']}: invalid use effect {effect_type!r}")
                             continue
-                        if effect_type == "open_cache":
-                            if item["id"] != SPOOKY_CACHE_ID or use.get("target") != "self" or not use.get("field") or use.get("battle", True):
-                                errors.append(f"item {item['id']}: invalid field-only cache configuration")
                         if effect_type in {"heal_hp", "damage"}:
                             amount = int(effect.get("amount", 0))
                             fraction = float(effect.get("fraction", 0.0)) if effect.get("fraction") is not None else 0.0

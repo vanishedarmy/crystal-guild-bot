@@ -139,7 +139,9 @@ def ensure_event_row(conn) -> None:
 
 
 def event_state(conn, now: float | None = None) -> dict[str, Any]:
-    ensure_event_row(conn)
+    # Snapshot exports use a read-only connection; migrations belong to the Bot.
+    if not conn.execute("PRAGMA query_only").fetchone()[0]:
+        ensure_event_row(conn)
     row = conn.execute("SELECT * FROM seasonal_event_instances WHERE edition_id=?", (EDITION_ID,)).fetchone()
     now = float(time.time() if now is None else now)
     if not row:
@@ -330,13 +332,23 @@ def buy_reward(conn, player_id: str, reward_id: str) -> tuple[bool, str, dict[st
     if reward["kind"] == "title":
         conn.execute("INSERT OR IGNORE INTO player_titles(player_id,title_id,unlocked_at) VALUES (?,?,CURRENT_TIMESTAMP)", (str(player_id),str(reward["title_id"])))
     trophies = reconcile_trophies(conn, player_id)
-    hint = " Open it from Inventory when you are ready." if reward["kind"] == "cache" else ""
+    hint = " Open it from the Seasonal tab or Inventory when you are ready." if reward["kind"] == "cache" else ""
     return True, f"Moonlit Emporium — acquired {reward['name']} for {reward['cost']} {TOKEN_NAME}.{hint}", {"reward_id":reward["id"],"trophies":trophies}
 
 
 def public_snapshot(conn, player_id: str) -> dict[str, Any]:
     state = event_state(conn)
     progress = player_progress(conn, player_id)
+    acquired = {str(row["reward_id"]): row["claimed_at"] for row in conn.execute(
+        "SELECT reward_id,claimed_at FROM player_seasonal_reward_claims WHERE player_id=? AND edition_id=?",
+        (str(player_id), EDITION_ID),
+    ).fetchall()}
+    # Recover the display's trophy presentation from an existing purchase receipt.
+    if progress["claims"].get("hollow_crystal_display", 0) > 0:
+        progress["trophies"].setdefault("season_halloween_keeper", acquired["hollow_crystal_display"])
+    cache_quantities = {str(row["item_id"]): int(row["quantity"] or 0) for row in conn.execute(
+        "SELECT item_id,quantity FROM inventory WHERE player_id=? AND quantity>0", (str(player_id),)
+    ).fetchall()}
     guild_kills = int(conn.execute("SELECT COALESCE(SUM(clears),0) FROM player_seasonal_monster_clears WHERE edition_id=?", (EDITION_ID,)).fetchone()[0] or 0)
     day_key = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     daily = conn.execute("SELECT seasonal_kills,adventures FROM player_seasonal_daily_progress WHERE player_id=? AND edition_id=? AND day_key=?", (str(player_id),EDITION_ID,day_key)).fetchone()
@@ -360,6 +372,9 @@ def public_snapshot(conn, player_id: str) -> dict[str, Any]:
         "world_event":HOLLOW_WARDEN,
         "objectives":objectives,
         "shop":[{**row,"owned":progress["claims"].get(row["id"],0)>0} for row in SHOP],
+        "keepsakes":[{**row,"acquired_at":acquired.get(row["id"])} for row in SHOP
+                     if row["kind"] in {"keepsake", "hall_decoration"} and progress["claims"].get(row["id"],0)>0],
+        "caches":[{**row,"quantity":cache_quantities.get(row["id"],0)} for row in SHOP if row["kind"]=="cache"],
         "trophies":[{**row,"unlocked_at":progress["trophies"].get(row["id"])} for row in TROPHIES],
         "guild_seasonal_kills":guild_kills,
         "art":{"banner":"/seasonal/halloween-2026/event-banner.webp","background":"/seasonal/halloween-2026/hollow-crystal-spire.webp"},

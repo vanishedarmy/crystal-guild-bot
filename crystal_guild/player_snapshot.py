@@ -1539,7 +1539,19 @@ class PortalRepository:
                         "art": None, "locked_art": None,
                         "secret": True, "earned": False,
                     })
+            try:
+                from .seasonal_events import public_snapshot
+                seasonal = public_snapshot(conn, player_id)
+            except sqlite3.Error:
+                seasonal = {}
+            seasonal_trophies = [{**row, "category": "seasonal", "requirement": row["description"], "secret": False}
+                                 for row in seasonal.get("trophies", [])]
+            seasonal_unlocked = [{"id": row["id"], "unlocked_at": row["unlocked_at"],
+                                  "unlock_source": "seasonal", "seen_at": None}
+                                 for row in seasonal_trophies if row.get("unlocked_at")]
             return {
+                "seasonal_trophies": seasonal_trophies,
+                "keepsakes": seasonal.get("keepsakes", []),
                 "player": self._public_identity(player),
                 "moment_slots": moment_slots,
                 "unlocked": [
@@ -1550,7 +1562,7 @@ class PortalRepository:
                         "seen_at": row["seen_at"],
                     }
                     for row in rows
-                ],
+                ] + seasonal_unlocked,
             }
 
 

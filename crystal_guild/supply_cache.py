@@ -10,7 +10,7 @@ SPOOKY_CACHE_TIERS = (
     ("gil", 15, ()),
 )
 SPOOKY_CACHE_DESCRIPTION = (
-    "A sealed cache. Open from Inventory for one random reward: "
+    "A sealed cache. Open from the Seasonal tab or Inventory for one random reward: "
     "45% common, 25% uncommon, 10% rare, 4% artifact, 1% legendary item, "
     "or 15% chance of 100–750 Gil. Items within each rarity are equally likely. "
     "Consumes one cache; open outside adventures and combat, even after the event ends."

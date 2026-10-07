@@ -153,6 +153,47 @@ class SpookyInventoryCacheTests(unittest.TestCase):
             self.assertFalse(self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "away").ok)
         self.assertEqual(self.game._inventory_qty("100", SPOOKY_CACHE_ID), 1)
 
+    def test_seasonal_tab_counts_update_on_purchase_and_open_with_receipt_replay(self):
+        first = self.game.portal_seasonal_buy("100", SPOOKY_CACHE_ID, "seasonal-tab-buy")
+        self.assertEqual(first.data["seasonal"]["caches"][0]["quantity"], 1)
+        self.game.rng = FixedRoll(85, 750)
+        opened = self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "seasonal-tab-open")
+        self.assertTrue(opened.ok)
+        self.assertEqual(opened.data["cache_reward"], {"kind": "gil", "amount": 750})
+        self.assertEqual(opened.data["seasonal"]["caches"][0]["quantity"], 0)
+        with patch("crystal_guild.engine.roll_spooky_cache", side_effect=AssertionError("no reroll")):
+            replay = self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "seasonal-tab-open")
+        self.assertEqual(opened.data, replay.data)
+        repository = PortalRepository(self.path, ROOT / "data")
+        try:
+            snapshot = repository.seasonal("van")["seasonal"]
+            self.assertEqual(snapshot["state"], "active")
+            self.assertEqual(snapshot["caches"][0]["quantity"], 0)
+            self.assertEqual(snapshot["tokens"], 90)
+        finally:
+            repository.close()
+
+    def test_existing_display_and_candle_purchases_are_visible_in_hall_and_seasonal_after_event(self):
+        self.assertTrue(self.game.portal_seasonal_buy("100", "hollow_crystal_display", "display").ok)
+        self.assertTrue(self.game.portal_seasonal_buy("100", "haunted_candle", "candle").ok)
+        # A legacy purchase can exist without a trophy row; project it from its receipt.
+        with self.db.tx() as conn:
+            conn.execute("DELETE FROM player_seasonal_trophies WHERE player_id='100' AND trophy_id='season_halloween_keeper'")
+            set_event_control(conn, enabled=False)
+        repository = PortalRepository(self.path, ROOT / "data")
+        try:
+            hall = repository.trophies("van")
+            seasonal = repository.seasonal("van")["seasonal"]
+            self.assertEqual({row["id"] for row in hall["keepsakes"]}, {"hollow_crystal_display", "haunted_candle"})
+            self.assertEqual(hall["keepsakes"], seasonal["keepsakes"])
+            self.assertEqual(len(hall["seasonal_trophies"]), 4)
+            self.assertIn("season_halloween_keeper", {row["id"] for row in hall["unlocked"]})
+            self.assertEqual(seasonal["state"], "disabled")
+            self.assertEqual(self.db.one("SELECT tokens FROM player_seasonal_event_progress WHERE player_id='100'")["tokens"], 0)
+            self.assertIsNone(self.db.one("SELECT * FROM player_seasonal_trophies WHERE player_id='100' AND trophy_id='season_halloween_keeper'"))
+        finally:
+            repository.close()
+
     def test_inventory_has_open_metadata_and_cache_is_not_recovery_recommendation(self):
         self.give_cache()
         inventory = PortalRepository(self.path, ROOT / "data").inventory("van")
