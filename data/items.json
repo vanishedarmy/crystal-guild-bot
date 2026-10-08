@@ -8318,5 +8318,25 @@
     "shop": true,
     "shop_level": 1,
     "description": "A warm camp meal. At Camp, eat one to gain +10% damage throughout your next Solo Venture if begun within 45 minutes. One meal can be queued at a time."
+  },
+  {
+    "id": "spooky_supply_cache",
+    "name": "Spooky Supply Cache",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "price": 0,
+    "shop": false,
+    "unsellable": true,
+    "description": "A sealed cache. Open from the Seasonal tab or Inventory for one random reward: 45% common, 25% uncommon, 10% rare, 4% artifact, 1% legendary item, or 15% chance of 100–750 Gil. Items within each rarity are equally likely. Consumes one cache; open outside adventures and combat, even after the event ends.",
+    "use": {
+      "target": "self",
+      "field": true,
+      "battle": false,
+      "effects": [
+        {
+          "type": "open_cache"
+        }
+      ]
+    }
   }
 ]

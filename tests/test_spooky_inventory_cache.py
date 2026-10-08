@@ -52,6 +52,57 @@ class SpookyInventoryCacheTests(unittest.TestCase):
     def give_cache(self, quantity=1):
         self.game._change_item("100", SPOOKY_CACHE_ID, quantity, "test")
 
+    def test_portal_opens_owned_cache_with_missing_or_legacy_item_metadata(self):
+        original = self.data.items[SPOOKY_CACHE_ID]
+        for i, definition in enumerate((None, {key: value for key, value in original.items() if key != "use"},
+                                        {**original, "use": {"field": False}})):
+            with self.subTest(catalog_case=i):
+                if definition is None:
+                    self.data.items.pop(SPOOKY_CACHE_ID, None)
+                else:
+                    self.data.items[SPOOKY_CACHE_ID] = definition
+                self.give_cache()
+                self.game.rng = FixedRoll(85, 750)
+                result = self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, f"legacy-cache-{i}")
+                self.assertTrue(result.ok, result.messages)
+                self.assertEqual(result.data["cache_reward"], {"kind": "gil", "amount": 750})
+                self.assertEqual(result.data["seasonal"]["caches"][0]["quantity"], 0)
+                self.assertEqual(self.game._inventory_qty("100", SPOOKY_CACHE_ID), 0)
+        self.data.items[SPOOKY_CACHE_ID] = original
+
+    def test_cache_chat_name_and_action_replay_do_not_depend_on_catalog_metadata(self):
+        self.data.items.pop(SPOOKY_CACHE_ID)
+        self.give_cache(2)
+        self.game.rng = FixedRoll(0)
+        direct = self.game.use_item("100", "Spooky Supply Cache")
+        self.assertTrue(direct.ok, direct.messages)
+        action = {"id": "legacy-replay", "type": "USE_FIELD_ITEM", "payload": {"item_id": SPOOKY_CACHE_ID},
+                  "twitch_id": "100", "username": "van", "protocol_version": ACTION_PROTOCOL_VERSION}
+        worker = PortalActionWorker(self.game, "https://example.invalid", "test")
+        result = worker._execute(action)
+        self.assertTrue(result[0], result)
+        with patch("crystal_guild.engine.roll_spooky_cache", side_effect=AssertionError("no reroll")):
+            replay = worker._execute(action)
+        self.assertEqual(result, replay)
+        self.assertEqual(self.game._inventory_qty("100", SPOOKY_CACHE_ID), 0)
+
+    def test_legacy_cache_keeps_combat_adventure_target_and_ownership_guards(self):
+        self.data.items.pop(SPOOKY_CACHE_ID)
+        self.give_cache()
+        self.assertFalse(self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "legacy-target", target_query="van").ok)
+        with patch.object(self.game, "_dungeon_load", return_value={"run_id": "test"}):
+            self.assertFalse(self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "legacy-away").ok)
+        self.game.encounter_roster["100"] = {}
+        try:
+            self.assertFalse(self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "legacy-combat").ok)
+            self.assertFalse(self.game.use_item("100", SPOOKY_CACHE_ID).ok)
+        finally:
+            self.game.encounter_roster.pop("100", None)
+        self.assertEqual(self.game._inventory_qty("100", SPOOKY_CACHE_ID), 1)
+        self.assertFalse(self.game.portal_use_field_item("100", "iron_ore", "not-a-cache").ok)
+        self.game._change_item("100", SPOOKY_CACHE_ID, -1, "test")
+        self.assertFalse(self.game.portal_use_field_item("100", SPOOKY_CACHE_ID, "legacy-empty").ok)
+
     def test_all_100_buckets_match_published_odds_and_real_item_rarities(self):
         counts = collections.Counter()
         for roll in range(100):

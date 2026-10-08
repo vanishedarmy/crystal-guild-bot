@@ -1364,6 +1364,16 @@ class CrystalGuildEngine:
             return GameResult.fail("Your Hunt is resolving automatically; field items cannot be used until your hero returns.")
 
         item = self._find_by_name_or_id(self.data.items, item_query)
+        # A sealed cache is its own action, not HP/MP recovery. Older merged
+        # installs may own caches before their catalog metadata has been updated.
+        cache_query = str(item_query or "").strip().casefold()
+        if (item and item["id"] == SPOOKY_CACHE_ID) or cache_query in {SPOOKY_CACHE_ID, "spooky supply cache"}:
+            if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+                return GameResult.fail("Wait until you are outside the active encounter or raid before opening a cache.")
+            if str(target_query or "").strip():
+                return GameResult.fail("Open this cache for yourself from Seasonal or Inventory.")
+            return self._open_spooky_cache(twitch_id)
+
         use = item.get("use") if item else None
         if not item or not isinstance(use, dict) or not use.get("field"):
             return GameResult.fail("That item has no field use. It may still be usable during an Active Battle.")
@@ -1371,11 +1381,6 @@ class CrystalGuildEngine:
             return GameResult.fail(f"You do not own {item['name']}.")
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("Wait until you are outside the active encounter or raid before using field items.")
-
-        if item["id"] == SPOOKY_CACHE_ID:
-            if str(target_query or "").strip():
-                return GameResult.fail("Open this cache for yourself from your own Inventory.")
-            return self._open_spooky_cache(twitch_id)
 
         target_id = str(twitch_id)
         target = actor
@@ -10418,7 +10423,9 @@ class CrystalGuildEngine:
     ) -> GameResult:
         item = self.data.items.get(str(item_id))
         use = item.get("use") if item and isinstance(item.get("use"), dict) else {}
-        if not item or not use.get("field"):
+        # Only the known sealed cache bypasses recovery metadata validation.
+        # Inventory ownership and adventure/combat/target rules stay in use_item.
+        if str(item_id) != SPOOKY_CACHE_ID and (not item or not use.get("field")):
             return self._portal_store_nonmutating_result(
                 action_id, GameResult.fail("That item is not available for out-of-combat Portal recovery.")
             )
