@@ -455,6 +455,10 @@ class PortalSyncWorker:
         with self._state_lock:
             self._state = "running"
         while not self._stop.is_set():
+            # Consume a prior wake before performing the sync. A new mutation
+            # arriving during sync_once must remain set and trigger a second
+            # pass, rather than being cleared after the potentially long run.
+            self._wake.clear()
             try:
                 result = self.client.sync_once(should_stop=self._stop.is_set)
                 failures = 0
@@ -472,8 +476,9 @@ class PortalSyncWorker:
                     self._state = "degraded"
                     self._last_error = f"{type(exc).__name__}: {exc}"
                 LOGGER.warning("Portal sync failed: %s | retrying in %.1fs", exc, delay)
+            if self._stop.is_set():
+                break
             self._wake.wait(timeout=delay)
-            self._wake.clear()
         with self._state_lock:
             self._state = "stopped"
 

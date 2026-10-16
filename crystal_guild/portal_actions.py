@@ -18,6 +18,16 @@ from .engine import CrystalGuildEngine, GameResult
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
 ACTION_PROTOCOL_VERSION = 39
 
+# These actions only read server state (or update a local, queue-neutral
+# preference). They must not reset inactivity timers, check for title unlocks,
+# or schedule costly full-player snapshot uploads.
+PASSIVE_PORTAL_ACTIONS = frozenset({
+    "PING", "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "TRADING_POST_HISTORY",
+    "RECOVERY_STATE", "FELLOWSHIP_STATE", "CRAFTING_STATE", "DAILY_STATE",
+    "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE", "RETAINER_STATE",
+    "MERC_STATE", "SEASONAL_STATE", "SET_GEAR_FAVORITES",
+})
+
 
 class PortalActionWorker:
     """Poll authenticated website actions and execute them in the live Bot process.
@@ -142,7 +152,7 @@ class PortalActionWorker:
                 continue
             action_type = str(action.get("type") or "").strip().upper()
             twitch_id = str(action.get("twitch_id") or "").strip()
-            track_titles = action_type not in {"RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT", "SET_GEAR_FAVORITES"}
+            track_titles = action_type not in PASSIVE_PORTAL_ACTIONS and action_type not in {"RECRUIT", "STREAMER_COMMAND", "ACK_ADVENTURE_RESULT"}
             title_before = self._player_title_ids(twitch_id) if track_titles else set()
             ok, message, data = self._execute(action)
             if ok:
@@ -168,19 +178,20 @@ class PortalActionWorker:
                 # game-action layer as well as in the hosted submission queue.
                 LOGGER.exception("Unable to acknowledge Portal action %s", action.get("id"))
                 raise
-            # Seasonal controls and purchases alter state that the player-facing
-            # Portal consumes. Wake the snapshot worker only after the hosted
-            # action acknowledgement succeeds, so the Web mirror converges at
-            # once and cannot remain stuck on a pre-command DISABLED snapshot.
-            seasonal_command = False
-            if action_type == "STREAMER_COMMAND":
-                payload = action.get("payload") if isinstance(action.get("payload"), dict) else {}
-                seasonal_command = str(payload.get("command") or "").strip().lower().lstrip("!") == "seasonalevent"
-            if ok and self.wake_sync is not None and (seasonal_command or action_type == "SEASONAL_BUY"):
+            # Mutations should appear on the player-facing Web immediately
+            # after acknowledgement rather than waiting up to a full sync
+            # interval. Read-only state queries must not trigger full scans.
+            # The sync worker coalesces repeated wake requests with an Event.
+            # A handful of streamer diagnostics only read state. Commands
+            # that alter Guild progression still get immediate sync.
+            streamer_read = action_type == "STREAMER_COMMAND" and str(
+                (action.get("payload") or {}).get("command") or ""
+            ).strip().lower().lstrip("!") in {"health", "economy", "cgversion", "encounterdebug", "directtest"}
+            if ok and self.wake_sync is not None and action_type not in PASSIVE_PORTAL_ACTIONS and not streamer_read:
                 try:
                     self.wake_sync()
                 except Exception:
-                    LOGGER.exception("Unable to wake Portal sync after Seasonal action %s", action_id)
+                    LOGGER.exception("Unable to wake Portal sync after action %s", action_id)
 
             pending = self._post_ack_notifications.pop(action_id, [])
             if pending and self.notify_result is not None:
@@ -323,12 +334,7 @@ class PortalActionWorker:
                 "username": str(row["username"]),
                 "display_name": display_name,
             }
-        passive_state_actions = {
-            "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "TRADING_POST_HISTORY", "RECOVERY_STATE", "FELLOWSHIP_STATE",
-            "CRAFTING_STATE", "DAILY_STATE", "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE", "SEASONAL_STATE",
-            "SET_GEAR_FAVORITES",
-        }
-        if action_type not in passive_state_actions:
+        if action_type not in PASSIVE_PORTAL_ACTIONS:
             # Only intentional Portal mutations reset the Long Rest inactivity
             # clock. Background/read-only state polling must never keep a hero
             # artificially awake.
@@ -1010,6 +1016,9 @@ class PortalActionWorker:
         with self._state_lock:
             self._state = "running"
         while not self._stop.is_set():
+            # A wake arriving during a claim/execute pass must survive until
+            # the next poll instead of being cleared after the pass.
+            self._wake.clear()
             try:
                 processed = self.poll_once()
                 failures = 0
@@ -1026,8 +1035,9 @@ class PortalActionWorker:
                     self._state = "degraded"
                     self._last_error = f"{type(exc).__name__}: {exc}"
                 LOGGER.warning("Portal action poll failed: %s | retrying in %.1fs", exc, delay)
+            if self._stop.is_set():
+                break
             self._wake.wait(timeout=delay)
-            self._wake.clear()
         with self._state_lock:
             self._state = "stopped"
 
