@@ -1,3 +1,7 @@
+# Current release: v1.9.7 — Queen’s Blood
+
+See `README_FIRST.txt` for this complete release and upgrade instructions. The setup and historical feature documentation below remains available.
+
 # Crystal Guild — Bot (v1.9.6: Triple Triad Expanded)
 
 The authoritative Twitch/chat engine and player database. Deploy together with the v1.9.6 hosted Web service.

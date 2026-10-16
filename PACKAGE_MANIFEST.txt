@@ -1,249 +1,250 @@
-Crystal Guild v1.9.6 — Triple Triad Expanded with Seasonal Cache opening hotfix: complete Bot inventory
-Path | SHA-256 | Bytes
-Bot/.env.example | fff97b62fb7d86d8e250511bb9e4b8b97523af072124ea7bcfd175a1adb6fbb9 | 1707
-Bot/.gitignore | 2687ef19fd8b75ddaf10b516366333f88f13228453f4ecc22a562a66b8f862b0 | 208
-Bot/.python-version | 35cafb8c702c5f217b67df5648dfb141cba38156c135a85cf5026d4d92d6bab3 | 8
-Bot/CHANGELOG.md | 05c0825e0a9112c56c4ca696e0bcff9ae0f631f25f8544957d22257764499542 | 5849
-Bot/COMBAT_DEVELOPER_GUIDE.md | de417118f1293a7cc81dae479c6572b5d029ed4b30e40df0d6a819c192a4c144 | 12290
-Bot/COMBAT_GUIDE.md | ff23f873b75eca86fbdcbebc45be86a33a5c302d16bf4f47141ec0ba255bde61 | 13280
-Bot/CRYSTAL_GUILD_CONTROL_PANEL.bat | af50330bf06f1bd508572ac95827efb54daa6ba004359ddf650c0a50cd6bcdf8 | 3712
-Bot/FULL_SETUP_README.md | 327f0981a6b17298db013d3b96e7c6792bca98f30553bc3c2a1bde1780666f9a | 1324
-Bot/GAME_DESIGN.md | c9a1be13f92d030457bfa23daa099ca58dba608a7be72e4c53b0ccd6d6d9ffaa | 3616
-Bot/MANUAL_TEST_CHECKLIST.md | 1c23fc10d548845d99ea5172f1fca9de453e061d5c4f0dca1ebb6fce673be3f3 | 838
-Bot/MOBILE_COMBAT_HUD_VALIDATION.md | 659d7ddb4ee2fb4519cce4e1e2c551855bc83b249a08945ddffc71332cd5a782 | 1920
-Bot/PORTAL_ACTIONS_SETUP.md | 1bd32bba1c2ee508c267017a25e6533d855aec2b353890f2f515e0e77f16f37d | 864
-Bot/README.md | 8da921491789820f04e995ca75a82ac680e06e5c1f87ba45e4ceb5138f7f2c6e | 661
-Bot/README_FIRST.txt | 63b51039128b06ec468bad9e561dcc1df944ab4ca4ebd409aaf97333a1e15c62 | 6162
-Bot/README_MOOGLE_EMPORIUM_REWORK.md | 620f75eede8685753536abc2d2cb7ba5f1afc35798298b6a2f3999dc11758aee | 5548
-Bot/README_OFFLINE_PROGRESSION_HOTFIX.md | b904419e9524ef6bf527df4e092887d7adcea9aa73f2f08c36db73ec24c0ee11 | 3905
-Bot/README_SEASONAL_EVENT_LIVE_HOTFIX.md | 0f2305148032f3d474e0741f740c00b06acb1f4d2ddb1b38e0392af9339cb44d | 2878
-Bot/RELEASE_NOTES.md | 63b51039128b06ec468bad9e561dcc1df944ab4ca4ebd409aaf97333a1e15c62 | 6162
-Bot/RENDER_CLOUD_SETUP.md | f90f05865d48a1f2134bdc7c5a36511910c5eb394f26a11d5ba255d91918260b | 1034
-Bot/SIMPLE_RENDER_SETUP.md | 8875b2af0d34939272c6fffb9e592bcc7c4782f4b4ef7713509910b350075fd6 | 567
-Bot/TITLE_EXPANSION.md | 7d212ba6a4d5df402f771d7d78a11c2a69f3f4a1e38948721c7017fa3a9648e9 | 1276
-Bot/UPGRADE_GUIDE.md | 855ce36f75368dd6ecbbb7566b314803edbb8188dcb75ce6b220841a8e5ab77e | 1790
-Bot/VALIDATION_REPORT.md | 188a0402d175706a43125744b8bc089c30b608ebc3518294843ccb09ea25fb68 | 2971
-Bot/VERSION.txt | 4e98d5940a398bb69093e50efce2d56261e066489a555abd1f77bc7145db8ee2 | 28
-Bot/WEB_SYNC_SETUP.md | c8540f55bc077c21922f4676f670968d937bf4356be737825f5fbab4a762c16a | 524
-Bot/WORLD_EVENTS.md | 37ad6af1770733a93212bf68e518a225e6719f8952172fdf40629c4f6951f494 | 2043
-Bot/backup_database.bat | fa509c0c949dc604933d52dbac3a031ddbffc63fbada2e67b9b60caa255a19cb | 211
-Bot/crystal_guild/__init__.py | 521e023de38146e86433e97d4d5a30d6f84cd3f3e03745a6005124c7793fdce5 | 44
-Bot/crystal_guild/active_battle.py | 0b03a637f9ff8209972ce01ec2d230ec0f2300e24fb8018a10351e8d3469eeca | 8734
-Bot/crystal_guild/balance.py | 7b96510fb3cd526b18b9042811a2751bb5045824303d26776c68d6f2141af54b | 16380
-Bot/crystal_guild/battle_presentation.py | 8d3a36ce3778c76b61de78255946e19e5df10baf7a65f5e3eeefb88cd0d0fedf | 8248
-Bot/crystal_guild/bestiary_progress.py | 706daaec950aa59a6c1790ddcf1fbc952012d7454371553e1c7503737494a76d | 4975
-Bot/crystal_guild/bestiary_research.py | c320271f86f8015651906a7672ccd9ab9c99e0d3400ee8274fd5891bf047e80d | 8202
-Bot/crystal_guild/chat_ux.py | a88284d66a49763a8c732f58e2a491b0b9252a1396f8ef8309282cd8efc020fe | 7996
-Bot/crystal_guild/chocobo.py | 05c1f9add3d8113c48883380f55c6932c1a2e4736a91905ca1e0ebbf65058830 | 6670
-Bot/crystal_guild/cloud_runtime.py | f7d91e7b591d247a441ceec09ce35048d5ad5bd158a76bb2bf8ebd43b05c873d | 10417
-Bot/crystal_guild/config.py | b71606ffdc25786ad4fb6a6bd43e24bf6200a376042d081a95b1176d996df273 | 7264
-Bot/crystal_guild/crafting_catalog.py | 0d9b287b34e41a7c1ec8b3159f1799978975f33e52d0e6b8620ec8be69eae5c7 | 3106
-Bot/crystal_guild/daily_provisions.py | ac39f5ec72edad2376295947c477e4ed7500bff91ee4b608f17a069b8777675a | 7843
-Bot/crystal_guild/data.py | d96f666b9afc366d6c952ddec8ba6cb123ae9b9ae500d0b67396a76267297853 | 43725
-Bot/crystal_guild/database.py | 6dbce6ca421055d8c0c06b74089dedf51949256e262d3188199ce085c7a2ca82 | 96863
-Bot/crystal_guild/dungeons.py | a2e041764ddd2f2f05ff11294d2f89c1a2c683e9a106dd389ff0ae49af9d0f79 | 590
-Bot/crystal_guild/emporium.py | 1f14dc129e989ac0826fc35422f0495fb34b64d5d3704939136ea4dfa92016b0 | 3409
-Bot/crystal_guild/encounter_daemon.py | 98a175f68e506a95a2d623553a5b5ea2312ab005c5268c3a9dddadceadd9517f | 26601
-Bot/crystal_guild/enemy_combat.py | 34cf65a9bea96d22750d775f9438704f970fc38431d6913e771ff40702a795ee | 2928
-Bot/crystal_guild/engine.py | 7ab75f852133f2b75c706ea42d97da7a38f3f4ddff797ef86eb2e063c0388002 | 1086910
-Bot/crystal_guild/expeditions.py | 08d02bb0d82612fc1a20aa025a7e03445099973ebe2c6929192a58766166e8bf | 5108
-Bot/crystal_guild/fellowship.py | 0dd9cf26a319bf8592d7aaf7d4720de3a4736038ebad05b1b1afd330fc211042 | 39981
-Bot/crystal_guild/fellowship_system.py | f9043fc90eb4008171c31811df18eca176ba1d9ca71660fcd40d569bce54d3e7 | 86799
-Bot/crystal_guild/gold_saucer.py | 98efe42717714bd545928a68f9ae503a76466308c3e6d844115efa33b7b891b8 | 17403
-Bot/crystal_guild/guild_initiatives.py | 541e89f9ff37dde5bcc445cdb845a4a9a0a1a763debb936366c1740f2d74141d | 15723
-Bot/crystal_guild/help_system.py | d438be95ec4ee0a8ef9c96b892b01ff83d8f36408ae3dd0c1335bb2692af71fe | 11572
-Bot/crystal_guild/mercenary.py | f2db44d0b4ebf3dfe481636835967e7d8c797ccb45e1bc04aebc0ef04d80e412 | 18039
-Bot/crystal_guild/moments.py | 6fed638967dac84ccefec846594a5466897887c4f05d16bae5ddf2045882603e | 13010
-Bot/crystal_guild/moments_progress.py | 668a213540f472a0633426d8bfeb57d43ecee0a8c00fdb36722098528682868a | 14930
-Bot/crystal_guild/personal_records.py | e20ffac838e0ed5308ed68c65143e5078ccdfc268a84452a0d3099598b98a6cd | 11694
-Bot/crystal_guild/player_snapshot.py | 33382930d73ba0406ca03ddadb0d42513cd36fc003a22c73f35ed6969a06354c | 112909
-Bot/crystal_guild/portal_actions.py | 60c78ea924b8168d3ea4a2dc2f21f26a6e59b87d0ba63d489fb1c9681b02b73a | 60661
-Bot/crystal_guild/portal_sync.py | a6caa4215b3485476b0d8c8b958ad22c11e0ef2d7e1b3c45f2939e9a9ea5013f | 22017
-Bot/crystal_guild/retainer.py | ff1fd33914c0477a44b01e7d34a648ee9847b42db4ad48e0caaefbf1a33eb306 | 7408
-Bot/crystal_guild/seasonal_events.py | 32cb0566948a8a8c649b9728abdfee6338505d8ce4160bf78a8f7e7c31acc1ba | 24626
-Bot/crystal_guild/simulator.py | 204598b9c04984d625e109ebc8b9d431cf0c6084d1e020b30908768bf16aa961 | 8831
-Bot/crystal_guild/stream_status.py | a58fd082b9cd32b86e24eedd4270bb28effed55f22f54c4cb3af6793d7515e5d | 7471
-Bot/crystal_guild/subscription_status.py | 61b0d39d52a2a9e4595549a7d96e46c21a1f4942549d2407973672a4317b84ac | 6899
-Bot/crystal_guild/supply_cache.py | e036c0be9ed1d5bdaa8574474c4a4340a0cccec39273eeef17561e4d33a23280 | 1283
-Bot/crystal_guild/time_format.py | d55b7e88ed426424b722ff47914ae06a3324345817ac117f7718b0d80c5fa9d1 | 980
-Bot/crystal_guild/token_store.py | 34221c3d2484bbb0bac48ac6b285acd1933ca1b49a1cf922ef54f0d185bb8714 | 8168
-Bot/crystal_guild/triple_triad.py | ae9227e690a2222901cc09dc455139f4a01c121a190679965381b152608e4234 | 6978
-Bot/crystal_guild/triple_triad_catalog.json | 9510ccb77d03e6e4a1200d6c953e2cf41f947529779a017a4c8c6a0d19592583 | 16942
-Bot/crystal_guild/trophies.py | e64f0e2d91b2edfe41d0b75f58706f0cbf589df46bd0e4812c9c977ef49583e7 | 16908
-Bot/crystal_guild/twitch_bot.py | e7e2b60db0e44923a09d5b9d6d094a0bea536c23da49bd3c1feb4e966a255e96 | 49477
-Bot/crystal_guild/world_events.py | 35cecb495c9bc7bf6a747501532651bebc744e46d9942627f2e904f8a207712c | 4114
-Bot/data/achievements.json | 480b52d4582d9f4f2beb304f453d00987c8a48ef98aaf95bc1654cadb7c77beb | 30657
-Bot/data/active_abilities.json | 1c26d8c02109a88986167c4b86592e42a3169318cb77d143020e3384f096986f | 90661
-Bot/data/bestiary_research.json | cb629765d30f1f193b65e3e0588c276c8ce1e2e832ca51b752d01604a0895715 | 40372
-Bot/data/bosses.json | ed6e318724a3edf0ce9547e1a71d8a2e75e94dd53309f0566b270b4070c6b292 | 38815
-Bot/data/dungeons.json | 1a1a8fc9bafadb3c03350c5b0aba927667abfa83340bc7080d4968642d471f40 | 26718
-Bot/data/enemy_actions.json | 6edb990452c0f362f330e1d11bfd52a0dd56788811f08ac72c5d44503bb48020 | 43128
-Bot/data/enemy_profiles.json | 2fe9839c243778125665c4116e562d0f96cf7cc55ad677c3529ce735d89874a8 | 2648
-Bot/data/expedition_regions.json | 54c2a9049873dbed86de38bc210c667ab35b408b7526b6f95bc2f1a164e7e248 | 29029
-Bot/data/forge.json | 258b1354e12e8dada89858372b3f7e1d4337bec5e337833d41397126caa003d1 | 843
-Bot/data/hunts.json | 9fac57d0f967d6d4ef03d8ccd2c15caa98234b36acc38afd24320ee19e0a86d5 | 7534
-Bot/data/items.json | 73ae197f3bff25913c2e592e463e0f675195503bba7b5f2d30664f17a83f41d6 | 170312
-Bot/data/jobs.json | 4c1a797ea6715f78faf9cc7d9640ef41069c2f57f48f7d15649a644680b625d7 | 30663
-Bot/data/moment_titles.json | 7d5d9832a79700a40050931ae9bf7002d4358af62901a0b266b41dae0dbbb846 | 2800
-Bot/data/moments.json | 60d18e9498a65f109129c094b00cb4adba30478aa4e5e490c72c2eef1ba817d7 | 12620
-Bot/data/monsters.json | c08e504f93d82c814d5182ae6119c7fc23a9feec68fd8a2f39fc29b872bc1938 | 57095
-Bot/data/quests.json | ab25507e012e8d892f8016c2b333e7155d01d19a4572de111f1a20aaaec5ce4c | 5005
-Bot/data/recipes.json | 5294929d5c05aa96985d77a79aab8b3220b971251c2f90f27938c778bc45e864 | 91028
-Bot/data/regions.json | efff05609da79b87618c9d91077f55ce833557539edcb8f912a2e7019a746325 | 9046
-Bot/data/relics.json | c3e20538766e23e8d7feca17cbf5de9a4dca9061a2d47ba509dc1d9f7532f8e4 | 42848
-Bot/data/seal_shop.json | c0fb45765cf57cc184d67824c2152e546e95c20454b09c3034cf3d9cb9c18b76 | 1537
-Bot/data/titles.json | 31cc0a9202e5d60cb4494bb8d26077a35ae9bd36e515210939f377d4e5360b7b | 27980
-Bot/generate_portal_sync_key.bat | 67e27141fc5aafc2b565ba3ef5e7f26631167aa7e138bd8c7c091d2d0e93bee1 | 279
-Bot/generate_portal_sync_key.py | 818b57eedbeaaff2401f9035c9233deb7eb1e63b6fe01505d77d2aa4df852c52 | 49
-Bot/open_twitch_authorization.bat | d7f2f775fc693d4c9e8291a71b03b7abce88717fa0b05f57248b66cb1cbdb5bf | 2027
-Bot/overlay/raid_overlay.html | e84c485283ea510b2fe83a9bab38873474301f0e40f18de5540a48ea15b26339 | 3413
-Bot/overlay/state.json | b6bfe776d653d414e29ebe3cb897b9e01c3b48f030341f3cdb6705beb19c0b51 | 41
-Bot/prepare_render_migration.py | ead268301e94d8d29a25bc9388e67603b35332161b638a500c39112315a8280a | 3885
-Bot/pyproject.toml | a29f79f41189c21e2e6b9d7dd45a0e5c158f7427533195d552d2387bbc1b8ed0 | 263
-Bot/render.yaml | c88b1f30bf848a2968360ba6b19133bfc41fee9edbacbbcad3df0792e4ef347a | 1788
-Bot/requirements.txt | 062f006c312d29d137a09f3bd9c63d1de62e57febdbff4cc4c090ebe03283d57 | 16
-Bot/resolve_twitch_ids.bat | 5719c5c34e5f5acc62dbc16e661b688465f254a0a02a460b3bd59aeb8f210ff5 | 380
-Bot/resolve_twitch_ids.py | 1c0d30b578f7790fea3a84cb7ec64f5311f56c3630cc02ede80ac92362c909a1 | 5166
-Bot/run_bot.bat | 6048281dfda1470cd5bfb7269b4df458f7f3341fa20c1a1020669a5dd280ee7c | 363
-Bot/run_bot.py | 2d8a4a4def233c5672ec76ad771bc0b53a1b12452a950fa9acfb7eb6f6206fb6 | 160
-Bot/run_cloud_preflight.py | 2773c2db00055f22b2b6787bd794476a9b9faf1edc8e59be9597373fe124f7c8 | 2096
-Bot/run_maintenance.bat | 5723d897cb419cd3910c50287755740b465253dec5d7c6f13a7e75c6bd1f5134 | 228
-Bot/run_maintenance.py | 6a0c4327f07e5fd9d733075fbfa17c8bb13bd71d311f12da55d1285627fdff05 | 7625
-Bot/run_overlay.bat | dc86c400225e6cc7e9b77976945668e2b6d6742349339d10ffab7b9a2ee2eee2 | 238
-Bot/run_overlay.py | ac5c1714db186e9aa311dc3a82bc33a9b87b92faee0aae15b49640b01f2862ed | 1283
-Bot/run_portal_sync.bat | c9e38c6522e64fc0108b485326774c14a7f313e07423f0ab33a9ae544a1e635b | 237
-Bot/run_portal_sync.py | daaeffaa386c6fbefad5dcc9c14f6113a234c981d70b72924a8f112cc67577df | 82
-Bot/run_recovery_drill.bat | 16382ca445195a3ae3a2527b0774e2a415028ef7524a6a7bd4ece5a6825ff9d1 | 290
-Bot/run_selftest.bat | 472710a435ec1f096e3bebd463882987446eb773ad5c0fff99763e9f838867b2 | 623
-Bot/run_simulator.bat | c9a9f1d98575e2db74b255c2f282fa27f4eca6a4a210aa824f2ecd1547b0f444 | 240
-Bot/run_simulator.py | 92cd085c4231e8bcae8fd3f760216332f25d97c8d40389455c189d92d4e235e1 | 159
-Bot/run_stress_test.bat | b51eaaf5e69af3754978fa102a30542727dc057085879a71686d2d6f41864aa4 | 292
-Bot/run_stress_test.py | 51310518372051b4d45c5e4f331e6598dd5844763ef1ac93d9a9aeb4e2b58c4d | 7906
-Bot/setup_windows.bat | 4bea80aeaa745e8f7cd6fcc31bcc8e94a87ee14d47cc6e28c38b76c6706e02ba | 1687
-Bot/test_portal_sync.bat | 20cef48cd5e4a319502a7ae57362e372c4b9a754702ddb6284e52786e89d280c | 252
-Bot/tests/simulate_triple_triad_balance.py | 97cfaf5a69ebc907236f4b1b9291f27d4b5ee4bb1f563ce524e05ad9368e10f6 | 2309
-Bot/tests/test_achievements_titles.py | 7e72c60794b91031582b68c2bd8be638fa8dbf854ab0c16552de8bf4bf30cfbb | 7672
-Bot/tests/test_active_battle.py | 8a3d413c6cc67bca03a68654a4cf81f5eb4700a17854b8120c8dc29c3cfa7a8f | 16364
-Bot/tests/test_active_hunts.py | 2fb912cd8b9a86dc108c82a6e5405369965d783f95bd9e3271960fec879325f6 | 13985
-Bot/tests/test_arsenal.py | dcea9cc286c93bf5493f6719619cc99776d28cbc53274539b6e9fc09ce885c99 | 3285
-Bot/tests/test_arsenal_ii.py | 2f6819b7fc6cc4d02f56931c89cf83b5dd422ca8e0226c331f8e2c78edfe4b9e | 2836
-Bot/tests/test_balance.py | a894192d7a4de37a71e9794d754b79776bea37e016e850e33bd8bae9091ca093 | 9467
-Bot/tests/test_battle_presentation.py | 94a2cfd7762caf689356b033ca6e2158e5da70aa27af004f81ad72bfc30aae8b | 7263
-Bot/tests/test_bestiary_hardening_step6.py | d27faa1a33b2580473e5f4b3149322e74a875c0018e583d6ce27d06a02ab3dad | 10383
-Bot/tests/test_bestiary_integration_step5.py | 0baa92219d4cdfb91e0a59ea3bb6552a5d8d39ff384dfbe870c8780b3a63c55b | 5714
-Bot/tests/test_bestiary_research_step1.py | d4281e4cc220f9cf681bd0626ebd5cf4b164a26f0b39b517030b884f6caf27c7 | 5457
-Bot/tests/test_bestiary_research_step3.py | 4081e25c43aa872d6452d8ccd8aff101f2780f6cba166dc07a564d6371957a26 | 6782
-Bot/tests/test_beta4_release_hardening.py | 5fa0d9cb7cd4c9e05ad04e7b8609b3beb60f2b465edb1ea3d4b1599c25f51e34 | 11267
-Bot/tests/test_camp_alpha12.py | 0fe5bdf71fc1d11f9f15139f36207571e8e2536a3fe44e1cd57110e690501f12 | 9923
-Bot/tests/test_chat_results_personalized.py | 68537dee05e453228eda4b2e26eb1fc611aff361462d84f4333830a2fa40e86c | 4648
-Bot/tests/test_chocobo_companions.py | 96b0b9052bbe593a4b5253e0678ebbb247a53f49aae5fab7f41527a77f6cd565 | 12823
-Bot/tests/test_cloud_continuity.py | 87fc90f74fa19f3e39601d6ded35a4ac301bd215ee0ffb371ac2e791446817ed | 3932
-Bot/tests/test_cloud_runtime.py | e77f10c095ac41062c4ea2b86bea945bfc6347ca770d6cee7e127eaa539dff2d | 13697
-Bot/tests/test_combat_balance.py | 2e61f05f6b40f1115a062879af44e176ff94d07aa9406459470f8c273728d1ae | 11565
-Bot/tests/test_command_ux.py | 0429b21e8232fa16978eb3c38e2544f2954d17dd51c701f49e2b2385383ee9f5 | 8894
-Bot/tests/test_crafting_194.py | 8beea02d023873816cec15393a16f8a246808d322919d87c51b8fe633a64cb79 | 6698
-Bot/tests/test_dungeons_alpha1.py | 2bad0d458e3f3347ea6b301e75cbe7138cd994dd21c4492aa444f0ee3a06b5b9 | 15452
-Bot/tests/test_dungeons_alpha2.py | b076e5375a04c6383761d897fb15d99073e1de242f8b7599d25b9dc57424d8c5 | 6368
-Bot/tests/test_dungeons_alpha3.py | d55ebf645a82012c4ff5c20b2c037dab0e98210aa01764df93e2c22480764fb4 | 6490
-Bot/tests/test_dungeons_alpha4.py | 7e6cb08d9b50145d21eeb3e986bf7f0e8a0701bf15a35708236cd02423fbcef8 | 4489
-Bot/tests/test_dungeons_beta1.py | 064c88d774106ec7aa258c8caae52d7019f17e4f739d2b7389b095a80c869c59 | 5966
-Bot/tests/test_dungeons_beta3.py | 458992542150b3b32e1e46377171d68eb1a3890488c05dd2412259b5bda4f2d9 | 6917
-Bot/tests/test_dungeons_rc1.py | b18cb4c2f054f62e5462b93ab7eba824161b59acf9ed89b24d88cb9eebbd417c | 1993
-Bot/tests/test_dungeons_release.py | d84af72e40c123aa3b68d6e1df0db2bfbb430af487674d6c74fecab27e5ceb9b | 1730
-Bot/tests/test_economy.py | cd1ccfbd09acf43ace009e6b7742d452d9f6a59072eb269a52c34c735c42ebf0 | 8049
-Bot/tests/test_elite_mercs_182.py | 04578a341281e3ef975a481442db2216a61826a4f2cc0bc5a5c84fcbd910ccf1 | 5313
-Bot/tests/test_emporium_annex_alpha3.py | b25011a0f849fdf836326dddfe48d7dc75545c2bda3f78c17444c67ea23711a5 | 5194
-Bot/tests/test_encounter_variety.py | ce5e727cf1d3d72531a982ae717d47c93919682b94e79cb2faa327d2bc253e8c | 4398
-Bot/tests/test_enemy_combat.py | 326a6e228d89db5403dfa70356c156a95653ddf85b4843b3ba945b1a79db84eb | 12346
-Bot/tests/test_engine.py | 21a3f87f69f3d5a4883f9f1a8af8c7cdd1d98093f275ec189b783fc8cbe17340 | 71387
-Bot/tests/test_expeditions_v12.py | cc195770b0fbc172e784582f6b450656b581a41666e972c12b98692e1e6b8845 | 28122
-Bot/tests/test_facility_material_balance.py | 139c0021ede48e7f6fe3b4389471e2fde7bc564f7e9bf67283daefadeebdc596 | 3208
-Bot/tests/test_fellowship.py | 38cd7a7e8a32bc663ccaeaaeb0c899e7c78dcda94a4bd6cf4aeaf8646f2cd68e | 13785
-Bot/tests/test_gear_favorites_authority.py | fdf3291eaa58c12a97bd0f7092d262c2fdb3695cd58d8a23065443077361e8d2 | 5663
-Bot/tests/test_gold_saucer_alpha1.py | cc89cdfeca60dc17007cb8b4501a9ad3f1ef4bd454ccc8b5cdee376eb69b9ab8 | 11216
-Bot/tests/test_gold_saucer_alpha1_h2.py | c09f70e386caa991cdf1c0ec1e9ca47bbad6d66212dd389fe3278e668fcab988 | 2995
-Bot/tests/test_gold_saucer_alpha2.py | 09a0719001d1d59a1a6424db5a967b3855c38579f7b04b6a9f37f3ac47e07567 | 7617
-Bot/tests/test_gold_saucer_alpha2_rebalance.py | 806ea177378ff7be9284d8f96d31af45f8772df92a02778759fb66056670f170 | 2969
-Bot/tests/test_gold_saucer_alpha3.py | 91f17d4893578f7062e594596a2bb9ba834c1030cc718b1f039e63c84e42fc03 | 3455
-Bot/tests/test_gold_saucer_alpha4.py | 250fd78783ebba3bd8080914c0e528c725e2d18d8f42f6e9962434c65273f118 | 5759
-Bot/tests/test_gold_saucer_alpha5.py | 44a507acb418395d126b5d0953d39eb3547a75420d5992c0d0f5a5e3ac79c831 | 7996
-Bot/tests/test_gold_saucer_alpha5_hotfix5_card_face_sync.py | 25ae46e29eae6e06278721719a6e9ce50fb702513f2cdb1cf99baf9f68881ec4 | 1132
-Bot/tests/test_gold_saucer_rc1.py | 143106a1f8dee4cf9a4598889f37228a486db877825a48d296d4632eb992193e | 5121
-Bot/tests/test_gold_saucer_rc2_balance.py | 3a82d6fd1f03b6aebfea003c4743fd8073a0ff6d2287cf66042a026cf70711a4 | 6444
-Bot/tests/test_guild_expansion_alpha1.py | d514627bf329c99de3a224a1e2c8f45a66afbadba8feb9637a3ee65ef150d792 | 5194
-Bot/tests/test_guild_expansion_alpha2.py | 7292053e851620f1de460a03a5112172ed020d30817633aeb4d40d5432d9ceba | 7052
-Bot/tests/test_guild_expansion_alpha3.py | a2f891fb3034acc13fa8dedc552716d61ea95a0245086a8dc02193dad6bda80f | 4177
-Bot/tests/test_guild_expansion_alpha4.py | e8941d05f017da2c66905db7dbb3e295399d9255daabe382534bb857489ad623 | 9732
-Bot/tests/test_guild_expansion_alpha5.py | bf93894e7ea212e8630fe39f4f1710c31e23f7c4ea56ec3835ec4bf6b634421d | 5302
-Bot/tests/test_guild_expansion_beta1.py | cbb99a71974f470284d66ce68aa3aaca4700b29e4578d933f0da378531e08e17 | 3941
-Bot/tests/test_guild_expansion_beta3.py | cc9d48689f56305dc65c146f0341e16da845b9ba8eccf37eef9d972643ac9eca | 10877
-Bot/tests/test_guild_expansion_rc1.py | 01d5ee7b71b90223ed8b8df9aedfc64a2238c8fb66cc2408219493294acfdfc0 | 3118
-Bot/tests/test_guild_initiatives_193.py | f6025dde757ada494ebd33c229c91b680d2bcf5ad4fab35c0763b5e187bdc5c5 | 12702
-Bot/tests/test_hall_of_trophies_alpha7.py | f70ae8e3cc15944b38a292f598be8d431d2a8117aecee9a0b4d644c858ff9b00 | 4661
-Bot/tests/test_hardening_191.py | 612e180870108c256dcef2abe062be66a4547578c05c593c251274c6d30341b5 | 2425
-Bot/tests/test_help_system.py | 3d8985e2578c6af90b9ac74589daa0142f8fb7245dc722d5b89f30672c9ba940 | 712
-Bot/tests/test_item_expansion.py | dbfffee1296a8025674c5f6e66dd3471478dd5143470dbba37e4f122e5f8b6ec | 8053
-Bot/tests/test_item_progression.py | f12fa41fab3bece3c877dbfc5a29018fa536dea1e299db4fbabe1d69fe9df303 | 2175
-Bot/tests/test_item_usage_copy_hotfix2.py | 40fdf56b9bb6ed4b22f21815b0cd12d6c7dc136085be4d7643a95656334c0cb1 | 1466
-Bot/tests/test_job_resource_switching.py | 1e335344d827e4e355d42d0b045bf433123afa56717fd6dcbe7374f3a4cdbfe2 | 5021
-Bot/tests/test_language_hotfix1.py | 9e0f1e61c3f6cceb1c450bad8ba7eba89e7dfb6bf9ab834b1390ed795ffcde15 | 3573
-Bot/tests/test_merc_recruitment_181.py | b4e128f62d63a24a638ff98565581b6470636d9db20b2128822cd738c68a9685 | 5698
-Bot/tests/test_merc_service_alpha1.py | 0a6f8df323c864a9131ff3d5afb4eb75655fc4d5fbb9aea479eb7da04f2d247e | 6908
-Bot/tests/test_merc_service_alpha2.py | aad56e4f75c738c191de330096356ca4bea90a8d975456f9003df7aa411f0ad7 | 3550
-Bot/tests/test_merc_service_batch2.py | b71409e910da69846d6809794913e708b60dfa934d2d37cd3355e23fcaba0421 | 8072
-Bot/tests/test_merc_service_batch4_help.py | 44440c4d7281f77c27b0363f17d7bb1bb445d316851861b430c7fc6d39f3c74a | 463
-Bot/tests/test_merc_service_hotfix3.py | 4474b1dceaca9992d87c842128dd8ea5458aed4ab97eef899d56cf66cd2749c1 | 4564
-Bot/tests/test_merc_service_rc1.py | 8d62d00ad297ab9453abe3bafc4b7daac0e097e1d5891efc84f13c83e42bb18a | 6233
-Bot/tests/test_moments_step2.py | 5ae5baf4aeaaff528e5b8bbe5350b7d721d3adb04a2ac79ca6d146e348d5baab | 10541
-Bot/tests/test_offline_progression_1948.py | bcb53de05aefce341068e00ec27219e6cf0716f257dc796f44b0b1e1d916561a | 2424
-Bot/tests/test_package_cleanup.py | 0e5de8bb06cbdfe52196073d9d64fd98171f1199fced2cbaf8c9a7eacb06fde7 | 647
-Bot/tests/test_passive_recovery.py | a6313adc072d79204502234b79fd594e5f510ef77eddf5280551c7ee1fd21a2b | 7017
-Bot/tests/test_persistence_recovery.py | 19f8d5416d60a32d65fc53c12fdc615018f9dc67646af4e0bfe110ae47038983 | 9666
-Bot/tests/test_personal_records_step1.py | 3b951465dd03e5da7ccd811d6230c583f6be1585060e8c5b51ca6dbc389c1141 | 6708
-Bot/tests/test_player_records.py | e07885e12a7bd3620abc1208c696d2d5b081bb646e4c6da5b97694b0d9550d5e | 3681
-Bot/tests/test_player_snapshot.py | d5fcc08f2686cd984245ea055611a35ae9ecf64f3c898ef52ff2c75bdba76378 | 5523
-Bot/tests/test_portal_actions.py | 306be082921518f3a7df9d6cc3f6d9f0c3f68892989dfcb82b66e60a5637a853 | 68178
-Bot/tests/test_portal_live_stream_controls_181.py | a7f14724b23bfb9e22ef070fc853405f2fa097c10e1dff58a7de30555ba5a99c | 6418
-Bot/tests/test_records_moments_step3.py | 75220e8b637328ed7bcdb1d2db7e3c7d344122da57a3fa55b47a919f19d70f55 | 21462
-Bot/tests/test_records_moments_step4.py | f44e738812a6569435094e5c046bb5cde358ad7dbfdee3f6b32aec0bc412e277 | 6798
-Bot/tests/test_records_moments_step5.py | 8f0b64582cdf588512cb0723be6a54b484e80b9a094fb53fa33cf654eff00970 | 6214
-Bot/tests/test_records_moments_step6.py | 06bccc534b1e651c687731c1535e44e05b2cc27fe8f32842618c9050aa228d43 | 13780
-Bot/tests/test_regional_emporium.py | a641c2040309d915a9e02a303930cde1922edfff9fc9497b1dcf9f6feab78330 | 11783
-Bot/tests/test_release_contract.py | ca343fbeaaca27d1be516a2c79b7843a627b520bd2fc83471068fe5d903146e6 | 6378
-Bot/tests/test_relic_arsenal_151.py | 72942419fbd26106d3c0e2384d9b2ffa83efad4ad7d74a586c10b03e087209be | 1542
-Bot/tests/test_relic_overhaul_192.py | 813c4844d625fb5f791d350448c3241af81a41e7f87fee95d16607947e2faac8 | 5574
-Bot/tests/test_resource_persistence.py | 0bfb463119d2aaa2ce5cd45bba9e3b3542a821e7a65539380084e42009d98532 | 11811
-Bot/tests/test_resynthesis_alpha1.py | 9d9b66bbf8ee7e9a57532a179620e5f930900806e3400846eb737f373e43979c | 6439
-Bot/tests/test_resynthesis_alpha2_hotfix5.py | 2fbfadbaa7212284dbda7c795480e88e0c0a2a59e05a96097b5ef30c7833c3b6 | 3734
-Bot/tests/test_retainer_alpha1.py | 760341b211e85b94648f59145d0cfcf7ffdf1175f2826ebc2b9857a3fec29d1f | 9290
-Bot/tests/test_retainer_alpha2.py | 947ac498bf952a95eb9d33fc0ad5e37a78ab3c3bf7dabfde113da8b2ecf311f8 | 5244
-Bot/tests/test_seasonal_events_alpha8.py | ab97993e4704e68b9461c71bf6cde3445ac93593cd6b820ae36c6935d653fb03 | 4037
-Bot/tests/test_seasonal_venture_1946.py | 2d7f863a3e9e222037a91c1d4ee8a0231413ae0d723d84de92d686a87f091e02 | 9192
-Bot/tests/test_setup.py | ce43595f9cb1140f4c0646ff552fd6737be675e905adc0a48f61e66518e43bfe | 3082
-Bot/tests/test_spooky_inventory_cache.py | 858c531bf16cfbd072f6e7d1cabbac96f1af8e3b4158191836e5d5006bbe9cca | 14946
-Bot/tests/test_stream_status.py | 0012d86e17f1b53019d6e348c3724dd5fbdfa9c52db536ac3fe349dbe2b3a1ae | 3820
-Bot/tests/test_subscription_status.py | d8eda459029167ed8c4810e27761e2cd086686fd92a06d915fdbcd0d86543d2f | 7768
-Bot/tests/test_task_completion_hardening_hotfix5.py | 84483906a7c95d3bbfb28a36dce23a1882fcee6efb4278e655e877a75ae6bc9f | 7470
-Bot/tests/test_title_expansion_alpha3.py | 92e1b54bc103335605b9dd92bfcace5650e40930c50a2f3d6ea05b422f90b05c | 7549
-Bot/tests/test_title_status_hardening_alpha5.py | 2519ff73754675135f9dbc3b803dda68cc6776776ed77e8e384a6a8ab6aa73ec | 7804
-Bot/tests/test_trading_post_alpha1.py | 35f527d4dda944423553901f6e88b8c1fcc317c48ea104f6ce9c7c57f0de653c | 8325
-Bot/tests/test_trading_post_alpha13.py | 474499b8299df180b68686c408137caf4b44362a314392b4227c7d7aa8a7e370 | 10237
-Bot/tests/test_trails_raids_alpha1.py | cd442ebfee6efeecc47cfefe7cd96c0d633d137cf59eb1f774555d9860a470f8 | 5503
-Bot/tests/test_trails_raids_alpha2.py | 29cbfdaf83d3979e4f661ee17a2fc3550f7a5d76452e096bb7b4148595709359 | 5424
-Bot/tests/test_trails_raids_alpha3.py | 9374aed941d429f3d2cd79f364c97385a960c130c64c867d2ea7b33b54f980ee | 4507
-Bot/tests/test_trails_raids_alpha4.py | 37aee38f519acd1c4557b65a29a40842525e489ca340f0ea1dfe2b45102ec3c7 | 6228
-Bot/tests/test_trails_raids_alpha5.py | 84a4c4954363f5b64221d2202b0cf1c856ec2ed88edfdf1326a535ee87dce78c | 4577
-Bot/tests/test_trails_raids_alpha6.py | 6a9257e840a890f726f119eb0c471a4a2124b43cd1fdf2f76ca9826f8007c953 | 5323
-Bot/tests/test_trails_raids_alpha7.py | c4c37698caf1676146c8b3e8cb3cb539e2fab1abe2b002f017badd2b92de8ce6 | 3733
-Bot/tests/test_trails_raids_beta1.py | 53309f716afd05bfb62f3836ab2a21f769e1b0dcb24f8989f7a2dec5b1b90374 | 5795
-Bot/tests/test_trails_raids_beta2.py | 5cf1f86963138c7e919773b366afb2498b690b86ae7d38780a94a046e60052b3 | 6150
-Bot/tests/test_trails_raids_beta3.py | 38b1ee19cc2b8e62c414932638d53c4d83e229f7e8a3a17f9c3bd7f19dcf5a7a | 5142
-Bot/tests/test_trails_raids_rc1.py | 16a33f35a1cb3b8d0bb692431cde309d688fcc1bf9e34fe91dfa99d73db95ef5 | 4615
-Bot/tests/test_triple_triad_hosted_ladder.py | 10470199f1b16a469f3e310fa1f304575141650a90a424d854199353237f27c8 | 8169
-Bot/tests/test_triple_triad_rework.py | 053baa84c2dd3dc0d41719925c6a22eff4cf676f2a4afb7abe0435926f5512b7 | 7207
-Bot/tests/test_wayfarer.py | 4f7b4558400fb68b64d9addee4a861b9dc73743bfaff210abd057cac4f64f83e | 14890
-Bot/tests/test_world_events_alpha6.py | c64d2bd8d03c57efa1dbda650bd7e36f190f1f798b3313b5585f1a5ab17a565d | 8474
-Bot/tools/simulate_expedition_balance.py | 490706f0d2975049909dac389157e0ade6bf6374b7e7856fc45a2ad0e7788cec | 14942
-Bot/tools/simulate_guild_balance.py | 221c7026bffb7e496e2f9791aeeefc1015e2b624a6fb072e4a4e7fd6a508ebf8 | 24053
-Bot/upgrade_crystal_guild.bat | fb6643e493d1d0796b7be32e862bea1d977a64bc2ffe4a5a06c85a44297145ab | 362
-Bot/upgrade_crystal_guild.py | 0efc40014e99a82486fe4f3e91b6b4dc83230541f6f76a6fdc5bdfdcbba6d025 | 3797
+Crystal Guild v1.9.7 — Queen’s Blood
+File index for this service. SHA-256 hashes for the complete package are in PACKAGE_MANIFEST_v1_9_7.json at the archive root.
+
+.env.example
+.gitignore
+.python-version
+CHANGELOG.md
+COMBAT_DEVELOPER_GUIDE.md
+COMBAT_GUIDE.md
+CRYSTAL_GUILD_CONTROL_PANEL.bat
+FULL_SETUP_README.md
+GAME_DESIGN.md
+MANUAL_TEST_CHECKLIST.md
+MOBILE_COMBAT_HUD_VALIDATION.md
+PORTAL_ACTIONS_SETUP.md
+README.md
+README_FIRST.txt
+README_MOOGLE_EMPORIUM_REWORK.md
+README_OFFLINE_PROGRESSION_HOTFIX.md
+README_SEASONAL_EVENT_LIVE_HOTFIX.md
+RELEASE_NOTES.md
+RENDER_CLOUD_SETUP.md
+SIMPLE_RENDER_SETUP.md
+TITLE_EXPANSION.md
+UPGRADE_GUIDE.md
+VALIDATION_REPORT.md
+VERSION.txt
+WEB_SYNC_SETUP.md
+WORLD_EVENTS.md
+backup_database.bat
+crystal_guild/__init__.py
+crystal_guild/active_battle.py
+crystal_guild/balance.py
+crystal_guild/battle_presentation.py
+crystal_guild/bestiary_progress.py
+crystal_guild/bestiary_research.py
+crystal_guild/chat_ux.py
+crystal_guild/chocobo.py
+crystal_guild/cloud_runtime.py
+crystal_guild/config.py
+crystal_guild/crafting_catalog.py
+crystal_guild/daily_provisions.py
+crystal_guild/data.py
+crystal_guild/database.py
+crystal_guild/dungeons.py
+crystal_guild/emporium.py
+crystal_guild/encounter_daemon.py
+crystal_guild/enemy_combat.py
+crystal_guild/engine.py
+crystal_guild/expeditions.py
+crystal_guild/fellowship.py
+crystal_guild/fellowship_system.py
+crystal_guild/gold_saucer.py
+crystal_guild/guild_initiatives.py
+crystal_guild/help_system.py
+crystal_guild/mercenary.py
+crystal_guild/moments.py
+crystal_guild/moments_progress.py
+crystal_guild/personal_records.py
+crystal_guild/player_snapshot.py
+crystal_guild/portal_actions.py
+crystal_guild/portal_sync.py
+crystal_guild/retainer.py
+crystal_guild/seasonal_events.py
+crystal_guild/simulator.py
+crystal_guild/stream_status.py
+crystal_guild/subscription_status.py
+crystal_guild/supply_cache.py
+crystal_guild/time_format.py
+crystal_guild/token_store.py
+crystal_guild/triple_triad.py
+crystal_guild/triple_triad_catalog.json
+crystal_guild/trophies.py
+crystal_guild/twitch_bot.py
+crystal_guild/world_events.py
+data/achievements.json
+data/active_abilities.json
+data/bestiary_research.json
+data/bosses.json
+data/dungeons.json
+data/enemy_actions.json
+data/enemy_profiles.json
+data/expedition_regions.json
+data/forge.json
+data/hunts.json
+data/items.json
+data/jobs.json
+data/moment_titles.json
+data/moments.json
+data/monsters.json
+data/quests.json
+data/recipes.json
+data/regions.json
+data/relics.json
+data/seal_shop.json
+data/titles.json
+generate_portal_sync_key.bat
+generate_portal_sync_key.py
+open_twitch_authorization.bat
+overlay/raid_overlay.html
+overlay/state.json
+prepare_render_migration.py
+pyproject.toml
+render.yaml
+requirements.txt
+resolve_twitch_ids.bat
+resolve_twitch_ids.py
+run_bot.bat
+run_bot.py
+run_cloud_preflight.py
+run_maintenance.bat
+run_maintenance.py
+run_overlay.bat
+run_overlay.py
+run_portal_sync.bat
+run_portal_sync.py
+run_recovery_drill.bat
+run_selftest.bat
+run_simulator.bat
+run_simulator.py
+run_stress_test.bat
+run_stress_test.py
+setup_windows.bat
+test_portal_sync.bat
+tests/simulate_triple_triad_balance.py
+tests/test_achievements_titles.py
+tests/test_active_battle.py
+tests/test_active_hunts.py
+tests/test_arsenal.py
+tests/test_arsenal_ii.py
+tests/test_balance.py
+tests/test_battle_presentation.py
+tests/test_bestiary_hardening_step6.py
+tests/test_bestiary_integration_step5.py
+tests/test_bestiary_research_step1.py
+tests/test_bestiary_research_step3.py
+tests/test_beta4_release_hardening.py
+tests/test_camp_alpha12.py
+tests/test_chat_results_personalized.py
+tests/test_chocobo_companions.py
+tests/test_cloud_continuity.py
+tests/test_cloud_runtime.py
+tests/test_combat_balance.py
+tests/test_command_ux.py
+tests/test_crafting_194.py
+tests/test_dungeons_alpha1.py
+tests/test_dungeons_alpha2.py
+tests/test_dungeons_alpha3.py
+tests/test_dungeons_alpha4.py
+tests/test_dungeons_beta1.py
+tests/test_dungeons_beta3.py
+tests/test_dungeons_rc1.py
+tests/test_dungeons_release.py
+tests/test_economy.py
+tests/test_elite_mercs_182.py
+tests/test_emporium_annex_alpha3.py
+tests/test_encounter_variety.py
+tests/test_enemy_combat.py
+tests/test_engine.py
+tests/test_expeditions_v12.py
+tests/test_facility_material_balance.py
+tests/test_fellowship.py
+tests/test_gear_favorites_authority.py
+tests/test_gold_saucer_alpha1.py
+tests/test_gold_saucer_alpha1_h2.py
+tests/test_gold_saucer_alpha2.py
+tests/test_gold_saucer_alpha2_rebalance.py
+tests/test_gold_saucer_alpha3.py
+tests/test_gold_saucer_alpha4.py
+tests/test_gold_saucer_alpha5.py
+tests/test_gold_saucer_alpha5_hotfix5_card_face_sync.py
+tests/test_gold_saucer_rc1.py
+tests/test_gold_saucer_rc2_balance.py
+tests/test_guild_expansion_alpha1.py
+tests/test_guild_expansion_alpha2.py
+tests/test_guild_expansion_alpha3.py
+tests/test_guild_expansion_alpha4.py
+tests/test_guild_expansion_alpha5.py
+tests/test_guild_expansion_beta1.py
+tests/test_guild_expansion_beta3.py
+tests/test_guild_expansion_rc1.py
+tests/test_guild_initiatives_193.py
+tests/test_hall_of_trophies_alpha7.py
+tests/test_hardening_191.py
+tests/test_help_system.py
+tests/test_item_expansion.py
+tests/test_item_progression.py
+tests/test_item_usage_copy_hotfix2.py
+tests/test_job_resource_switching.py
+tests/test_language_hotfix1.py
+tests/test_merc_recruitment_181.py
+tests/test_merc_service_alpha1.py
+tests/test_merc_service_alpha2.py
+tests/test_merc_service_batch2.py
+tests/test_merc_service_batch4_help.py
+tests/test_merc_service_hotfix3.py
+tests/test_merc_service_rc1.py
+tests/test_moments_step2.py
+tests/test_offline_progression_1948.py
+tests/test_package_cleanup.py
+tests/test_passive_recovery.py
+tests/test_persistence_recovery.py
+tests/test_personal_records_step1.py
+tests/test_player_records.py
+tests/test_player_snapshot.py
+tests/test_portal_actions.py
+tests/test_portal_live_stream_controls_181.py
+tests/test_records_moments_step3.py
+tests/test_records_moments_step4.py
+tests/test_records_moments_step5.py
+tests/test_records_moments_step6.py
+tests/test_regional_emporium.py
+tests/test_release_contract.py
+tests/test_relic_arsenal_151.py
+tests/test_relic_overhaul_192.py
+tests/test_resource_persistence.py
+tests/test_resynthesis_alpha1.py
+tests/test_resynthesis_alpha2_hotfix5.py
+tests/test_retainer_alpha1.py
+tests/test_retainer_alpha2.py
+tests/test_seasonal_events_alpha8.py
+tests/test_seasonal_venture_1946.py
+tests/test_setup.py
+tests/test_spooky_inventory_cache.py
+tests/test_stream_status.py
+tests/test_subscription_status.py
+tests/test_task_completion_hardening_hotfix5.py
+tests/test_title_expansion_alpha3.py
+tests/test_title_status_hardening_alpha5.py
+tests/test_trading_post_alpha1.py
+tests/test_trading_post_alpha13.py
+tests/test_trails_raids_alpha1.py
+tests/test_trails_raids_alpha2.py
+tests/test_trails_raids_alpha3.py
+tests/test_trails_raids_alpha4.py
+tests/test_trails_raids_alpha5.py
+tests/test_trails_raids_alpha6.py
+tests/test_trails_raids_alpha7.py
+tests/test_trails_raids_beta1.py
+tests/test_trails_raids_beta2.py
+tests/test_trails_raids_beta3.py
+tests/test_trails_raids_rc1.py
+tests/test_triple_triad_hosted_ladder.py
+tests/test_triple_triad_rework.py
+tests/test_wayfarer.py
+tests/test_world_events_alpha6.py
+tools/simulate_expedition_balance.py
+tools/simulate_guild_balance.py
+upgrade_crystal_guild.bat
+upgrade_crystal_guild.py

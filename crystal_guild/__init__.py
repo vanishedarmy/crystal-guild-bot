@@ -1,1 +1,1 @@
-__version__ = "1.9.6-triple-triad-expanded"
+__version__ = "1.9.7-queens-blood"

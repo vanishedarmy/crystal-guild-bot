@@ -1,3 +1,7 @@
+# v1.9.7 — Queen’s Blood
+
+For this release, follow `README_FIRST.txt`. Preserve both live databases and private configuration; the prebuilt frontend is included. Historical instructions follow.
+
 # Upgrade to Alpha 13 — Trading Post QoL
 
 # Crystal Guild Alpha 13 — ONE-ZIP HANDOFF

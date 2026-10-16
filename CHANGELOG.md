@@ -1,3 +1,7 @@
+# v1.9.7 — Queen’s Blood
+
+48 approved card portraits, 14-opponent solo circuit, live and correspondence invitations, compact illustrated Card Hall, server clocks and reconnect handling. Existing progression and saved matches are preserved. See RELEASE_NOTES.md.
+
 ## v1.9.6 — Triple Triad Expanded
 
 - Expand Triple Triad to 45 cards, ten opponents and five circuits, with gentler novice play and five dedicated UI sections.

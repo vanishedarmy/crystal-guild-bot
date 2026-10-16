@@ -1,32 +1,13 @@
-# Crystal Guild — Records & Moments Alpha 10 Validation
+# v1.9.7 validation
 
-**Scope:** cumulative Steps 1–7 based on v1.9.0 Alpha 9 Player Language Hotfix 1; new release identity `1.9.0-records-moments-alpha10`.
+107 Queen’s Blood tests, 33 hosted Portal Action tests, 33 carried-forward Bot regression tests, and five frontend identity/Emporium checks pass. The production frontend builds successfully.
 
-## Source-level regression
+All 48 full-size portraits and 48 display previews decode correctly, match their manifests, and are identical between the source and built static trees. Full-size portraits preserve the approved source pixels; previews retain the whole frame at 320×480.
 
-| Gate | Result |
-| --- | --- |
-| Full Bot unittest suite | **894/894 passed** |
-| Hosted Web/API unittest suite | **85/85 passed** |
-| Full frontend Node suite | **748/805 passed, 57 failed** |
-| Frontend Step 6 failure-name comparison | **57/57 inherited, zero newly failing names** |
-| Focused Records/Moments Steps 4–7 frontend checks | **22/22 passed** |
-| Newly introduced Step 7 frontend checks | **7/7 passed** |
-| Release identity | Alpha 10 matches Bot, hosted API, Guide metadata, Web and package metadata |
-| Local database schema | **23**, no new Step 7 migration |
-| Hosted sync / Portal Action protocol | **1 / 37**, unchanged |
-| Individual Moment/Trophy assets | **16/16 individual WebPs**, matching Step 5 SHA-256; matching independent PNGs available in standalone pack |
+Sixteen browser checks cover the tutorial, move previews and persistence, collection search, full-art dialogs and focus return, deck saving, six widths from 320 to 1390 pixels, live invitations between two synthetic accounts, automatic opponent updates, offline/reconnect behavior, and correspondence invitations. No browser JavaScript errors were observed.
 
-## Explicit limitations
+Fifty-six deterministic games across all 14 opponents finish within the bounded simulation. This verifies termination under that strategy, not human win rates or exhaustive balance.
 
-The 57 outstanding frontend assertions are identical by test name to the Step 6 baseline. Many refer to older release identities or historical frontend/layout contracts; none are counted as passing. Newly modified current-release assertions were updated to Alpha 10 while preserving earlier feature and asset verification. A fully passing frontend regression suite is **not** established.
+The historical frontend suite reports 774 passing and 102 failing assertions out of 876. These inherited release/layout/asset expectations are recorded in the complete JSON report; the suite is not claimed to be entirely green. An older Seasonal Events Alpha 8 schema assertion also fails on the approved baseline because it expects schema 26 instead of 27.
 
-The current runtime lacks installed React/Vite dependencies and cannot access the npm registry (`EAI_AGAIN`). Consequently a dependency-installed Vite production bundle and actual deployed desktop/mobile React browser walkthrough could **not** be completed here. A static responsive CSS/source audit and targeted frontend regression checks passed; this does not substitute for real browser verification on staging. Do not treat these source-level gates as proof of production readiness.
-
-## Release identity and migration
-
-Local schema **23**; existing schema 22 is migrated with an automatic verified `pre_schema_23_*` backup. Existing Bestiary, career/Trial records, Titles, seasonal records, Guild economy and Hall of Trophies ownership are preserved. Historical Moments are awarded **only** for verified saved single purchases and five consecutive paid Mini Cactpot losses. No older combat/Hunt/Raid/World Event Moment is guessed from aggregated totals.
-
-## Recommended deployment gate
-
-Install pinned Web dependencies in an environment with registry access and run `npm run build`; run full Node/hosted suites on the exact deployed source; validate owned/unowned secret Moments, Trophy Hall, Records cards, Player Guide and responsive mobile layout against a staging environment. Preserve all actual SQLite databases, Twitch tokens, `.env`, `overlay/state.json` and hosted secrets. Only replace production with matching Alpha 10 Bot/Web after the staging walkthrough and the inherited test-failure assessment are acceptable to you.
+Tests use local synthetic accounts and databases. No live deployment, real-user invitations, or real transactions were performed. See `VALIDATION_v1_9_7.json` in the full package for details.
