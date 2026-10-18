@@ -70,7 +70,7 @@ class ChocoboCompanionTests(unittest.TestCase):
         self.assertTrue(self.game.register_chocobo(player_id, name).ok)
 
     def test_schema_six_and_stable_project_are_additive(self):
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(self.db.schema_version(), 28)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobos'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_chocobo_traits'"))
         project = PROJECTS["chocobo_stable_t1"]
@@ -96,7 +96,7 @@ class ChocoboCompanionTests(unittest.TestCase):
 
         migrated = Database(db_path)
         try:
-            self.assertEqual(migrated.schema_version(), 23)
+            self.assertEqual(migrated.schema_version(), 28)
             row = migrated.one("SELECT portrait_id FROM player_chocobos WHERE player_id='100'")
             self.assertEqual(str(row["portrait_id"]), DEFAULT_PORTRAIT_ID)
             self.assertIsNotNone(migrated.pre_migration_backup_path)

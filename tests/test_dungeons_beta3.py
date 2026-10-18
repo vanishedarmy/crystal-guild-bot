@@ -87,8 +87,8 @@ class DungeonsBeta3Tests(unittest.TestCase):
         return results
 
     def test_beta3_identity_keeps_schema10_protocol25_and_feature_freeze(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(__version__, "1.9.7-queens-blood")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 28)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         self.assertEqual(len(self.game1._dungeon_board_state("1430")["dungeons"]), 4)
 

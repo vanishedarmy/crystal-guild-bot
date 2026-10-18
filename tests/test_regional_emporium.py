@@ -177,14 +177,15 @@ class RegionalEmporiumTests(unittest.TestCase):
         self.db.execute("UPDATE fellowship_facilities SET tier=1 WHERE facility_id IN ('emporium_annex','trading_post')")
         self.give("iron_ore", 9)
         self.db.execute("DROP TABLE player_regional_shops")
-        self.db.execute("DELETE FROM schema_migrations WHERE version=27")
+        # Simulate a v26 installation without leaving newly-added v28 state.
+        self.db.execute("DELETE FROM schema_migrations WHERE version IN (27,28)")
         self.db.close()
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 27)
+        self.assertEqual(self.db.schema_version(), 28)
         self.assertTrue(self.db.pre_migration_backup_path.exists())
         with sqlite3.connect(self.db.pre_migration_backup_path) as backup:
             self.assertEqual(backup.execute("PRAGMA quick_check").fetchone()[0], "ok")
-            self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 26)
+            self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 27)
         self.assertEqual(self.db.one("SELECT quantity FROM inventory WHERE player_id='100' AND item_id='iron_ore'")["quantity"], 9)
         repo = PortalRepository(self.path, ROOT / "data")
         services = repo.fellowship()["services"]

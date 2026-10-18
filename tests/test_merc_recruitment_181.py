@@ -41,10 +41,10 @@ class MercRecruitment181Tests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_release_contract_and_schema_18_registry_table(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(__version__, "1.9.7-queens-blood")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 28)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(self.db.schema_version(), 28)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_merc_recruits'"))
         state = self.game.portal_merc_state("100").data["merc_state"]
         self.assertEqual(len(state["heroes"]), 18)

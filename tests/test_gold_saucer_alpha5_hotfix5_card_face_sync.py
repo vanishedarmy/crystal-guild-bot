@@ -22,7 +22,8 @@ class TripleTriadCardFaceSyncTests(unittest.TestCase):
             "bahamut": (8, 8, 7, 7),
             "odin": (9, 7, 8, 6),
         }
-        self.assertEqual(set(expected), set(TRIPLE_TRIAD_CARDS_BY_ID))
+        self.assertEqual(len(TRIPLE_TRIAD_CARDS_BY_ID), 45)
+        self.assertLessEqual(set(expected), set(TRIPLE_TRIAD_CARDS_BY_ID))
         for card_id, values in expected.items():
             card = TRIPLE_TRIAD_CARDS_BY_ID[card_id]
             actual = (card["top"], card["right"], card["bottom"], card["left"])

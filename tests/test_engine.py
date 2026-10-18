@@ -13,6 +13,7 @@ from crystal_guild.config import Settings
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine, xp_to_next
+from crystal_guild.seasonal_events import set_event_control
 from crystal_guild.encounter_daemon import (
     EncounterDaemon, NotificationDispatcher, TwitchChatDeliveryError,
     TwitchRESTChatSender, _packed_messages,
@@ -28,6 +29,11 @@ class EngineTests(unittest.TestCase):
         self.db = Database(Path(self.tmp.name) / "test.db")
         self.game = CrystalGuildEngine(self.db, GameData(ROOT / "data"), venture_cooldown_seconds=0, venture_treasure_chance=0.0, overlay_state_path=str(Path(self.tmp.name) / "overlay.json"), rng=random.Random(7))
         self.game.recruit("1", "van", "Van")
+        # Generic engine regression tests require regular monsters. The 2026
+        # seasonal event is now live during October and replaces encounters.
+        # Seasonal-specific behavior has its own tests.
+        with self.db.tx() as conn:
+            set_event_control(conn, enabled=False)
 
     def tearDown(self) -> None:
         self.db.close()

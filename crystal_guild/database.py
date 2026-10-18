@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 27
+DATABASE_SCHEMA_VERSION = 28
 
 
 class Database:
@@ -1492,6 +1492,81 @@ class Database:
                     INSERT INTO schema_migrations(version,name) VALUES (27,'regional_moogle_emporium');
                     COMMIT;
                 """)
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # LW-0: additive, disabled-by-default Living World foundation.
+        # Version 27 belongs to the regional Moogle Emporium; never reuse it.
+        if not self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=28").fetchone():
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(28)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS lw_region_progress (
+                        player_id TEXT NOT NULL,
+                        region_id TEXT NOT NULL,
+                        progress INTEGER NOT NULL DEFAULT 0 CHECK(progress >= 0),
+                        updated_at INTEGER NOT NULL DEFAULT 0,
+                        PRIMARY KEY(player_id, region_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS lw_activity_receipts (
+                        player_id TEXT NOT NULL,
+                        source TEXT NOT NULL,
+                        activity_id TEXT NOT NULL,
+                        received_at INTEGER NOT NULL,
+                        PRIMARY KEY(player_id, source, activity_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_lw_receipts_source ON lw_activity_receipts(source, received_at);
+                    CREATE TABLE IF NOT EXISTS lw_discoveries (
+                        player_id TEXT NOT NULL,
+                        discovery_id TEXT NOT NULL,
+                        region_id TEXT NOT NULL,
+                        source TEXT NOT NULL,
+                        discovered_at INTEGER NOT NULL,
+                        PRIMARY KEY(player_id, discovery_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_lw_discoveries_region ON lw_discoveries(player_id, region_id);
+                    CREATE TABLE IF NOT EXISTS lw_world_events (
+                        event_id TEXT PRIMARY KEY,
+                        region_id TEXT NOT NULL,
+                        status TEXT NOT NULL,
+                        starts_at INTEGER NOT NULL,
+                        expires_at INTEGER NOT NULL,
+                        payload_json TEXT NOT NULL DEFAULT '{}'
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_lw_world_events_expiry ON lw_world_events(status, expires_at);
+                    CREATE TABLE IF NOT EXISTS lw_event_contributions (
+                        player_id TEXT NOT NULL,
+                        event_id TEXT NOT NULL,
+                        contribution INTEGER NOT NULL DEFAULT 0 CHECK(contribution >= 0),
+                        updated_at INTEGER NOT NULL,
+                        PRIMARY KEY(player_id, event_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE,
+                        FOREIGN KEY(event_id) REFERENCES lw_world_events(event_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS lw_reward_receipts (
+                        player_id TEXT NOT NULL,
+                        reward_key TEXT NOT NULL,
+                        source TEXT NOT NULL,
+                        granted_at INTEGER NOT NULL,
+                        PRIMARY KEY(player_id, reward_key),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS lw_world_state (
+                        state_key TEXT PRIMARY KEY,
+                        value_json TEXT NOT NULL,
+                        expires_at INTEGER,
+                        updated_at INTEGER NOT NULL
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (28,'living_world_lw0_foundation');
+                    COMMIT;
+                """)
+                self.conn.commit()
             except Exception:
                 self.conn.rollback()
                 raise

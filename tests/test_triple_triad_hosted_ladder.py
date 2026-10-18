@@ -126,7 +126,7 @@ class HostedTripleTriadLadderTests(unittest.TestCase):
             )
         completed = self.action("TRIAD_PLAY", {"card": last_card, "cell": 8})
         self.assertEqual(completed["status"], "completed", completed)
-        state = completed["result"]["data"]["gold_saucer_state"]["triple_triad"]
+        state = completed["result"]["data"]["triple_triad_state"]
         self.assertEqual(state["match"]["result"], "win")
         return state
 
@@ -136,8 +136,6 @@ class HostedTripleTriadLadderTests(unittest.TestCase):
             (WEB_ROOT / "crystal_guild/triple_triad_catalog.json").read_bytes(),
         )
         for index, opponent in enumerate(TRIPLE_TRIAD_OPPONENTS):
-            if index == 5:
-                self.now += 86400
             started = self.action("TRIAD_START", {"opponent": opponent["id"]})
             self.assertEqual(started["status"], "completed", started)
             state = self.finish_with_win(opponent)
@@ -152,8 +150,10 @@ class HostedTripleTriadLadderTests(unittest.TestCase):
                 self.assertFalse(state["circuits"][circuit_index + 1]["unlocked"])
         self.assertEqual(self.db.one("SELECT COUNT(*) n FROM gold_saucer_history WHERE game='triad_circuit'")["n"], 5)
         self.assertEqual(state["records"]["wins"], 10)
-        # Exhausted daily entries still block new matches through the Bot.
-        self.assertEqual(self.action("TRIAD_START", {"opponent": "saucer_attendant"})["status"], "failed")
+        # Every table remains available after ten matches in the same day.
+        self.assertEqual(self.action("TRIAD_START", {"opponent": "saucer_attendant"})["status"], "completed")
+        self.assertEqual(state["unlimited_matches"], True)
+        self.assertEqual(self.db.one("SELECT COALESCE(SUM(payout),0) value FROM gold_saucer_history WHERE game='triple_triad'")["value"], 0)
 
     def test_web_accepts_new_id_but_bot_still_enforces_the_lock(self):
         completed = self.action("TRIAD_START", {"opponent": "moogle_dealer"})

@@ -35,10 +35,10 @@ class TitleExpansionAlpha3Tests(unittest.TestCase):
         self.assertEqual(PRIZES_BY_ID["one_more_spin"]["cost"], 750)
         self.assertEqual(PRIZES_BY_ID["probably_rigged"]["cost"], 1000)
         self.assertEqual(PRIZES_BY_ID["bird_is_the_word"]["cost"], 1250)
-        self.assertEqual(PRIZES_BY_ID["card_shark"]["cost"], 1500)
+        self.assertNotIn("card_shark", PRIZES_BY_ID)
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
         ids = {row["id"] for row in state["prizes"]}
-        self.assertTrue({"one_more_spin", "probably_rigged", "bird_is_the_word", "card_shark"}.issubset(ids))
+        self.assertTrue({"one_more_spin", "probably_rigged", "bird_is_the_word"}.issubset(ids))
 
     def test_gold_saucer_earned_titles_are_visible_as_challenges(self):
         state = self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
@@ -84,12 +84,13 @@ class TitleExpansionAlpha3Tests(unittest.TestCase):
             "ON CONFLICT(player_id) DO UPDATE SET best_streak=3"
         )
         conn = self.db.conn
-        self.assertEqual(gold_saucer_record_value(conn, "100", "unique_games"), 5)
+        self.assertEqual(gold_saucer_record_value(conn, "100", "unique_games"), 4)
         self.assertEqual(gold_saucer_record_value(conn, "100", "cactpot_jackpots"), 1)
         self.assertEqual(gold_saucer_record_value(conn, "100", "slots_jackpots"), 1)
         self.assertEqual(gold_saucer_record_value(conn, "100", "monster_toss_gold_games"), 1)
         self.assertEqual(gold_saucer_record_value(conn, "100", "chocobo_race_wins"), 1)
-        self.assertEqual(gold_saucer_record_value(conn, "100", "triple_triad_best_streak"), 3)
+        # Legacy Triad stats are not Gold Saucer metrics after separation.
+        self.assertEqual(gold_saucer_record_value(conn, "100", "triple_triad_best_streak"), 0)
 
     def test_oh_hi_mark_is_secret_until_same_mark_is_cleared_three_times(self):
         locked = self.game.achievement("100", "oh hi mark")
@@ -119,7 +120,7 @@ class TitleExpansionAlpha3Tests(unittest.TestCase):
             "slots_jackpot",
             "toss_golden_arm",
             "race_chocobo_whisperer",
-            "triad_heart_of_cards",
+            "saucer_sampler",
         ]
         for achievement_id in ids:
             self.db.execute(
@@ -143,6 +144,7 @@ class TitleExpansionAlpha3Tests(unittest.TestCase):
         payload = repo.achievements("van")
         by_id = {row["id"]: row for row in payload["achievements"]}
         self.assertEqual(by_id["saucer_high_roller"]["progress"]["raw_value"], 4321)
+        self.assertEqual(by_id["triad_heart_of_cards"]["category"], "Card Hall")
         self.assertEqual(by_id["professional_hoarder"]["progress"]["raw_value"], 50)
         self.assertEqual(by_id["oh_hi_mark"]["name"], "Secret Achievement")
 

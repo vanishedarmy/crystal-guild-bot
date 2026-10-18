@@ -148,10 +148,10 @@ class BestiaryHardeningStep6(unittest.TestCase):
         # historical schema-21 gameplay and seasonal data intact.
         with sqlite3.connect(self.path) as conn:
             conn.execute("DROP TABLE player_bestiary_mastery")
-            conn.execute("DELETE FROM schema_migrations WHERE version IN (22,23)")
+            conn.execute("DELETE FROM schema_migrations WHERE version>=22")
             self.assertEqual(conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 21)
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(self.db.schema_version(), 28)
         backup = self.db.pre_migration_backup_path
         self.assertIsNotNone(backup)
         self.assertTrue(backup.is_file())

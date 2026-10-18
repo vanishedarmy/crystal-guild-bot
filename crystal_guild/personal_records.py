@@ -38,7 +38,7 @@ CATEGORY_LABELS = {
     "raids": "Raids & Trials",
     "gold_saucer": "Gold Saucer",
 }
-_SAUCER_PAID_GAMES = frozenset({"mini_cactpot", "slots", "monster_toss", "chocobo_racing", "triple_triad"})
+_SAUCER_PAID_GAMES = frozenset({"mini_cactpot", "slots", "monster_toss", "chocobo_racing"})
 _SHOP_SOURCES = frozenset({"shop", "portal_shop", "trading_post_buy"})
 _SALE_SOURCES = frozenset({"sell", "portal_sell", "trading_post_sale"})
 _THREAT_ORDER = {"Dangerous": 1, "Severe": 2, "Extreme": 3}

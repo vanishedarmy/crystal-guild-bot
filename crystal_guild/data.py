@@ -8,6 +8,7 @@ from .crafting_catalog import CATEGORIES, build_source_index, recipe_category
 from .bestiary_research import validate_research_overlay
 from .moments import validate_moment_catalog
 from .supply_cache import SPOOKY_CACHE_ID, SPOOKY_CACHE_TIERS
+from .living_world import validate_catalog
 
 
 class GameData:
@@ -38,6 +39,10 @@ class GameData:
         self.enemy_profiles = self._load_map("enemy_profiles.json")
         self.enemy_actions = self._load_map("enemy_actions.json")
         self.bestiary_research = json.loads((self.data_dir / "bestiary_research.json").read_text(encoding="utf-8"))
+        self.living_world_regions = self._load_list("living_world_regions.json")
+        self.living_world_discoveries = self._load_list("living_world_discoveries.json")
+        self.living_world_config = json.loads((self.data_dir / "living_world_config.json").read_text(encoding="utf-8"))
+        self.living_world_art_slots = json.loads((self.data_dir / "living_world_art_slots.json").read_text(encoding="utf-8"))
 
     def _load_map(self, filename: str) -> dict[str, dict[str, Any]]:
         payload = json.loads((self.data_dir / filename).read_text(encoding="utf-8"))
@@ -619,7 +624,7 @@ class GameData:
         valid_categories = {
             "Adventure", "Combat", "Bestiary", "Hunts", "Jobs", "Crafting",
             "Economy", "Relics", "Raids", "Social", "Comedy", "Boss", "Secret", "Expeditions",
-            "Gold Saucer", "Chocobos",
+            "Gold Saucer", "Card Hall", "Chocobos",
         }
         valid_tiers = {"bronze", "silver", "gold", "crystal"}
         for achievement in self.achievements.values():
@@ -719,6 +724,8 @@ class GameData:
             self.moments, self.moment_titles,
             self.achievements, self.titles,
         ))
+
+        errors.extend(validate_catalog(self.living_world_regions, self.living_world_config, self.living_world_art_slots, self.living_world_discoveries))
 
         return errors
 

@@ -32,7 +32,8 @@ class CraftingCatalogTests(unittest.TestCase):
     def test_field_item_coverage_and_genuine_material_sources(self):
         consumables = {item["id"] for item in self.data.items.values() if item["type"] == "consumable"}
         crafted = {r["output"]["item_id"] for r in self.data.recipes.values()}
-        self.assertEqual(consumables - crafted, set())
+        # Seasonal caches are intentionally openable rewards, not recipes.
+        self.assertEqual(consumables - crafted, {"spooky_supply_cache"})
         self.assertGreaterEqual(len(consumables), 33)
         inputs = {m["item_id"] for r in self.data.recipes.values() for m in r.get("materials", [])}
         self.assertEqual(inputs - set(self.data.crafting_sources), set())

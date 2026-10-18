@@ -1,0 +1,30 @@
+[
+  {
+    "id": "oldstone_arch",
+    "name": "Oldstone Arch",
+    "description": "A vinebound gateway remembers a road that time forgot.",
+    "region_id": "verdant_wilds",
+    "reward_gil": 75
+  },
+  {
+    "id": "whispering_grove",
+    "name": "Whispering Grove",
+    "description": "Light dances through an untouched woodland sanctuary.",
+    "region_id": "verdant_wilds",
+    "reward_gil": 100
+  },
+  {
+    "id": "silverrun_crossing",
+    "name": "Silverrun Crossing",
+    "description": "A clearwater bridge links two forgotten woodland trails.",
+    "region_id": "verdant_wilds",
+    "reward_gil": 125
+  },
+  {
+    "id": "mossroot_shrine",
+    "name": "Mossroot Shrine",
+    "description": "Ancient stone guardians shelter a quiet forest altar.",
+    "region_id": "verdant_wilds",
+    "reward_gil": 200
+  }
+]

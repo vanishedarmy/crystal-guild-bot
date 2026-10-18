@@ -37,7 +37,7 @@ class GoldSaucerRC1HardeningTests(unittest.TestCase):
         return self.game.portal_gold_saucer_state("100").data["gold_saucer_state"]
 
     def _finish_triad(self, prefix: str):
-        result = self.state()["triple_triad"]
+        result = self.game.portal_triad_state("100").data["triple_triad_state"]
         step = 0
         while result["active"]:
             match = result["match"]
@@ -45,19 +45,19 @@ class GoldSaucerRC1HardeningTests(unittest.TestCase):
             cell = next(index for index, row in enumerate(match["board"]) if row is None)
             played = self.game.portal_triad_play("100", card, cell, f"{prefix}-{step}")
             self.assertTrue(played.ok, played.messages)
-            result = played.data["gold_saucer_state"]["triple_triad"]
+            result = played.data["triple_triad_state"]
             step += 1
         return result
 
     def test_rc1_identity_freezes_schema_protocol_and_all_five_attractions(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(__version__, "1.9.7-queens-blood")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 28)
+        self.assertEqual(self.db.schema_version(), 28)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         attractions = self.state()["attractions"]
         self.assertEqual(
             [row["id"] for row in attractions],
-            ["mini_cactpot", "crystal_slots", "monster_toss", "chocobo_racing", "triple_triad"],
+            ["mini_cactpot", "crystal_slots", "monster_toss", "chocobo_racing"],
         )
         self.assertTrue(all(row["status"] == "open" for row in attractions))
 
@@ -85,25 +85,23 @@ class GoldSaucerRC1HardeningTests(unittest.TestCase):
         self.assertEqual(int(row["created_at"]), start_at)
         self.assertEqual(final.data["gold_saucer_state"]["monster_toss"]["games_today"], 0)
 
-    def test_triad_entry_counts_immediately_and_cross_midnight_stays_on_start_day(self):
+    def test_card_hall_midnight_match_records_start_without_daily_cap(self):
         day = 1_800_057_600
-        start_at = day + 86_390
-        resolve_at = day + 86_410
+        start_at, resolve_at = day + 86_390, day + 86_410
+        before = self.state()["points"]
         with patch("crystal_guild.engine.time.time", return_value=start_at):
             started = self.game.portal_triad_start("100", "saucer_attendant", "rc1-triad-midnight-start")
-        self.assertTrue(started.ok)
-        triad = started.data["gold_saucer_state"]["triple_triad"]
-        self.assertEqual(triad["matches_today"], 1)
-        self.assertEqual(triad["matches_remaining"], 4)
+        self.assertTrue(started.ok, started.messages)
+        self.assertTrue(started.data["triple_triad_state"]["active"])
+        self.assertTrue(started.data["triple_triad_state"]["unlimited_matches"])
         with patch("crystal_guild.engine.time.time", return_value=resolve_at):
             resolved = self._finish_triad("rc1-triad-midnight-play")
         self.assertFalse(resolved["active"])
-        row = self.db.one("SELECT created_at FROM gold_saucer_history WHERE player_id='100' AND game='triple_triad'")
+        row = self.db.one("SELECT created_at,wager,payout FROM gold_saucer_history WHERE player_id='100' AND game='triple_triad'")
         self.assertEqual(int(row["created_at"]), start_at)
-        with self.db.tx(immediate=True) as conn:
-            next_day = self.game._gold_saucer_state_sql(conn, "100", resolve_at)
-        self.assertEqual(next_day["triple_triad"]["matches_today"], 0)
-        self.assertEqual(next_day["triple_triad"]["matches_remaining"], 5)
+        self.assertEqual((row["wager"],row["payout"]), (0,0))
+        self.assertEqual(self.state()["points"], before)
+        self.assertTrue(self.game.portal_triad_start("100", "saucer_attendant", "rc1-triad-next-day").ok)
 
 
 if __name__ == "__main__":

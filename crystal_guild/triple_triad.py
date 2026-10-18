@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 CATALOG = json.loads(Path(__file__).with_name("triple_triad_catalog.json").read_text(encoding="utf-8"))
-TRIPLE_TRIAD_DAILY_MATCHES = CATALOG["daily_matches"]
+TRIPLE_TRIAD_DAILY_MATCHES = 0  # Legacy compatibility; Card Hall offers unlimited free matches.
 TRIPLE_TRIAD_STARTER_DECK = tuple(CATALOG["starter_deck"])
 TRIPLE_TRIAD_STARTER_COLLECTION = tuple(CATALOG["starter_collection"])
 TRIPLE_TRIAD_CARDS = tuple(CATALOG["cards"])
@@ -98,9 +98,53 @@ def triple_triad_recent_misses(history: list[dict[str, Any]], opponent_id: str) 
     return misses
 
 
+def triple_triad_capture(board: list[dict[str, Any] | None], cell: int) -> list[int]:
+    """Apply the basic Triple Triad capture rule for the card at ``cell``."""
+    placed = board[int(cell)]
+    if not isinstance(placed, dict):
+        return []
+    card = TRIPLE_TRIAD_CARDS_BY_ID[str(placed["card_id"])]
+    owner = str(placed["owner"])
+    row, col = divmod(int(cell), 3)
+    checks = []
+    if row > 0:
+        checks.append((cell - 3, "top", "bottom"))
+    if col < 2:
+        checks.append((cell + 1, "right", "left"))
+    if row < 2:
+        checks.append((cell + 3, "bottom", "top"))
+    if col > 0:
+        checks.append((cell - 1, "left", "right"))
+    captured: list[int] = []
+    for neighbor_index, attack_side, defend_side in checks:
+        neighbor = board[int(neighbor_index)]
+        if not isinstance(neighbor, dict) or str(neighbor.get("owner")) == owner:
+            continue
+        other = TRIPLE_TRIAD_CARDS_BY_ID.get(str(neighbor.get("card_id")))
+        if other and int(card[attack_side]) > int(other[defend_side]):
+            neighbor["owner"] = owner
+            captured.append(int(neighbor_index))
+    return captured
+
+
+def triple_triad_place(board: list[dict[str, Any] | None], cell: int, card_id: str, owner: str) -> list[int]:
+    if int(cell) < 0 or int(cell) > 8 or board[int(cell)] is not None:
+        raise ValueError("Triple Triad cell is unavailable.")
+    if str(card_id) not in TRIPLE_TRIAD_CARDS_BY_ID:
+        raise ValueError("Unknown Triple Triad card.")
+    board[int(cell)] = {"card_id": str(card_id), "owner": str(owner)}
+    return triple_triad_capture(board, int(cell))
+
+
+def triple_triad_score(board: list[dict[str, Any] | None]) -> tuple[int, int]:
+    player = sum(1 for row in board if isinstance(row, dict) and row.get("owner") == "player")
+    npc = sum(1 for row in board if isinstance(row, dict) and row.get("owner") == "npc")
+    return int(player), int(npc)
+
+
+
 def triple_triad_npc_move(board, hand, difficulty="Novice", match_seed="") -> tuple[str, int]:
     # Only the visible board and the NPC's own hand are available here.
-    from .gold_saucer import triple_triad_place
     empty = [i for i, cell in enumerate(board) if cell is None]
     if not empty or not hand:
         raise ValueError("Triple Triad NPC has no legal move.")

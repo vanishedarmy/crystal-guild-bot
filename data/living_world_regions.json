@@ -1,0 +1,58 @@
+[
+  {
+    "id": "verdant_wilds",
+    "name": "Verdant Wilds",
+    "order": 1,
+    "biome": "temperate woodland",
+    "artwork_slot": "living-world/regions/verdant_wilds/banner.webp"
+  },
+  {
+    "id": "amber_highlands",
+    "name": "Amber Highlands",
+    "order": 2,
+    "biome": "sunlit highlands",
+    "artwork_slot": "living-world/regions/amber_highlands/banner.webp"
+  },
+  {
+    "id": "mistfen",
+    "name": "Mistfen",
+    "order": 3,
+    "biome": "misty wetlands",
+    "artwork_slot": "living-world/regions/mistfen/banner.webp"
+  },
+  {
+    "id": "crystal_hollows",
+    "name": "Crystal Hollows",
+    "order": 4,
+    "biome": "crystalline caves",
+    "artwork_slot": "living-world/regions/crystal_hollows/banner.webp"
+  },
+  {
+    "id": "frostbound_reach",
+    "name": "Frostbound Reach",
+    "order": 5,
+    "biome": "frozen mountains",
+    "artwork_slot": "living-world/regions/frostbound_reach/banner.webp"
+  },
+  {
+    "id": "ashen_expanse",
+    "name": "Ashen Expanse",
+    "order": 6,
+    "biome": "volcanic badlands",
+    "artwork_slot": "living-world/regions/ashen_expanse/banner.webp"
+  },
+  {
+    "id": "sunken_coast",
+    "name": "Sunken Coast",
+    "order": 7,
+    "biome": "forgotten coastal ruins",
+    "artwork_slot": "living-world/regions/sunken_coast/banner.webp"
+  },
+  {
+    "id": "astral_ruins",
+    "name": "Astral Ruins",
+    "order": 8,
+    "biome": "ancient star-touched ruins",
+    "artwork_slot": "living-world/regions/astral_ruins/banner.webp"
+  }
+]

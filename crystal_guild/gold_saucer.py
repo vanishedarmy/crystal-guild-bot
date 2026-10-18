@@ -176,60 +176,13 @@ def chocobo_race_result(level: int, traits: set[str] | list[str] | tuple[str, ..
     }
 
 
-# Alpha 5 — Triple Triad. The first playable ruleset intentionally uses the
-# classic four-side comparison game without Same, Plus, elemental modifiers,
-# or regional rules. Matches are persistent and authoritative; a player move
-# and the responding NPC move are committed together so refresh/retry cannot
-# duplicate MGP or board actions.
+# Legacy compatibility reexports; all card-game rules live in triple_triad.py.
 from .triple_triad import (
     TRIPLE_TRIAD_DAILY_MATCHES, TRIPLE_TRIAD_STARTER_DECK, TRIPLE_TRIAD_STARTER_COLLECTION,
     TRIPLE_TRIAD_CARDS, TRIPLE_TRIAD_CARDS_BY_ID, TRIPLE_TRIAD_OPPONENTS,
     TRIPLE_TRIAD_OPPONENTS_BY_ID, triple_triad_card_payload, triple_triad_npc_move,
+    triple_triad_capture, triple_triad_place, triple_triad_score,
 )
-
-
-def triple_triad_capture(board: list[dict[str, Any] | None], cell: int) -> list[int]:
-    """Apply the basic Triple Triad capture rule for the card at ``cell``."""
-    placed = board[int(cell)]
-    if not isinstance(placed, dict):
-        return []
-    card = TRIPLE_TRIAD_CARDS_BY_ID[str(placed["card_id"])]
-    owner = str(placed["owner"])
-    row, col = divmod(int(cell), 3)
-    checks = []
-    if row > 0:
-        checks.append((cell - 3, "top", "bottom"))
-    if col < 2:
-        checks.append((cell + 1, "right", "left"))
-    if row < 2:
-        checks.append((cell + 3, "bottom", "top"))
-    if col > 0:
-        checks.append((cell - 1, "left", "right"))
-    captured: list[int] = []
-    for neighbor_index, attack_side, defend_side in checks:
-        neighbor = board[int(neighbor_index)]
-        if not isinstance(neighbor, dict) or str(neighbor.get("owner")) == owner:
-            continue
-        other = TRIPLE_TRIAD_CARDS_BY_ID.get(str(neighbor.get("card_id")))
-        if other and int(card[attack_side]) > int(other[defend_side]):
-            neighbor["owner"] = owner
-            captured.append(int(neighbor_index))
-    return captured
-
-
-def triple_triad_place(board: list[dict[str, Any] | None], cell: int, card_id: str, owner: str) -> list[int]:
-    if int(cell) < 0 or int(cell) > 8 or board[int(cell)] is not None:
-        raise ValueError("Triple Triad cell is unavailable.")
-    if str(card_id) not in TRIPLE_TRIAD_CARDS_BY_ID:
-        raise ValueError("Unknown Triple Triad card.")
-    board[int(cell)] = {"card_id": str(card_id), "owner": str(owner)}
-    return triple_triad_capture(board, int(cell))
-
-
-def triple_triad_score(board: list[dict[str, Any] | None]) -> tuple[int, int]:
-    player = sum(1 for row in board if isinstance(row, dict) and row.get("owner") == "player")
-    npc = sum(1 for row in board if isinstance(row, dict) and row.get("owner") == "npc")
-    return int(player), int(npc)
 
 
 def gold_saucer_record_value(conn: Any, player_id: str, metric: str) -> int:
@@ -248,14 +201,14 @@ def gold_saucer_record_value(conn: Any, player_id: str, metric: str) -> int:
     if key == "games_played":
         row = conn.execute(
             "SELECT COUNT(*) AS n FROM gold_saucer_history "
-            "WHERE player_id=? AND game IN ('mini_cactpot','slots','monster_toss','chocobo_racing','triple_triad')",
+            "WHERE player_id=? AND game IN ('mini_cactpot','slots','monster_toss','chocobo_racing')",
             (str(player_id),),
         ).fetchone()
         return int(row["n"] or 0) if row else 0
     if key == "unique_games":
         row = conn.execute(
             "SELECT COUNT(DISTINCT game) AS n FROM gold_saucer_history "
-            "WHERE player_id=? AND game IN ('mini_cactpot','slots','monster_toss','chocobo_racing','triple_triad')",
+            "WHERE player_id=? AND game IN ('mini_cactpot','slots','monster_toss','chocobo_racing')",
             (str(player_id),),
         ).fetchone()
         return int(row["n"] or 0) if row else 0
@@ -285,12 +238,6 @@ def gold_saucer_record_value(conn: Any, player_id: str, metric: str) -> int:
             (str(player_id),),
         ).fetchone()
         return int(row["n"] or 0) if row else 0
-    if key == "triple_triad_best_streak":
-        row = conn.execute(
-            "SELECT best_streak AS value FROM player_triple_triad WHERE player_id=?",
-            (str(player_id),),
-        ).fetchone()
-        return int(row["value"] or 0) if row else 0
     return 0
 
 
@@ -348,20 +295,6 @@ PRIZES = (
         "description": "A prestige title for Gold Saucer riders with podium feathers to spare.",
     },
     {
-        "id": "triad_tactician",
-        "title_id": "triad_tactician",
-        "name": "Triad Tactician",
-        "cost": 4000,
-        "description": "For card players who can see a capture from four sides away.",
-    },
-    {
-        "id": "card_hall_master",
-        "title_id": "card_hall_master",
-        "name": "Card Hall Master",
-        "cost": 9000,
-        "description": "A prestige title for adventurers who have conquered the Gold Saucer card hall.",
-    },
-    {
         "id": "one_more_spin",
         "title_id": "one_more_spin",
         "name": "One More Spin",
@@ -381,13 +314,6 @@ PRIZES = (
         "name": "Bird Is the Word",
         "cost": 1250,
         "description": "A racing-flavored vanity title for dedicated feather enthusiasts.",
-    },
-    {
-        "id": "card_shark",
-        "title_id": "card_shark",
-        "name": "Card Shark",
-        "cost": 1500,
-        "description": "A classic card-table title for players who prefer their threats rectangular.",
     },
 )
 PRIZES_BY_ID = {str(row["id"]): row for row in PRIZES}

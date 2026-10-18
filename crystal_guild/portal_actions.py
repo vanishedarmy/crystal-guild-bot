@@ -24,7 +24,7 @@ ACTION_PROTOCOL_VERSION = 39
 PASSIVE_PORTAL_ACTIONS = frozenset({
     "PING", "CHARACTER_STATE", "SHOP_STATE", "TRADING_POST_STATE", "TRADING_POST_HISTORY",
     "RECOVERY_STATE", "FELLOWSHIP_STATE", "CRAFTING_STATE", "DAILY_STATE",
-    "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE", "RETAINER_STATE",
+    "CHOCOBO_STATE", "ADVENTURE_STATE", "GOLD_SAUCER_STATE", "TRIAD_STATE", "RETAINER_STATE",
     "MERC_STATE", "SEASONAL_STATE", "SET_GEAR_FAVORITES",
 })
 
@@ -597,6 +597,10 @@ class PortalActionWorker:
             if strategy not in {"steady", "balanced", "sprint"}:
                 return False, "Chocobo Racing strategy is invalid.", {}
             return self._game_result(self.game.portal_chocobo_race(twitch_id, course, strategy, str(action.get("id") or "")))
+        if action_type == "TRIAD_STATE":
+            if payload:
+                return False, "Triple Triad state does not accept parameters.", {}
+            return self._game_result(self.game.portal_triad_state(twitch_id))
         if action_type == "TRIAD_SET_DECK":
             if set(payload) != {"cards"} or not isinstance(payload.get("cards"), list):
                 return False, "Triple Triad deck requires only a cards list.", {}

@@ -31,9 +31,9 @@ class GoldSaucerAlpha3MGPTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_alpha3_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.9.3-guild-initiatives")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(__version__, "1.9.7-queens-blood")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 28)
+        self.assertEqual(self.db.schema_version(), 28)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
 
     def test_mgp_is_canonical_currency_without_resetting_legacy_balance(self):

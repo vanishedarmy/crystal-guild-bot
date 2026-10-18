@@ -45,11 +45,13 @@ class GoldSaucerAlpha2RebalanceTests(unittest.TestCase):
         self.assertEqual(CHOCOBO_RACING_COURSES_BY_ID["manderville_sprint"]["payouts"], {1: 120, 2: 70, 3: 35})
         self.assertEqual(CHOCOBO_RACING_COURSES_BY_ID["crystal_circuit"]["payouts"], {1: 190, 2: 105, 3: 50})
         self.assertEqual(CHOCOBO_RACING_COURSES_BY_ID["golden_gauntlet"]["payouts"], {1: 300, 2: 160, 3: 75})
-        self.assertEqual(TRIPLE_TRIAD_OPPONENTS_BY_ID["saucer_attendant"]["win_payout"], 100)
-        self.assertEqual(TRIPLE_TRIAD_OPPONENTS_BY_ID["card_shark"]["win_payout"], 150)
-        self.assertEqual(TRIPLE_TRIAD_OPPONENTS_BY_ID["crystal_master"]["win_payout"], 240)
+        # Triple Triad is now a free Card Hall game, independent of MGP.
+        for opponent in TRIPLE_TRIAD_OPPONENTS_BY_ID.values():
+            self.assertNotIn("entry_cost", opponent)
+            self.assertNotIn("win_payout", opponent)
         self.assertEqual(PRIZES_BY_ID["saucer_regular"]["cost"], 500)
-        self.assertEqual(PRIZES_BY_ID["card_hall_master"]["cost"], 9000)
+        self.assertNotIn("card_hall_master", PRIZES_BY_ID)
+        self.assertNotIn("triad_tactician", PRIZES_BY_ID)
 
 
 if __name__ == "__main__":

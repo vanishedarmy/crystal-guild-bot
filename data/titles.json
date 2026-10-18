@@ -417,7 +417,7 @@
   },
   {
     "id": "everyones_grudge",
-    "name": "Everyone\u2019s Grudge",
+    "name": "Everyone’s Grudge",
     "description": "Has made the Tonberry community collectively aware of their existence.",
     "category": "Comedy",
     "rarity": "epic",
@@ -506,7 +506,7 @@
   {
     "id": "master_artisan",
     "name": "Master Artisan",
-    "description": "Crafted enough equipment to start criticizing other people\u2019s hammer technique.",
+    "description": "Crafted enough equipment to start criticizing other people’s hammer technique.",
     "category": "Crafting",
     "rarity": "epic",
     "source": "Achievement"
@@ -626,7 +626,7 @@
   {
     "id": "breath_test_failure",
     "name": "Breath Test Failure",
-    "description": "Has been KO\u2019d by Malboro enough times to identify Bad Breath by vintage.",
+    "description": "Has been KO’d by Malboro enough times to identify Bad Breath by vintage.",
     "category": "Secret",
     "rarity": "rare",
     "source": "Achievement"
@@ -787,17 +787,17 @@
     "id": "triad_tactician",
     "name": "Triad Tactician",
     "description": "Can see a capture from four sides away.",
-    "category": "Gold Saucer",
+    "category": "Card Hall",
     "rarity": "rare",
-    "source": "Gold Saucer Prize Counter"
+    "source": "Card Hall · Triple Triad"
   },
   {
     "id": "card_hall_master",
     "name": "Card Hall Master",
     "description": "The card hall has stopped pretending this is a casual visit.",
-    "category": "Gold Saucer",
+    "category": "Card Hall",
     "rarity": "epic",
-    "source": "Gold Saucer Prize Counter"
+    "source": "Card Hall · Triple Triad"
   },
   {
     "id": "one_more_spin",
@@ -827,9 +827,9 @@
     "id": "card_shark",
     "name": "Card Shark",
     "description": "Smiles politely while calculating all four sides of your inevitable mistake.",
-    "category": "Gold Saucer",
+    "category": "Card Hall",
     "rarity": "rare",
-    "source": "Gold Saucer Prize Counter"
+    "source": "Card Hall · Triple Triad"
   },
   {
     "id": "high_roller",

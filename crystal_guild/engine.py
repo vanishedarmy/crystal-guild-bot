@@ -90,6 +90,7 @@ from .daily_provisions import (
     subscriber_perk,
 )
 from .data import GameData
+from .living_world import record_solo_bank
 from .bestiary_progress import reconcile_mastery
 from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
                                reconcile_all_owned_moment_rewards)
@@ -123,6 +124,11 @@ TRADING_POST_HISTORY_SECONDS = 30 * 24 * 60 * 60
 from .triple_triad import (
     TRIPLE_TRIAD_STARTER_COLLECTION, triple_triad_progress,
     triple_triad_recent_misses, triple_triad_power,
+    TRIPLE_TRIAD_DAILY_MATCHES, TRIPLE_TRIAD_STARTER_DECK, TRIPLE_TRIAD_CARDS, TRIPLE_TRIAD_CARDS_BY_ID,
+    TRIPLE_TRIAD_OPPONENTS, TRIPLE_TRIAD_OPPONENTS_BY_ID,
+    triple_triad_card_payload as saucer_triad_card_payload,
+    triple_triad_place as saucer_triad_place, triple_triad_score as saucer_triad_score,
+    triple_triad_npc_move as saucer_triad_npc_move,
 )
 from .gold_saucer import (
     WELCOME_MGP as SAUCER_WELCOME_MGP, DAILY_ALLOWANCE_MGP as SAUCER_DAILY_ALLOWANCE_MGP, DAILY_REWARD_MGP as SAUCER_DAILY_REWARD_MGP,
@@ -132,13 +138,9 @@ from .gold_saucer import (
     MONSTER_TOSS_TARGETS_BY_ID, MONSTER_TOSS_STYLES_BY_ID,
     CHOCOBO_RACING_DAILY_RACES, CHOCOBO_RACING_COURSES, CHOCOBO_RACING_STRATEGIES,
     CHOCOBO_RACING_COURSES_BY_ID, CHOCOBO_RACING_STRATEGIES_BY_ID,
-    TRIPLE_TRIAD_DAILY_MATCHES, TRIPLE_TRIAD_STARTER_DECK, TRIPLE_TRIAD_CARDS, TRIPLE_TRIAD_CARDS_BY_ID,
-    TRIPLE_TRIAD_OPPONENTS, TRIPLE_TRIAD_OPPONENTS_BY_ID,
     masked_grid as saucer_masked_grid, slot_labels as saucer_slot_labels, slot_payout as saucer_slot_payout,
     monster_toss_throw_profile as saucer_toss_profile, monster_toss_payout as saucer_toss_payout,
-    chocobo_race_result as saucer_chocobo_race_result, triple_triad_card_payload as saucer_triad_card_payload,
-    triple_triad_place as saucer_triad_place, triple_triad_score as saucer_triad_score,
-    triple_triad_npc_move as saucer_triad_npc_move, gold_saucer_record_value as saucer_record_value,
+    chocobo_race_result as saucer_chocobo_race_result, gold_saucer_record_value as saucer_record_value,
 )
 from .retainer import (
     RETAINER_DEFAULT_NAME, RETAINER_ASSIGNMENTS, RETAINER_ASSIGNMENTS_BY_ID,
@@ -2305,6 +2307,16 @@ class CrystalGuildEngine:
                     )
         except Exception:
             LOGGER.exception("Unable to record completed seasonal Solo Venture objective")
+        # LW-1: only banked cleared Solo Ventures in Greenwind Plains count.
+        # Isolated from combat/seasonal randomness and existing reward flows.
+        world_discovery = None
+        if self.data.living_world_config.get("venture_hooks_enabled"):
+            try:
+                world_discovery = record_solo_bank(self.db, twitch_id, expedition,
+                                                  self.data.living_world_discoveries,
+                                                  source_region=self.data.living_world_config.get("intro_source_region", "greenwind_plains"))
+            except Exception:
+                LOGGER.exception("Unable to record LW-1 discovery after banked Solo Venture")
         achievements = self._check_achievements(twitch_id)
         secured = expedition.get("secured") or {}
         item_labels = [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in items]
@@ -2320,7 +2332,9 @@ class CrystalGuildEngine:
                 "loot": [*secured_loot, *item_labels], "secured_loot": secured_loot, "fellowship_renown": renown, "achievements": [str(x) for x in achievements[:4]],
             },
             "history": list(expedition.get("history") or [])[-8:],
-            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2], *seasonal_notes]],
+            "living_world_discovery": world_discovery,
+            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2], *seasonal_notes,
+                *( [f"LIVING WORLD — {world_discovery['name']} discovered! +{world_discovery['reward_gil']} Gil"] if world_discovery else [] )]],
             "player": self._solo_result_vitals(twitch_id),
             "cooldown_seconds": SOLO_VENTURE_COOLDOWN_SECONDS,
             "interactive": True,
@@ -2330,7 +2344,7 @@ class CrystalGuildEngine:
         return GameResult.success(
             f"SOLO VENTURE — {stage} stage{'s' if stage != 1 else ''} complete. Banked {gil} Gil"
             + (f" and {len(items)} spoil stack{'s' if len(items) != 1 else ''}." if items else "."),
-            solo_result=summary, solo_expedition_finished=True,
+            solo_result=summary, solo_expedition_finished=True, living_world_discovery=world_discovery,
         )
 
     def _solo_finish_defeat(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
@@ -2559,6 +2573,7 @@ class CrystalGuildEngine:
         selected_prep = plan["prep_id"] if plan["prep_id"] in self._CAMP_PREPARATIONS else ""
         merc_contract = self._merc_claim_for_mission(twitch_id, "venture")
         expedition = {
+            "lw_activity_id": uuid.uuid4().hex,
             "version": 1, "started_at": now, "updated_at": now, "stage": 1, "max_stages": SOLO_EXPEDITION_MAX_STAGES,
             "region_id": str(p["current_region"]), "status": "event", "secured": {"xp": 0, "jp": 0}, "secured_loot": [],
             "spoils": {"gil": 0, "items": []}, "history": [], "round_history": [], "event": None, "combat": None,
@@ -4368,7 +4383,11 @@ class CrystalGuildEngine:
                 magnitude = float(effect.get("magnitude", 0.0))
                 chance = effective_status_chance(effect, profile)
                 if recipient == "self":
-                    if self.rng.random() <= chance:
+                    # The 90% debuff accuracy cap applies to hostile statuses,
+                    # not an enemy's explicitly guaranteed self-buff. Mighty
+                    # Guard's Protect + Power Up both declare chance=1.0.
+                    self_chance = max(0.0, min(1.0, float(effect.get("chance", 1.0))))
+                    if self.rng.random() < self_chance:
                         apply_status(monster_statuses, status_id, turns, magnitude)
                         status_parts.append(status_id.replace("_", " ").title())
                     continue
@@ -11336,7 +11355,7 @@ class CrystalGuildEngine:
             pending = conn.execute("SELECT match_id,opponent_id FROM gold_saucer_triple_triad WHERE player_id=? AND state='active'", (twitch_id,)).fetchone()
             snapshot = {"quantities": {c: 1 for c in upgraded}, "catalog_revision": 2}
             if pending:
-                snapshot.update({"pending_match_id": pending["match_id"], "pending_cost": {"saucer_attendant": 20, "card_shark": 30, "crystal_master": 45}.get(pending["opponent_id"], 0)})
+                snapshot.update({"pending_match_id": pending["match_id"]})
             conn.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triad_collection',0,0,'upgrade',?,?)", (twitch_id, json.dumps(snapshot), int(time.time())))
         return profile
 
@@ -11391,6 +11410,18 @@ class CrystalGuildEngine:
             "resolved_at": int(row["resolved_at"] or 0),
         }
 
+    def _triple_triad_titles_sql(self, conn: Any, twitch_id: str, progress: dict[str, Any], wins: int) -> None:
+        earned = []
+        if wins >= 3:
+            earned.append("triad_tactician")
+        if wins >= 10:
+            earned.append("card_shark")
+        if all(bool(c["cleared"]) for c in progress["circuits"]):
+            earned.append("card_hall_master")
+        for title_id in earned:
+            if title_id in self.data.titles:
+                conn.execute("INSERT OR IGNORE INTO player_titles(player_id,title_id) VALUES (?,?)", (twitch_id, title_id))
+
     def _triple_triad_state_sql(self, conn: Any, twitch_id: str, points: int, now: int) -> dict[str, Any]:
         profile = self._triple_triad_ensure_profile_sql(conn, twitch_id)
         collection = [str(value) for value in self._gold_saucer_json(profile["collection_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID]
@@ -11405,31 +11436,19 @@ class CrystalGuildEngine:
         row = conn.execute("SELECT * FROM gold_saucer_triple_triad WHERE player_id=?", (twitch_id,)).fetchone()
         match = self._triple_triad_match_payload_sql(row)
         active = bool(match and match["state"] == "active")
-        day_start = int(now) - (int(now) % 86400)
-        today_row = conn.execute(
-            "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='triple_triad' AND created_at>=?",
-            (twitch_id, day_start),
-        ).fetchone()
-        matches_today = int(today_row["n"] or 0) if today_row else 0
-        # RC1: a daily Triple Triad entry belongs to the UTC day on which the
-        # challenge was started/paid for, not the day on which a persistent
-        # match happens to finish. Count an active same-day match immediately;
-        # resolved history is written with the original started_at timestamp.
-        if active and int(row["started_at"] or 0) >= day_start:
-            matches_today += 1
         wins = int(profile["wins"] or 0)
         history = self._triple_triad_history_sql(conn, twitch_id)
         if match:
             match["rewards"] = next((h["details"] for h in reversed(history) if h["details"].get("match_id") == match["id"]), {})
         progress = triple_triad_progress(history, wins)
+        self._triple_triad_titles_sql(conn, twitch_id, progress, wins)
         circuits = {c["id"]: c for c in progress["circuits"]}
         opponents = []
         for opponent in TRIPLE_TRIAD_OPPONENTS:
             circuit = circuits[opponent["circuit"]]
             unlocked = circuit["unlocked"]
-            cost = int(opponent["cost"])
             opponents.append({
-                **{k: opponent[k] for k in ("id", "name", "difficulty", "circuit", "unlock_wins", "cost", "win_payout", "draw_payout", "loss_payout", "description", "drop_chance", "draw_drop_chance")},
+                **{k: opponent[k] for k in ("id", "name", "difficulty", "circuit", "unlock_wins", "description", "drop_chance", "draw_drop_chance")},
                 "circuit_name": circuit["name"],
                 "unlock_hint": "Clear the previous circuit (win against both opponents).",
                 "deck_power": triple_triad_power(opponent["deck"]),
@@ -11438,13 +11457,10 @@ class CrystalGuildEngine:
                 "wins": progress["victories"].get(opponent["id"], 0),
                 "wins_without_card": triple_triad_recent_misses(history, opponent["id"]),
                 "unlocked": unlocked,
-                "can_start": bool(unlocked and not active and matches_today < TRIPLE_TRIAD_DAILY_MATCHES and int(points) >= cost),
+                "can_start": bool(unlocked and not active),
             })
         return {
-            "daily_matches": int(TRIPLE_TRIAD_DAILY_MATCHES),
-            "matches_today": matches_today,
-            "matches_remaining": max(0, int(TRIPLE_TRIAD_DAILY_MATCHES) - matches_today),
-            "next_daily_reset_at": day_start + 86400,
+            "unlimited_matches": True,
             "rules": {
                 "name": "Open",
                 "description": "Both hands are visible. A higher adjacent side captures the lower side; equal sides do not capture. Cards left in hand count toward the final score. Same, Plus and elemental modifiers are off.",
@@ -11483,13 +11499,13 @@ class CrystalGuildEngine:
         npc_score += len(npc_hand)
         if player_score > npc_score:
             outcome = "win"
-            payout = int(opponent["win_payout"])
+            payout = 0
         elif player_score == npc_score:
             outcome = "draw"
-            payout = int(opponent["draw_payout"])
+            payout = 0
         else:
             outcome = "loss"
-            payout = int(opponent["loss_payout"])
+            payout = 0
         collection = list(dict.fromkeys(str(c) for c in self._gold_saucer_json(profile["collection_json"], []) if str(c) in TRIPLE_TRIAD_CARDS_BY_ID))
         history = self._triple_triad_history_sql(conn, twitch_id)
         reward_card = None
@@ -11500,19 +11516,8 @@ class CrystalGuildEngine:
             reward_card = self.rng.choice(missing or list(opponent["rewards"]))
             if reward_card not in collection:
                 collection.append(reward_card)
-        entry_cost = int(opponent["cost"])
-        for h in history:
-            if h["game"] == "triad_collection" and h["details"].get("pending_match_id") == str(match_row["match_id"]):
-                entry_cost = int(h["details"]["pending_cost"])
-                if outcome == "draw":
-                    payout = max(payout, entry_cost)
         old_streak = int(profile["current_streak"] or 0)
         new_streak = old_streak + 1 if outcome == "win" else 0
-        cost = entry_cost
-        conn.execute(
-            "UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
-            (payout, payout, twitch_id),
-        )
         conn.execute(
             "UPDATE player_triple_triad SET collection_json=?,matches=matches+1,wins=wins+?,draws=draws+?,losses=losses+?,cards_won=cards_won+?,current_streak=?,best_streak=MAX(best_streak,?),updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
             (
@@ -11533,7 +11538,6 @@ class CrystalGuildEngine:
         details = {
             "match_id": str(match_row["match_id"]),
             "catalog_revision": 2,
-            "payout": payout,
             "guaranteed_card": guaranteed,
             "opponent_id": str(opponent["id"]),
             "opponent_name": str(opponent["name"]),
@@ -11545,28 +11549,25 @@ class CrystalGuildEngine:
         entry_started_at = int(match_row["started_at"] or now)
         history_entry = conn.execute(
             "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triple_triad',?,?,?,?,?)",
-            (twitch_id, cost, payout, outcome, json.dumps(details, separators=(",", ":")), entry_started_at),
+            (twitch_id, 0, 0, outcome, json.dumps(details, separators=(",", ":")), entry_started_at),
         )
-        # Award each cleared circuit once, in the same transaction as resolution.
+        # Record each cleared circuit once, in the same transaction as resolution.
         progress = triple_triad_progress(self._triple_triad_history_sql(conn, twitch_id), int(profile["wins"]) + int(outcome == "win"))
         circuit_bonus = 0
         for circuit in progress["circuits"]:
             if circuit["cleared"] and circuit["unlocked"] and not circuit["bonus_paid"]:
-                bonus = int(circuit["bonus"])
-                conn.execute("UPDATE player_gold_saucer SET points=points+?,lifetime_earned=lifetime_earned+? WHERE player_id=?", (bonus, bonus, twitch_id))
-                conn.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triad_circuit',0,?,'clear',?,?)", (twitch_id, bonus, json.dumps({"circuit": circuit["id"], "name": circuit["name"]}), now))
-                circuit_bonus += bonus
-        details["circuit_bonus"] = circuit_bonus
+                conn.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'triad_circuit',0,0,'clear',?,?)", (twitch_id, json.dumps({"circuit": circuit["id"], "name": circuit["name"]}), now))
+                circuit_bonus += 1
+        details["circuit_cleared"] = bool(circuit_bonus)
         conn.execute("UPDATE gold_saucer_history SET details_json=? WHERE id=?", (json.dumps(details, separators=(",", ":")), history_entry.lastrowid))
         trophies = reconcile_player_trophies(conn, str(twitch_id), source=f"triple_triad:{outcome}")
         suffix = f" Card won: {details['card_reward_name']}." if reward_card else ""
         if circuit_bonus:
-            suffix += f" Circuit clear bonus: {circuit_bonus} MGP."
+            suffix += " Circuit cleared! Next opponents unlocked."
         trophy_suffix = f" Trophy unlocked: {trophies[0]}." if trophies else ""
         result = GameResult.success(
-            f"TRIPLE TRIAD — {outcome.upper()} {player_score}-{npc_score} vs {opponent['name']}. {payout} MGP awarded.{suffix}{trophy_suffix}",
+            f"TRIPLE TRIAD — {outcome.upper()} {player_score}-{npc_score} vs {opponent['name']}.{suffix}{trophy_suffix}",
             triple_triad_result=details,
-            triad_payout=payout,
             triad_card_reward=reward_card,
             trophies_unlocked=trophies,
         )
@@ -11626,7 +11627,7 @@ class CrystalGuildEngine:
             }
         history_rows = conn.execute(
             "SELECT game,wager,payout,outcome,details_json,created_at FROM gold_saucer_history "
-            "WHERE player_id=? AND game!='triad_collection' ORDER BY created_at DESC,id DESC LIMIT 8",
+            "WHERE player_id=? AND game NOT IN ('triple_triad','triad_circuit','triad_collection') ORDER BY created_at DESC,id DESC LIMIT 8",
             (twitch_id,),
         ).fetchall()
         history = []
@@ -11812,22 +11813,6 @@ class CrystalGuildEngine:
         })
         records["games_played"] = int(records.get("games_played", 0)) + len(race_entries)
 
-        triad_state = self._triple_triad_state_sql(conn, twitch_id, points, now)
-        triad_records = triad_state.get("records", {})
-        triad_matches = int(triad_records.get("matches", 0))
-        triad_wins = int(triad_records.get("wins", 0))
-        records.update({
-            "triple_triad_matches": triad_matches,
-            "triple_triad_wins": triad_wins,
-            "triple_triad_draws": int(triad_records.get("draws", 0)),
-            "triple_triad_losses": int(triad_records.get("losses", 0)),
-            "triple_triad_cards_owned": int(triad_state.get("owned_count", 0)),
-            "triple_triad_cards_won": int(triad_records.get("cards_won", 0)),
-            "triple_triad_best_streak": int(triad_records.get("best_streak", 0)),
-            "triple_triad_win_rate_pct": round((triad_wins / triad_matches) * 100, 1) if triad_matches else 0.0,
-        })
-        records["games_played"] = int(records.get("games_played", 0)) + triad_matches
-
         chocobo_row = conn.execute(
             "SELECT name,xp,portrait_id,registered_at FROM player_chocobos WHERE player_id=?",
             (twitch_id,),
@@ -11931,7 +11916,6 @@ class CrystalGuildEngine:
                     for minimum, payout, tier in MONSTER_TOSS_PAYOUTS
                 ],
             },
-            "triple_triad": triad_state,
             "chocobo_racing": {
                 "daily_races": CHOCOBO_RACING_DAILY_RACES,
                 "races_today": races_today,
@@ -11952,7 +11936,6 @@ class CrystalGuildEngine:
                 {"id": "crystal_slots", "name": "Crystal Slots", "status": "open", "description": "Quick three-reel spins using MGP."},
                 {"id": "monster_toss", "name": "Monster Toss", "status": "open", "description": "Five persistent throws. Choose a target and throw style, then chase the best score before the daily games run out."},
                 {"id": "chocobo_racing", "name": "Chocobo Racing", "status": "open", "description": "Race your existing registered Chocobo across three daily circuits with course and pace choices."},
-                {"id": "triple_triad", "name": "Triple Triad", "status": "open", "description": "Build a five-card deck, challenge Gold Saucer NPCs, capture adjacent cards, and grow a persistent collection."},
             ],
             "history": history,
         }
@@ -12357,6 +12340,20 @@ class CrystalGuildEngine:
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
+    def portal_triad_state(self, twitch_id: str) -> GameResult:
+        """Card Hall Triple Triad state, independent of Gold Saucer currency."""
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        with self.db.tx(immediate=True) as conn:
+            # Pick up historical streak achievements without forcing a Gold Saucer visit.
+            unlocked = self._check_achievements(twitch_id)
+            state = self._triple_triad_state_sql(conn, twitch_id, 0, int(time.time()))
+        result = GameResult.success("Triple Triad table ready.", triple_triad_state=state)
+        if unlocked:
+            result.data["achievement_unlocks"] = list(unlocked)
+            result.messages.extend(f"ACHIEVEMENT — {entry}" for entry in unlocked)
+        return result
+
     def portal_triad_set_deck(self, twitch_id: str, cards: list[str], action_id: str) -> GameResult:
         replay = self._portal_action_replay(action_id)
         if replay is not None:
@@ -12368,7 +12365,6 @@ class CrystalGuildEngine:
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("Triple Triad decks require five different valid cards."))
         now = int(time.time())
         with self.db.tx(immediate=True) as conn:
-            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
             profile = self._triple_triad_ensure_profile_sql(conn, twitch_id)
             active = conn.execute("SELECT 1 FROM gold_saucer_triple_triad WHERE player_id=? AND state='active'", (twitch_id,)).fetchone()
             owned = {str(value) for value in self._gold_saucer_json(profile["collection_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID}
@@ -12383,8 +12379,7 @@ class CrystalGuildEngine:
                     (json.dumps(normalized, separators=(",", ":")), twitch_id),
                 )
                 result = GameResult.success("Triple Triad deck saved.", triple_triad_deck=normalized)
-            self._gold_saucer_attach_achievements(twitch_id, result)
-            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+            result.data["triple_triad_state"] = self._triple_triad_state_sql(conn, twitch_id, 0, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
@@ -12398,41 +12393,25 @@ class CrystalGuildEngine:
         if opponent_key not in TRIPLE_TRIAD_OPPONENTS_BY_ID:
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a valid Triple Triad opponent."))
         now = int(time.time())
-        day_start = now - (now % 86400)
         with self.db.tx(immediate=True) as conn:
-            account = self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
             profile = self._triple_triad_ensure_profile_sql(conn, twitch_id)
             opponent = TRIPLE_TRIAD_OPPONENTS_BY_ID[opponent_key]
             active = conn.execute("SELECT * FROM gold_saucer_triple_triad WHERE player_id=? AND state='active'", (twitch_id,)).fetchone()
-            today = conn.execute(
-                "SELECT COUNT(*) AS n FROM gold_saucer_history WHERE player_id=? AND game='triple_triad' AND created_at>=?",
-                (twitch_id, day_start),
-            ).fetchone()
-            matches_today = int(today["n"] or 0) if today else 0
             wins = int(profile["wins"] or 0)
             progress = triple_triad_progress(self._triple_triad_history_sql(conn, twitch_id), wins)
             circuit = next(c for c in progress["circuits"] if c["id"] == opponent["circuit"])
             deck = [str(value) for value in self._gold_saucer_json(profile["deck_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID]
             owned = {str(value) for value in self._gold_saucer_json(profile["collection_json"], []) if str(value) in TRIPLE_TRIAD_CARDS_BY_ID}
-            cost = int(opponent["cost"])
             if active:
                 result = GameResult.fail("Finish your active Triple Triad match before starting another one.")
-            elif matches_today >= TRIPLE_TRIAD_DAILY_MATCHES:
-                result = GameResult.fail("You have used all Triple Triad entries for today. The card hall resets at 00:00 UTC.")
             elif not circuit["unlocked"]:
                 result = GameResult.fail("Clear the previous Triple Triad circuit by winning against both of its opponents.")
             elif len(deck) != 5 or len(set(deck)) != 5 or any(card_id not in owned for card_id in deck):
                 result = GameResult.fail("Save a valid five-card Triple Triad deck before starting a match.")
-            elif int(account["points"] or 0) < cost:
-                result = GameResult.fail(f"{opponent['name']} costs {cost} MGP to challenge.")
             else:
                 match_id = uuid.uuid4().hex
                 board = [None] * 9
                 npc_hand = [str(value) for value in opponent["deck"]]
-                conn.execute(
-                    "UPDATE player_gold_saucer SET points=points-?,lifetime_spent=lifetime_spent+?,updated_at=CURRENT_TIMESTAMP WHERE player_id=?",
-                    (cost, cost, twitch_id),
-                )
                 conn.execute(
                     "INSERT INTO gold_saucer_triple_triad(player_id,match_id,state,opponent_id,board_json,player_hand_json,npc_hand_json,turn,started_at,updated_at) "
                     "VALUES (?,?, 'active', ?,?,?,?,'player',?,?) "
@@ -12444,9 +12423,8 @@ class CrystalGuildEngine:
                         json.dumps(npc_hand, separators=(",", ":")), now, now,
                     ),
                 )
-                result = GameResult.success(f"TRIPLE TRIAD — match started against {opponent['name']} for {cost} MGP.", triple_triad_match_id=match_id)
-            self._gold_saucer_attach_achievements(twitch_id, result)
-            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+                result = GameResult.success(f"TRIPLE TRIAD — match started against {opponent['name']}.", triple_triad_match_id=match_id)
+            result.data["triple_triad_state"] = self._triple_triad_state_sql(conn, twitch_id, 0, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
@@ -12461,7 +12439,6 @@ class CrystalGuildEngine:
             return self._portal_store_nonmutating_result(action_id, GameResult.fail("Choose a Triple Triad card in hand and an empty board cell."))
         now = int(time.time())
         with self.db.tx(immediate=True) as conn:
-            self._gold_saucer_ensure_account_sql(conn, twitch_id, now)
             match = conn.execute("SELECT * FROM gold_saucer_triple_triad WHERE player_id=?", (twitch_id,)).fetchone()
             if not match or str(match["state"] or "") != "active":
                 result = GameResult.fail("Start a Triple Triad match first.")
@@ -12507,8 +12484,13 @@ class CrystalGuildEngine:
                             triple_triad_move=move_data,
                         )
                     result.data["triple_triad_move"] = move_data
-            self._gold_saucer_attach_achievements(twitch_id, result)
-            result.data["gold_saucer_state"] = self._gold_saucer_state_sql(conn, twitch_id, now)
+                    if result.ok and result.data.get("triple_triad_result"):
+                        # Card Hall achievements belong to the game, not Gold Saucer.
+                        newly_unlocked = self._check_achievements(twitch_id)
+                        if newly_unlocked:
+                            result.data["achievement_unlocks"] = list(newly_unlocked)
+                            result.messages.extend(f"ACHIEVEMENT — {entry}" for entry in newly_unlocked)
+            result.data["triple_triad_state"] = self._triple_triad_state_sql(conn, twitch_id, 0, now)
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
@@ -17515,8 +17497,13 @@ class CrystalGuildEngine:
         )
 
     def _boss_phase(self, boss: dict[str, Any]) -> dict[str, Any]:
-        ratio=boss.get("current_hp",boss["hp"])/max(1,boss.get("max_hp",boss["hp"]))
-        phases=sorted(boss.get("phases",[{"threshold":1.0,"name":"Battle","damage_mult":1.0}]),key=lambda x:x.get("threshold",0),reverse=True)
+        # ``dict.get(key, default)`` evaluates the default eagerly. Raid recovery
+        # and watchdog states can carry current_hp/max_hp without the old ``hp``
+        # key (or be partial during recovery), so never index the legacy key.
+        max_hp = max(1, int(boss.get("max_hp") or boss.get("hp") or boss.get("current_hp") or 1))
+        current_hp = max(0, int(boss.get("current_hp") if boss.get("current_hp") is not None else boss.get("hp") or max_hp))
+        ratio = current_hp / max_hp
+        phases=sorted(boss.get("phases") or [{"threshold":1.0,"name":"Battle","damage_mult":1.0}],key=lambda x:x.get("threshold",0),reverse=True)
         chosen=phases[0]
         for phase in phases:
             if ratio <= phase.get("threshold",1.0):
@@ -17607,6 +17594,8 @@ class CrystalGuildEngine:
         if not boss:
             return {"active":False,"status":status or "IDLE"}
         phase=self._boss_phase(boss)
+        max_hp = max(1, int(boss.get("max_hp") or boss.get("hp") or boss.get("current_hp") or 1))
+        current_hp = max(0, int(boss.get("current_hp") if boss.get("current_hp") is not None else boss.get("hp") or max_hp))
         top=sorted(
             self.raid_roster.values(),
             key=lambda m: raid_contribution_score(damage=m.get("damage",0), healing=m.get("healing",0), mitigation=m.get("mitigation",0)),
@@ -17622,9 +17611,9 @@ class CrystalGuildEngine:
         actionable = [m for m in self.raid_roster.values() if int(m.get("hp",0)) > 0 and not m.get("restrained")]
         ready_actions = sum(1 for m in actionable if self._raid_action_ready_for_next_round(m, boss))
         return {
-            "active":active, "status":status or boss.get("state","rally").upper(), "boss":boss["name"], "tier":boss.get("tier","World Boss"),
+            "active":active, "status":status or str(boss.get("state") or "rally").upper(), "boss":str(boss.get("name") or boss.get("id") or "Raid Boss"), "tier":boss.get("tier","World Boss"),
             "encounter_type":boss.get("encounter_type","Raid"), "encounter_name":boss.get("encounter_name") or boss.get("name"),
-            "hp":boss.get("current_hp",boss["hp"]), "max_hp":boss.get("max_hp",boss["hp"]), "round":boss.get("round",0), "phase":phase.get("name","Battle"),
+            "hp":current_hp, "max_hp":max_hp, "round":boss.get("round",0), "phase":phase.get("name","Battle"),
             "signature":boss.get("signature","Cataclysm"), "raiders":len(self.raid_roster), "alive":sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0),
             "ready_actions":ready_actions, "actionable_raiders":len(actionable),
             "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":top_rows,
@@ -18030,6 +18019,11 @@ class CrystalGuildEngine:
                     (player_id,),
                 )
             return int(row["battles"]) if row else 0
+        if kind == "triple_triad_record":
+            if str(req.get("metric") or "") != "triple_triad_best_streak":
+                return 0
+            row = self.db.one("SELECT best_streak FROM player_triple_triad WHERE player_id=?", (player_id,))
+            return int(row["best_streak"] or 0) if row else 0
         if kind == "gold_saucer_record":
             return int(saucer_record_value(self.db.conn, player_id, str(req.get("metric") or "")))
         if kind == "achievement_category_count":
@@ -18124,6 +18118,8 @@ class CrystalGuildEngine:
             job = self.data.jobs.get(req.get("job_id"), {}).get("name")
             subject = job or "a single Job"
             return f"Fight {amount} battles on {subject} ({value}/{amount})"
+        if kind == "triple_triad_record":
+            return f"Triple Triad win streak {amount:,} ({value:,}/{amount:,})"
         if kind == "gold_saucer_record":
             labels = {
                 "lifetime_earned": "Earn MGP", "lifetime_spent": "Spend MGP",
@@ -18265,14 +18261,13 @@ class CrystalGuildEngine:
             self._gold_saucer_ensure_account_sql(conn, player_id, now)
             conn.execute("DELETE FROM gold_saucer_cactpot WHERE player_id=?", (player_id,))
             conn.execute("DELETE FROM gold_saucer_monster_toss WHERE player_id=?", (player_id,))
-            conn.execute("DELETE FROM gold_saucer_triple_triad WHERE player_id=?", (player_id,))
             conn.execute("DELETE FROM cooldowns WHERE player_id=? AND action IN ('gold_saucer_cactpot','gold_saucer_slots')", (player_id,))
             conn.execute(
                 "INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) VALUES (?,'admin_reset',0,0,'admin_reset','{}',?)",
                 (player_id, now),
             )
             result = GameResult.success(
-                f"GOLD SAUCER — Cleared active Cactpot/Monster Toss/Triple Triad state and attraction cooldowns for {display}. Balance, card collection, deck, and records were preserved.",
+                f"GOLD SAUCER — Cleared active Cactpot/Monster Toss state and attraction cooldowns for {display}. Balance, card collection, deck, and records were preserved.",
                 player_id=player_id,
             )
             if action_id:

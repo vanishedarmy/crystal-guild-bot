@@ -114,6 +114,7 @@ class PersonalRecordsStep1Tests(unittest.TestCase):
     def test_repeat_reads_are_read_only_and_do_not_award_titles(self):
         self.db.execute("INSERT INTO gold_saucer_history(player_id,game,wager,payout,outcome,details_json,created_at) "
                         "VALUES ('100','mini_cactpot',50,0,'loss','{}',1001)")
+        migrations_before = self.db.one("SELECT COUNT(*) AS n FROM schema_migrations")["n"]
         titles_before = self.db.one("SELECT COUNT(*) AS n FROM player_titles WHERE player_id='100'")["n"]
         achievements_before = self.db.one("SELECT COUNT(*) AS n FROM achievements WHERE player_id='100'")["n"]
         first = self._records()
@@ -121,7 +122,9 @@ class PersonalRecordsStep1Tests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM player_titles WHERE player_id='100'")["n"], titles_before)
         self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM achievements WHERE player_id='100'")["n"], achievements_before)
-        self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM schema_migrations WHERE version>23")["n"], 0)
+        # Read-only snapshots must not add migrations; the baseline now
+        # includes legitimate migrations beyond the old v23 contract.
+        self.assertEqual(self.db.one("SELECT COUNT(*) AS n FROM schema_migrations")["n"], migrations_before)
 
 
 if __name__ == "__main__":

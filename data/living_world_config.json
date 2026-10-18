@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "milestone": "LW-1",
+  "enabled": true,
+  "playable": true,
+  "offline_completion_required": true,
+  "fellowship_is_optional": true,
+  "direct_reward_grants_enabled": true,
+  "venture_hooks_enabled": true,
+  "world_event_hooks_enabled": false,
+  "activity_sources": [
+    "solo_venture",
+    "stream_venture",
+    "expedition",
+    "hunt",
+    "world_event",
+    "discovery",
+    "fellowship"
+  ],
+  "feature_flags": {
+    "atlas_ui": true,
+    "exploration": true,
+    "bestiary": false,
+    "world_events": false,
+    "aftermaths": false,
+    "fellowship_contracts": false
+  },
+  "intro_source_region": "greenwind_plains"
+}

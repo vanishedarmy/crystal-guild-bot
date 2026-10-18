@@ -1132,12 +1132,12 @@
     "name": "Heart of the Cards",
     "description": "Build a 3-win Triple Triad streak.",
     "condition": {
-      "type": "gold_saucer_record",
+      "type": "triple_triad_record",
       "metric": "triple_triad_best_streak",
       "amount": 3
     },
     "reward_title": "heart_of_the_cards",
-    "category": "Gold Saucer",
+    "category": "Card Hall",
     "tier": "silver",
     "points": 25,
     "secret": false
@@ -1145,11 +1145,11 @@
   {
     "id": "saucer_sampler",
     "name": "Try Everything Once",
-    "description": "Play all five major Gold Saucer attractions.",
+    "description": "Play all four Gold Saucer attractions.",
     "condition": {
       "type": "gold_saucer_record",
       "metric": "unique_games",
-      "amount": 5
+      "amount": 4
     },
     "reward_title": "saucer_sampler",
     "category": "Gold Saucer",

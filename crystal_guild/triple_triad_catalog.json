@@ -19,7 +19,6 @@
     "bomb",
     "flan"
   ],
-  "daily_matches": 5,
   "cards": [
     {
       "id": "chocobo",
@@ -476,45 +475,36 @@
     {
       "id": "starter",
       "name": "Starter",
-      "difficulty": "Novice",
-      "bonus": 100
+      "difficulty": "Novice"
     },
     {
       "id": "bronze",
       "name": "Bronze",
-      "difficulty": "Standard",
-      "bonus": 150
+      "difficulty": "Standard"
     },
     {
       "id": "silver",
       "name": "Silver",
-      "difficulty": "Skilled",
-      "bonus": 200
+      "difficulty": "Skilled"
     },
     {
       "id": "gold",
       "name": "Gold",
-      "difficulty": "Expert",
-      "bonus": 250
+      "difficulty": "Expert"
     },
     {
       "id": "crystal",
       "name": "Crystal",
-      "difficulty": "Master",
-      "bonus": 350
+      "difficulty": "Master"
     }
   ],
   "opponents": [
     {
       "id": "saucer_attendant",
-      "name": "Saucer Attendant",
+      "name": "Card Hall Attendant",
       "circuit": "starter",
       "difficulty": "Novice",
       "unlock_wins": 0,
-      "cost": 10,
-      "win_payout": 100,
-      "draw_payout": 10,
-      "loss_payout": 5,
       "drop_chance": 1,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -537,10 +527,6 @@
       "circuit": "starter",
       "difficulty": "Novice",
       "unlock_wins": 0,
-      "cost": 10,
-      "win_payout": 100,
-      "draw_payout": 10,
-      "loss_payout": 5,
       "drop_chance": 1,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -562,10 +548,6 @@
       "circuit": "bronze",
       "difficulty": "Standard",
       "unlock_wins": 2,
-      "cost": 20,
-      "win_payout": 120,
-      "draw_payout": 20,
-      "loss_payout": 5,
       "drop_chance": 1,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -590,10 +572,6 @@
       "circuit": "bronze",
       "difficulty": "Standard",
       "unlock_wins": 2,
-      "cost": 20,
-      "win_payout": 120,
-      "draw_payout": 20,
-      "loss_payout": 5,
       "drop_chance": 1,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -618,10 +596,6 @@
       "circuit": "silver",
       "difficulty": "Skilled",
       "unlock_wins": 3,
-      "cost": 30,
-      "win_payout": 150,
-      "draw_payout": 30,
-      "loss_payout": 8,
       "drop_chance": 0.75,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -645,10 +619,6 @@
       "circuit": "silver",
       "difficulty": "Skilled",
       "unlock_wins": 3,
-      "cost": 30,
-      "win_payout": 150,
-      "draw_payout": 30,
-      "loss_payout": 8,
       "drop_chance": 0.75,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -672,10 +642,6 @@
       "circuit": "gold",
       "difficulty": "Expert",
       "unlock_wins": 6,
-      "cost": 40,
-      "win_payout": 200,
-      "draw_payout": 40,
-      "loss_payout": 10,
       "drop_chance": 0.55,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -699,10 +665,6 @@
       "circuit": "gold",
       "difficulty": "Expert",
       "unlock_wins": 6,
-      "cost": 40,
-      "win_payout": 200,
-      "draw_payout": 40,
-      "loss_payout": 10,
       "drop_chance": 0.55,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -725,10 +687,6 @@
       "circuit": "crystal",
       "difficulty": "Master",
       "unlock_wins": 8,
-      "cost": 45,
-      "win_payout": 240,
-      "draw_payout": 45,
-      "loss_payout": 12,
       "drop_chance": 0.35,
       "draw_drop_chance": 0.2,
       "deck": [
@@ -751,10 +709,6 @@
       "circuit": "crystal",
       "difficulty": "Master",
       "unlock_wins": 8,
-      "cost": 45,
-      "win_payout": 240,
-      "draw_payout": 45,
-      "loss_payout": 12,
       "drop_chance": 0.35,
       "draw_drop_chance": 0.2,
       "deck": [

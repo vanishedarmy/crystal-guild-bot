@@ -10,6 +10,7 @@ from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.enemy_combat import choose_enemy_action, effective_special_chance
 from crystal_guild.engine import CrystalGuildEngine
+from crystal_guild.seasonal_events import set_event_control
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,6 +31,10 @@ class EnemyCombatTests(unittest.TestCase):
         )
         self.game.recruit("1", "van", "Van")
         self.game.choose_job("1", "warrior")
+        # Keep generic enemy-profile tests independent of the live seasonal
+        # replacement pool; separate seasonal tests cover those encounters.
+        with self.db.tx() as conn:
+            set_event_control(conn, enabled=False)
 
     def tearDown(self) -> None:
         self.db.close()
