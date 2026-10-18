@@ -1,5 +1,6 @@
 """v1.9.3 Guild Initiatives: real Fellowship receipt and payout integration."""
 from __future__ import annotations
+from contextlib import closing
 
 import random
 import tempfile
@@ -162,7 +163,7 @@ class GuildInitiativesTests(unittest.TestCase):
         original = self.db.one("SELECT gil,level FROM players WHERE twitch_id='101'")
         inventory = {r["item_id"]: r["quantity"] for r in self.db.all("SELECT item_id,quantity FROM inventory WHERE player_id='101'")}
         self.db.close()
-        with sqlite3.connect(self.path) as conn:
+        with closing(sqlite3.connect(self.path)) as conn, conn:
             for table in ("guild_initiative_contributions", "guild_initiative_contracts", "guild_initiative_player_progress", "guild_initiative_rewards", "guild_initiative_maintenance"):
                 conn.execute(f"DROP TABLE {table}")
             conn.execute("DELETE FROM schema_migrations WHERE version=26")

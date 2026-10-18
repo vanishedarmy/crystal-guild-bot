@@ -1,5 +1,6 @@
 """Alpha 12 Camp & Recovery gameplay contract and replay safety."""
 import tempfile
+from contextlib import closing
 import time
 import unittest
 from pathlib import Path
@@ -136,7 +137,7 @@ class CampAlpha12Tests(unittest.TestCase):
         from sqlite3 import connect
         path = Path(self.tmp.name) / 'guild.db'
         self.db.close()
-        with connect(path) as connection:
+        with closing(connect(path)) as connection, connection:
             connection.execute('DROP TABLE player_camp_preparations')
             connection.execute('DELETE FROM schema_migrations WHERE version=24')
             connection.execute('DROP TABLE trading_post_watchlist')
@@ -148,7 +149,7 @@ class CampAlpha12Tests(unittest.TestCase):
         self.assertIsNotNone(self.db.one('SELECT twitch_id FROM players WHERE twitch_id=?', ('123',)))
         backups = sorted((path.parent / 'backups').glob('pre_schema_24_*.db'))
         self.assertTrue(backups, "The schema-24 migration must create a verified backup")
-        with connect(backups[-1]) as connection:
+        with closing(connect(backups[-1])) as connection:
             self.assertEqual(connection.execute('SELECT MAX(version) FROM schema_migrations').fetchone()[0], 23)
             self.assertEqual(connection.execute('SELECT COUNT(*) FROM players').fetchone()[0], 1)
 

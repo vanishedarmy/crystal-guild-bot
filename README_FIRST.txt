@@ -1,3 +1,21 @@
+# Crystal Guild — v1.9.7 + Living World LW-1 / ART-1
+
+This is the full combined Bot + Web build. The Bot runtime baseline remains v1.9.7 Queen's Blood; the release adds the LW-1 Verdant Wilds foundation and ART-1 while retaining current Card Hall and economy changes.
+
+**Important:** Triple Triad now lives in the Card Hall independently of the Gold Saucer, without MGP charges or rewards. Both Queen's Blood and Triple Triad use Card Hall. The eight Atlas regions unlock progressively, and infrastructure progression must be completable offline. ART-1 event/aftermath placeholder illustrations do not enable unfinished event game mechanics.
+
+To upgrade, stop BOTH services and back up live code and databases. Deploy the included `Bot/` and `Web/` source files, preserving private `.env`/config, hosted and Bot SQLite databases, backups, overlay runtime state, and live persistence. Replace the deployed `Web/frontend/dist` directory as a whole with the included Vite output: do not merge old hashed chunks. Copying only changed files into the running build is not the correct deployment procedure.
+
+Do not overwrite production databases or secret environment files. The full release contains no live database, session secrets, or tokens. It includes `Web/frontend/public` and a fully assembled compiled `Web/frontend/dist`; npm rebuild is not required for hosts using prebuilt output. `Web/Dockerfile.prebuilt` deploys the compiled frontend. Source-building hosts may use their established `npm ci` / `npm run build` procedure.
+
+Technical baseline: Bot local schema 27, hosted sync schema 1, Portal Action protocol 39. The abandoned Living World 1A/1B and v1.9.4.4 Accessibility branch are NOT implementation baselines. Follow Bot/README_FIRST.txt and Web/HOSTING_GUIDE.md for historical setup details. This release addendum supersedes their outdated Card Hall/Triple Triad placement descriptions.
+
+Automated Windows staging checks: frontend 908/908, Bot 1013/1013, hosted Web 215/215, compiled verifier PASS, and disposable Bot-to-hosted-Portal discovery PASS. Checked compiled JS/CSS and all 1,156 static source files against the returned manifest. Static HTTP smoke confirmed the Vite entrypoint and several key assets return HTTP 200. This is an assembled full package, **not evidence of a live production deployment**. Browser visual QA could not be completed in the assistant's isolated environment because Chromium navigation was administratively blocked. After deployment, manually check desktop and mobile layouts, sign-in, Card Hall, Atlas, Emporium, and representative offline progression before accepting production sign-off.
+
+---
+
+## Historical baseline instructions (v1.9.7)
+
 # Crystal Guild v1.9.7 — Queen’s Blood
 
 This is the complete Bot + Web release. It includes all 48 approved Queen’s Blood portraits, the solo circuit, live invitations, correspondence duels, and the prebuilt frontend.

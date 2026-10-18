@@ -1,5 +1,6 @@
 """Step 6 release hardening: no invented history, loss of rewards or replay drift."""
 from __future__ import annotations
+from contextlib import closing
 
 import json
 import random
@@ -202,7 +203,7 @@ class Step6RecordsMomentsHardeningTests(unittest.TestCase):
         self.assertEqual(self.db.schema_version(), 28)
         backup = sorted((self.path.parent / "backups").glob("pre_schema_23_*.db"))[-1]
         self.assertTrue(backup.is_file())
-        with sqlite3.connect(backup) as old:
+        with closing(sqlite3.connect(backup)) as old, old:
             self.assertEqual(old.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 22)
             self.assertEqual(old.execute("SELECT gil FROM players WHERE twitch_id='1'").fetchone()[0], 321321)
             self.assertEqual(old.execute("SELECT COUNT(*) FROM transactions WHERE player_id='1' AND source='shop' AND amount=-25000").fetchone()[0], 1)

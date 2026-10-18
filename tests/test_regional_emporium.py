@@ -1,4 +1,5 @@
 from __future__ import annotations
+from contextlib import closing
 
 import json
 import random
@@ -183,7 +184,7 @@ class RegionalEmporiumTests(unittest.TestCase):
         self.db = Database(self.path)
         self.assertEqual(self.db.schema_version(), 28)
         self.assertTrue(self.db.pre_migration_backup_path.exists())
-        with sqlite3.connect(self.db.pre_migration_backup_path) as backup:
+        with closing(sqlite3.connect(self.db.pre_migration_backup_path)) as backup, backup:
             self.assertEqual(backup.execute("PRAGMA quick_check").fetchone()[0], "ok")
             self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 27)
         self.assertEqual(self.db.one("SELECT quantity FROM inventory WHERE player_id='100' AND item_id='iron_ore'")["quantity"], 9)

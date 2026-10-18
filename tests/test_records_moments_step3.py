@@ -1,5 +1,6 @@
 """Step 3: transactionally settled Moments, verified history and live producer hooks."""
 from __future__ import annotations
+from contextlib import closing
 
 import json
 import random
@@ -328,7 +329,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         self.db.execute("INSERT INTO player_bestiary_mastery(player_id,monster_id,research_points,source_defeats) "
                         "VALUES ('1','goblin',1,20)")
         self.db.close()
-        with sqlite3.connect(self.path) as conn:
+        with closing(sqlite3.connect(self.path)) as conn, conn:
             for table in ("player_moment_unlocks", "player_moment_reconciliation", "player_record_events"):
                 conn.execute(f"DROP TABLE {table}")
             conn.execute("DELETE FROM schema_migrations WHERE version>=23")
@@ -338,7 +339,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         self.assertIn("pre_schema_28_", self.db.pre_migration_backup_path.name)
         historic_backups = sorted((self.path.parent / "backups").glob("pre_schema_23_*.db"))
         self.assertTrue(historic_backups)
-        with sqlite3.connect(historic_backups[-1]) as backup:
+        with closing(sqlite3.connect(historic_backups[-1])) as backup, backup:
             self.assertEqual(backup.execute("PRAGMA quick_check").fetchone()[0], "ok")
             self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 22)
         self.assertEqual(self.db.one("SELECT source_defeats FROM player_bestiary_mastery WHERE player_id='1' AND monster_id='goblin'")["source_defeats"], 20)

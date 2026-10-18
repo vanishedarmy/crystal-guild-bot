@@ -1,4 +1,5 @@
 from __future__ import annotations
+from contextlib import closing
 
 import json
 import os
@@ -223,7 +224,7 @@ class CloudRuntimeTests(unittest.TestCase):
             target = create_startup_backup(settings, keep=2, reserve_bytes=0)
             self.assertIsNotNone(target)
             assert target is not None
-            with sqlite3.connect(target) as conn:
+            with closing(sqlite3.connect(target)) as conn, conn:
                 self.assertEqual(conn.execute("PRAGMA quick_check").fetchone()[0], "ok")
                 self.assertEqual(conn.execute("SELECT COUNT(*) FROM players").fetchone()[0], 1)
             self.assertLessEqual(len(list(backup_dir.glob("crystal_guild-startup-*.db"))), 2)
@@ -235,7 +236,7 @@ class CloudRuntimeTests(unittest.TestCase):
             db.execute("INSERT INTO players(twitch_id,username,display_name) VALUES ('1','van','Van')")
             db.close()
             target = copy_database_for_migration(source, Path(tmp) / "out" / "crystal_guild.db")
-            with sqlite3.connect(target) as conn:
+            with closing(sqlite3.connect(target)) as conn, conn:
                 self.assertEqual(conn.execute("PRAGMA quick_check").fetchone()[0], "ok")
                 self.assertEqual(conn.execute("SELECT COUNT(*) FROM players").fetchone()[0], 1)
 

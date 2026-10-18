@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import concurrent.futures
+from contextlib import closing
 import sqlite3
 import tempfile
 import unittest
@@ -89,7 +90,7 @@ class LivingWorldFoundationTests(unittest.TestCase):
     def test_upgrade_27_to_28_creates_backup_and_keeps_regional_shop(self):
         # Simulate a real v27 file by dropping only the freshly created v28 tables.
         self.db.close()
-        with sqlite3.connect(self.path) as raw:
+        with closing(sqlite3.connect(self.path)) as raw, raw:
             raw.execute('PRAGMA foreign_keys=OFF')
             for name in ('lw_event_contributions','lw_world_events','lw_discoveries',
                          'lw_activity_receipts','lw_region_progress','lw_reward_receipts','lw_world_state'):
