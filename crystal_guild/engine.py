@@ -1834,6 +1834,27 @@ class CrystalGuildEngine:
             return None
         return item, item_level, min_level, max_level
 
+    @staticmethod
+    def _unusable_item_resource(effects: list[dict[str, Any]], target: dict[str, Any]) -> str:
+        """Reject a resource-only item only if *none* of its effects can apply.
+
+        MP-only and AP-only items remain Job-specific, while mixed recovery
+        (such as Elixir) must not require a Job to possess both resource pools.
+        HP, status, and other effects are evaluated normally at resolution.
+        """
+        effect_types = {str(effect.get("type") or "") for effect in effects}
+        if not effect_types or not effect_types.issubset({"restore_mp", "restore_ap"}):
+            return ""
+        if ("restore_mp" in effect_types and int(target.get("max_mp", 0)) > 0) or (
+            "restore_ap" in effect_types and int(target.get("max_ap", 0)) > 0
+        ):
+            return ""
+        if effect_types == {"restore_mp"}:
+            return "MP"
+        if effect_types == {"restore_ap"}:
+            return "AP"
+        return "MP or AP"
+
     def _solo_owned_battle_items(self, twitch_id: str, meta: dict[str, Any]) -> list[dict[str, Any]]:
         rows = self.db.all(
             "SELECT item_id,quantity FROM inventory WHERE player_id=? AND quantity>0 ORDER BY item_id",
@@ -1850,12 +1871,10 @@ class CrystalGuildEngine:
             target = str(use.get("target", "ally"))
             usable = not requires_revive and int(meta.get("hp", 0)) > 0
             reason = "Revive items cannot target the acting hero while they are conscious." if requires_revive else ""
-            if usable and any(effect.get("type") == "restore_mp" for effect in effects) and int(meta.get("max_mp", 0)) <= 0:
+            unavailable_resource = self._unusable_item_resource(effects, meta)
+            if usable and unavailable_resource:
                 usable = False
-                reason = "Your current Job does not use MP."
-            if usable and any(effect.get("type") == "restore_ap" for effect in effects) and int(meta.get("max_ap", 0)) <= 0:
-                usable = False
-                reason = "Your current Job does not use AP."
+                reason = f"Your current Job does not use {unavailable_resource}."
             result.append({
                 "id": str(item["id"]),
                 "name": str(item.get("name") or item["id"]),
@@ -3692,10 +3711,11 @@ class CrystalGuildEngine:
             if not target_query and target_mode == "ally":
                 return GameResult.fail(f"{item['name']} needs a KO'd ally target. Example: !use {item['name']} <hero>.")
             return GameResult.fail(f"{target['name']} is not KO'd.")
-        if target and any(effect.get("type") == "restore_mp" for effect in effects) and int(target.get("max_mp", 0)) <= 0:
-            return GameResult.fail(f"{target['name']} does not use MP; {item['name']} has no effect on that Job.")
-        if target and any(effect.get("type") == "restore_ap" for effect in effects) and int(target.get("max_ap", 0)) <= 0:
-            return GameResult.fail(f"{target['name']} does not use AP; {item['name']} has no effect on that Job.")
+        unavailable_resource = self._unusable_item_resource(effects, target) if target else ""
+        if unavailable_resource:
+            return GameResult.fail(
+                f"{target['name']} does not use {unavailable_resource}; {item['name']} has no effect on that Job."
+            )
 
         meta["action"] = {"kind": "item", "item_id": item["id"], "target_id": target_id}
         ready = self._all_round_actions_queued()

@@ -171,7 +171,7 @@
     "price": 850,
     "shop": true,
     "shop_level": 8,
-    "description": "Immediately restores a hero to full HP, MP and AP outside combat and ends an active camp rest.",
+    "description": "Immediately restores a hero to full HP and their applicable Job resources (MP and/or AP) outside combat, and ends an active camp rest.",
     "use": {
       "target": "self",
       "field": true,
@@ -5932,7 +5932,7 @@
     "price": 8000,
     "shop": false,
     "shop_level": 40,
-    "description": "Fully restores HP, MP and AP to one hero. Not sold in normal shops.",
+    "description": "Fully restores HP and applicable Job resources (MP and/or AP) to one hero. Not sold in normal shops.",
     "use": {
       "target": "ally",
       "field": true,
@@ -5960,7 +5960,7 @@
     "price": 25000,
     "shop": false,
     "shop_level": 50,
-    "description": "Fully restores HP, MP and AP to every living hero in Active Battle. Exceptionally rare.",
+    "description": "Fully restores HP and applicable Job resources (MP and/or AP) to every living hero in Active Battle. Exceptionally rare.",
     "use": {
       "target": "party",
       "field": false,
