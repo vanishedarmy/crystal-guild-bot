@@ -1,6 +1,6 @@
 # v1.9.7 — Queen’s Blood
 
-Queen’s Blood joins Crystal Guild in its own Card Hall, separate from Gold Saucer and Triple Triad.
+Queen’s Blood joins Triple Triad in the standalone Card Hall. Both card games are separate from Gold Saucer; Triple Triad has no MGP rewards or costs.
 
 - **48 illustrated cards:** 16 foundation cards, 16 heroes, and 16 summons and villains. All six approved batches are included, with the final Cactuar, Cloud, Zidane, FFVII Remake Leviathan, and reference-pose Sephiroth revisions. Lightweight 320×480 display copies keep browsing fast; the 1024×1536 lossless originals remain available in the art viewer. Portraits retain their full frame; collection and selected-card views open larger artwork dialogs.
 - **Solo progression:** guided tutorial, practice matches, 14 circuit opponents, guaranteed first-win rewards, and three saved 15-card deck slots. Every card can be obtained solo. PvP, raids, and live streams are not progression gates.
