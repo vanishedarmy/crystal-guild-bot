@@ -90,7 +90,6 @@ from .daily_provisions import (
     subscriber_perk,
 )
 from .data import GameData
-from .living_world import record_solo_bank
 from .bestiary_progress import reconcile_mastery
 from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
                                reconcile_all_owned_moment_rewards)
@@ -2307,16 +2306,6 @@ class CrystalGuildEngine:
                     )
         except Exception:
             LOGGER.exception("Unable to record completed seasonal Solo Venture objective")
-        # LW-1: only banked cleared Solo Ventures in Greenwind Plains count.
-        # Isolated from combat/seasonal randomness and existing reward flows.
-        world_discovery = None
-        if self.data.living_world_config.get("venture_hooks_enabled"):
-            try:
-                world_discovery = record_solo_bank(self.db, twitch_id, expedition,
-                                                  self.data.living_world_discoveries,
-                                                  source_region=self.data.living_world_config.get("intro_source_region", "greenwind_plains"))
-            except Exception:
-                LOGGER.exception("Unable to record LW-1 discovery after banked Solo Venture")
         achievements = self._check_achievements(twitch_id)
         secured = expedition.get("secured") or {}
         item_labels = [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in items]
@@ -2332,9 +2321,7 @@ class CrystalGuildEngine:
                 "loot": [*secured_loot, *item_labels], "secured_loot": secured_loot, "fellowship_renown": renown, "achievements": [str(x) for x in achievements[:4]],
             },
             "history": list(expedition.get("history") or [])[-8:],
-            "living_world_discovery": world_discovery,
-            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2], *seasonal_notes,
-                *( [f"LIVING WORLD — {world_discovery['name']} discovered! +{world_discovery['reward_gil']} Gil"] if world_discovery else [] )]],
+            "notes": [str(x) for x in [*fellowship_notes[:2], *chocobo_notes[:2], *seasonal_notes]],
             "player": self._solo_result_vitals(twitch_id),
             "cooldown_seconds": SOLO_VENTURE_COOLDOWN_SECONDS,
             "interactive": True,
@@ -2344,7 +2331,7 @@ class CrystalGuildEngine:
         return GameResult.success(
             f"SOLO VENTURE — {stage} stage{'s' if stage != 1 else ''} complete. Banked {gil} Gil"
             + (f" and {len(items)} spoil stack{'s' if len(items) != 1 else ''}." if items else "."),
-            solo_result=summary, solo_expedition_finished=True, living_world_discovery=world_discovery,
+            solo_result=summary, solo_expedition_finished=True,
         )
 
     def _solo_finish_defeat(self, twitch_id: str, expedition: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
@@ -2573,7 +2560,6 @@ class CrystalGuildEngine:
         selected_prep = plan["prep_id"] if plan["prep_id"] in self._CAMP_PREPARATIONS else ""
         merc_contract = self._merc_claim_for_mission(twitch_id, "venture")
         expedition = {
-            "lw_activity_id": uuid.uuid4().hex,
             "version": 1, "started_at": now, "updated_at": now, "stage": 1, "max_stages": SOLO_EXPEDITION_MAX_STAGES,
             "region_id": str(p["current_region"]), "status": "event", "secured": {"xp": 0, "jp": 0}, "secured_loot": [],
             "spoils": {"gil": 0, "items": []}, "history": [], "round_history": [], "event": None, "combat": None,
@@ -4383,11 +4369,7 @@ class CrystalGuildEngine:
                 magnitude = float(effect.get("magnitude", 0.0))
                 chance = effective_status_chance(effect, profile)
                 if recipient == "self":
-                    # The 90% debuff accuracy cap applies to hostile statuses,
-                    # not an enemy's explicitly guaranteed self-buff. Mighty
-                    # Guard's Protect + Power Up both declare chance=1.0.
-                    self_chance = max(0.0, min(1.0, float(effect.get("chance", 1.0))))
-                    if self.rng.random() < self_chance:
+                    if self.rng.random() <= chance:
                         apply_status(monster_statuses, status_id, turns, magnitude)
                         status_parts.append(status_id.replace("_", " ").title())
                     continue
@@ -17497,13 +17479,8 @@ class CrystalGuildEngine:
         )
 
     def _boss_phase(self, boss: dict[str, Any]) -> dict[str, Any]:
-        # ``dict.get(key, default)`` evaluates the default eagerly. Raid recovery
-        # and watchdog states can carry current_hp/max_hp without the old ``hp``
-        # key (or be partial during recovery), so never index the legacy key.
-        max_hp = max(1, int(boss.get("max_hp") or boss.get("hp") or boss.get("current_hp") or 1))
-        current_hp = max(0, int(boss.get("current_hp") if boss.get("current_hp") is not None else boss.get("hp") or max_hp))
-        ratio = current_hp / max_hp
-        phases=sorted(boss.get("phases") or [{"threshold":1.0,"name":"Battle","damage_mult":1.0}],key=lambda x:x.get("threshold",0),reverse=True)
+        ratio=boss.get("current_hp",boss["hp"])/max(1,boss.get("max_hp",boss["hp"]))
+        phases=sorted(boss.get("phases",[{"threshold":1.0,"name":"Battle","damage_mult":1.0}]),key=lambda x:x.get("threshold",0),reverse=True)
         chosen=phases[0]
         for phase in phases:
             if ratio <= phase.get("threshold",1.0):
@@ -17594,8 +17571,6 @@ class CrystalGuildEngine:
         if not boss:
             return {"active":False,"status":status or "IDLE"}
         phase=self._boss_phase(boss)
-        max_hp = max(1, int(boss.get("max_hp") or boss.get("hp") or boss.get("current_hp") or 1))
-        current_hp = max(0, int(boss.get("current_hp") if boss.get("current_hp") is not None else boss.get("hp") or max_hp))
         top=sorted(
             self.raid_roster.values(),
             key=lambda m: raid_contribution_score(damage=m.get("damage",0), healing=m.get("healing",0), mitigation=m.get("mitigation",0)),
@@ -17611,9 +17586,9 @@ class CrystalGuildEngine:
         actionable = [m for m in self.raid_roster.values() if int(m.get("hp",0)) > 0 and not m.get("restrained")]
         ready_actions = sum(1 for m in actionable if self._raid_action_ready_for_next_round(m, boss))
         return {
-            "active":active, "status":status or str(boss.get("state") or "rally").upper(), "boss":str(boss.get("name") or boss.get("id") or "Raid Boss"), "tier":boss.get("tier","World Boss"),
+            "active":active, "status":status or boss.get("state","rally").upper(), "boss":boss["name"], "tier":boss.get("tier","World Boss"),
             "encounter_type":boss.get("encounter_type","Raid"), "encounter_name":boss.get("encounter_name") or boss.get("name"),
-            "hp":current_hp, "max_hp":max_hp, "round":boss.get("round",0), "phase":phase.get("name","Battle"),
+            "hp":boss.get("current_hp",boss["hp"]), "max_hp":boss.get("max_hp",boss["hp"]), "round":boss.get("round",0), "phase":phase.get("name","Battle"),
             "signature":boss.get("signature","Cataclysm"), "raiders":len(self.raid_roster), "alive":sum(1 for m in self.raid_roster.values() if m.get("hp",0)>0),
             "ready_actions":ready_actions, "actionable_raiders":len(actionable),
             "enraged":boss.get("round",0)>=boss.get("enrage_round",999), "summon_gauge":boss.get("summon_gauge",0), "top":top_rows,

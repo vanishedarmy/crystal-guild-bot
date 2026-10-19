@@ -20,7 +20,6 @@ from .gold_saucer import gold_saucer_record_value
 from .personal_records import project_personal_records
 from .guild_initiatives import contract_view, board_view
 from .moments import public_moments_view
-from .living_world import player_snapshot as living_world_player_snapshot
 from .trophies import TROPHY_CATALOG, TROPHIES_BY_ID
 from .fellowship import (AIRSHIP_MISSIONS, AIRSHIP_UPGRADES, DEEDS, FACILITIES, GUILD_EXPANSION_FACILITY_IDS, PUBLIC_GUILD_FACILITY_IDS, GUILD_RANKS, PROJECTS, WEEKLY_ORDER_SET_REWARD, facility_effects, fellowship_level_progress, guild_rank_for_renown, legacy_snapshot_from_connection, weekly_orders, weekly_period_key)
 
@@ -1582,16 +1581,6 @@ class PortalRepository:
                 return {"player": self._public_identity(player), "seasonal": public_snapshot(conn, str(player["twitch_id"]))}
             except sqlite3.Error:
                 return {"player": self._public_identity(player), "seasonal": {"state":"disabled","active":False,"redemption":False}}
-
-    def living_world(self, key: str) -> dict[str, Any] | None:
-        with self.connect() as conn:
-            player = self._find_player(conn, key)
-            if not player:
-                return None
-            return living_world_player_snapshot(
-                conn, str(player["twitch_id"]), self.data.living_world_regions,
-                self.data.living_world_config, self.data.living_world_discoveries
-            )
 
     def records(self, key: str) -> dict[str, Any] | None:
         with self.connect() as conn:

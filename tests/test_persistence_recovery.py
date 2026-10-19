@@ -11,7 +11,7 @@ from unittest.mock import patch
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
 from crystal_guild.engine import CrystalGuildEngine
-from crystal_guild.portal_sync import MODULES, PortalSyncClient
+from crystal_guild.portal_sync import PortalSyncClient
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -188,9 +188,7 @@ class PortalSyncRecoveryTests(unittest.TestCase):
                     yield
 
             repo = Repo()
-            # The retry test uses an isolated repository mock. Keep its
-            # module methods in step with the real Portal snapshot contract.
-            for module in MODULES:
+            for module in ("overview", "jobs", "inventory", "hunts", "bestiary", "relics", "achievements", "records"):
                 setattr(repo, module, lambda username, module=module: {"module": module, "username": username})
 
             class Client(PortalSyncClient):

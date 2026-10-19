@@ -1,5 +1,4 @@
 from __future__ import annotations
-from contextlib import closing
 
 import json
 import os
@@ -224,7 +223,7 @@ class CloudRuntimeTests(unittest.TestCase):
             target = create_startup_backup(settings, keep=2, reserve_bytes=0)
             self.assertIsNotNone(target)
             assert target is not None
-            with closing(sqlite3.connect(target)) as conn, conn:
+            with sqlite3.connect(target) as conn:
                 self.assertEqual(conn.execute("PRAGMA quick_check").fetchone()[0], "ok")
                 self.assertEqual(conn.execute("SELECT COUNT(*) FROM players").fetchone()[0], 1)
             self.assertLessEqual(len(list(backup_dir.glob("crystal_guild-startup-*.db"))), 2)
@@ -236,7 +235,7 @@ class CloudRuntimeTests(unittest.TestCase):
             db.execute("INSERT INTO players(twitch_id,username,display_name) VALUES ('1','van','Van')")
             db.close()
             target = copy_database_for_migration(source, Path(tmp) / "out" / "crystal_guild.db")
-            with closing(sqlite3.connect(target)) as conn, conn:
+            with sqlite3.connect(target) as conn:
                 self.assertEqual(conn.execute("PRAGMA quick_check").fetchone()[0], "ok")
                 self.assertEqual(conn.execute("SELECT COUNT(*) FROM players").fetchone()[0], 1)
 
@@ -259,9 +258,8 @@ class CloudRuntimeTests(unittest.TestCase):
         source = (ROOT / "RENDER_CLOUD_SETUP.md").read_text(encoding="utf-8")
         self.assertIn("Alpha 8 Seasonal Event Framework Bot and matching Web build", source)
         upgrade = (ROOT / "UPGRADE_GUIDE.md").read_text(encoding="utf-8")
-        self.assertIn("Back up both your live Bot database", upgrade)
-        self.assertIn("pre-migration backup", upgrade)
-        self.assertIn("database", upgrade.lower())
+        self.assertIn("17 → 18", upgrade)
+        self.assertIn("pre_schema_21", upgrade)
         self.assertIn("/var/data/crystal_guild.db", source)
         self.assertIn("/var/data/twitch_tokens.db", source)
         self.assertIn("run_cloud_preflight.py", source)

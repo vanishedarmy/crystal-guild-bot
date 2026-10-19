@@ -89,12 +89,10 @@ class GoldSaucerRC2BalanceTests(unittest.TestCase):
             self.assertGreater(int(course["payouts"][1]), cost)
             self.assertGreater(int(course["payouts"][2]), cost)
             self.assertGreater(int(course["payouts"][3]), cost)
-        # Card Hall Triad has no wagering economy, while Chocobo Racing still uses MGP.
-        self.assertEqual(len(TRIPLE_TRIAD_OPPONENTS), 10)
         for opponent in TRIPLE_TRIAD_OPPONENTS:
-            self.assertNotIn("cost", opponent)
-            self.assertNotIn("win_payout", opponent)
-            self.assertNotIn("draw_payout", opponent)
+            cost = int(opponent["cost"])
+            self.assertGreater(int(opponent["win_payout"]), cost)
+            self.assertEqual(int(opponent["draw_payout"]), cost)
 
     def test_cactpot_history_tracks_net_outcome_and_net_win_count(self):
         tmp = tempfile.TemporaryDirectory()

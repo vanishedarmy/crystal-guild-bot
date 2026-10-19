@@ -35,8 +35,8 @@ class BestiaryResearchStep3Tests(unittest.TestCase):
         )
 
     def test_schema_22_adds_mastery_receipt_ledger(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 28)
-        self.assertEqual(self.db.schema_version(), 28)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(self.db.schema_version(), 26)
         columns = {row["name"] for row in self.db.all("PRAGMA table_info(player_bestiary_mastery)")}
         self.assertEqual(columns, {"player_id", "monster_id", "research_points", "source_defeats", "mastered_at"})
 

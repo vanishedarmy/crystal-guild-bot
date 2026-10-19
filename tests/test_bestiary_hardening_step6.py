@@ -1,6 +1,5 @@
 """Step 6 release gates: historical saves, visibility, isolation and once-only rewards."""
 from __future__ import annotations
-from contextlib import closing
 
 import sqlite3
 import tempfile
@@ -147,12 +146,12 @@ class BestiaryHardeningStep6(unittest.TestCase):
         self.db.close()
         # Synthetic legacy fixture: revert schema-22 and schema-23 metadata, leaving all
         # historical schema-21 gameplay and seasonal data intact.
-        with closing(sqlite3.connect(self.path)) as conn, conn:
+        with sqlite3.connect(self.path) as conn:
             conn.execute("DROP TABLE player_bestiary_mastery")
-            conn.execute("DELETE FROM schema_migrations WHERE version>=22")
+            conn.execute("DELETE FROM schema_migrations WHERE version IN (22,23)")
             self.assertEqual(conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 21)
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 28)
+        self.assertEqual(self.db.schema_version(), 26)
         backup = self.db.pre_migration_backup_path
         self.assertIsNotNone(backup)
         self.assertTrue(backup.is_file())
@@ -160,7 +159,7 @@ class BestiaryHardeningStep6(unittest.TestCase):
         # own migration backup with the original schema-21 snapshot.
         original_backup = sorted((self.path.parent / "backups").glob("pre_schema_22_*.db"))
         self.assertTrue(original_backup)
-        with closing(sqlite3.connect(original_backup[-1])) as older, older:
+        with sqlite3.connect(original_backup[-1]) as older:
             self.assertEqual(older.execute("PRAGMA quick_check").fetchone()[0], "ok")
             self.assertEqual(older.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 21)
             self.assertEqual(older.execute("SELECT defeats FROM bestiary WHERE player_id='100' AND monster_id='goblin'").fetchone()[0], 25)

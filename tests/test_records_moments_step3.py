@@ -1,6 +1,5 @@
 """Step 3: transactionally settled Moments, verified history and live producer hooks."""
 from __future__ import annotations
-from contextlib import closing
 
 import json
 import random
@@ -37,7 +36,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         for pid, user in [("1", "van"), ("2", "mira"), ("3", "cid")]:
             self.assertTrue(self.game.recruit(pid, user, user.title()).ok)
             self.assertTrue(self.game.choose_job(pid, "warrior").ok)
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 28)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
 
     def tearDown(self):
         self.db.close()
@@ -69,7 +68,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         return facts
 
     def test_schema_23_additive_and_independent_existing_tables(self):
-        self.assertEqual(self.db.schema_version(), 28)
+        self.assertEqual(self.db.schema_version(), 26)
         for table in ("player_moment_unlocks", "player_moment_reconciliation", "player_record_events",
                       "player_bestiary_mastery", "player_titles"):
             self.assertIsNotNone(self.db.one("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)))
@@ -329,17 +328,15 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         self.db.execute("INSERT INTO player_bestiary_mastery(player_id,monster_id,research_points,source_defeats) "
                         "VALUES ('1','goblin',1,20)")
         self.db.close()
-        with closing(sqlite3.connect(self.path)) as conn, conn:
+        with sqlite3.connect(self.path) as conn:
             for table in ("player_moment_unlocks", "player_moment_reconciliation", "player_record_events"):
                 conn.execute(f"DROP TABLE {table}")
-            conn.execute("DELETE FROM schema_migrations WHERE version>=23")
+            conn.execute("DELETE FROM schema_migrations WHERE version=23")
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 28)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertIsNotNone(self.db.pre_migration_backup_path)
-        self.assertIn("pre_schema_28_", self.db.pre_migration_backup_path.name)
-        historic_backups = sorted((self.path.parent / "backups").glob("pre_schema_23_*.db"))
-        self.assertTrue(historic_backups)
-        with closing(sqlite3.connect(historic_backups[-1])) as backup, backup:
+        self.assertIn("pre_schema_23_", self.db.pre_migration_backup_path.name)
+        with sqlite3.connect(self.db.pre_migration_backup_path) as backup:
             self.assertEqual(backup.execute("PRAGMA quick_check").fetchone()[0], "ok")
             self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 22)
         self.assertEqual(self.db.one("SELECT source_defeats FROM player_bestiary_mastery WHERE player_id='1' AND monster_id='goblin'")["source_defeats"], 20)

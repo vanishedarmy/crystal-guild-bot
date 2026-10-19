@@ -98,6 +98,7 @@ generate_portal_sync_key.bat
 generate_portal_sync_key.py
 open_twitch_authorization.bat
 overlay/raid_overlay.html
+overlay/state.json
 prepare_render_migration.py
 pyproject.toml
 render.yaml

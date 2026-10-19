@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-from contextlib import closing
 import json
 import os
 import sqlite3
@@ -30,7 +29,7 @@ class TwitchTokenStore:
         return conn
 
     def _initialize(self) -> None:
-        with closing(self._connect()) as conn, conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS twitch_tokens(
@@ -59,7 +58,7 @@ class TwitchTokenStore:
         refresh = str(refresh_token or "").strip()
         if not uid or not token or not refresh:
             raise ValueError("user_id, access_token, and refresh_token are required")
-        with closing(self._connect()) as conn, conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 INSERT INTO twitch_tokens(user_id,access_token,refresh_token,updated_at)
@@ -75,25 +74,25 @@ class TwitchTokenStore:
         self._tighten_permissions()
 
     def delete(self, user_id: str) -> None:
-        with closing(self._connect()) as conn, conn:
+        with self._connect() as conn:
             conn.execute("DELETE FROM twitch_tokens WHERE user_id=?", (str(user_id),))
             conn.commit()
 
     def load(self) -> list[dict[str, str]]:
-        with closing(self._connect()) as conn, conn:
+        with self._connect() as conn:
             rows = conn.execute(
                 "SELECT user_id,access_token,refresh_token FROM twitch_tokens ORDER BY user_id"
             ).fetchall()
         return [dict(row) for row in rows]
 
     def count(self) -> int:
-        with closing(self._connect()) as conn, conn:
+        with self._connect() as conn:
             row = conn.execute("SELECT COUNT(*) AS n FROM twitch_tokens").fetchone()
         return int(row["n"])
 
     def get(self, user_id: str) -> dict[str, str] | None:
         """Return one managed Twitch token row without exposing it elsewhere."""
-        with closing(self._connect()) as conn, conn:
+        with self._connect() as conn:
             row = conn.execute(
                 "SELECT user_id,access_token,refresh_token FROM twitch_tokens WHERE user_id=?",
                 (str(user_id),),
@@ -153,7 +152,7 @@ def copy_token_database(source: str | Path, target: str | Path, expected_user_id
     if not source_path.exists():
         raise FileNotFoundError(source_path)
     try:
-        with closing(sqlite3.connect(f"file:{source_path}?mode=ro", uri=True, timeout=5.0)) as conn:
+        with sqlite3.connect(f"file:{source_path}?mode=ro", uri=True, timeout=5.0) as conn:
             rows = conn.execute(
                 "SELECT user_id,access_token,refresh_token FROM twitch_tokens ORDER BY user_id"
             ).fetchall()

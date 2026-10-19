@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from contextlib import closing
 import os
 import shutil
 import sqlite3
@@ -35,7 +34,7 @@ def cloud_bootstrap_ready(settings: Settings) -> tuple[bool, list[str]]:
         # Fail closed before Database() can create or migrate anything. A wrong,
         # empty, or damaged upload must never become the authoritative Guild.
         try:
-            with closing(sqlite3.connect(f"file:{database.resolve()}?mode=ro", uri=True, timeout=5.0)) as conn:
+            with sqlite3.connect(f"file:{database.resolve()}?mode=ro", uri=True, timeout=5.0) as conn:
                 quick = conn.execute("PRAGMA quick_check").fetchone()
                 players = conn.execute(
                     "SELECT 1 FROM sqlite_master WHERE type='table' AND name='players'"

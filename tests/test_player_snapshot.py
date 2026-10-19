@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import tempfile
-from contextlib import ExitStack
 import unittest
 from pathlib import Path
 
@@ -15,16 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PlayerSnapshotTests(unittest.TestCase):
     def test_snapshot_repository_tracks_live_player_data(self):
-        with tempfile.TemporaryDirectory() as tmp, ExitStack() as cleanup:
+        with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "guild.db"
             db = Database(path)
-            cleanup.callback(db.close)
             data = GameData(ROOT / "data")
             engine = CrystalGuildEngine(db, data, venture_cooldown_seconds=0, venture_treasure_chance=0.0)
             engine.recruit("100", "van", "Van")
             engine.choose_job("100", "warrior")
             repo = PortalRepository(path, ROOT / "data")
-            cleanup.callback(repo.close)
             profile = repo.overview("van")
             self.assertIsNotNone(profile)
             self.assertEqual(profile["identity"]["display_name"], "Van")
@@ -44,13 +41,13 @@ class PlayerSnapshotTests(unittest.TestCase):
             self.assertTrue(all(entry["level"] is None for entry in bestiary["monsters"]))
             self.assertTrue(all(entry["combat_profile"] is None for entry in bestiary["monsters"]))
             self.assertTrue(all(entry["active_skill"] is None for entry in bestiary["monsters"]))
+            db.close()
 
 
     def test_snapshot_reads_full_rest_sentinel_at_selected_job_maximum(self):
-        with tempfile.TemporaryDirectory() as tmp, ExitStack() as cleanup:
+        with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "guild.db"
             db = Database(path)
-            cleanup.callback(db.close)
             data = GameData(ROOT / "data")
             engine = CrystalGuildEngine(db, data, venture_cooldown_seconds=0, venture_treasure_chance=0.0)
             engine.recruit("100", "van", "Van")
@@ -62,17 +59,17 @@ class PlayerSnapshotTests(unittest.TestCase):
             self.assertGreater(int(white["max_mp"]), int(black["max_mp"]))
 
             repo = PortalRepository(path, ROOT / "data")
-            cleanup.callback(repo.close)
             profile = repo.overview("van")
             self.assertEqual(profile["resources"]["mp"]["current"], profile["resources"]["mp"]["max"] )
             self.assertEqual(profile["resources"]["mp"]["max"], int(white["max_mp"]))
+            repo.close()
+            db.close()
 
 
     def test_snapshot_resource_bars_follow_live_battle_runtime_state(self):
-        with tempfile.TemporaryDirectory() as tmp, ExitStack() as cleanup:
+        with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "guild.db"
             db = Database(path)
-            cleanup.callback(db.close)
             data = GameData(ROOT / "data")
             engine = CrystalGuildEngine(db, data, venture_cooldown_seconds=0, venture_treasure_chance=0.0)
             engine.recruit("100", "van", "Van")
@@ -84,19 +81,19 @@ class PlayerSnapshotTests(unittest.TestCase):
             engine._persist_runtime_state()
 
             repo = PortalRepository(path, ROOT / "data")
-            cleanup.callback(repo.close)
             profile = repo.overview("van")
             self.assertTrue(profile["resources"]["live_battle"])
             self.assertEqual(profile["resources"]["ap"]["current"], actor["ap"])
             self.assertEqual(profile["resources"]["mp"]["max"], 0)
+            repo.close()
+            db.close()
 
 
 
     def test_resting_snapshot_includes_absolute_camp_deadline(self):
-        with tempfile.TemporaryDirectory() as tmp, ExitStack() as cleanup:
+        with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "guild.db"
             db = Database(path)
-            cleanup.callback(db.close)
             data = GameData(ROOT / "data")
             engine = CrystalGuildEngine(db, data, venture_cooldown_seconds=0, venture_treasure_chance=0.0)
             engine.recruit("100", "timerhero", "Timer Hero")
@@ -106,11 +103,12 @@ class PlayerSnapshotTests(unittest.TestCase):
             db.execute("UPDATE players SET camp_until=? WHERE twitch_id='100'", (until,))
 
             repo = PortalRepository(path, ROOT / "data")
-            cleanup.callback(repo.close)
             profile = repo.overview("timerhero")
             self.assertEqual(profile["status"]["state"], "resting")
             self.assertEqual(profile["status"]["until"], until)
             self.assertGreater(profile["status"]["remaining_seconds"], 0)
+            repo.close()
+            db.close()
 
 
 if __name__ == "__main__":

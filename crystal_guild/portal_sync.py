@@ -32,7 +32,6 @@ MODULES = (
     "guild_board",
     "trophies",
     "seasonal",
-    "living_world",
 )
 
 
@@ -105,7 +104,6 @@ class PortalSyncClient:
             "guild_board": self.repository.guild_board,
             "trophies": getattr(self.repository, "trophies", lambda _username: {"player": {}, "unlocked": []}),
             "seasonal": getattr(self.repository, "seasonal", lambda _username: {"player": {}, "seasonal": {"state":"disabled"}}),
-            "living_world": self.repository.living_world,
         }
         snapshot: dict[str, Any] = {}
         # One SQLite read transaction keeps all modules on the same WAL snapshot,

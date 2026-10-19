@@ -54,7 +54,7 @@ class WayfarerSoloVentureTests(unittest.TestCase):
         return state
 
     def test_schema_five_persists_solo_runs_and_migrates_schema_four_with_backup(self):
-        self.assertEqual(self.db.schema_version(), 28)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='solo_expeditions'"))
         self.db.close()
 
@@ -66,7 +66,7 @@ class WayfarerSoloVentureTests(unittest.TestCase):
 
         migrated = Database(self.path)
         try:
-            self.assertEqual(migrated.schema_version(), 28)
+            self.assertEqual(migrated.schema_version(), 23)
             self.assertIsNotNone(migrated.one("SELECT name FROM sqlite_master WHERE type='table' AND name='solo_expeditions'"))
             self.assertIsNotNone(migrated.pre_migration_backup_path)
             self.assertIn("pre_schema_5", Path(migrated.pre_migration_backup_path).name)
@@ -226,7 +226,6 @@ class WayfarerSoloVentureTests(unittest.TestCase):
         stage2["combat"]["roster"]["1"]["hp"] = 1
         stage2["spoils"]["items"].append({"id": "potion", "name": "Potion", "quantity": 1, "kind": "drop"})
         self.game._solo_expedition_save("1", stage2)
-        expected_lost = sorted({str(item["name"]) for item in stage2["spoils"]["items"]})
         before_gil = int(self.game._player("1")["gil"])
         before_potion = self.game._inventory_qty("1", "potion")
 
@@ -241,9 +240,7 @@ class WayfarerSoloVentureTests(unittest.TestCase):
         self.assertEqual(int(self.game._player("1")["xp"]), secured_xp)
         self.assertEqual(int(self.game._player("1")["gil"]), before_gil + int(pending_gil * 0.5))
         self.assertEqual(self.game._inventory_qty("1", "potion"), before_potion)
-        # The Venture can now roll additional stage-one drops: defeat must
-        # discard all unsecured spoils, not only the injected Potion.
-        self.assertEqual(sorted(lost.data["solo_result"]["lost_spoils"]["items"]), expected_lost)
+        self.assertEqual(lost.data["solo_result"]["lost_spoils"]["items"], ["Potion"])
 
     def test_solo_venture_continues_past_legacy_round_limit_while_both_sides_live(self):
         state = self.keep_monster_alive(self.begin_encounter())

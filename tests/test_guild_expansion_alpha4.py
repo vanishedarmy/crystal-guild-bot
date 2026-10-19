@@ -6,7 +6,6 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
@@ -37,7 +36,7 @@ class GuildExpansionAlpha4Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_schema9_adds_persistent_airship_tables_without_reset(self):
-        self.assertEqual(self.db.schema_version(), 28)
+        self.assertEqual(self.db.schema_version(), 26)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='fellowship_airship_state'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='fellowship_airship_upgrades'"))
         self.assertEqual(int(self.db.one("SELECT COUNT(*) AS n FROM players")["n"]), 1)
@@ -69,7 +68,7 @@ class GuildExpansionAlpha4Tests(unittest.TestCase):
 
         upgraded = Database(path)
         try:
-            self.assertEqual(upgraded.schema_version(), 28)
+            self.assertEqual(upgraded.schema_version(), 23)
             player = upgraded.one("SELECT level,gil FROM players WHERE twitch_id='808'")
             self.assertEqual((int(player["level"]), int(player["gil"])), (37, 54321))
             self.assertEqual(int(upgraded.one("SELECT tier FROM fellowship_facilities WHERE facility_id='workshop'")["tier"]), 2)
@@ -112,10 +111,7 @@ class GuildExpansionAlpha4Tests(unittest.TestCase):
         self.assertTrue(ok, message)
         self.assertEqual(active["id"], "merchant_escort")
         run_id = active["run_id"]
-        # Isolate mission settlement from unrelated Guild Board rewards:
-        # bulk Venture credit also completes A Day's Adventure (+200 Gil).
-        with patch("crystal_guild.fellowship_system.progress_event", return_value=[]):
-            self.game.fellowship_system.record_activity("1", "venture_complete", amount=50, event_key="a4:escort:progress")
+        self.game.fellowship_system.record_activity("1", "venture_complete", amount=50, event_key="a4:escort:progress")
         state = self.db.one("SELECT progress,target,active_run_id FROM fellowship_airship_state WHERE singleton_id=1")
         self.assertEqual(int(state["progress"]), int(state["target"]))
         self.assertEqual(str(state["active_run_id"]), run_id)
