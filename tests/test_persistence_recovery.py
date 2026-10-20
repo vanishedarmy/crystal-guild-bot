@@ -188,7 +188,7 @@ class PortalSyncRecoveryTests(unittest.TestCase):
                     yield
 
             repo = Repo()
-            for module in ("overview", "jobs", "inventory", "hunts", "bestiary", "relics", "achievements", "records"):
+            for module in ("overview", "jobs", "inventory", "hunts", "bestiary", "relics", "achievements", "records", "guild_board"):
                 setattr(repo, module, lambda username, module=module: {"module": module, "username": username})
 
             class Client(PortalSyncClient):

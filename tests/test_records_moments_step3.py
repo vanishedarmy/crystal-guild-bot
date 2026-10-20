@@ -36,7 +36,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         for pid, user in [("1", "van"), ("2", "mira"), ("3", "cid")]:
             self.assertTrue(self.game.recruit(pid, user, user.title()).ok)
             self.assertTrue(self.game.choose_job(pid, "warrior").ok)
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
 
     def tearDown(self):
         self.db.close()
@@ -68,7 +68,7 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         return facts
 
     def test_schema_23_additive_and_independent_existing_tables(self):
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(self.db.schema_version(), 27)
         for table in ("player_moment_unlocks", "player_moment_reconciliation", "player_record_events",
                       "player_bestiary_mastery", "player_titles"):
             self.assertIsNotNone(self.db.one("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)))
@@ -324,21 +324,22 @@ class RecordsMomentsStep3Tests(unittest.TestCase):
         self.assertIn("moment_early_checkout", self.unlocks())
         self.assertIn("moment_money_well_wasted", self.unlocks())
 
-    def test_existing_schema_22_upgrades_to_23_with_verified_backup_and_no_reset(self):
+    def test_missing_schema23_stamp_recovers_with_verified_backup_and_no_reset(self):
         self.db.execute("INSERT INTO player_bestiary_mastery(player_id,monster_id,research_points,source_defeats) "
                         "VALUES ('1','goblin',1,20)")
         self.db.close()
+        # A current-schema repair fixture, not a historical schema-22 DB.
         with sqlite3.connect(self.path) as conn:
             for table in ("player_moment_unlocks", "player_moment_reconciliation", "player_record_events"):
                 conn.execute(f"DROP TABLE {table}")
             conn.execute("DELETE FROM schema_migrations WHERE version=23")
         self.db = Database(self.path)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(self.db.schema_version(), 27)
         self.assertIsNotNone(self.db.pre_migration_backup_path)
         self.assertIn("pre_schema_23_", self.db.pre_migration_backup_path.name)
         with sqlite3.connect(self.db.pre_migration_backup_path) as backup:
             self.assertEqual(backup.execute("PRAGMA quick_check").fetchone()[0], "ok")
-            self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 22)
+            self.assertEqual(backup.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 27)
         self.assertEqual(self.db.one("SELECT source_defeats FROM player_bestiary_mastery WHERE player_id='1' AND monster_id='goblin'")["source_defeats"], 20)
         self.assertEqual(self.db.quick_check(), [])
 

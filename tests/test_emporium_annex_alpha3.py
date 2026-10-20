@@ -32,7 +32,7 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_release_contract_keeps_schema_and_protocol_stable(self):
-        self.assertEqual(__version__, "1.9.6-triple-triad-expanded")
+        self.assertEqual(__version__, "1.9.7-queens-blood")
         self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
         self.assertEqual(self.db.schema_version(), 27)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)

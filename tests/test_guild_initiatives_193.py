@@ -46,8 +46,8 @@ class GuildInitiativesTests(unittest.TestCase):
         return self.game.fellowship_system.record_activity(pid, activity, event_key=key, amount=amount, renown=0)
 
     def test_schema_rotation_and_public_module(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
+        self.assertEqual(self.db.schema_version(), 27)
         self.assertEqual(len(selected(CONTRACTS, self._weekly())), 3)
         self.assertEqual(len(selected(DAILIES, daily_period_key())), 3)
         self.assertEqual(len(selected(WEEKLIES, self._weekly())), 3)
@@ -128,7 +128,7 @@ class GuildInitiativesTests(unittest.TestCase):
         reopened = Database(self.path)
         try:
             self.assertEqual(prior, board_view(reopened.conn, "101"))
-            self.assertEqual(reopened.schema_version(), 26)
+            self.assertEqual(reopened.schema_version(), 27)
             self.assertEqual(reopened.one("PRAGMA foreign_key_check"), None)
         finally:
             reopened.close()
@@ -168,7 +168,7 @@ class GuildInitiativesTests(unittest.TestCase):
             conn.execute("DELETE FROM schema_migrations WHERE version=26")
         migrated = Database(self.path)
         try:
-            self.assertEqual(migrated.schema_version(), 26)
+            self.assertEqual(migrated.schema_version(), 27)
             self.assertIn("pre_schema_26_", migrated.pre_migration_backup_path.name)
             self.assertEqual(tuple(original), tuple(migrated.one("SELECT gil,level FROM players WHERE twitch_id='101'")))
             self.assertEqual(inventory, {r["item_id"]: r["quantity"] for r in migrated.all("SELECT item_id,quantity FROM inventory WHERE player_id='101'")})

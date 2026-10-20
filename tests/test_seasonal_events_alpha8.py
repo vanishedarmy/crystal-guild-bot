@@ -14,7 +14,7 @@ class SeasonalEventsAlpha8Tests(unittest.TestCase):
         self.pid="100"; self.conn.execute("INSERT INTO players(twitch_id,username,display_name) VALUES (?,?,?)",(self.pid,"van","Van")); self.conn.commit()
     def tearDown(self): self.db.close(); self.tmp.cleanup()
     def test_schema_and_halloween_2026_live_schedule(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION,26); self.assertEqual(self.db.schema_version(),26)
+        self.assertEqual(DATABASE_SCHEMA_VERSION,27); self.assertEqual(self.db.schema_version(),27)
         state=event_state(self.conn, now=1790985600.0)  # 2026-10-03T00:00:00Z
         self.assertEqual(state["edition_id"],EDITION_ID); self.assertEqual(state["state"],"active"); self.assertTrue(state["active"])
         self.assertEqual(state["activation_mode"],"scheduled")

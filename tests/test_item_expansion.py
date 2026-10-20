@@ -159,9 +159,12 @@ class ItemExpansionTests(unittest.TestCase):
         self.game._resolve_active_item(
             "1", actor, {"item_id": "arctic_wind", "target_id": "monster"}, log
         )
-        self.assertEqual(before - int(self.game.active_encounter["monster_hp"]), 300)
+        effect = self.data.items["arctic_wind"]["use"]["effects"][0]
+        weakness = self.game._encounter_monster(self.game.active_encounter).get("weakness")
+        expected = int(effect["amount"] * (1.30 if str(weakness or "").lower() == str(effect["element"]).lower() else 1.0))
+        self.assertEqual(before - int(self.game.active_encounter["monster_hp"]), expected)
         self.assertEqual(self.game._inventory_qty("1", "arctic_wind"), 0)
-        self.assertTrue(any("300 Ice damage" in row for row in log))
+        self.assertTrue(any(f"{expected} Ice damage" in row for row in log))
 
     def test_equipped_status_immunity_is_loaded_into_battle_state(self):
         self.db.execute("UPDATE players SET level=10 WHERE twitch_id='1'")

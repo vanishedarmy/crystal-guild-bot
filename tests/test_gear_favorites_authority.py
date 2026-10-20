@@ -44,7 +44,7 @@ class GearFavoritesAuthorityTests(unittest.TestCase):
         }
 
     def test_portal_favorites_persist_in_player_database_and_snapshot(self):
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
         ok, message, data = self.worker._execute(
             self.action("pa_favorites_1", ["hunters_axe", "chain_mail", "hunters_axe"])
         )
@@ -106,7 +106,7 @@ class GearFavoritesMigrationTests(unittest.TestCase):
 
             migrated = Database(path)
             try:
-                self.assertEqual(migrated.schema_version(), 23)
+                self.assertEqual(migrated.schema_version(), 27)
                 table = migrated.conn.execute(
                     "SELECT name FROM sqlite_master WHERE type='table' AND name='player_gear_favorites'"
                 ).fetchone()
@@ -114,12 +114,12 @@ class GearFavoritesMigrationTests(unittest.TestCase):
                 self.assertIsNotNone(migrated.pre_migration_backup_path)
                 backup = Path(migrated.pre_migration_backup_path)
                 self.assertTrue(backup.exists())
-                self.assertIn("pre_schema_23_", backup.name)
+                self.assertIn("pre_schema_27_", backup.name)
                 verify = sqlite3.connect(backup)
                 try:
                     self.assertEqual(verify.execute("PRAGMA quick_check").fetchone()[0], "ok")
                     version = verify.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-                    self.assertEqual(int(version), 22)
+                    self.assertEqual(int(version), 26)
                     tables = {row[0] for row in verify.execute("SELECT name FROM sqlite_master WHERE type='table'")}
                     self.assertIn("player_gear_favorites", tables)
                 finally:

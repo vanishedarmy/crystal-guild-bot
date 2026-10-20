@@ -34,8 +34,8 @@ class ResynthesisAlpha2Hotfix5Tests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_release_contract_and_stream_venture_are_encounter_only(self):
-        self.assertEqual(__version__, "1.9.4-crafting-reforged")
-        self.assertEqual(DATABASE_SCHEMA_VERSION, 26)
+        self.assertEqual(__version__, "1.9.7-queens-blood")
+        self.assertEqual(DATABASE_SCHEMA_VERSION, 27)
         self.assertEqual(ACTION_PROTOCOL_VERSION, 39)
         self.assertTrue(self.game.choose_job("100", "warrior").ok)
         result = self.game.venture("100", bypass_cooldown=True)

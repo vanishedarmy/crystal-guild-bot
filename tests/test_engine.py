@@ -28,6 +28,9 @@ class EngineTests(unittest.TestCase):
         self.db = Database(Path(self.tmp.name) / "test.db")
         self.game = CrystalGuildEngine(self.db, GameData(ROOT / "data"), venture_cooldown_seconds=0, venture_treasure_chance=0.0, overlay_state_path=str(Path(self.tmp.name) / "overlay.json"), rng=random.Random(7))
         self.game.recruit("1", "van", "Van")
+        # Older engine-unit fixtures address monsters in the permanent catalog.
+        # Seasonal encounter variants are exercised in their dedicated suite.
+        self.game._roll_seasonal_venture_variant = lambda **_kwargs: None
 
     def tearDown(self) -> None:
         self.db.close()
@@ -565,7 +568,7 @@ class EngineTests(unittest.TestCase):
     def test_admin_raid_resolver_watchdog_preserves_living_raid(self):
         from crystal_guild.engine import GameResult
 
-        self.game.active_boss = {"id": "watchdog_boss", "state": "combat", "round": 1}
+        self.game.active_boss = {"id": "watchdog_boss", "name": "Watchdog Boss", "hp": 100, "current_hp": 100, "max_hp": 100, "state": "combat", "round": 1}
         self.game.raid_roster = {"1": {"name": "Van", "hp": 100, "max_hp": 100}}
 
         def no_terminal_raid_round(*args, **kwargs):

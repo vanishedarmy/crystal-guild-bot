@@ -38,7 +38,7 @@ class GuildExpansionAlpha2Tests(unittest.TestCase):
         self.assertEqual(projects["moogle_relief_shipment"]["project_type"], "supply_drive")
         self.assertEqual(projects["clear_the_roads"]["project_type"], "guild_objective")
         self.assertEqual(projects["chart_the_frontier"]["requirements"][0]["label"], "Expeditions completed")
-        self.assertEqual(self.db.schema_version(), 26)
+        self.assertEqual(self.db.schema_version(), 27)
 
     def test_supply_drive_completes_once_without_changing_facility_tiers(self):
         before_tiers = self.game.fellowship_system.facility_tiers()
@@ -90,13 +90,26 @@ class GuildExpansionAlpha2Tests(unittest.TestCase):
             (period, order["id"], "1"),
         )
         before_gil = int(self.db.one("SELECT gil FROM players WHERE twitch_id='1'")["gil"])
+        before_ledger = int(self.db.one(
+            "SELECT COALESCE(SUM(amount),0) AS total FROM transactions WHERE player_id='1' AND kind='gil'"
+        )["total"])
         before_member = int(self.db.one("SELECT renown FROM fellowship_members WHERE player_id='1'")["renown"])
         self.game.fellowship_system.record_activity(
             "1", order["activity"], event_key="alpha2:order-finish", renown=0
         )
         after_gil = int(self.db.one("SELECT gil FROM players WHERE twitch_id='1'")["gil"])
         after_member = int(self.db.one("SELECT renown FROM fellowship_members WHERE player_id='1'")["renown"])
-        self.assertEqual(after_gil - before_gil, int(order["personal_gil"]))
+        rewards = self.db.all(
+            "SELECT amount FROM transactions WHERE player_id='1' AND kind='gil' AND source='fellowship_order_reward'"
+        )
+        self.assertEqual([int(row["amount"]) for row in rewards], [int(order["personal_gil"])])
+        after_ledger = int(self.db.one(
+            "SELECT COALESCE(SUM(amount),0) AS total FROM transactions WHERE player_id='1' AND kind='gil'"
+        )["total"])
+        # Completing an order can also trigger an independent Guild Board
+        # initiative reward; every Gil granted must be present in the ledger.
+        self.assertEqual(after_gil - before_gil, after_ledger - before_ledger)
+        self.assertGreaterEqual(after_gil - before_gil, int(order["personal_gil"]))
         self.assertEqual(after_member - before_member, int(order["personal_renown"]))
         reward_events = self.db.all("SELECT event_key FROM fellowship_events WHERE event_key LIKE 'order_participant_reward:%'")
         self.assertEqual(len(reward_events), 1)

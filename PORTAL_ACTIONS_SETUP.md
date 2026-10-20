@@ -1,3 +1,9 @@
+# Crystal Guild v1.9.7 — Portal Actions Setup
+
+Current matching Bot/Web release: `1.9.7-queens-blood`. Portal Action protocol **39**, local Bot schema **27**, hosted sync schema **1**. Preserve tokens, databases, private sync configuration, and session secrets. Follow `README_FIRST.txt` for current deployment instructions.
+
+## Historical compatibility notes
+
 # Crystal Guild Alpha 13 Trading Post — Matching runtime requirements
 
 Current Bot/Web release: `1.9.0-trading-post-qol-alpha13`. Portal Action protocol **39**, local Bot schema **25**, hosted sync **1**. Preserve existing tokens, databases and environment secrets. Follow `START_HERE.md`.

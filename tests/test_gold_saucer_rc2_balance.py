@@ -83,16 +83,22 @@ class GoldSaucerRC2BalanceTests(unittest.TestCase):
         low_payout, low_tier = monster_toss_payout(90)
         self.assertEqual((low_payout, low_tier), (10, "near_miss"))
 
-    def test_racing_and_triad_preserve_clear_win_draw_loss_stakes(self):
+    def test_racing_stakes_and_free_card_hall_reward_rates(self):
         for course in CHOCOBO_RACING_COURSES:
             cost = int(course["cost"])
             self.assertGreater(int(course["payouts"][1]), cost)
             self.assertGreater(int(course["payouts"][2]), cost)
             self.assertGreater(int(course["payouts"][3]), cost)
         for opponent in TRIPLE_TRIAD_OPPONENTS:
-            cost = int(opponent["cost"])
-            self.assertGreater(int(opponent["win_payout"]), cost)
-            self.assertEqual(int(opponent["draw_payout"]), cost)
+            # v1.9.7 removed Triad's MGP wagers; rewards are collectible cards.
+            self.assertNotIn("cost", opponent)
+            self.assertNotIn("win_payout", opponent)
+            self.assertNotIn("draw_payout", opponent)
+            self.assertGreaterEqual(float(opponent["drop_chance"]), 0)
+            self.assertLessEqual(float(opponent["drop_chance"]), 1)
+            self.assertGreaterEqual(float(opponent["draw_drop_chance"]), 0)
+            self.assertLessEqual(float(opponent["draw_drop_chance"]), 1)
+            self.assertTrue(opponent["rewards"])
 
     def test_cactpot_history_tracks_net_outcome_and_net_win_count(self):
         tmp = tempfile.TemporaryDirectory()

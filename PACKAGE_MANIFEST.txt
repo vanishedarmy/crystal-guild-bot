@@ -1,5 +1,5 @@
-Crystal Guild v1.9.7 — Queen’s Blood
-File index for this service. SHA-256 hashes for the complete package are in PACKAGE_MANIFEST_v1_9_7.json at the archive root.
+Crystal Guild v1.9.7 — Queen’s Blood (Phase 5 maintained Bot source)
+File index for the sanitized Bot distribution. Runtime state, credentials, logs and bytecode caches are excluded.
 
 .env.example
 .gitignore
@@ -12,6 +12,7 @@ FULL_SETUP_README.md
 GAME_DESIGN.md
 MANUAL_TEST_CHECKLIST.md
 MOBILE_COMBAT_HUD_VALIDATION.md
+PACKAGE_MANIFEST.txt
 PORTAL_ACTIONS_SETUP.md
 README.md
 README_FIRST.txt
@@ -98,7 +99,6 @@ generate_portal_sync_key.bat
 generate_portal_sync_key.py
 open_twitch_authorization.bat
 overlay/raid_overlay.html
-overlay/state.json
 prepare_render_migration.py
 pyproject.toml
 render.yaml
@@ -136,12 +136,15 @@ tests/test_bestiary_research_step1.py
 tests/test_bestiary_research_step3.py
 tests/test_beta4_release_hardening.py
 tests/test_camp_alpha12.py
+tests/test_card_hall_phase4_persistence.py
+tests/test_card_hall_standalone.py
 tests/test_chat_results_personalized.py
 tests/test_chocobo_companions.py
 tests/test_cloud_continuity.py
 tests/test_cloud_runtime.py
 tests/test_combat_balance.py
 tests/test_command_ux.py
+tests/test_consumable_resource_audit.py
 tests/test_crafting_194.py
 tests/test_dungeons_alpha1.py
 tests/test_dungeons_alpha2.py
@@ -199,6 +202,7 @@ tests/test_moments_step2.py
 tests/test_offline_progression_1948.py
 tests/test_package_cleanup.py
 tests/test_passive_recovery.py
+tests/test_performance_polish.py
 tests/test_persistence_recovery.py
 tests/test_personal_records_step1.py
 tests/test_player_records.py
@@ -210,6 +214,7 @@ tests/test_records_moments_step4.py
 tests/test_records_moments_step5.py
 tests/test_records_moments_step6.py
 tests/test_regional_emporium.py
+tests/test_release_archive_gate_phase5.py
 tests/test_release_contract.py
 tests/test_relic_arsenal_151.py
 tests/test_relic_overhaul_192.py
@@ -244,6 +249,7 @@ tests/test_triple_triad_hosted_ladder.py
 tests/test_triple_triad_rework.py
 tests/test_wayfarer.py
 tests/test_world_events_alpha6.py
+tools/check_release_archive.py
 tools/simulate_expedition_balance.py
 tools/simulate_guild_balance.py
 upgrade_crystal_guild.bat

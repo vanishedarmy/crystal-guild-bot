@@ -4,6 +4,7 @@ import random
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from crystal_guild.active_battle import apply_status
 from crystal_guild.data import GameData
@@ -30,6 +31,9 @@ class EnemyCombatTests(unittest.TestCase):
         )
         self.game.recruit("1", "van", "Van")
         self.game.choose_job("1", "warrior")
+        # Ordinary combat tests must not be replaced by a calendar-active event.
+        # Seasonal replacement is exercised in its dedicated integration suite.
+        self.game._roll_seasonal_venture_variant = lambda **_kwargs: None
 
     def tearDown(self) -> None:
         self.db.close()
@@ -236,12 +240,13 @@ class EnemyCombatTests(unittest.TestCase):
         ability = behavior["ability"]
         self.assertEqual(ability["target"], "self")
         log: list[str] = []
-        self.game._resolve_enemy_special(
-            self.data.monsters["ironclad"],
-            self.data.enemy_profiles[behavior["profile"]],
-            ability,
-            log,
-        )
+        with patch.object(self.game.rng, "random", return_value=0.0):
+            self.game._resolve_enemy_special(
+                self.data.monsters["ironclad"],
+                self.data.enemy_profiles[behavior["profile"]],
+                ability,
+                log,
+            )
         statuses = self.game.active_encounter["monster_statuses"]
         self.assertIn("protect", statuses)
         self.assertIn("power_up", statuses)
