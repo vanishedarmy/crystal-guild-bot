@@ -288,6 +288,21 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.equip(uid, item))
 
     @commands.command()
+    async def buyweapon(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.quick_buy_gear(uid, "weapon"))
+
+    @commands.command()
+    async def buyarmor(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.quick_buy_gear(uid, "armor"))
+
+    @commands.command()
+    async def buyaccessory(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.quick_buy_gear(uid, "accessory"))
+
+    @commands.command()
     async def shop(self, ctx: commands.Context) -> None:
         uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.shop(uid))

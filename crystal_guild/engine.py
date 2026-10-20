@@ -6499,6 +6499,134 @@ class CrystalGuildEngine:
             result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
         return result
 
+    def quick_buy_gear(self, twitch_id: str, slot: str) -> GameResult:
+        """Buy and equip the best suitable gear in the *current* personal Emporium.
+
+        Chat-only shortcut. Uses the same actual stock, discounted price,
+        equipment restrictions, Gil ledger and Moment hooks as ordinary buys.
+        Never silently falls back to a weaker, affordable item or buys duplicates.
+        """
+        column = {"weapon": "weapon_id", "armor": "armor_id", "accessory": "accessory_id"}.get(slot)
+        if not column:
+            return GameResult.fail("Choose weapon, armor, or accessory.")
+
+        # One engine-level operation, one database commit: no charged-but-not-
+        # equipped partial outcome, and competing requests cannot double-spend.
+        with self._state_lock, self.db.tx(immediate=True) as conn:
+            p = self._player(twitch_id)
+            if not p:
+                return self._need_recruit()
+            if self._dungeon_load(twitch_id):
+                return GameResult.fail("Finish or retreat from your Dungeon before shopping or changing gear.")
+            if self._solo_expedition_load(twitch_id):
+                return GameResult.fail("Return or retreat from your Solo Venture before changing gear.")
+            if self._expedition_load(twitch_id):
+                return GameResult.fail("Return from your Expedition before changing gear.")
+            if str(twitch_id) in self.active_hunts:
+                return GameResult.fail("Equipment is locked while your hero is away on a Hunt.")
+            if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
+                return GameResult.fail("You cannot buy-and-equip gear during an active encounter or raid.")
+
+            job_id = str(p["current_job"])
+            job = self.data.jobs.get(job_id, {})
+            job_name = str(job.get("name", job_id.title()))
+            level = int(p["level"])
+            if job_id == "adventurer" and slot in {"weapon", "armor"}:
+                return GameResult.fail("Choose a starter Job with !job before buying a weapon or armor.")
+            stock, _ = self._shop_stock(twitch_id)
+            matches = [item for item in stock
+                       if item.get("type") == slot
+                       and int(item.get("min_level", 1) or 1) <= level
+                       and (not item.get("allowed_jobs") or job_id in item["allowed_jobs"])]
+            if not matches:
+                return GameResult.fail(
+                    f"No suitable {slot} in your current Moogle Emporium stock for {job_name} Lv.{level}. "
+                    "Use !shop to view stock or try again after its refresh."
+                )
+
+            growth = job.get("growth", {})
+            weights = {key: max(0.5, float(growth.get(key, 1))) for key in
+                       ("str", "vit", "mag", "spr", "dex", "lck")}
+            weights.update({"attack": weights["str"] / 2, "magic_power": weights["mag"] / 2, "hp": 0.06})
+
+            def suitability(item: dict[str, Any]) -> tuple[int, float, int, str]:
+                # Highest available item tier first, then combat-relevant bonuses
+                # for the active Job; deterministic tie-breaking across rotations.
+                tier = max(int(item.get("shop_level", 1) or 1),
+                           int(item.get("min_level", 1) or 1))
+                bonuses = item.get("bonuses") or {}
+                score = sum(float(value) * weights.get(stat, 0.0)
+                            for stat, value in bonuses.items()
+                            if stat in weights)
+                # Specific equipment wins an exact stat tie over universal gear.
+                specific = 1 if item.get("allowed_jobs") else 0
+                return (tier, score, specific, str(item["id"]))
+
+            item = max(matches, key=suitability)
+            current_row = conn.execute(f"SELECT {column} AS item_id FROM equipment WHERE player_id=?", (twitch_id,)).fetchone()
+            current_id = str(current_row["item_id"]) if current_row and current_row["item_id"] else None
+            if current_id == item["id"]:
+                return GameResult.success(
+                    f"{item['name']} is already equipped as your {slot}; no Gil spent.",
+                    slot=slot, item_id=item["id"], purchased=False, equipped=True, cost=0,
+                )
+            equipped = self.data.items.get(current_id) if current_id else None
+            if equipped and (not equipped.get("allowed_jobs") or job_id in equipped["allowed_jobs"]):
+                protected = str(equipped.get("rarity", "")).lower() in {"relic", "artifact", "legendary"}
+                if protected or suitability(equipped) >= suitability(item):
+                    return GameResult.success(
+                        f"Kept {equipped['name']} equipped: it is at least as suitable as "
+                        f"the best {slot} in your current shop ({item['name']}). No Gil spent.",
+                        slot=slot, item_id=current_id, purchased=False, equipped=True, cost=0,
+                    )
+
+            owned = conn.execute("SELECT quantity FROM inventory WHERE player_id=? AND item_id=?",
+                                 (twitch_id, item["id"])).fetchone()
+            already_owned = bool(owned and int(owned["quantity"]) > 0)
+            cost = 0 if already_owned else purchase_price(item, self._emporium_perks())
+            fresh = conn.execute("SELECT gil FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
+            balance = int(fresh["gil"])
+            if balance < cost:
+                shortfall = cost - balance
+                return GameResult.fail(
+                    f"Not enough Gil for {item['name']} ({slot}, Lv.{suitability(item)[0]})! "
+                    f"Price: {cost:,} Gil | You have: {balance:,} Gil | Need: {shortfall:,} more. No purchase made.",
+                    slot=slot, item_id=item["id"], cost=cost, gil=balance, shortfall=shortfall,
+                )
+            if not already_owned:
+                conn.execute("UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
+                             (cost, twitch_id))
+                conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,1) "
+                             "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+1",
+                             (twitch_id, item["id"]))
+                purchase_id = conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) "
+                    "VALUES (?, 'gil', 'gil', ?, 'shop')", (twitch_id, -cost)
+                ).lastrowid
+                self._moment_purchase_sql(conn, twitch_id, purchase_id, cost, source="shop")
+                conn.execute(
+                    "INSERT INTO transactions(player_id,kind,asset_id,amount,source) "
+                    "VALUES (?, 'item', ?, 1, 'shop')", (twitch_id, item["id"])
+                )
+            conn.execute(f"UPDATE equipment SET {column}=? WHERE player_id=?", (item["id"], twitch_id))
+            self._normalize_after_equipment_change(twitch_id)
+
+        if already_owned:
+            return GameResult.success(
+                f"Equipped your owned {item['name']} ({slot}) for {job_name} Lv.{level}. No Gil spent.",
+                slot=slot, item_id=item["id"], purchased=False, equipped=True, cost=0, gil=balance,
+            )
+        result = GameResult.success(
+            f"Purchased and equipped {item['name']} ({slot}, Lv.{suitability(item)[0]}) "
+            f"for {job_name}: {cost:,} Gil. Remaining: {balance - cost:,} Gil.",
+            slot=slot, item_id=item["id"], purchased=True, equipped=True,
+            cost=cost, gil=balance - cost,
+        )
+        unlocked = self._check_achievements(twitch_id)
+        if unlocked:
+            result.messages.append("Achievement unlocked: " + " | ".join(unlocked))
+        return result
+
     def _portal_character_state_data(self, twitch_id: str) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:

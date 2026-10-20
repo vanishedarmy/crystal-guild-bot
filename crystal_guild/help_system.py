@@ -25,10 +25,12 @@ HELP_TOPICS = {
     "inventory": (
         "INVENTORY — !inventory lists items. Filter with !inventory weapon, armor, accessory, consumable, or material. Alias: !inv.",
         "!gear shows equipped items and active stats. Alias: !equipment. Use !equip <item>, !item <name>, !shop, !buy, and !sell to manage gear and supplies.",
+        "For quick chat-only gearing, !buyweapon, !buyarmor, or !buyaccessory picks the best current Emporium stock for your Job and level, buys it, and equips it. Not enough Gil? The command tells you the exact shortfall.",
     ),
     "shop": (
         "SHOP — !shop shows your personal Moogle Emporium rotation. Buy with !buy <slot or item> [qty]; consumables can be bought in quantity.",
         "Stock is Job- and level-aware and does not reroll every time you type !shop. Use !item <name> to inspect something you own or discover.",
+        "No Portal required: !buyweapon | !buyarmor | !buyaccessory buys and equips suitable current stock automatically. Already owned? It equips for free. Insufficient Gil? No purchase is made.",
     ),
     "hunts": (
         "HUNTS — !hunts shows C/B/A/S progress and remains readable off-stream. !hunt <name> dispatches your hero while the channel is LIVE; the Adventurer Portal Hunt Board remains available off-stream.",
@@ -88,7 +90,7 @@ ALIASES = {
     "venture": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
     "rest": "recovery", "camp": "recovery", "use": "recovery",
     "inv": "inventory", "gear": "inventory", "equipment": "inventory", "equip": "inventory", "item": "inventory",
-    "buy": "shop", "sell": "shop",
+    "buy": "shop", "buyweapon": "shop", "buyarmor": "shop", "buyaccessory": "shop", "sell": "shop",
     "hunt": "hunts", "huntboard": "hunts", "marks": "hunts", "sealshop": "hunts", "sealbuy": "hunts",
     "merc": "mercs", "mercs": "mercs", "mercenary": "mercs", "mercenaries": "mercs",
     "quest": "quests",
