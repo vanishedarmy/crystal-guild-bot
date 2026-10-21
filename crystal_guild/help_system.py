@@ -71,7 +71,7 @@ HELP_TOPICS = {
     ),
     "fellowship": (
         "FELLOWSHIP — !fellowship shows the shared Guild LVL, your personal Guild Rank, active project, and weekly progress. !rank shows your personal standing and next promotion.",
-        "Use !project for the current project, !contribute gil <amount> or !contribute <amount> <item> to donate, !orders for weekly objectives, !facilities for Guild upgrades, !workshop for refining services, !airship for shared Airship status, !legacy for Guild accomplishments, and !contributions for your Fellowship record.",
+        "Use !project for the current project, !contribute gil <amount> or !contribute <amount> <item> to donate, !orders for weekly objectives, !facilities for Guild upgrades, !workshop for refining services, !airship for Guild Airship status, !airshipregions for sky routes, !airshipexpedition <region> <depth> to launch a personal sky Expedition, !legacy for Guild accomplishments, and !contributions for your Fellowship record.",
     ),
     "chocobos": (
         "CHOCOBOS — the Fellowship first builds the Chocobo Stable. Then complete !chocoboquest, purchase a 500 Gil Registration Writ with !chocobowrit, and wait one hour for it to activate.",

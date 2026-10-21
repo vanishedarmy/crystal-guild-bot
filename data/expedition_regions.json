@@ -978,5 +978,458 @@
         "description": "A vast crystal flower opens as the Scar stabilizes for a few precious moments."
       }
     ]
+  },
+  {
+    "id": "shattered_sky_isles",
+    "name": "The Shattered Sky Isles",
+    "min_level": 25,
+    "recommended_max_level": 38,
+    "description": "Floating archipelagos, forgotten temple spires, and skybound ruins beyond the Chocobo roads.",
+    "identity": "Floating Islands",
+    "hazard": "Shattered Updrafts",
+    "boss_name": "Tempest Roc",
+    "materials": [
+      "skyglass_shard",
+      "celestial_thread",
+      "mythril_ore"
+    ],
+    "encounters": [
+      {
+        "monster_id": "coeurl",
+        "weight": 20
+      },
+      {
+        "monster_id": "chimera",
+        "weight": 20
+      },
+      {
+        "monster_id": "ahriman",
+        "weight": 18
+      },
+      {
+        "monster_id": "chimera_brain",
+        "weight": 8
+      }
+    ],
+    "event_weights": {
+      "combat": 24,
+      "resource": 17,
+      "treasure": 15,
+      "hazard": 10,
+      "discovery": 18,
+      "traveler": 4,
+      "airship": 12
+    },
+    "discoveries": [
+      "Windward Temple",
+      "Crystal Aerodrome",
+      "Cloudfall Gorge",
+      "Skybreaker Spire"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Windward Temple",
+        "description": "Survey the remote floating islands.",
+        "unlock": "More routes"
+      },
+      {
+        "threshold": 50,
+        "name": "Crystal Aerodrome",
+        "description": "Survey the remote floating islands.",
+        "unlock": "Ancient survey data"
+      },
+      {
+        "threshold": 75,
+        "name": "Cloudfall Gorge",
+        "description": "Survey the remote floating islands.",
+        "unlock": "Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Skybreaker Spire",
+        "description": "Survey the remote floating islands.",
+        "unlock": "Airship region mastered"
+      }
+    ],
+    "boss": {
+      "id": "tempest_roc",
+      "name": "Tempest Roc",
+      "monster_id": "tempest_roc",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 420,
+      "reward_mult": 1.55,
+      "guaranteed_rewards": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 3
+        },
+        {
+          "item_id": "celestial_thread",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "storm_dragon",
+        "weight": 5
+      }
+    ],
+    "mastery": {
+      "title_id": "",
+      "bonus": "Airship survey events +5%",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    },
+    "landmarks": [
+      {
+        "name": "Windward Temple",
+        "unlock_progress": 10,
+        "description": "Windward Temple mapped by the Guild Airship."
+      },
+      {
+        "name": "Crystal Aerodrome",
+        "unlock_progress": 35,
+        "description": "Crystal Aerodrome mapped by the Guild Airship."
+      },
+      {
+        "name": "Cloudfall Gorge",
+        "unlock_progress": 60,
+        "description": "Cloudfall Gorge mapped by the Guild Airship."
+      },
+      {
+        "name": "Skybreaker Spire",
+        "unlock_progress": 85,
+        "description": "Skybreaker Spire mapped by the Guild Airship."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "The Cargo Hold is lowered into a hidden floating islands salvage field."
+      ],
+      "treasure": [
+        "A forgotten sky cache is found behind a drifting veil of clouds."
+      ],
+      "hazard": [
+        "Shattered Updrafts rocks the ship and forces an emergency maneuver."
+      ],
+      "traveler": [
+        "A stranded skyfarer shares charts and medical supplies at an isolated mooring."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "shattered_sky_isles_rare",
+        "name": "Aerial Cartographer",
+        "kind": "survey",
+        "description": "The Survey Array traces a forgotten chain of floating temples."
+      }
+    ],
+    "transport": "airship",
+    "required_core": 0
+  },
+  {
+    "id": "aetherstorm_expanse",
+    "name": "The Aetherstorm Expanse",
+    "min_level": 35,
+    "recommended_max_level": 49,
+    "description": "Violent aether currents, fractured crystals, and storms that tear holes in the sky.",
+    "identity": "Aether Storms",
+    "hazard": "Aether Lightning",
+    "boss_name": "Aetherstorm Colossus",
+    "materials": [
+      "stormheart_crystal",
+      "elemental_crystal",
+      "adamantite"
+    ],
+    "encounters": [
+      {
+        "monster_id": "chimera_brain",
+        "weight": 18
+      },
+      {
+        "monster_id": "evil_eye",
+        "weight": 18
+      },
+      {
+        "monster_id": "death_machine",
+        "weight": 16
+      },
+      {
+        "monster_id": "crystal_wolf",
+        "weight": 14
+      }
+    ],
+    "event_weights": {
+      "combat": 24,
+      "resource": 17,
+      "treasure": 15,
+      "hazard": 10,
+      "discovery": 18,
+      "traveler": 4,
+      "airship": 12
+    },
+    "discoveries": [
+      "Storm-Eye Beacon",
+      "Resonance Rift",
+      "Lightning Cathedral",
+      "The Broken Compass"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Storm-Eye Beacon",
+        "description": "Survey the remote aether storms.",
+        "unlock": "More routes"
+      },
+      {
+        "threshold": 50,
+        "name": "Resonance Rift",
+        "description": "Survey the remote aether storms.",
+        "unlock": "Ancient survey data"
+      },
+      {
+        "threshold": 75,
+        "name": "Lightning Cathedral",
+        "description": "Survey the remote aether storms.",
+        "unlock": "Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "The Broken Compass",
+        "description": "Survey the remote aether storms.",
+        "unlock": "Airship region mastered"
+      }
+    ],
+    "boss": {
+      "id": "aetherstorm_colossus",
+      "name": "Aetherstorm Colossus",
+      "monster_id": "aetherstorm_colossus",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 480,
+      "reward_mult": 1.6500000000000001,
+      "guaranteed_rewards": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 3
+        },
+        {
+          "item_id": "elemental_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "storm_dragon",
+        "weight": 5
+      }
+    ],
+    "mastery": {
+      "title_id": "",
+      "bonus": "Airship survey events +5%",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    },
+    "landmarks": [
+      {
+        "name": "Storm-Eye Beacon",
+        "unlock_progress": 10,
+        "description": "Storm-Eye Beacon mapped by the Guild Airship."
+      },
+      {
+        "name": "Resonance Rift",
+        "unlock_progress": 35,
+        "description": "Resonance Rift mapped by the Guild Airship."
+      },
+      {
+        "name": "Lightning Cathedral",
+        "unlock_progress": 60,
+        "description": "Lightning Cathedral mapped by the Guild Airship."
+      },
+      {
+        "name": "The Broken Compass",
+        "unlock_progress": 85,
+        "description": "The Broken Compass mapped by the Guild Airship."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "The Cargo Hold is lowered into a hidden aether storms salvage field."
+      ],
+      "treasure": [
+        "A forgotten sky cache is found behind a drifting veil of clouds."
+      ],
+      "hazard": [
+        "Aether Lightning rocks the ship and forces an emergency maneuver."
+      ],
+      "traveler": [
+        "A stranded skyfarer shares charts and medical supplies at an isolated mooring."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "aetherstorm_expanse_rare",
+        "name": "Storm-Eye Cache",
+        "kind": "treasure",
+        "description": "A drifting magitek cache emerges from the calm eye of the storm."
+      }
+    ],
+    "transport": "airship",
+    "required_core": 1
+  },
+  {
+    "id": "forgotten_dominion",
+    "name": "The Forgotten Dominion",
+    "min_level": 45,
+    "recommended_max_level": 65,
+    "description": "A lost ancient empire suspended above the world, guarded by constructs and imperial relics.",
+    "identity": "Ancient Civilization",
+    "hazard": "Arcane Defense Grid",
+    "boss_name": "Dominion Sentinel",
+    "materials": [
+      "dominion_relic",
+      "dark_matter",
+      "ancient_coin"
+    ],
+    "encounters": [
+      {
+        "monster_id": "crystal_golem",
+        "weight": 18
+      },
+      {
+        "monster_id": "elemental_archon",
+        "weight": 17
+      },
+      {
+        "monster_id": "gold_dragon",
+        "weight": 14
+      },
+      {
+        "monster_id": "holy_dragon",
+        "weight": 12
+      }
+    ],
+    "event_weights": {
+      "combat": 24,
+      "resource": 17,
+      "treasure": 15,
+      "hazard": 10,
+      "discovery": 18,
+      "traveler": 4,
+      "airship": 12
+    },
+    "discoveries": [
+      "Celestial Throne",
+      "Lost Imperial Dock",
+      "Clockwork Archive",
+      "Silent Citadel"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Celestial Throne",
+        "description": "Survey the remote ancient civilization.",
+        "unlock": "More routes"
+      },
+      {
+        "threshold": 50,
+        "name": "Lost Imperial Dock",
+        "description": "Survey the remote ancient civilization.",
+        "unlock": "Ancient survey data"
+      },
+      {
+        "threshold": 75,
+        "name": "Clockwork Archive",
+        "description": "Survey the remote ancient civilization.",
+        "unlock": "Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Silent Citadel",
+        "description": "Survey the remote ancient civilization.",
+        "unlock": "Airship region mastered"
+      }
+    ],
+    "boss": {
+      "id": "dominion_sentinel",
+      "name": "Dominion Sentinel",
+      "monster_id": "dominion_sentinel",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 540,
+      "reward_mult": 1.75,
+      "guaranteed_rewards": [
+        {
+          "item_id": "dominion_relic",
+          "quantity": 3
+        },
+        {
+          "item_id": "dark_matter",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "ancient_adamantoise",
+        "weight": 5
+      }
+    ],
+    "mastery": {
+      "title_id": "",
+      "bonus": "Airship survey events +5%",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    },
+    "landmarks": [
+      {
+        "name": "Celestial Throne",
+        "unlock_progress": 10,
+        "description": "Celestial Throne mapped by the Guild Airship."
+      },
+      {
+        "name": "Lost Imperial Dock",
+        "unlock_progress": 35,
+        "description": "Lost Imperial Dock mapped by the Guild Airship."
+      },
+      {
+        "name": "Clockwork Archive",
+        "unlock_progress": 60,
+        "description": "Clockwork Archive mapped by the Guild Airship."
+      },
+      {
+        "name": "Silent Citadel",
+        "unlock_progress": 85,
+        "description": "Silent Citadel mapped by the Guild Airship."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "The Cargo Hold is lowered into a hidden ancient civilization salvage field."
+      ],
+      "treasure": [
+        "A forgotten sky cache is found behind a drifting veil of clouds."
+      ],
+      "hazard": [
+        "Arcane Defense Grid rocks the ship and forces an emergency maneuver."
+      ],
+      "traveler": [
+        "A stranded skyfarer shares charts and medical supplies at an isolated mooring."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "forgotten_dominion_rare",
+        "name": "Imperial Vault",
+        "kind": "treasure",
+        "description": "A sealed royal vault floats out of the ruins, still protected by ancient magitek."
+      }
+    ],
+    "transport": "airship",
+    "required_core": 2
   }
 ]

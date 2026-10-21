@@ -51,9 +51,9 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertEqual(self.db.schema_version(), 27)
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_expeditions'"))
         self.assertIsNotNone(self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='player_region_exploration'"))
-        self.assertEqual(len(self.data.expedition_regions), 5)
+        self.assertEqual(len([r for r in self.data.expedition_regions.values() if r.get("transport") != "airship"]), 5)
         self.assertEqual(
-            set(self.data.expedition_regions),
+            {r["id"] for r in self.data.expedition_regions.values() if r.get("transport") != "airship"},
             {"emerald_wilds", "ashen_highlands", "mistfen_marshes", "frostveil_reach", "astral_scar"},
         )
 
@@ -487,7 +487,7 @@ class ExpeditionV12Tests(unittest.TestCase):
         state = self.game._portal_adventure_state_data("100")
         board = state["expeditions"]
         self.assertTrue(board["ready"])
-        self.assertEqual(len(board["regions"]), 5)
+        self.assertEqual(len([r for r in board["regions"] if r["transport"] == "chocobo"]), 5)
         self.assertEqual([row["id"] for row in board["depths"]], ["scout", "journey", "deep"])
         self.assertIn("keen_eye", board["traits_active"])
         encoded = json.dumps({"adventure_state": state}, separators=(",", ":")).encode()

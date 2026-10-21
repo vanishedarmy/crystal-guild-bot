@@ -1849,7 +1849,7 @@
     "profile": "controller",
     "ability": {
       "id": "pharaoh_s_curse",
-      "name": "Pharaoh\u2019s Curse",
+      "name": "Pharaoh’s Curse",
       "chance": 0.307,
       "cooldown": 1,
       "target": "single",
@@ -2230,6 +2230,21 @@
   },
   {
     "id": "rift_wyrm",
+    "profile": "caster",
+    "ability": null
+  },
+  {
+    "id": "tempest_roc",
+    "profile": "berserker",
+    "ability": null
+  },
+  {
+    "id": "aetherstorm_colossus",
+    "profile": "caster",
+    "ability": null
+  },
+  {
+    "id": "dominion_sentinel",
     "profile": "caster",
     "ability": null
   }

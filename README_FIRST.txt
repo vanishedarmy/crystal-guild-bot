@@ -1,3 +1,7 @@
+# CURRENT RELEASE: v1.9.8 — Airship Expedition
+
+See `RELEASE_NOTES.md` and the `AIRSHIP_EXPEDITION_198.md` release guide. Existing setup and Queen’s Blood instructions remain relevant to previously released features.
+
 # Crystal Guild v1.9.7 — Queen’s Blood
 
 This is the complete Bot + Web release. It includes all 48 approved Queen’s Blood portraits, the solo circuit, live invitations, correspondence duels, and the prebuilt frontend.

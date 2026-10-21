@@ -289,7 +289,7 @@ class GameData:
                 if float(encounter.get("weight", 0) or 0) <= 0:
                     errors.append(f"expedition region {region.get('id')}: encounter weight must be > 0")
             weights = dict(region.get("event_weights") or {})
-            for kind in ("combat", "resource", "treasure", "hazard", "discovery", "traveler", "chocobo"):
+            for kind in ("combat", "resource", "treasure", "hazard", "discovery", "traveler", "chocobo", "airship"):
                 if float(weights.get(kind, 0) or 0) < 0:
                     errors.append(f"expedition region {region.get('id')}: invalid {kind} event weight")
             if sum(max(0.0, float(v or 0)) for v in weights.values()) <= 0:

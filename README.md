@@ -1,3 +1,7 @@
+# CURRENT RELEASE: v1.9.8 — Airship Expedition
+
+See `RELEASE_NOTES.md` and the `AIRSHIP_EXPEDITION_198.md` release guide. Existing setup and Queen’s Blood instructions remain relevant to previously released features.
+
 # Current release: v1.9.7 — Queen’s Blood
 
 See `README_FIRST.txt` for this complete release and upgrade instructions. The setup and historical feature documentation below remains available.

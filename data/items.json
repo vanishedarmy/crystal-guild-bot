@@ -8338,5 +8338,32 @@
         }
       ]
     }
+  },
+  {
+    "id": "skyglass_shard",
+    "name": "Skyglass Shard",
+    "type": "material",
+    "rarity": "rare",
+    "price": 0,
+    "shop": false,
+    "description": "An Airship Expedition-exclusive salvage from The Shattered Sky Isles."
+  },
+  {
+    "id": "stormheart_crystal",
+    "name": "Stormheart Crystal",
+    "type": "material",
+    "rarity": "rare",
+    "price": 0,
+    "shop": false,
+    "description": "An Airship Expedition-exclusive salvage from The Aetherstorm Expanse."
+  },
+  {
+    "id": "dominion_relic",
+    "name": "Dominion Relic",
+    "type": "material",
+    "rarity": "rare",
+    "price": 0,
+    "shop": false,
+    "description": "An Airship Expedition-exclusive salvage from The Forgotten Dominion."
   }
 ]

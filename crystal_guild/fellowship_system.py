@@ -414,52 +414,8 @@ class FellowshipSystem:
             return [f"AIRSHIP MISSION FAILED — {mission['name']} returned at {progress}/{target} mission progress."]
 
     def start_airship_mission(self, query: str) -> tuple[bool, str, dict[str, Any] | None]:
-        self._settle_airship_mission_if_due()
-        norm = str(query or "").strip().lower().replace("-", "_").replace(" ", "_")
-        with self.db.tx() as conn:
-            # Re-read after taking the write lock. Two owner actions arriving
-            # together may never overwrite one another's active run.
-            state = conn.execute(
-                "SELECT * FROM fellowship_airship_state WHERE singleton_id=1"
-            ).fetchone()
-            if not state or not int(state["built"] or 0):
-                return False, "The Crystal Guild Airship has not been completed yet.", None
-            if state["active_mission_id"]:
-                mission = self._airship_mission_definition(str(state["active_mission_id"]))
-                return False, f"The Airship is already away on {mission['name'] if mission else 'a mission'}.", None
-
-            upgrades = {
-                str(row["upgrade_id"]): max(0, min(3, int(row["tier"] or 0)))
-                for row in conn.execute("SELECT upgrade_id,tier FROM fellowship_airship_upgrades").fetchall()
-            }
-            core = int(upgrades.get("crystal_core", 0))
-            unlocked = [mission for mission in AIRSHIP_MISSIONS if int(mission.get("required_core", 0)) <= core]
-            mission = next((item for item in unlocked if item["id"] == norm), None)
-            if mission is None:
-                mission = next((item for item in unlocked if str(item["name"]).lower() == str(query or "").strip().lower()), None)
-            if mission is None:
-                names = ", ".join(item["name"] for item in unlocked) or "none"
-                return False, f"Airship mission unavailable. Unlocked missions: {names}.", None
-
-            now = int(time.time())
-            duration = self._airship_mission_duration(mission, upgrades)
-            target = self._airship_mission_target(mission, upgrades)
-            run_id = f"{mission['id']}:{time.time_ns()}"
-            updated = conn.execute(
-                "UPDATE fellowship_airship_state SET active_mission_id=?,active_run_id=?,started_at=?,ends_at=?,progress=0,target=?,updated_at=CURRENT_TIMESTAMP "
-                "WHERE singleton_id=1 AND active_mission_id IS NULL AND active_run_id IS NULL",
-                (mission["id"], run_id, now, now + duration, target),
-            ).rowcount
-            if not updated:
-                return False, "The Airship received another mission order first. Check its current deployment.", None
-            conn.execute(
-                "INSERT INTO fellowship_activity(player_id,kind,label,amount) VALUES (NULL,'airship_mission_started',?,?)",
-                (mission["name"], target),
-            )
-
-        snapshot = self.airship_snapshot()
-        active = snapshot.get("active_mission")
-        return True, f"AIRSHIP MISSION — {mission['name']} launched. Return in {active['duration_label'] if active else 'scheduled time'}; goal {target} progress.", active
+        """Retired in 1.9.8. Running legacy missions still settle normally."""
+        return False, "Airship missions are retired in v1.9.8. Use Airship Expeditions from the Adventure Board or !airshipexpedition.", None
 
     def airship_snapshot(self, now: int | None = None) -> dict[str, Any]:
         now = int(time.time()) if now is None else int(now)
@@ -513,6 +469,7 @@ class FellowshipSystem:
                 "ended_at": int(row["ended_at"]),
             })
         return {
+            "mode": "expeditions",
             "built": built,
             "dock_level": self.major_facility_level("airship_dock"),
             "missions_completed": int(state["missions_completed"] or 0) if state else 0,

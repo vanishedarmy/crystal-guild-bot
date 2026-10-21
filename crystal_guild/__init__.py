@@ -1,1 +1,1 @@
-__version__ = "1.9.7-queens-blood"
+__version__ = "1.9.8-airship-expedition"

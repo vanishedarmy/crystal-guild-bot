@@ -2837,7 +2837,7 @@
     "gil": 4523,
     "weakness": "Holy",
     "special": {
-      "name": "Pharaoh\u2019s Curse",
+      "name": "Pharaoh’s Curse",
       "chance": 0.256,
       "multiplier": 2.81
     },
@@ -3026,7 +3026,7 @@
   },
   {
     "id": "great_malboro_omega",
-    "name": "Great Malboro \u03a9",
+    "name": "Great Malboro Ω",
     "level": 92,
     "hp": 11358,
     "attack": 419,
@@ -3245,6 +3245,78 @@
       {
         "item_id": "celestial_thread",
         "chance": 0.32
+      }
+    ]
+  },
+  {
+    "id": "tempest_roc",
+    "name": "Tempest Roc",
+    "level": 32,
+    "hp": 2377,
+    "attack": 199,
+    "defense": 105,
+    "spirit": 93,
+    "xp": 1443,
+    "jp": 140,
+    "gil": 777,
+    "weakness": "Fire",
+    "special": {
+      "name": "Glacial Meteor",
+      "chance": 0.2,
+      "multiplier": 2.05
+    },
+    "drops": [
+      {
+        "item_id": "skyglass_shard",
+        "chance": 0.65
+      }
+    ]
+  },
+  {
+    "id": "aetherstorm_colossus",
+    "name": "Aetherstorm Colossus",
+    "level": 42,
+    "hp": 2696,
+    "attack": 146,
+    "defense": 87,
+    "spirit": 90,
+    "xp": 2390,
+    "jp": 147,
+    "gil": 1380,
+    "weakness": "Holy",
+    "special": {
+      "name": "Meridian Rupture",
+      "chance": 0.2,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "stormheart_crystal",
+        "chance": 0.65
+      }
+    ]
+  },
+  {
+    "id": "dominion_sentinel",
+    "name": "Dominion Sentinel",
+    "level": 52,
+    "hp": 2696,
+    "attack": 146,
+    "defense": 87,
+    "spirit": 90,
+    "xp": 2390,
+    "jp": 147,
+    "gil": 1380,
+    "weakness": "Holy",
+    "special": {
+      "name": "Meridian Rupture",
+      "chance": 0.2,
+      "multiplier": 2.15
+    },
+    "drops": [
+      {
+        "item_id": "dominion_relic",
+        "chance": 0.65
       }
     ]
   }

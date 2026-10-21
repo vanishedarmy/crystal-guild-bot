@@ -244,11 +244,11 @@ AIRSHIP_MISSIONS = [
 ]
 
 AIRSHIP_UPGRADES = {
-    "hull": {"name": "Hull", "description": "Reinforced plating gives dangerous missions a larger success margin."},
-    "engine": {"name": "Engine", "description": "Improved engines shorten Airship mission travel time."},
-    "cargo": {"name": "Cargo Hold", "description": "Expanded cargo capacity increases participant Gil rewards."},
-    "survey": {"name": "Survey Array", "description": "Better instruments increase Fellowship Renown earned from Airship missions."},
-    "crystal_core": {"name": "Crystal Core", "description": "A stronger core unlocks advanced Airship missions."},
+    "hull": {"name": "Hull", "description": "Reinforced plating reduces Airship Expedition hazard damage and protects more loot after rescue."},
+    "engine": {"name": "Engine", "description": "Improved engines shorten Airship Expedition travel time."},
+    "cargo": {"name": "Cargo Hold", "description": "Expanded cargo holds increase materials recovered from Airship Expedition resource nodes."},
+    "survey": {"name": "Survey Array", "description": "Survey instruments improve rare discoveries and exploration gain on Airship Expeditions."},
+    "crystal_core": {"name": "Crystal Core", "description": "Crystal Core tiers unlock progressively more distant Airship Expedition regions."},
 }
 
 

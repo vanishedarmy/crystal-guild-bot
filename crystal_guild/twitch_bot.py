@@ -340,6 +340,88 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.fellowship_airship(), limit=3)
 
     @commands.command()
+    async def airshipregions(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        board = self.game._expedition_board_state(uid)
+        if not board:
+            await ctx.send("AIRSHIP — Create a character first with !recruit.")
+            return
+        rows = [r for r in board.get("regions", []) if r.get("transport") == "airship"]
+        await ctx.send("AIRSHIP REGIONS — " + " | ".join(f"{r['id']} Lv.{r['min_level']} Core T{r['required_core']} ({'open' if r['unlocked'] else 'locked'})" for r in rows))
+
+    @commands.command()
+    async def airshipexpedition(self, ctx: commands.Context, region: str = "", depth: str = "scout") -> None:
+        uid, _, _ = self._identity(ctx)
+        if not region:
+            await ctx.send("AIRSHIP — Usage: !airshipexpedition <region_id> [scout|journey|deep|boss|legendary]. See !airshipregions.")
+            return
+        region_id = region.strip().lower()
+        row = self.game.data.expedition_regions.get(region_id)
+        if not row or row.get("transport") != "airship":
+            await ctx.send("AIRSHIP — Choose an Airship-only region listed with !airshipregions.")
+            return
+        await send_result(ctx, self.game.expedition_start(uid, region_id, depth.lower()))
+
+    def _chat_airship_active(self, uid: str) -> bool:
+        return self.game._is_airship_expedition(self.game._expedition_load(uid) or {})
+
+    @commands.command()
+    async def airshipstage(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_resolve_stage(uid))
+
+    @commands.command()
+    async def airshiproute(self, ctx: commands.Context, route: str = "unknown") -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_continue(uid, route.lower()))
+
+    @commands.command()
+    async def airshipreturn(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_return(uid))
+
+    @commands.command()
+    async def airshipcamp(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_camp(uid))
+
+    @commands.command()
+    async def airshipattack(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_combat_action(uid, "attack"))
+
+    @commands.command()
+    async def airshipdefend(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_combat_action(uid, "defend"))
+
+    @commands.command()
+    async def airshipretreat(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not self._chat_airship_active(uid):
+            await ctx.send("AIRSHIP — No personal Airship Expedition is active. Launch one with !airshipexpedition.")
+            return
+        await send_result(ctx, self.game.expedition_retreat(uid))
+
+    @commands.command()
     async def deeds(self, ctx: commands.Context) -> None:
         await send_result(ctx, self.game.fellowship_deeds(), limit=3)
 

@@ -6945,6 +6945,22 @@ class CrystalGuildEngine:
         chocobo, _ = self._expedition_chocobo_traits(twitch_id)
         return max(1, int((chocobo or {}).get("level", 1) or 1))
 
+    @staticmethod
+    def _is_airship_expedition(state: dict[str, Any]) -> bool:
+        return str(state.get("transport") or "chocobo") == "airship"
+
+    @staticmethod
+    def _airship_tier(state: dict[str, Any], key: str) -> int:
+        if str(state.get("transport") or "chocobo") != "airship":
+            return 0
+        return max(0, min(3, int((state.get("airship_upgrades") or {}).get(key, 0))))
+
+    def _expedition_defeat_keep(self, twitch_id: str, state: dict[str, Any]) -> float:
+        if self._is_airship_expedition(state):
+            return min(0.90, 0.70 + 0.06 * self._airship_tier(state, "hull"))
+        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
+        return expedition_defeat_cache_keep(traits, max(1, int((chocobo or {}).get("level", 1) or 1)))
+
     def _expedition_stipend(self, state: dict[str, Any], outcome: str) -> int:
         if str(outcome) != "complete":
             return 0
@@ -7014,8 +7030,8 @@ class CrystalGuildEngine:
             "landmarks_found": sum(1 for landmark in landmarks if landmark["discovered"]),
         }
 
-    def _expedition_atlas(self, twitch_id: str) -> dict[str, Any]:
-        region_ids = list(self.data.expedition_regions)
+    def _expedition_atlas(self, twitch_id: str, transport: str = "chocobo") -> dict[str, Any]:
+        region_ids = [r["id"] for r in self.data.expedition_regions.values() if str(r.get("transport") or "chocobo") == transport]
         progress_rows = [self._expedition_progress(twitch_id, region_id) for region_id in region_ids]
         region_count = max(1, len(progress_rows))
         total_progress = sum(int(row.get("progress", 0)) for row in progress_rows)
@@ -7171,11 +7187,11 @@ class CrystalGuildEngine:
             depth = EXPEDITION_DEPTHS.get(str(state.get("depth")), EXPEDITION_DEPTHS["scout"])
             base_travel = int(depth["travel_seconds"])
         chocobo_level = max(1, int((chocobo or {}).get("level", 1) or 1))
-        seconds = expedition_travel_seconds(base_travel, traits, chocobo_level)
+        seconds = max(30, int(round(base_travel * (1.0 - 0.12 * self._airship_tier(state, "engine"))))) if self._is_airship_expedition(state) else expedition_travel_seconds(base_travel, traits, chocobo_level)
         penalty = max(0, int(state.pop("travel_penalty_seconds", 0) or 0))
         if penalty:
             seconds += penalty
-        if bool(state.pop("chocobo_travel_boost", False)):
+        if bool(state.pop("chocobo_travel_boost", False)) and not self._is_airship_expedition(state):
             seconds = max(30, int(round(seconds * 0.80)))
         now = int(time.time())
         state["route"] = route_id
@@ -7208,10 +7224,11 @@ class CrystalGuildEngine:
         route_config = EXPEDITION_ROUTES.get(route, EXPEDITION_ROUTES["unknown"])
         rare_mult = float(route_config.get("rare_encounter_mult", 1.0) or 1.0)
         _, traits = self._expedition_chocobo_traits(twitch_id)
-        if "keen_eye" in traits:
-            rare_mult *= 1.15
-        if "lucky_plume" in traits:
-            rare_mult *= 1.10
+        if not self._is_airship_expedition(state):
+            if "keen_eye" in traits:
+                rare_mult *= 1.15
+            if "lucky_plume" in traits:
+                rare_mult *= 1.10
 
         all_eligible: list[tuple[dict[str, Any], float]] = []
         preferred: list[tuple[dict[str, Any], float]] = []
@@ -7367,7 +7384,8 @@ class CrystalGuildEngine:
             str((EXPEDITION_DEPTHS.get(str(state.get("depth"))) or {}).get("name") or state.get("depth") or "Expedition")
         )
         return {
-            "type": "expedition_v12",
+            "type": "airship_expedition_v198" if self._is_airship_expedition(state) else "expedition_v12",
+            "transport": "airship" if self._is_airship_expedition(state) else "chocobo",
             "outcome": str(outcome),
             "title": ("Legendary Contract Complete" if legendary_contract and outcome == "complete" else "Regional Boss Contract Complete" if boss_contract and outcome == "complete" else "Expedition Complete" if outcome == "complete" else "Expedition Returned" if outcome == "returned" else "Expedition Rescue"),
             "region_name": str(region.get("name") or "Unknown Region"),
@@ -7451,7 +7469,7 @@ class CrystalGuildEngine:
         elif outcome == "defeat":
             self.db.update_record_stats(twitch_id, {"expedition_rescues": 1})
         chocobo_xp = max(0, int(state.get("chocobo_xp", 0))) + max(4, int(state.get("stage", 1)) * 3)
-        chocobo_notes = self._award_chocobo_xp(twitch_id, chocobo_xp)
+        chocobo_notes = [] if self._is_airship_expedition(state) else self._award_chocobo_xp(twitch_id, chocobo_xp)
         summary = self._expedition_result_summary(twitch_id, state, outcome=outcome, kept=kept, lost=lost)
         summary["chocobo_notes"] = chocobo_notes[:2]
         summary["stipend_seals"] = stipend_seals
@@ -7470,7 +7488,7 @@ class CrystalGuildEngine:
             )
         if outcome == "defeat":
             return GameResult.success(
-                f"EXPEDITION RESCUE — Your Chocobo gets you home with {int(round(keep_ratio * 100))}% of the Expedition Cache.",
+                f"EXPEDITION RESCUE — {'Your Guild Airship' if self._is_airship_expedition(state) else 'Your Chocobo'} gets you home with {int(round(keep_ratio * 100))}% of the Expedition Cache.",
                 expedition_finished=True,
                 expedition_result=summary,
                 expedition_milestones=milestones,
@@ -7587,9 +7605,22 @@ class CrystalGuildEngine:
             return GameResult.success("Your Expedition is already underway. Continue it from the Adventure Board.", expedition_active=True)
         if not self._expedition_board_ready():
             return GameResult.fail("The Fellowship Expedition Board must be completed before distant Expeditions can launch.")
-        chocobo, _ = self._expedition_chocobo_traits(twitch_id)
-        if not chocobo:
-            return GameResult.fail("A registered Chocobo is required for Expeditions.")
+        region = self.data.expedition_regions.get(str(region_id))
+        if not region:
+            return GameResult.fail("That Expedition region is not available.")
+        transport = str(region.get("transport") or "chocobo")
+        airship = self.fellowship_system.airship_snapshot() if transport == "airship" else None
+        if transport == "airship":
+            if not airship.get("built"):
+                return GameResult.fail("The Guild Airship must be constructed before Airship Expeditions unlock.")
+            current_core = next((int(u["tier"]) for u in airship["upgrades"] if u["id"] == "crystal_core"), 0)
+            required_core = int(region.get("required_core", 0))
+            if current_core < required_core:
+                return GameResult.fail(f"{region['name']} requires Crystal Core Tier {required_core}.")
+        else:
+            chocobo, _ = self._expedition_chocobo_traits(twitch_id)
+            if not chocobo:
+                return GameResult.fail("A registered Chocobo is required for ground Expeditions.")
         if p["current_job"] == "adventurer":
             return GameResult.fail("Choose a Job before launching an Expedition.")
         blocked = self._activity_block(twitch_id)
@@ -7599,9 +7630,6 @@ class CrystalGuildEngine:
             return GameResult.fail("Finish your active encounter or raid before launching an Expedition.")
         if self.active_boss or self.active_encounter:
             return GameResult.fail("A Guild battle is already active. Launch the Expedition after it clears.")
-        region = self.data.expedition_regions.get(str(region_id))
-        if not region:
-            return GameResult.fail("That Expedition region is not available.")
         if int(p["level"] or 1) < int(region.get("min_level", 1)):
             return GameResult.fail(f"{region['name']} is recommended from Lv.{int(region.get('min_level', 1))}.")
         contract_kind = str(depth_id).lower()
@@ -7630,7 +7658,9 @@ class CrystalGuildEngine:
                 return GameResult.fail("Choose Scout, Journey, Deep Expedition, or an unlocked Regional Boss contract.")
         now = int(time.time())
         state = {
-            "version": 3,
+            "version": 4,
+            "transport": transport,
+            "airship_upgrades": {u["id"]: int(u["tier"]) for u in airship["upgrades"]} if airship else {},
             "started_at": now,
             "updated_at": now,
             "region_id": str(region["id"]),
@@ -7657,7 +7687,7 @@ class CrystalGuildEngine:
         seconds = self._expedition_begin_travel(twitch_id, state, "unknown")
         self.db.update_record_stats(twitch_id, {"expeditions_started": 1})
         return GameResult.success(
-            f"EXPEDITION LAUNCHED — {region['name']} · {depth['name']}. Stage 1 travel: {self._format_seconds(seconds)}.",
+            f"{'AIRSHIP EXPEDITION' if transport == 'airship' else 'EXPEDITION'} LAUNCHED — {region['name']} · {depth['name']}. Stage 1 travel: {self._format_seconds(seconds)}.",
             expedition_started=True,
             expedition_boss_contract=bool(boss_contract),
             expedition_legendary_contract=bool(legendary_contract),
@@ -7683,7 +7713,7 @@ class CrystalGuildEngine:
         if kind == "resource":
             materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
             item_id = self.rng.choice(materials) if materials else ""
-            qty = self.rng.randint(2, 3) + expedition_resource_yield_bonus(traits, chocobo_level)
+            qty = self.rng.randint(2, 3) + (self._airship_tier(state, "cargo") if self._is_airship_expedition(state) else expedition_resource_yield_bonus(traits, chocobo_level))
             row = self._expedition_cache_add_item(state, item_id, qty, source="rare_resource") if item_id else None
             payload["item"] = row
             outcome = f" Recovered {row['name']} x{row['quantity']}." if row else " The opportunity fades before anything can be recovered."
@@ -7710,7 +7740,7 @@ class CrystalGuildEngine:
             bonus_gil = max(30, int((45 + stage * 12) * mult))
             cache["gil"] = int(cache.get("gil", 0)) + bonus_gil
             payload["gil"] = bonus_gil
-            progress_gain = 7
+            progress_gain = 7 + self._airship_tier(state, "survey")
             outcome = f" The survey advances rapidly and {bonus_gil} Gil is added to the cache."
         else:
             item = self._expedition_roll_treasure(twitch_id)
@@ -7746,7 +7776,7 @@ class CrystalGuildEngine:
                 return GameResult.fail("This Regional Boss contract is missing its combat profile.")
             state["boss_encounter"] = True
             return self._expedition_initialize_combat(twitch_id, state, monster)
-        kinds, weights = expedition_event_weights(region, str(state.get("route") or "unknown"), traits, chocobo_level)
+        kinds, weights = expedition_event_weights(region, str(state.get("route") or "unknown"), set() if self._is_airship_expedition(state) else traits, chocobo_level)
         progress = self._expedition_progress(twitch_id, str(region.get("id") or ""))
         mastery = dict(region.get("mastery") or {}) if progress.get("mastered") else {}
         preferred = str(mastery.get("event_type") or "")
@@ -7757,7 +7787,7 @@ class CrystalGuildEngine:
         rare_events = [dict(value) for value in region.get("rare_events", []) if isinstance(value, dict)]
         route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
         rare_chance = float(route_config.get("rare_event_chance", 0.05) or 0.05)
-        rare_chance += expedition_rare_event_bonus(traits, chocobo_level)
+        rare_chance += (0.012 * self._airship_tier(state, "survey")) if self._is_airship_expedition(state) else expedition_rare_event_bonus(traits, chocobo_level)
         rare_chance += self.fellowship_system.archive_rare_event_bonus()
         if progress.get("mastered"):
             rare_chance += 0.010
@@ -7778,10 +7808,33 @@ class CrystalGuildEngine:
                 return self._expedition_initialize_combat(twitch_id, state, monster)
             event_type = "discovery"
 
+        if event_type == "airship" and self._is_airship_expedition(state):
+            incident = self.rng.choice(("aerial_ambush", "aetherstorm", "damaged_landing", "floating_ruins"))
+            if incident in {"aerial_ambush", "aetherstorm"}:
+                p = self._player(twitch_id)
+                hp = max(1, int(p["current_hp"] or 1)) if p else 1
+                base = max(1, int(self._max_hp(p) * (0.08 if incident == "aerial_ambush" else 0.12))) if p else 1
+                damage = max(1, int(round(base * (1.0 - 0.12 * self._airship_tier(state, "hull")))))
+                loss = min(max(0, hp - 1), damage)
+                if loss:
+                    self._save_hp(twitch_id, hp - loss)
+                label = ("Sky pirates ambush the Guild Airship." if incident == "aerial_ambush" else "A violent aetherstorm shakes the ship.") + f" Reinforced hull saves the crew; {loss} HP lost."
+                return self._expedition_stage_resolved(twitch_id, state, {"type": "airship", "subtype": incident, "label": label, "damage": loss})
+            if incident == "damaged_landing":
+                delay = max(30, int(round(90 * (1.0 - 0.15 * self._airship_tier(state, "engine")))))
+                state["travel_penalty_seconds"] = delay
+                return self._expedition_stage_resolved(twitch_id, state, {"type": "airship", "subtype": incident, "label": f"Emergency landing amid shattered sky-rocks. Repairs delay the next flight by {delay} seconds."})
+            materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
+            item_id = materials[0] if materials else ""
+            qty = 1 + self._airship_tier(state, "cargo")
+            row = self._expedition_cache_add_item(state, item_id, qty, source="airship_ruins") if item_id else None
+            label = f"Uncharted floating ruins discovered. Salvaged {row['name']} x{row['quantity']}." if row else "Uncharted floating ruins revealed in the cloud break."
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "airship", "subtype": incident, "label": label, "item": row}, progress_gain=3 + self._airship_tier(state, "survey"))
+
         if event_type == "resource":
             materials = [str(value) for value in region.get("materials", []) if str(value) in self.data.items]
             item_id = self.rng.choice(materials) if materials else ""
-            qty = self.rng.randint(1, 2) + expedition_resource_yield_bonus(traits, chocobo_level)
+            qty = self.rng.randint(1, 2) + (self._airship_tier(state, "cargo") if self._is_airship_expedition(state) else expedition_resource_yield_bonus(traits, chocobo_level))
             row = self._expedition_cache_add_item(state, item_id, qty, source="resource") if item_id else None
             flavor = self._expedition_regional_flavor(region, "resource")
             outcome = f"Gathered {row['name']} x{row['quantity']}." if row else "The resource node turns out to be picked clean."
@@ -7804,7 +7857,7 @@ class CrystalGuildEngine:
             percent = self.rng.uniform(0.06, 0.12)
             route_config = EXPEDITION_ROUTES.get(str(state.get("route") or "unknown"), EXPEDITION_ROUTES["unknown"])
             percent *= float(route_config.get("hazard_damage_mult", 1.0) or 1.0)
-            percent *= expedition_hazard_damage_multiplier(traits, chocobo_level)
+            percent *= (1.0 - 0.12 * self._airship_tier(state, "hull")) if self._is_airship_expedition(state) else expedition_hazard_damage_multiplier(traits, chocobo_level)
             region_progress = self._expedition_progress(twitch_id, str(region.get("id") or ""))
             if region_progress.get("mastered"):
                 percent *= float((region.get("mastery") or {}).get("hazard_mult", 1.0) or 1.0)
@@ -7828,7 +7881,7 @@ class CrystalGuildEngine:
             flavor = self._expedition_regional_flavor(region, "discovery")
             outcome = f"Discovered {landmark}. Survey value added to the Guild map."
             label = f"{flavor} {outcome}".strip()
-            return self._expedition_stage_resolved(twitch_id, state, {"type": "discovery", "label": label, "landmark": landmark, "gil": bonus_gil}, progress_gain=4)
+            return self._expedition_stage_resolved(twitch_id, state, {"type": "discovery", "label": label, "landmark": landmark, "gil": bonus_gil}, progress_gain=4 + self._airship_tier(state, "survey"))
 
         if event_type == "traveler":
             p = self._player(twitch_id)
@@ -8010,8 +8063,7 @@ class CrystalGuildEngine:
             healing_done=int(meta.get("healing", 0)),
             best_hit=int(meta.get("best_hit", 0)),
         )
-        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
-        keep_ratio = expedition_defeat_cache_keep(traits, max(1, int((chocobo or {}).get("level", 1) or 1)))
+        keep_ratio = self._expedition_defeat_keep(twitch_id, state)
         state.setdefault("history", []).append(
             {"stage": int(state.get("stage", 1)), "type": "defeat", "label": f"Defeated by {monster['name']}"}
         )
@@ -8228,8 +8280,7 @@ class CrystalGuildEngine:
         if meta:
             self._save_hp(twitch_id, max(1, int(meta.get("hp", 1))))
             self._save_resources_from_meta(twitch_id, meta)
-        chocobo, traits = self._expedition_chocobo_traits(twitch_id)
-        keep_ratio = expedition_defeat_cache_keep(traits, max(1, int((chocobo or {}).get("level", 1) or 1)))
+        keep_ratio = self._expedition_defeat_keep(twitch_id, state)
         state.setdefault("history", []).append(
             {"stage": int(state.get("stage", 1)), "type": "retreat", "label": "Retreated from an Expedition encounter"}
         )
@@ -8259,6 +8310,8 @@ class CrystalGuildEngine:
         max_stages = int(state.get("max_stages") or (base_stages + EXPEDITION_BONUS_STAGES))
         return {
             "active": True,
+            "transport": "airship" if self._is_airship_expedition(state) else "chocobo",
+            "airship_upgrades": copy.deepcopy(state.get("airship_upgrades") or {}) if self._is_airship_expedition(state) else {},
             "status": str(state.get("status") or "travel"),
             "region": {"id": str(region.get("id") or state.get("region_id") or ""), "name": str(region.get("name") or "Unknown Region")},
             "depth": {"id": str(depth["id"]), "name": str(depth["name"])},
@@ -8302,12 +8355,16 @@ class CrystalGuildEngine:
                     "effects": list(spec.get("effects") or [])[:2],
                 }
         board_ready = self._expedition_board_ready()
+        airship = self.fellowship_system.airship_snapshot()
+        upgrades = {u["id"]: int(u["tier"]) for u in airship.get("upgrades", [])}
         active = self._expedition_public(twitch_id)
         level = int(p["level"] or 1)
         regions = []
         for region in sorted(self.data.expedition_regions.values(), key=lambda row: int(row.get("min_level", 1))):
             progress = self._expedition_progress(twitch_id, str(region["id"]))
-            unlocked = level >= int(region.get("min_level", 1))
+            transport = str(region.get("transport") or "chocobo")
+            required_core = int(region.get("required_core", 0))
+            unlocked = (level >= int(region.get("min_level", 1)) and (transport != "airship" or (bool(airship.get("built")) and int(upgrades.get("crystal_core", 0)) >= required_core)))
             compact_progress = {
                 "progress": int(progress.get("progress", 0)),
                 "boss_clears": int(progress.get("boss_clears", 0)),
@@ -8334,6 +8391,8 @@ class CrystalGuildEngine:
             region_payload = {
                 "id": str(region["id"]),
                 "name": str(region["name"]),
+                "transport": transport,
+                "required_core": required_core,
                 "min_level": int(region.get("min_level", 1)),
                 "recommended_max_level": int(region.get("recommended_max_level", 99)),
                 "identity": str(region.get("identity") or "Exploration"),
@@ -8348,13 +8407,16 @@ class CrystalGuildEngine:
                 "boss_name": str((region.get("boss") or {}).get("name") or region.get("boss_name") or "Regional Boss"),
             }
             if not unlocked:
-                region_payload["reason"] = f"Requires Lv.{int(region.get('min_level', 1))}."
+                region_payload["reason"] = ("Build the Guild Airship." if transport == "airship" and not airship.get("built") else f"Requires Crystal Core Tier {required_core}." if transport == "airship" and int(upgrades.get("crystal_core", 0)) < required_core else f"Requires Lv.{int(region.get('min_level', 1))}.")
             regions.append(region_payload)
         return {
             "board_ready": board_ready,
             "chocobo_ready": bool(chocobo),
-            "ready": bool(board_ready and chocobo),
-            "reason": "" if board_ready and chocobo else "Complete the Fellowship Expedition Board and register a Chocobo first.",
+            "ready": bool(board_ready and (chocobo or airship.get("built"))),
+            "ground_ready": bool(board_ready and chocobo),
+            "airship_ready": bool(board_ready and airship.get("built")),
+            "airship": {"built": bool(airship.get("built")), "upgrades": airship.get("upgrades", []), "dock_level": int(airship.get("dock_level", 0))},
+            "reason": "" if board_ready and (chocobo or airship.get("built")) else "Complete the Fellowship Expedition Board, then register a Chocobo or construct the Guild Airship.",
             "chocobo": chocobo,
             "traits_active": [str(value) for value in sorted(traits)],
             "depths": [
@@ -8375,6 +8437,7 @@ class CrystalGuildEngine:
             ],
             "regions": regions,
             "atlas": self._expedition_atlas(twitch_id),
+            "airship_atlas": self._expedition_atlas(twitch_id, "airship"),
             "active": active,
         }
 
@@ -14718,22 +14781,15 @@ class CrystalGuildEngine:
                 f"GUILD AIRSHIP — {active['name']} | {status} | returns in {active.get('duration_label', 'scheduled time')}",
                 f"Contributors {active.get('participant_count', 0)} | {upgrade_text}",
             )
-        unlocked = ", ".join(m["name"] for m in airship.get("missions", []) if m.get("unlocked")) or "none"
+        unlocked = [r["name"] for r in self.data.expedition_regions.values() if r.get("transport") == "airship" and int(r.get("required_core", 0)) <= next((int(u["tier"]) for u in airship["upgrades"] if u["id"] == "crystal_core"), 0)]
         return GameResult.success(
-            f"GUILD AIRSHIP — READY | Missions complete {airship.get('missions_completed', 0)}",
-            f"Unlocked missions: {unlocked}",
+            "GUILD AIRSHIP — READY FOR EXPEDITIONS | " + ", ".join(unlocked),
+            "Each player can launch their own journey: !airshipregions · !airshipexpedition <region> <scout|journey|deep>.",
             upgrade_text,
         )
 
     def set_airship_mission(self, mission_query: str) -> GameResult:
-        ok, message, mission = self.fellowship_system.start_airship_mission(mission_query)
-        if not ok:
-            return GameResult.fail(message)
-        detail = ""
-        if mission:
-            activities = ", ".join(str(key).replace("_", " ").title() for key in (mission.get("activities") or {}))
-            detail = f"Progress from: {activities}."
-        return GameResult.success(message, detail if detail else "The Airship is underway.")
+        return GameResult.fail("Airship missions have been replaced by individual Airship Expeditions. Use !airshipregions.")
 
     def fellowship_deeds(self) -> GameResult:
         deeds = self.fellowship_system.deeds_snapshot()

@@ -1270,6 +1270,33 @@
       ],
       "habitat_provenance": "expedition_registry",
       "lore": "The Rift Wyrm moves through the Astral Scar as easily as other dragons cross a mountain pass. It has no intention of sharing the route."
+    },
+    "tempest_roc": {
+      "category": "expedition",
+      "family": "behemoths",
+      "habitats": [
+        "shattered_sky_isles"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "This legendary sky predator guards the highest shattered isles against anyone who approaches its stormbound nest."
+    },
+    "aetherstorm_colossus": {
+      "category": "expedition",
+      "family": "constructs",
+      "habitats": [
+        "aetherstorm_expanse"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "Charged by endless crystal storms, this towering airborne construct drives travelers away from the heart of the Expanse."
+    },
+    "dominion_sentinel": {
+      "category": "expedition",
+      "family": "constructs",
+      "habitats": [
+        "forgotten_dominion"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "The last guardian of the Forgotten Dominion watches an empty imperial throne and obeys orders from a vanished era."
     }
   }
 }

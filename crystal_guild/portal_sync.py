@@ -17,7 +17,7 @@ from .config import load_dotenv
 from .player_snapshot import PortalRepository
 
 
-SYNC_VERSION = "1.9.7-queens-blood"
+SYNC_VERSION = "1.9.8-airship-expedition"
 LOGGER = logging.getLogger("CrystalGuild.PortalSync")
 SCHEMA_VERSION = 1
 MODULES = (
