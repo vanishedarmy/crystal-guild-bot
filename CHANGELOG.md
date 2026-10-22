@@ -1,3 +1,18 @@
+## v1.9.8 Stream Mist Party Support — Ventures & Raids
+
+Twitch `!healparty`/`!healparty 1` (100 Gil), `!healparty 2` (250 Gil),
+`!healparty 3` (500 Gil), and `!healparty 4` (1,000 Gil) instantly apply
+Mist Potion + Mist Ether, Mist Hi-Potion + Mist Ether,
+Mist Mega-Potion + Mist Hi-Ether, or Mist X-Potion + Mist Hi-Ether,
+respectively, across the **living active Venture or Raid party**.
+Each joined player may sponsor one successful use **per Venture and per Raid**;
+this resets with the next run. Costs are Gil-only; no owned items are consumed.
+Insufficient funds, KO'd actors, unjoined users, full-health/full-MP parties,
+and rally-only battles do not spend Gil or consume an allowance. Recovery and
+charge are committed together in the persisted runtime state, protecting
+restarts and multiple Bot connections. Raid support contributes to the
+supporting hero's healing total. No Web changes or schema migration.
+
 # v1.9.8 — Airship Expedition
 
 The Crystal Guild Airship is now the Fellowship's shared unlock for individual remote Expeditions. The old 24–48-hour passive mission **launches are retired**; any mission already in flight can finish and settle using its original persisted rules, and mission history and construction/upgrades remain intact.

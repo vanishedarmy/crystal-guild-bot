@@ -1,5 +1,16 @@
 # CURRENT RELEASE: v1.9.8 — Airship Expedition
 
+## Twitch Mist Party Healing (Ventures & Raids)
+
+During a live-stream Rally Venture or Raid **combat** phase, participating players may
+use `!healparty` (100 Gil), `!healparty 2` (250 Gil), `!healparty 3` (500 Gil), or
+`!healparty 4` (1,000 Gil) to immediately heal the entire **living** party's
+HP and MP. Mist support can be purchased **once per player per Venture** and
+**once per player per Raid**, with separate allowances for each new run.
+No physical consumable is needed. Failed uses never deduct Gil. Full rules are
+in `HEALPARTY_STREAM_VENTURE_RAID_ADDON.md`.
+
+
 See `RELEASE_NOTES.md` and the `AIRSHIP_EXPEDITION_198.md` release guide. Existing setup and Queen’s Blood instructions remain relevant to previously released features.
 
 # Current release: v1.9.7 — Queen’s Blood

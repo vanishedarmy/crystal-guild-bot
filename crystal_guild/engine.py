@@ -2944,6 +2944,124 @@ class CrystalGuildEngine:
         )
 
     @_state_guard
+    def heal_party(self, twitch_id: str, tier: str | int | None = None) -> GameResult:
+        """Pay for one immediate party Mist recovery per participant per Venture/Raid.
+
+        The use receipt is stored on the active combat roster, not on the player,
+        so each new Venture *or* Raid grants its own use. SQLite's guarded
+        authoritative runtime checkpoint serializes concurrent Bot processes and
+        makes the debit, receipt and recovery durable together.
+        """
+        tiers = {
+            1: (100, "potion", "ether", "Mist Potion", "Mist Ether"),
+            2: (250, "hi_potion", "ether", "Mist Hi-Potion", "Mist Ether"),
+            3: (500, "mega_potion", "hi_ether", "Mist Mega-Potion", "Mist Hi-Ether"),
+            4: (1000, "x_potion", "hi_ether", "Mist X-Potion", "Mist Hi-Ether"),
+        }
+        token = str(tier if tier is not None else "1").strip()
+        if token not in {"1", "2", "3", "4"}:
+            return GameResult.fail("Usage: !healparty [1|2|3|4] — costs 100 / 250 / 500 / 1,000 Gil; once per player per Venture or Raid.")
+        level = int(token)
+        cost, hp_item_id, mp_item_id, hp_label, mp_label = tiers[level]
+        player = self._player(twitch_id)
+        if not player:
+            return self._need_recruit()
+
+        activity = None
+        activity_id = None
+        if self.active_encounter and self.active_encounter.get("kind", "venture") == "venture":
+            activity = "Venture"
+            if self.active_encounter.get("state") != "combat":
+                return GameResult.fail("Wait until the Venture rally closes and Active Battle begins to use !healparty.")
+            roster = self.encounter_roster
+            activity_id = self.active_encounter.get("id")
+        elif self.active_boss:
+            activity = "Raid"
+            if self.active_boss.get("state") != "combat":
+                return GameResult.fail("Wait until the Raid rally closes and combat begins to use !healparty.")
+            roster = self.raid_roster
+            activity_id = self._raid_instance_id(self.active_boss)
+        else:
+            return GameResult.fail("!healparty is available only during an active Twitch Venture or Raid battle.")
+
+        actor = roster.get(str(twitch_id))
+        if actor is None:
+            return GameResult.fail(f"Only heroes who joined this {activity} can use !healparty.")
+        if actor.get("mist_heal_used"):
+            return GameResult.fail(f"You have already used !healparty this {activity}. Each player gets one use per {activity}, regardless of tier.")
+        if int(actor.get("hp", 0)) <= 0:
+            return GameResult.fail("Your hero is KO'd and cannot use !healparty.")
+        if int(player["gil"]) < cost:
+            shortfall = cost - int(player["gil"])
+            return GameResult.fail(
+                f"{hp_label} + {mp_label} costs {cost:,} Gil. You have {int(player['gil']):,} Gil "
+                f"and need {shortfall:,} more. No Gil spent."
+            )
+
+        hp_use = (self.data.items[hp_item_id].get("use") or {}).get("effects") or []
+        mp_use = (self.data.items[mp_item_id].get("use") or {}).get("effects") or []
+        hp_effect = next(effect for effect in hp_use if effect.get("type") == "heal_hp")
+        mp_effect = next(effect for effect in mp_use if effect.get("type") == "restore_mp")
+        total_hp = total_mp = heroes_helped = 0
+        changes: list[tuple[dict[str, Any], int, int]] = []
+        for hero in roster.values():
+            current_hp = int(hero.get("hp", 0))
+            if current_hp <= 0:  # Mist healing doesn't revive fallen heroes.
+                continue
+            max_hp = max(0, int(hero.get("max_hp", 0)))
+            current_mp = max(0, int(hero.get("mp", 0)))
+            max_mp = max(0, int(hero.get("max_mp", 0)))
+            hp_restore = max(0, int(hp_effect.get("amount", 0)))
+            if hp_effect.get("fraction") is not None:
+                hp_restore = max(hp_restore, int(max_hp * float(hp_effect["fraction"])))
+            mp_restore = max(0, int(mp_effect.get("amount", 0)))
+            if mp_effect.get("fraction") is not None:
+                mp_restore = max(mp_restore, int(max_mp * float(mp_effect["fraction"])))
+            new_hp = min(max_hp, current_hp + hp_restore)
+            new_mp = min(max_mp, current_mp + mp_restore)
+            total_hp += new_hp - current_hp
+            total_mp += new_mp - current_mp
+            if new_hp != current_hp or new_mp != current_mp:
+                heroes_helped += 1
+            changes.append((hero, new_hp, new_mp))
+        if total_hp == 0 and total_mp == 0:
+            return GameResult.fail(f"The living {activity} party is already at full HP and MP. No Gil spent or use consumed.")
+
+        # _state_guard locks the combat checkpoint via SQLite BEGIN IMMEDIATE.
+        # The conditional debit and roster receipt roll back together on failure.
+        with self.db.tx() as conn:
+            debit = conn.execute(
+                "UPDATE players SET gil=gil-?,updated_at=CURRENT_TIMESTAMP "
+                "WHERE twitch_id=? AND gil>=?",
+                (cost, str(twitch_id), cost),
+            )
+            if debit.rowcount != 1:
+                return GameResult.fail("Insufficient Gil for party healing; no recovery was applied.")
+            conn.execute(
+                "INSERT INTO transactions(player_id,kind,asset_id,amount,source) "
+                "VALUES (?,'gil','gil',?,?)",
+                (str(twitch_id), -cost, "raid_party_heal" if activity == "Raid" else "venture_party_heal"),
+            )
+        for hero, new_hp, new_mp in changes:
+            hero["hp"] = new_hp
+            hero["mp"] = new_mp
+        actor["mist_heal_used"] = level
+        actor["healing"] = int(actor.get("healing", 0)) + total_hp
+        remaining = int(player["gil"]) - cost
+        return GameResult.success(
+            f"MIST SUPPORT — {player['display_name']} used {hp_label} + {mp_label} "
+            f"for {cost:,} Gil! {heroes_helped} hero(es) recovered "
+            f"{total_hp:,} HP and {total_mp:,} MP across the {activity} party. "
+            f"{remaining:,} Gil remaining. (1 use per player per {activity})",
+            tier=level, cost=cost, hp_restored=total_hp, mp_restored=total_mp,
+            heroes_helped=heroes_helped, remaining_gil=remaining,
+            activity=activity.lower(), encounter_id=activity_id,
+        )
+
+    # Previous Venture-only entry point remains available to existing callers.
+    heal_venture_party = heal_party
+
+    @_state_guard
     def join_encounter(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
         p = self._player(twitch_id)
         if not p:

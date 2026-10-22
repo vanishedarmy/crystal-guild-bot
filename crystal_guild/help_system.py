@@ -17,6 +17,7 @@ HELP_TOPICS = {
         "VENTURES — Twitch Rally Venture is live-stream gameplay: !venture is available only while the channel is LIVE. Portal Solo Venture remains available off-stream as a private, player-paced three-stage run.",
         "ACTIVE BATTLE — ENCOUNTER Ventures open a rally and !join enters it. When combat begins, each living hero queues one action per round: !attack, !ability <name> [target], !defend, or !use <item> [target].",
         "!encounter shows a compact battle dashboard with enemy HP, party HP/MP/AP, statuses, queued actions and the timer. Ordinary enemy attacks target one hero; explicit party skills can hit multiple heroes. !battlelog shows recent resolved rounds without adding automatic chat spam.",
+        "MIST SUPPORT — During a live Venture or Raid battle, !healparty (100 Gil), !healparty 2 (250 Gil), !healparty 3 (500 Gil), or !healparty 4 (1,000 Gil) immediately heals the living party’s HP/MP. Once per participating hero per Venture and once per Raid (separate uses). No Gil spent if it cannot be used.",
     ),
     "recovery": (
         "RECOVERY — !rest starts a free camp recovery; use !rest again to check the timer. !use tent restores you immediately outside combat. While LIVE, use !use <item> | <username> to apply eligible field recovery to another adventurer.",
@@ -55,7 +56,7 @@ HELP_TOPICS = {
     ),
     "raids": (
         "RAIDS — live-stream participation requires the channel to be LIVE: when a boss rally is active, !raid joins it and !boss shows status. Combat advances automatically after the rally closes.",
-        "During raids use !limit, !summon [name], !revive <hero>, and !raidstats. Browse the catalog with !bosses and !bossinfo <name>.",
+        "During raids use !limit, !summon [name], !revive <hero>, and !raidstats. !healparty [1|2|3|4] pays 100/250/500/1,000 Gil to restore the living Raid party HP/MP, once per raider per Raid. Browse the catalog with !bosses and !bossinfo <name>.",
     ),
     "bestiary": (
         "BESTIARY — !bestiary shows discovery progress. !monsters [region] browses encounters and !monster <name> inspects a creature.",
@@ -88,7 +89,7 @@ ALIASES = {
     "hero": "character", "profile": "character", "status": "character", "me": "character", "daily": "character", "substatus": "character",
     "job": "jobs", "jobinfo": "jobs", "abilities": "jobs", "mastery": "jobs", "stance": "jobs",
     "venture": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
-    "rest": "recovery", "camp": "recovery", "use": "recovery",
+    "rest": "recovery", "camp": "recovery", "use": "recovery", "healparty": "adventure",
     "inv": "inventory", "gear": "inventory", "equipment": "inventory", "equip": "inventory", "item": "inventory",
     "buy": "shop", "buyweapon": "shop", "buyarmor": "shop", "buyaccessory": "shop", "sell": "shop",
     "hunt": "hunts", "huntboard": "hunts", "marks": "hunts", "sealshop": "hunts", "sealbuy": "hunts",

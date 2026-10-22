@@ -167,6 +167,13 @@ class RPGCommands(commands.Component):
         if result.ok and result.data.get("encounter_started"):
             self.bot.encounter_daemon.wake()
 
+    @commands.command()
+    async def healparty(self, ctx: commands.Context, tier: str = "1") -> None:
+        if not await self._require_stream_live(ctx, "Venture/Raid party healing"):
+            return
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.heal_party(uid, tier))
+
     @commands.command(aliases=["fight", "rally"])
     async def join(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Rally participation"):
