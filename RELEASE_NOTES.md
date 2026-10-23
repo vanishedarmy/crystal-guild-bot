@@ -1,3 +1,11 @@
+## v1.9.8 – Stream Activity / Overlay Hotfix
+
+- Raid `!revive <hero>` now uses shared Raider targeting: @username, Twitch name, or unambiguous character name; Phoenix Down rules and KO checks remain intact.
+- World Events support all four `!healparty` tiers; they have independent once-per-player-per-run receipts and a distinct `world_event_party_heal` Gil transaction. No charge on failed attempts.
+- Corrected Bot-to-Portal Raid overlay handoff to retain public Raid roster, HP/MP, current effects, queued actions, readiness and rally timers; no private identifiers exposed.
+- Active-player Portal status now projects running Hunts, stream battles, Raids, Expeditions, Solo Ventures, and Dungeons with available countdown deadlines.
+- Same release identifier: `1.9.8-airship-expedition`. No DB schema migration or gameplay balance change.
+
 ## v1.9.8 Stream Mist Party Support — Ventures & Raids
 
 Twitch `!healparty`/`!healparty 1` (100 Gil), `!healparty 2` (250 Gil),

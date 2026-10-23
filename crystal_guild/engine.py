@@ -2945,7 +2945,7 @@ class CrystalGuildEngine:
 
     @_state_guard
     def heal_party(self, twitch_id: str, tier: str | int | None = None) -> GameResult:
-        """Pay for one immediate party Mist recovery per participant per Venture/Raid.
+        """Pay for one immediate party Mist recovery per participant per Venture, World Event, or Raid.
 
         The use receipt is stored on the active combat roster, not on the player,
         so each new Venture *or* Raid grants its own use. SQLite's guarded
@@ -2960,7 +2960,7 @@ class CrystalGuildEngine:
         }
         token = str(tier if tier is not None else "1").strip()
         if token not in {"1", "2", "3", "4"}:
-            return GameResult.fail("Usage: !healparty [1|2|3|4] — costs 100 / 250 / 500 / 1,000 Gil; once per player per Venture or Raid.")
+            return GameResult.fail("Usage: !healparty [1|2|3|4] — costs 100 / 250 / 500 / 1,000 Gil; once per player per Venture, World Event, or Raid.")
         level = int(token)
         cost, hp_item_id, mp_item_id, hp_label, mp_label = tiers[level]
         player = self._player(twitch_id)
@@ -2969,10 +2969,10 @@ class CrystalGuildEngine:
 
         activity = None
         activity_id = None
-        if self.active_encounter and self.active_encounter.get("kind", "venture") == "venture":
-            activity = "Venture"
+        if self.active_encounter and self.active_encounter.get("kind", "venture") in {"venture", "world_event"}:
+            activity = "World Event" if self.active_encounter.get("kind") == "world_event" else "Venture"
             if self.active_encounter.get("state") != "combat":
-                return GameResult.fail("Wait until the Venture rally closes and Active Battle begins to use !healparty.")
+                return GameResult.fail(f"Wait until the {activity} rally closes and Active Battle begins to use !healparty.")
             roster = self.encounter_roster
             activity_id = self.active_encounter.get("id")
         elif self.active_boss:
@@ -2982,7 +2982,7 @@ class CrystalGuildEngine:
             roster = self.raid_roster
             activity_id = self._raid_instance_id(self.active_boss)
         else:
-            return GameResult.fail("!healparty is available only during an active Twitch Venture or Raid battle.")
+            return GameResult.fail("!healparty is available only during an active Twitch Venture, World Event, or Raid battle.")
 
         actor = roster.get(str(twitch_id))
         if actor is None:
@@ -3040,7 +3040,7 @@ class CrystalGuildEngine:
             conn.execute(
                 "INSERT INTO transactions(player_id,kind,asset_id,amount,source) "
                 "VALUES (?,'gil','gil',?,?)",
-                (str(twitch_id), -cost, "raid_party_heal" if activity == "Raid" else "venture_party_heal"),
+                (str(twitch_id), -cost, "raid_party_heal" if activity == "Raid" else "world_event_party_heal" if activity == "World Event" else "venture_party_heal"),
             )
         for hero, new_hp, new_mp in changes:
             hero["hp"] = new_hp
@@ -17490,16 +17490,15 @@ class CrystalGuildEngine:
         reviver=self.raid_roster.get(reviver_id)
         if not reviver or reviver.get("hp",0)<=0:
             return GameResult.fail("You must be alive and participating in the raid to revive someone.")
-        q=self._norm(target_query.lstrip('@'))
-        target_pid=None
-        for pid,meta in self.raid_roster.items():
-            p=self._player(pid)
-            names={self._norm(meta.get("name",""))}
-            if p: names.add(self._norm(p["username"]))
-            if q in names:
-                target_pid=pid; break
+        # Use the shared Raid target resolver: it accepts the joined hero name,
+        # Twitch username, @mention and unique abbreviated names consistently
+        # with the other Raid actions, including after a runtime reload.
+        target_token = str(target_query or "").strip().lstrip("@").strip()
+        if not target_token:
+            return GameResult.fail("Usage: !revive <raider> — requires one Phoenix Down.")
+        target_pid = self._raid_target_id(target_token)
         if not target_pid:
-            return GameResult.fail("That hero is not in the raid.")
+            return GameResult.fail("That hero is not in the raid, or the name matches multiple raiders. Use their full Twitch username.")
         target=self.raid_roster[target_pid]
         if target.get("hp",0)>0:
             return GameResult.fail(f"{target['name']} is still standing. Save the Phoenix Down for someone making worse choices.")

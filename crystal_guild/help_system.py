@@ -17,7 +17,7 @@ HELP_TOPICS = {
         "VENTURES — Twitch Rally Venture is live-stream gameplay: !venture is available only while the channel is LIVE. Portal Solo Venture remains available off-stream as a private, player-paced three-stage run.",
         "ACTIVE BATTLE — ENCOUNTER Ventures open a rally and !join enters it. When combat begins, each living hero queues one action per round: !attack, !ability <name> [target], !defend, or !use <item> [target].",
         "!encounter shows a compact battle dashboard with enemy HP, party HP/MP/AP, statuses, queued actions and the timer. Ordinary enemy attacks target one hero; explicit party skills can hit multiple heroes. !battlelog shows recent resolved rounds without adding automatic chat spam.",
-        "MIST SUPPORT — During a live Venture or Raid battle, !healparty (100 Gil), !healparty 2 (250 Gil), !healparty 3 (500 Gil), or !healparty 4 (1,000 Gil) immediately heals the living party’s HP/MP. Once per participating hero per Venture and once per Raid (separate uses). No Gil spent if it cannot be used.",
+        "MIST SUPPORT — During a live Venture, World Event, or Raid battle, !healparty (100 Gil), !healparty 2 (250 Gil), !healparty 3 (500 Gil), or !healparty 4 (1,000 Gil) immediately heals the living party’s HP/MP. Once per participating hero per Venture, World Event, or Raid (each run has separate uses). No Gil spent if it cannot be used.",
     ),
     "recovery": (
         "RECOVERY — !rest starts a free camp recovery; use !rest again to check the timer. !use tent restores you immediately outside combat. While LIVE, use !use <item> | <username> to apply eligible field recovery to another adventurer.",

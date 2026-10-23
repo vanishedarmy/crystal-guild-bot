@@ -1,3 +1,7 @@
+## v1.9.8 Stream/Portal repair (Hotfix)
+
+`!revive <raider>` in an active Raid accepts an @mention, joined character name, or Twitch username and consumes a Phoenix Down only for a KO'd raider. During active World Event combat `!healparty [1|2|3|4]` now works at the same Gil costs and once-per-player-per-run limits as Venture and Raid. Raid overlay data sync now retains public joined-party HP/MP, statuses, action readiness and rally timers. The read-only Portal profile projects active Hunt, Venture, World Event, Raid, Expedition, Solo Venture and Dungeon status from persistent runtime state. Deploy the matching Web patch for countdown rendering. No schema migration; preserve existing databases, env files, and runtime overlay state.
+
 # CURRENT RELEASE: v1.9.8 — Airship Expedition
 
 ## Twitch Mist Party Healing (Ventures & Raids)

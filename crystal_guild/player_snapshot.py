@@ -497,7 +497,7 @@ class PortalRepository:
                 ).fetchone()
             equipment = self._equipment(conn, player_id, job)
             stats = self._stats(conn, player, job, equipment)
-            status = self._status(player, stats["hp"])
+            status = self._status(player, stats["hp"], conn=conn)
             hp_current = stats["hp"] if status["state"] == "ready_after_rest" else int(player["current_hp"])
             counts = self._counts(conn, player_id)
             mastery_slots = self._mastery_slots(conn, player_id)
@@ -1908,8 +1908,71 @@ class PortalRepository:
             "title": player["title"],
         }
 
-    def _status(self, player: sqlite3.Row, max_hp: int | None = None) -> dict[str, Any]:
+    def _active_activity_status(self, conn: sqlite3.Connection, player_id: str, now: int) -> dict[str, Any] | None:
+        """Project current activity from durable state, never old cooldown notices."""
+        def activity(state: str, label: str, until: Any = 0) -> dict[str, Any]:
+            try:
+                deadline = max(0, int(float(until or 0)))
+            except (ValueError, TypeError, OverflowError):
+                deadline = 0
+            return {"state": state, "label": label, "until": deadline,
+                    "remaining_seconds": max(0, deadline - now) if deadline else 0}
+
+        try:
+            record = conn.execute("SELECT value_json FROM runtime_state WHERE state_key='combat'").fetchone()
+            runtime = json.loads(record["value_json"]) if record else {}
+            if isinstance(runtime, dict):
+                encounter = runtime.get("active_encounter") or {}
+                if (isinstance(encounter, dict) and player_id in (runtime.get("encounter_roster") or {})):
+                    kind = encounter.get("kind")
+                    label = {"world_event": "World Event", "hunt": "Hunt", "venture": "Venture"}.get(kind, "Venture")
+                    stage = str(encounter.get("state") or "rally")
+                    if stage in {"rally", "combat"}:
+                        deadline = encounter.get("closes_at") if stage == "rally" else encounter.get("next_round_at")
+                        return activity("in_battle", f"{label} — {'Rally' if stage == 'rally' else 'In Battle'}", deadline)
+                boss = runtime.get("active_boss") or {}
+                if isinstance(boss, dict) and player_id in (runtime.get("raid_roster") or {}):
+                    stage = str(boss.get("state") or "rally")
+                    if stage in {"rally", "combat"}:
+                        deadline = boss.get("closes_at") if stage == "rally" else boss.get("next_round_at")
+                        return activity("in_raid", f"Raid — {'Rally' if stage == 'rally' else 'In Battle'}", deadline)
+                hunts = runtime.get("active_hunts") or {}
+                hunt = hunts.get(player_id) if isinstance(hunts, dict) else None
+                if isinstance(hunt, dict):
+                    return activity("on_hunt", "On Hunt", hunt.get("resolves_at"))
+        except (sqlite3.Error, json.JSONDecodeError, ValueError, TypeError):
+            pass
+        # Individually saved adventures remain active independently of the
+        # shared encounter state, including on server restarts.
+        for table, state_name, label in (
+            ("solo_expeditions", "in_venture", "Solo Venture"),
+            ("player_expeditions", "on_expedition", "Airship / Chocobo Expedition"),
+            ("player_dungeons", "in_dungeon", "Dungeon Delve"),
+        ):
+            try:
+                row = conn.execute(f"SELECT state_json FROM {table} WHERE player_id=?", (player_id,)).fetchone()
+                if not row:
+                    continue
+                state = json.loads(row["state_json"])
+                if not isinstance(state, dict):
+                    continue
+                step = str(state.get("status") or "travel")
+                if step in {"complete", "finished", "retreated", "defeat", "victory"}:
+                    continue
+                detail = " — In Battle" if step == "combat" else " — Exploring"
+                if table == "player_expeditions":
+                    detail = " — Airship" if state.get("transport") == "airship" or state.get("expedition_type") == "airship" else " — Chocobo"
+                return activity(state_name, label + detail, state.get("travel_ready_at") if step != "combat" else 0)
+            except (sqlite3.Error, ValueError, TypeError, json.JSONDecodeError):
+                continue
+        return None
+
+    def _status(self, player: sqlite3.Row, max_hp: int | None = None, conn: sqlite3.Connection | None = None) -> dict[str, Any]:
         now = int(time.time())
+        if conn is not None:
+            active = self._active_activity_status(conn, str(player["twitch_id"]), now)
+            if active is not None:
+                return active
         camp_until = int(player["camp_until"] or 0)
         if camp_until > now:
             return {

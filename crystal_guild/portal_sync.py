@@ -162,7 +162,8 @@ class PortalSyncClient:
             return None
         allowed = {
             "active", "status", "boss", "tier", "encounter_type", "encounter_name", "hp", "max_hp", "round", "phase",
-            "signature", "raiders", "alive", "enraged", "summon_gauge", "top", "adds", "mechanic", "last_mechanic", "next_round_at", "updated_at",
+            "signature", "raiders", "alive", "ready_actions", "actionable_raiders", "enraged", "summon_gauge", "top", "adds", "mechanic", "last_mechanic", "next_round_at", "updated_at",
+            "members", "boss_statuses", "rally_closes_at", "rounds_to_enrage",
         }
         overlay = {key: raw[key] for key in allowed if key in raw}
         top = overlay.get("top")
@@ -205,12 +206,48 @@ class PortalSyncClient:
                 if key in mechanic and mechanic[key] is not None:
                     clean[key] = max(0, int(mechanic[key]))
             overlay[field] = clean or None
+        # Joined-party rows and telegraphs are public overlay data. Prior
+        # allowlisting silently discarded them, leaving the raid roster blank.
+        members = overlay.get("members")
+        if isinstance(members, list):
+            safe_members = []
+            for row in members[:64]:
+                if not isinstance(row, dict):
+                    continue
+                safe = {}
+                for key, size in {"name":80,"role":24,"job":40,"resource":2,
+                                  "state":12,"action":56,"action_kind":24,"target":80}.items():
+                    safe[key] = str(row.get(key) or "")[:size]
+                for key in ("hp", "max_hp", "resource_value", "resource_max"):
+                    safe[key] = max(0, int(row.get(key) or 0))
+                safe["statuses"] = self._public_overlay_statuses(row.get("statuses"))
+                safe_members.append(safe)
+            overlay["members"] = safe_members
+        else:
+            overlay["members"] = []
+        overlay["boss_statuses"] = self._public_overlay_statuses(overlay.get("boss_statuses"))
+        for key in ("ready_actions", "actionable_raiders", "rally_closes_at"):
+            overlay[key] = max(0, int(overlay.get(key) or 0))
         return {
             "schema_version": SCHEMA_VERSION,
             "sync_version": SYNC_VERSION,
             "generated_at": int(time.time()),
             "overlay": overlay,
         }
+
+    @staticmethod
+    def _public_overlay_statuses(rows: Any) -> list[dict[str, Any]]:
+        if not isinstance(rows, list):
+            return []
+        result = []
+        for entry in rows[:12]:
+            if not isinstance(entry, dict):
+                continue
+            token = str(entry.get("id") or "")
+            turns = int(entry.get("turns") or 0)
+            if token and len(token) <= 32 and all(c.isalnum() or c == "_" for c in token) and 1 <= turns <= 99:
+                result.append({"id": token, "turns": turns})
+        return result
 
     @staticmethod
     def snapshot_hash(payload: dict[str, Any]) -> str:

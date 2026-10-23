@@ -169,7 +169,7 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def healparty(self, ctx: commands.Context, tier: str = "1") -> None:
-        if not await self._require_stream_live(ctx, "Venture/Raid party healing"):
+        if not await self._require_stream_live(ctx, "Venture/World Event/Raid party healing"):
             return
         uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.heal_party(uid, tier))
@@ -699,7 +699,7 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.summon_raid(uid, summon_name))
 
     @commands.command()
-    async def revive(self, ctx: commands.Context, *, target: str) -> None:
+    async def revive(self, ctx: commands.Context, *, target: str = "") -> None:
         if not await self._require_stream_live(ctx, "Raid actions"):
             return
         uid, _, _ = self._identity(ctx)
