@@ -1,3 +1,19 @@
+## v1.9.9 — Skybound Singularity
+
+- Three additional Airship Expedition regions (6 total), each with a regional boss, exploration landmarks, materials and illustrated backdrops.
+- All three previously established Airship regions also receive original scenic artwork.
+- Eclipsed Singularity Citadel, a separate Lv.97 World Map region beyond Omega Ruins, with new creatures and an Eclipse Sovereign Ultimate Superboss raid.
+- Existing expeditions, saves, and Cloud sync protocol remain compatible.
+
+## v1.9.8 — Item Effects Audit Hotfix
+
+- Hardened HP/MP/AP restorative item math across field, standard battle, and Raid/World Event use. Full-effect items set applicable pools directly to maximum; partial percent recovery never rounds down to zero on positive pools.
+- Megalixir/Elixir battle messages now explicitly distinguish **full HP at item resolution** from HP reduced by an enemy's later action in the same combat round.
+- Portal field-item previews now calculate amounts using the same capped formula as actual item use.
+- Regression-checked fixed HP potions, percentage ethers/AP restoratives, all six elemental damage consumables, 30% standard-battle elemental weakness bonuses, Megalixir in mixed HP/MP/AP parties, and inventory debit behavior.
+- Refreshed the old item-count regression test for the existing 440-item v1.9.8 catalog (including three Airship materials).
+- Remains `1.9.8-airship-expedition`; no item rebalance, database migration, Web rebuild or live state replacement.
+
 ## v1.9.8 – Stream Activity / Overlay Hotfix
 
 - Raid `!revive <hero>` now uses shared Raider targeting: @username, Twitch name, or unambiguous character name; Phoenix Down rules and KO checks remain intact.

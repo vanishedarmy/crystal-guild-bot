@@ -466,5 +466,41 @@
         "weight": 1
       }
     ]
+  },
+  {
+    "id": "eclipsed_singularity_citadel",
+    "name": "Eclipsed Singularity Citadel",
+    "min_level": 97,
+    "description": "Beyond Omega Ruins, broken god-machines and black crystal spires encircle an eclipse at the edge of reality. The Eclipse Sovereign awaits.",
+    "encounters": [
+      {
+        "monster_id": "omega_sentinel",
+        "weight": 10
+      },
+      {
+        "monster_id": "great_malboro_omega",
+        "weight": 8
+      },
+      {
+        "monster_id": "mimic_king",
+        "weight": 8
+      },
+      {
+        "monster_id": "eclipse_harbinger",
+        "weight": 17
+      },
+      {
+        "monster_id": "singularity_archon",
+        "weight": 10
+      },
+      {
+        "monster_id": "demonolith",
+        "weight": 7
+      },
+      {
+        "monster_id": "void_avatar",
+        "weight": 7
+      }
+    ]
   }
 ]

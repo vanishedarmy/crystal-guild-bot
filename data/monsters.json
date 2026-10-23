@@ -3319,5 +3319,145 @@
         "chance": 0.65
       }
     ]
+  },
+  {
+    "id": "emberglass_wyrm",
+    "name": "Emberglass Wyrm",
+    "level": 62,
+    "hp": 9100,
+    "attack": 360,
+    "defense": 205,
+    "spirit": 190,
+    "xp": 6400,
+    "jp": 370,
+    "gil": 5100,
+    "weakness": "Water",
+    "special": {
+      "name": "Molten Cataclysm",
+      "chance": 0.24,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "emberglass_core",
+        "chance": 0.58
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "frostveil_astrolabe",
+    "name": "Frostveil Astrolabe",
+    "level": 75,
+    "hp": 12700,
+    "attack": 410,
+    "defense": 240,
+    "spirit": 275,
+    "xp": 9500,
+    "jp": 480,
+    "gil": 6900,
+    "weakness": "Fire",
+    "special": {
+      "name": "Absolute Zero",
+      "chance": 0.24,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "frostveil_prism",
+        "chance": 0.58
+      },
+      {
+        "item_id": "adamantite",
+        "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "mirage_pharaoh",
+    "name": "Mirage Pharaoh",
+    "level": 86,
+    "hp": 16600,
+    "attack": 495,
+    "defense": 265,
+    "spirit": 295,
+    "xp": 12400,
+    "jp": 580,
+    "gil": 8600,
+    "weakness": "Wind",
+    "special": {
+      "name": "Hourglass Reversal",
+      "chance": 0.24,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "mirage_hourglass",
+        "chance": 0.58
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "eclipse_harbinger",
+    "name": "Eclipse Harbinger",
+    "level": 100,
+    "hp": 21200,
+    "attack": 645,
+    "defense": 335,
+    "spirit": 355,
+    "xp": 15200,
+    "jp": 680,
+    "gil": 11500,
+    "weakness": "Holy",
+    "special": {
+      "name": "Event Horizon",
+      "chance": 0.3,
+      "multiplier": 2.8
+    },
+    "drops": [
+      {
+        "item_id": "singularity_shard",
+        "chance": 0.58
+      },
+      {
+        "item_id": "omega_core",
+        "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "singularity_archon",
+    "name": "Singularity Archon",
+    "level": 103,
+    "hp": 26500,
+    "attack": 710,
+    "defense": 390,
+    "spirit": 385,
+    "xp": 17500,
+    "jp": 760,
+    "gil": 13000,
+    "weakness": "Holy",
+    "special": {
+      "name": "Reality Collapse",
+      "chance": 0.3,
+      "multiplier": 2.8
+    },
+    "drops": [
+      {
+        "item_id": "singularity_shard",
+        "chance": 0.58
+      },
+      {
+        "item_id": "eclipse_core",
+        "chance": 0.15
+      }
+    ]
   }
 ]

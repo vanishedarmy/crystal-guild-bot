@@ -44,7 +44,7 @@
     },
     "birds": {
       "name": "Avian Beasts",
-      "description": "Feathers, talons, and a bird’s-eye view of adventurers who forgot to look up."
+      "description": "Feathers, talons, and a bird\u2019s-eye view of adventurers who forgot to look up."
     },
     "undead": {
       "name": "Undead",
@@ -56,7 +56,7 @@
     },
     "constructs": {
       "name": "Golems & Constructs",
-      "description": "Stone or steel, spellwork or machinery—these guardians have outlasted the people who built them."
+      "description": "Stone or steel, spellwork or machinery\u2014these guardians have outlasted the people who built them."
     },
     "aquatic": {
       "name": "Aquatic Beasts",
@@ -80,7 +80,7 @@
     },
     "wild_beasts": {
       "name": "Wild Beasts",
-      "description": "The wilds belong to them. Travelers are merely passing through—if they’re lucky."
+      "description": "The wilds belong to them. Travelers are merely passing through\u2014if they\u2019re lucky."
     },
     "dragons": {
       "name": "Dragons & Drakes",
@@ -112,7 +112,7 @@
     },
     "elementals": {
       "name": "Elementals",
-      "description": "The land’s own magic, given shape and a rather unpredictable mood."
+      "description": "The land\u2019s own magic, given shape and a rather unpredictable mood."
     },
     "spellcasters": {
       "name": "Sorcerers & Wanderers",
@@ -1128,6 +1128,7 @@
       "category": "regional",
       "family": "fiends",
       "habitats": [
+        "eclipsed_singularity_citadel",
         "interdimensional_rift"
       ],
       "habitat_provenance": "region_encounters",
@@ -1137,6 +1138,7 @@
       "category": "regional",
       "family": "constructs",
       "habitats": [
+        "eclipsed_singularity_citadel",
         "interdimensional_rift",
         "omega_ruins"
       ],
@@ -1203,6 +1205,7 @@
       "category": "regional",
       "family": "malboros",
       "habitats": [
+        "eclipsed_singularity_citadel",
         "omega_ruins"
       ],
       "habitat_provenance": "region_encounters",
@@ -1212,6 +1215,7 @@
       "category": "regional",
       "family": "mimics",
       "habitats": [
+        "eclipsed_singularity_citadel",
         "omega_ruins"
       ],
       "habitat_provenance": "region_encounters",
@@ -1221,6 +1225,7 @@
       "category": "regional",
       "family": "magitek",
       "habitats": [
+        "eclipsed_singularity_citadel",
         "omega_ruins"
       ],
       "habitat_provenance": "region_encounters",
@@ -1297,6 +1302,51 @@
       ],
       "habitat_provenance": "expedition_registry",
       "lore": "The last guardian of the Forgotten Dominion watches an empty imperial throne and obeys orders from a vanished era."
+    },
+    "emberglass_wyrm": {
+      "category": "expedition",
+      "family": "dragons",
+      "habitats": [
+        "emberglass_caldera"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "An ancient guardian of Emberglass Caldera that challenges even veteran airship explorers."
+    },
+    "frostveil_astrolabe": {
+      "category": "expedition",
+      "family": "constructs",
+      "habitats": [
+        "frostveil_observatory"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "An ancient guardian of Frostveil Observatory that challenges even veteran airship explorers."
+    },
+    "mirage_pharaoh": {
+      "category": "expedition",
+      "family": "spellcasters",
+      "habitats": [
+        "gilded_mirage_expanse"
+      ],
+      "habitat_provenance": "expedition_registry",
+      "lore": "An ancient guardian of Gilded Mirage Expanse that challenges even veteran airship explorers."
+    },
+    "eclipse_harbinger": {
+      "category": "regional",
+      "family": "watchers",
+      "habitats": [
+        "eclipsed_singularity_citadel"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "An omen of the eclipse that stalks those who enter the citadel."
+    },
+    "singularity_archon": {
+      "category": "regional",
+      "family": "constructs",
+      "habitats": [
+        "eclipsed_singularity_citadel"
+      ],
+      "habitat_provenance": "region_encounters",
+      "lore": "A reality-warping construct designed to guard the Sovereign."
     }
   }
 }

@@ -35,7 +35,7 @@ class BestiaryResearchStep1Tests(unittest.TestCase):
     def test_roster_exactly_matches_three_gameplay_domains(self):
         from collections import Counter
         counts = Counter(row['category'] for row in self.overlay['entries'].values())
-        self.assertEqual(dict(counts), {'regional': 90, 'hunt': 17, 'expedition': 5})
+        self.assertEqual(dict(counts), {'regional': 92, 'hunt': 17, 'expedition': 11})
         self.assertEqual(self.overlay['entries']['rift_dragon']['category'], 'hunt')
         self.assertEqual(self.overlay['entries']['elder_ochu']['category'], 'expedition')
 

@@ -2247,5 +2247,95 @@
     "id": "dominion_sentinel",
     "profile": "caster",
     "ability": null
+  },
+  {
+    "id": "emberglass_wyrm",
+    "profile": "caster",
+    "ability": {
+      "id": "molten_cataclysm",
+      "name": "Molten Cataclysm",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.05,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "frostveil_astrolabe",
+    "profile": "caster",
+    "ability": {
+      "id": "absolute_zero",
+      "name": "Absolute Zero",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.06,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mirage_pharaoh",
+    "profile": "caster",
+    "ability": {
+      "id": "hourglass_reversal",
+      "name": "Hourglass Reversal",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.06,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "eclipse_harbinger",
+    "profile": "caster",
+    "ability": {
+      "id": "event_horizon",
+      "name": "Event Horizon",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.12,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "singularity_archon",
+    "profile": "caster",
+    "ability": {
+      "id": "reality_collapse",
+      "name": "Reality Collapse",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.13,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
   }
 ]

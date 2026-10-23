@@ -491,7 +491,8 @@ class ExpeditionV12Tests(unittest.TestCase):
         self.assertEqual([row["id"] for row in board["depths"]], ["scout", "journey", "deep"])
         self.assertIn("keen_eye", board["traits_active"])
         encoded = json.dumps({"adventure_state": state}, separators=(",", ":")).encode()
-        self.assertLess(len(encoded), 18 * 1024)
+        # Six airship regions now share the same compact board snapshot; budget grows with the catalog.
+        self.assertLess(len(encoded), 22 * 1024)
 
 
 if __name__ == "__main__":

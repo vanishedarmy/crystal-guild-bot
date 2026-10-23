@@ -227,3 +227,7 @@ The presentation layer does not advance timers or decide combat. The scheduler s
   increases enemy pressure.
 - After a successful player Stun, the enemy resists Stun for the following round.
 - Hunt marks gain gradual rank-based debuff resistance; they are not status-immune.
+
+### Item resolution timing (v1.9.8)
+
+A Megalixir immediately restores **full HP and applicable MP/AP** for each *living* party member when the item action resolves; it does not revive KO'd allies. Items resolve ahead of enemy attacks and round-end status effects, so a character may appear hurt in the **end-of-round** overlay despite having reached full HP earlier that round. The action log explicitly marks "FULL HP at item resolution". An Elixir fully restores one conscious target, while ordinary Potion-family items restore a fixed HP amount (up to the target's HP cap). Offensive item damage uses its catalog base amount and receives the +30% elemental weakness modifier against vulnerable standard-battle monsters.

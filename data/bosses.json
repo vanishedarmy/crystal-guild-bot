@@ -1699,5 +1699,55 @@
     "enrage_round": 8,
     "attacks_per_round": 5,
     "aoe_every": 2
+  },
+  {
+    "id": "eclipse_sovereign",
+    "name": "Eclipse Sovereign",
+    "tier": "Ultimate Superboss",
+    "recommended_level": 99,
+    "hp": 1350000,
+    "xp": 225000,
+    "gil": 500000,
+    "signature": "Reality Unmade",
+    "description": "The supreme threat of the Eclipsed Singularity Citadel, beyond Omega Ruins. An endgame Guild raid for fully prepared parties.",
+    "drops": [
+      {
+        "item_id": "eclipse_core",
+        "chance": 0.43
+      },
+      {
+        "item_id": "singularity_shard",
+        "chance": 0.8
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.95
+      }
+    ],
+    "phases": [
+      {
+        "threshold": 1.0,
+        "name": "Eclipse Awakening",
+        "damage_mult": 1.0
+      },
+      {
+        "threshold": 0.7,
+        "name": "Broken Horizon",
+        "damage_mult": 1.22
+      },
+      {
+        "threshold": 0.35,
+        "name": "Singularity Unbound",
+        "damage_mult": 1.5
+      },
+      {
+        "threshold": 0.12,
+        "name": "Reality Unmade",
+        "damage_mult": 1.7
+      }
+    ],
+    "enrage_round": 7,
+    "attacks_per_round": 6,
+    "aoe_every": 2
   }
 ]

@@ -8365,5 +8365,50 @@
     "price": 0,
     "shop": false,
     "description": "An Airship Expedition-exclusive salvage from The Forgotten Dominion."
+  },
+  {
+    "id": "emberglass_core",
+    "name": "Emberglass Core",
+    "type": "material",
+    "rarity": "rare",
+    "price": 0,
+    "shop": false,
+    "description": "Volcanic aether condensed within the Emberglass Caldera."
+  },
+  {
+    "id": "frostveil_prism",
+    "name": "Frostveil Prism",
+    "type": "material",
+    "rarity": "rare",
+    "price": 0,
+    "shop": false,
+    "description": "An astronomical crystal recovered from Frostveil Observatory."
+  },
+  {
+    "id": "mirage_hourglass",
+    "name": "Mirage Hourglass",
+    "type": "material",
+    "rarity": "rare",
+    "price": 0,
+    "shop": false,
+    "description": "A relic that holds drifting sands from the Gilded Mirage Expanse."
+  },
+  {
+    "id": "singularity_shard",
+    "name": "Singularity Shard",
+    "type": "material",
+    "rarity": "artifact",
+    "price": 0,
+    "shop": false,
+    "description": "A fragment recovered from the impossible Eclipsed Singularity Citadel."
+  },
+  {
+    "id": "eclipse_core",
+    "name": "Eclipse Core",
+    "type": "material",
+    "rarity": "legendary",
+    "price": 0,
+    "shop": false,
+    "description": "An unstable remnant of the Eclipse Sovereign, ruler beyond Omega Ruins."
   }
 ]

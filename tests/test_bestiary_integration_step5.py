@@ -35,17 +35,17 @@ class BestiaryIntegrationStep5Tests(unittest.TestCase):
     def by_id(self, entry_id: str):
         return next(row for row in self.snapshot()["monsters"] if row["id"] == entry_id)
 
-    def test_unified_catalog_has_164_unique_scoped_entries(self):
+    def test_unified_catalog_has_173_unique_scoped_entries(self):
         snap = self.snapshot()
         rows = snap["monsters"]
-        self.assertEqual(len(rows), 164)
-        self.assertEqual(len({row["id"] for row in rows}), 164)
+        self.assertEqual(len(rows), 173)
+        self.assertEqual(len({row["id"] for row in rows}), 173)
         scopes = {}
         for row in rows:
             scopes[row["scope"]] = scopes.get(row["scope"], 0) + 1
-        self.assertEqual(scopes, {"base": 112, "boss": 37, "world_event": 10, "seasonal": 5})
-        self.assertEqual(snap["summary"]["base_total"], 112)
-        self.assertEqual(snap["summary"]["special_total"], 52)
+        self.assertEqual(scopes, {"base": 120, "boss": 38, "world_event": 10, "seasonal": 5})
+        self.assertEqual(snap["summary"]["base_total"], 120)
+        self.assertEqual(snap["summary"]["special_total"], 53)
 
     def test_locked_external_records_fail_closed(self):
         row = self.by_id("boss:ifrit")

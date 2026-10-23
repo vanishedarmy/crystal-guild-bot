@@ -1,4 +1,4 @@
-Crystal Guild v1.9.8 — Airship Expedition + Twitch Venture/Raid Mist Support
+Crystal Guild v1.9.8 — Airship Expedition + Twitch Venture/Raid/World Event Support + Item Effects Hotfix
 Sanitized Bot release source index (excludes runtime databases, tokens, overlay state and bytecode).
 
 .env.example
@@ -260,3 +260,5 @@ tools/simulate_expedition_balance.py
 tools/simulate_guild_balance.py
 upgrade_crystal_guild.bat
 upgrade_crystal_guild.py
+ITEM_EFFECTS_198_HOTFIX.md
+tests/test_consumable_effects_198_hotfix.py

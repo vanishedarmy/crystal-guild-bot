@@ -1333,6 +1333,26 @@ class CrystalGuildEngine:
             "While resting you cannot Venture, Hunt, join encounters, or join raids. Use !rest to check the camp timer; a Tent can restore HP/MP/AP immediately with !use tent.",
         )
 
+    @staticmethod
+    def _item_restored_value(current: int, maximum: int, effect: dict[str, Any]) -> int:
+        """Resolve an item's absolute/percentage recovery against its target cap.
+
+        A full (100%) recovery sets the resource *to its maximum* rather than
+        calculating a nominal additive amount. Partial percent restoratives
+        recover at least one point when a positive resource pool exists.
+        """
+        cap = max(0, int(maximum))
+        before = max(0, int(current))
+        if cap <= 0:
+            return before
+        fraction = effect.get("fraction")
+        if fraction is not None and float(fraction) >= 1.0:
+            return cap
+        amount = max(0, int(effect.get("amount", 0)))
+        if fraction is not None and float(fraction) > 0:
+            amount = max(amount, max(1, int(cap * float(fraction))))
+        return min(cap, before + amount)
+
     @_state_guard
     def use_item(
         self,
@@ -1426,32 +1446,26 @@ class CrystalGuildEngine:
             if effect_type == "heal_hp":
                 if new_hp <= 0:
                     continue
-                amount = int(effect.get("amount", 0))
-                if effect.get("fraction") is not None:
-                    amount = max(amount, int(max_hp * float(effect.get("fraction", 0))))
                 before = new_hp
-                new_hp = min(max_hp, new_hp + max(0, amount))
+                new_hp = self._item_restored_value(before, max_hp, effect)
                 restored = new_hp - before
                 if restored > 0:
-                    effects_done.append(f"restores {restored} HP")
+                    suffix = " (FULL HP at item resolution)" if float(effect.get("fraction") or 0) >= 1 else ""
+                    effects_done.append(f"restores {restored} HP{suffix}")
             elif effect_type == "restore_mp" and max_mp > 0 and new_hp > 0:
-                amount = max(0, int(effect.get("amount", 0)))
-                if effect.get("fraction") is not None:
-                    amount = max(amount, int(max_mp * float(effect.get("fraction", 0))))
                 before = new_mp
-                new_mp = min(max_mp, new_mp + amount)
+                new_mp = self._item_restored_value(before, max_mp, effect)
                 restored = new_mp - before
                 if restored > 0:
-                    effects_done.append(f"restores {restored} MP")
+                    suffix = " (FULL MP)" if float(effect.get("fraction") or 0) >= 1 else ""
+                    effects_done.append(f"restores {restored} MP{suffix}")
             elif effect_type == "restore_ap" and max_ap > 0 and new_hp > 0:
-                amount = max(0, int(effect.get("amount", 0)))
-                if effect.get("fraction") is not None:
-                    amount = max(amount, int(max_ap * float(effect.get("fraction", 0))))
                 before = new_ap
-                new_ap = min(max_ap, new_ap + amount)
+                new_ap = self._item_restored_value(before, max_ap, effect)
                 restored = new_ap - before
                 if restored > 0:
-                    effects_done.append(f"restores {restored} AP")
+                    suffix = " (FULL AP)" if float(effect.get("fraction") or 0) >= 1 else ""
+                    effects_done.append(f"restores {restored} AP{suffix}")
             elif effect_type == "revive" and new_hp <= 0:
                 fraction = float(effect.get("fraction", 0.30))
                 new_hp = max(1, int(max_hp * fraction))
@@ -4247,15 +4261,13 @@ class CrystalGuildEngine:
                         continue
                     maximum = int(row.get("max_hp", 0))
                     before = int(row.get("hp", 0))
-                    amount = max(0, int(effect.get("amount", 0)))
-                    if effect.get("fraction") is not None:
-                        amount = max(amount, int(maximum * float(effect.get("fraction", 0))))
-                    row["hp"] = min(maximum, before + amount)
+                    row["hp"] = self._item_restored_value(before, maximum, effect)
                     healed_total += int(row["hp"]) - before
                 if healed_total > 0:
                     meta["healing"] += healed_total
                     used = True
-                    parts.append(f"restores {healed_total} HP")
+                    suffix = " (FULL HP at item resolution)" if float(effect.get("fraction") or 0) >= 1 else ""
+                    parts.append(f"restores {healed_total} HP{suffix}")
                 continue
 
             if effect_type in {"restore_mp", "restore_ap"}:
@@ -4268,14 +4280,12 @@ class CrystalGuildEngine:
                     if maximum <= 0:
                         continue
                     before = int(row.get(key, 0))
-                    amount = max(0, int(effect.get("amount", 0)))
-                    if effect.get("fraction") is not None:
-                        amount = max(amount, int(maximum * float(effect.get("fraction", 0))))
-                    row[key] = min(maximum, before + amount)
+                    row[key] = self._item_restored_value(before, maximum, effect)
                     restored_total += int(row[key]) - before
                 if restored_total > 0:
                     used = True
-                    parts.append(f"restores {restored_total} {key.upper()}")
+                    suffix = f" (FULL {key.upper()})" if float(effect.get("fraction") or 0) >= 1 else ""
+                    parts.append(f"restores {restored_total} {key.upper()}{suffix}")
                 continue
 
             if effect_type == "revive":
@@ -6902,29 +6912,23 @@ class CrystalGuildEngine:
                 for effect in effects:
                     effect_type = effect.get("type")
                     if effect_type == "heal_hp" and hp > 0:
-                        amount = max(0, int(effect.get("amount", 0)))
-                        if effect.get("fraction") is not None:
-                            amount = max(amount, int(max_hp * float(effect.get("fraction", 0))))
-                        effective = min(max(0, max_hp - hp), amount)
-                        potential_total += amount
+                        nominal = self._item_restored_value(0, max_hp, effect)
+                        effective = max(0, self._item_restored_value(hp, max_hp, effect) - hp)
+                        potential_total += nominal
                         effective_total += effective
                         if effective > 0:
                             preview_parts.append(f"+{effective} HP")
                     elif effect_type == "restore_mp" and hp > 0 and max_mp > 0:
-                        amount = max(0, int(effect.get("amount", 0)))
-                        if effect.get("fraction") is not None:
-                            amount = max(amount, int(max_mp * float(effect.get("fraction", 0))))
-                        effective = min(max(0, max_mp - mp), amount)
-                        potential_total += amount
+                        nominal = self._item_restored_value(0, max_mp, effect)
+                        effective = max(0, self._item_restored_value(mp, max_mp, effect) - mp)
+                        potential_total += nominal
                         effective_total += effective
                         if effective > 0:
                             preview_parts.append(f"+{effective} MP")
                     elif effect_type == "restore_ap" and hp > 0 and max_ap > 0:
-                        amount = max(0, int(effect.get("amount", 0)))
-                        if effect.get("fraction") is not None:
-                            amount = max(amount, int(max_ap * float(effect.get("fraction", 0))))
-                        effective = min(max(0, max_ap - ap), amount)
-                        potential_total += amount
+                        nominal = self._item_restored_value(0, max_ap, effect)
+                        effective = max(0, self._item_restored_value(ap, max_ap, effect) - ap)
+                        potential_total += nominal
                         effective_total += effective
                         if effective > 0:
                             preview_parts.append(f"+{effective} AP")
@@ -16097,19 +16101,23 @@ class CrystalGuildEngine:
                 healed = 0
                 for row in targets:
                     if not row or int(row.get("hp", 0)) <= 0: continue
-                    maximum=int(row.get("max_hp",0)); before=int(row.get("hp",0)); amount=max(0,int(effect.get("amount",0)))
-                    if effect.get("fraction") is not None: amount=max(amount,int(maximum*float(effect.get("fraction",0))))
-                    row["hp"]=min(maximum,before+amount); healed += int(row["hp"])-before
-                if healed: used=True; healing_total += healed; meta["healing"] = int(meta.get("healing",0))+healed; parts.append(f"restores {healed} HP")
+                    maximum=int(row.get("max_hp",0)); before=int(row.get("hp",0))
+                    row["hp"]=self._item_restored_value(before,maximum,effect); healed += int(row["hp"])-before
+                if healed:
+                    used=True; healing_total += healed; meta["healing"] = int(meta.get("healing",0))+healed
+                    suffix = " (FULL HP at item resolution)" if float(effect.get("fraction") or 0) >= 1 else ""
+                    parts.append(f"restores {healed} HP{suffix}")
             elif et in {"restore_mp", "restore_ap"}:
                 key="mp" if et=="restore_mp" else "ap"; restored=0
                 for row in targets:
                     if not row or int(row.get("hp",0))<=0: continue
-                    maximum=int(row.get(f"max_{key}",0)); before=int(row.get(key,0)); amount=max(0,int(effect.get("amount",0)))
+                    maximum=int(row.get(f"max_{key}",0)); before=int(row.get(key,0))
                     if maximum<=0: continue
-                    if effect.get("fraction") is not None: amount=max(amount,int(maximum*float(effect.get("fraction",0))))
-                    row[key]=min(maximum,before+amount); restored += int(row[key])-before
-                if restored: used=True; parts.append(f"restores {restored} {key.upper()}")
+                    row[key]=self._item_restored_value(before,maximum,effect); restored += int(row[key])-before
+                if restored:
+                    used=True
+                    suffix=f" (FULL {key.upper()})" if float(effect.get("fraction") or 0) >= 1 else ""
+                    parts.append(f"restores {restored} {key.upper()}{suffix}")
             elif et == "revive":
                 revived=0
                 for row in targets:

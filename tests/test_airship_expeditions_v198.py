@@ -39,9 +39,9 @@ class AirshipExpedition198(unittest.TestCase):
     def test_catalog_and_original_ground_atlas_unchanged(self):
         self.assertEqual(self.data.validate(), [])
         self.assertEqual(len([r for r in self.data.expedition_regions.values() if r.get('transport') != 'airship']), 5)
-        self.assertEqual(len([r for r in self.data.expedition_regions.values() if r.get('transport') == 'airship']), 3)
+        self.assertEqual(len([r for r in self.data.expedition_regions.values() if r.get('transport') == 'airship']), 6)
         self.assertEqual(self.game._expedition_atlas('198')['region_count'], 5)
-        self.assertEqual(self.game._expedition_atlas('198', 'airship')['region_count'], 3)
+        self.assertEqual(self.game._expedition_atlas('198', 'airship')['region_count'], 6)
 
     def test_airship_requires_guild_board_construction_level_and_core(self):
         a = self.game.expedition_start('198', 'shattered_sky_isles', 'scout')
@@ -108,7 +108,7 @@ class AirshipExpedition198(unittest.TestCase):
     def test_browse_regions_and_retire_old_mission_launch(self):
         self.gate(built=True, core=1)
         board = self.game._expedition_board_state('198')
-        self.assertEqual(len(board['regions']), 8)
+        self.assertEqual(len(board['regions']), 11)
         self.assertEqual(sum(r['unlocked'] for r in board['regions'] if r['transport'] == 'airship'), 2)
         self.assertTrue(board['airship_ready'])
         self.assertFalse(board['ground_ready'])

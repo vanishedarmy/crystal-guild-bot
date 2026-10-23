@@ -1431,5 +1431,458 @@
     ],
     "transport": "airship",
     "required_core": 2
+  },
+  {
+    "id": "emberglass_caldera",
+    "name": "Emberglass Caldera",
+    "min_level": 55,
+    "recommended_max_level": 70,
+    "description": "Skyborne volcanic forges, obsidian cliffs, and burning islands suspended over a sea of ash.",
+    "identity": "Volcanic Skylands",
+    "hazard": "Cinderfall Turbulence",
+    "boss_name": "Emberglass Wyrm",
+    "materials": [
+      "emberglass_core",
+      "dark_matter",
+      "adamantite"
+    ],
+    "encounters": [
+      {
+        "monster_id": "red_dragon",
+        "weight": 22
+      },
+      {
+        "monster_id": "rift_wyrm",
+        "weight": 19
+      },
+      {
+        "monster_id": "behemoth_tyrant",
+        "weight": 16
+      },
+      {
+        "monster_id": "adamant_golem",
+        "weight": 13
+      }
+    ],
+    "event_weights": {
+      "combat": 25,
+      "resource": 17,
+      "treasure": 14,
+      "hazard": 13,
+      "discovery": 17,
+      "traveler": 3,
+      "airship": 11
+    },
+    "discoveries": [
+      "Cinder Docks",
+      "Obsidian Causeway",
+      "Forgeheart Rift",
+      "The Broken Crucible"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Cinder Docks",
+        "description": "Chart Cinder Docks in Emberglass Caldera.",
+        "unlock": "More routes"
+      },
+      {
+        "threshold": 50,
+        "name": "Obsidian Causeway",
+        "description": "Chart Obsidian Causeway in Emberglass Caldera.",
+        "unlock": "Ancient survey data"
+      },
+      {
+        "threshold": 75,
+        "name": "Forgeheart Rift",
+        "description": "Chart Forgeheart Rift in Emberglass Caldera.",
+        "unlock": "Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "The Broken Crucible",
+        "description": "Chart The Broken Crucible in Emberglass Caldera.",
+        "unlock": "Airship region mastered"
+      }
+    ],
+    "boss": {
+      "id": "emberglass_wyrm",
+      "name": "Emberglass Wyrm",
+      "monster_id": "emberglass_wyrm",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 600,
+      "reward_mult": 1.9,
+      "guaranteed_rewards": [
+        {
+          "item_id": "emberglass_core",
+          "quantity": 3
+        },
+        {
+          "item_id": "dark_matter",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "great_wyrm",
+        "weight": 5
+      }
+    ],
+    "mastery": {
+      "title_id": "",
+      "bonus": "Airship survey events +5%",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    },
+    "landmarks": [
+      {
+        "name": "Cinder Docks",
+        "unlock_progress": 10,
+        "description": "Cinder Docks mapped by the Guild Airship."
+      },
+      {
+        "name": "Obsidian Causeway",
+        "unlock_progress": 35,
+        "description": "Obsidian Causeway mapped by the Guild Airship."
+      },
+      {
+        "name": "Forgeheart Rift",
+        "unlock_progress": 60,
+        "description": "Forgeheart Rift mapped by the Guild Airship."
+      },
+      {
+        "name": "The Broken Crucible",
+        "unlock_progress": 85,
+        "description": "The Broken Crucible mapped by the Guild Airship."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "The Cargo Hold harvests rare materials from Emberglass Caldera."
+      ],
+      "treasure": [
+        "An uncharted cache emerges from the ruins of Emberglass Caldera."
+      ],
+      "hazard": [
+        "Cinderfall Turbulence strikes the Guild Airship and forces an evasive maneuver."
+      ],
+      "traveler": [
+        "A stranded navigator trades supplies for a safe route through the skies."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "emberglass_caldera_rare",
+        "name": "Forgeheart Cache",
+        "kind": "treasure",
+        "description": "A sealed forge vault drifts into reach through the ash storm."
+      }
+    ],
+    "transport": "airship",
+    "required_core": 2
+  },
+  {
+    "id": "frostveil_observatory",
+    "name": "Frostveil Observatory",
+    "min_level": 65,
+    "recommended_max_level": 82,
+    "description": "Frozen floating plateaus and an ancient sky observatory beneath the aurora.",
+    "identity": "Celestial Icefield",
+    "hazard": "Astral Whiteout",
+    "boss_name": "Frostveil Astrolabe",
+    "materials": [
+      "frostveil_prism",
+      "elemental_crystal",
+      "adamantite"
+    ],
+    "encounters": [
+      {
+        "monster_id": "frost_behemoth",
+        "weight": 22
+      },
+      {
+        "monster_id": "blue_dragon",
+        "weight": 19
+      },
+      {
+        "monster_id": "rift_behemoth",
+        "weight": 16
+      },
+      {
+        "monster_id": "astral_construct",
+        "weight": 13
+      }
+    ],
+    "event_weights": {
+      "combat": 25,
+      "resource": 17,
+      "treasure": 14,
+      "hazard": 13,
+      "discovery": 17,
+      "traveler": 3,
+      "airship": 11
+    },
+    "discoveries": [
+      "Icefall Landing",
+      "Moonlit Traverse",
+      "Starwheel Dome",
+      "Aurora Meridian"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Icefall Landing",
+        "description": "Chart Icefall Landing in Frostveil Observatory.",
+        "unlock": "More routes"
+      },
+      {
+        "threshold": 50,
+        "name": "Moonlit Traverse",
+        "description": "Chart Moonlit Traverse in Frostveil Observatory.",
+        "unlock": "Ancient survey data"
+      },
+      {
+        "threshold": 75,
+        "name": "Starwheel Dome",
+        "description": "Chart Starwheel Dome in Frostveil Observatory.",
+        "unlock": "Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Aurora Meridian",
+        "description": "Chart Aurora Meridian in Frostveil Observatory.",
+        "unlock": "Airship region mastered"
+      }
+    ],
+    "boss": {
+      "id": "frostveil_astrolabe",
+      "name": "Frostveil Astrolabe",
+      "monster_id": "frostveil_astrolabe",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 660,
+      "reward_mult": 2.02,
+      "guaranteed_rewards": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 3
+        },
+        {
+          "item_id": "elemental_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "crystal_dragon",
+        "weight": 5
+      }
+    ],
+    "mastery": {
+      "title_id": "",
+      "bonus": "Airship survey events +5%",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    },
+    "landmarks": [
+      {
+        "name": "Icefall Landing",
+        "unlock_progress": 10,
+        "description": "Icefall Landing mapped by the Guild Airship."
+      },
+      {
+        "name": "Moonlit Traverse",
+        "unlock_progress": 35,
+        "description": "Moonlit Traverse mapped by the Guild Airship."
+      },
+      {
+        "name": "Starwheel Dome",
+        "unlock_progress": 60,
+        "description": "Starwheel Dome mapped by the Guild Airship."
+      },
+      {
+        "name": "Aurora Meridian",
+        "unlock_progress": 85,
+        "description": "Aurora Meridian mapped by the Guild Airship."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "The Cargo Hold harvests rare materials from Frostveil Observatory."
+      ],
+      "treasure": [
+        "An uncharted cache emerges from the ruins of Frostveil Observatory."
+      ],
+      "hazard": [
+        "Astral Whiteout strikes the Guild Airship and forces an evasive maneuver."
+      ],
+      "traveler": [
+        "A stranded navigator trades supplies for a safe route through the skies."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "frostveil_observatory_rare",
+        "name": "Moonfall Conjunction",
+        "kind": "survey",
+        "description": "Ancient star maps reveal hidden routes beyond the frozen horizon."
+      }
+    ],
+    "transport": "airship",
+    "required_core": 3
+  },
+  {
+    "id": "gilded_mirage_expanse",
+    "name": "Gilded Mirage Expanse",
+    "min_level": 75,
+    "recommended_max_level": 95,
+    "description": "Floating deserts, sandfall canyons, ancient golden temples and lost hourglass relics.",
+    "identity": "Sunken Sky Empire",
+    "hazard": "Temporal Sandstorm",
+    "boss_name": "Mirage Pharaoh",
+    "materials": [
+      "mirage_hourglass",
+      "ancient_coin",
+      "dark_matter"
+    ],
+    "encounters": [
+      {
+        "monster_id": "land_worm",
+        "weight": 22
+      },
+      {
+        "monster_id": "archeodemon",
+        "weight": 19
+      },
+      {
+        "monster_id": "void_avatar",
+        "weight": 16
+      },
+      {
+        "monster_id": "omega_fragment",
+        "weight": 13
+      }
+    ],
+    "event_weights": {
+      "combat": 25,
+      "resource": 17,
+      "treasure": 14,
+      "hazard": 13,
+      "discovery": 17,
+      "traveler": 3,
+      "airship": 11
+    },
+    "discoveries": [
+      "Sandfall Gate",
+      "Blue Oasis",
+      "Hourglass Necropolis",
+      "Gilded Throne"
+    ],
+    "objectives": [
+      {
+        "threshold": 25,
+        "name": "Sandfall Gate",
+        "description": "Chart Sandfall Gate in Gilded Mirage Expanse.",
+        "unlock": "More routes"
+      },
+      {
+        "threshold": 50,
+        "name": "Blue Oasis",
+        "description": "Chart Blue Oasis in Gilded Mirage Expanse.",
+        "unlock": "Ancient survey data"
+      },
+      {
+        "threshold": 75,
+        "name": "Hourglass Necropolis",
+        "description": "Chart Hourglass Necropolis in Gilded Mirage Expanse.",
+        "unlock": "Regional Boss"
+      },
+      {
+        "threshold": 100,
+        "name": "Gilded Throne",
+        "description": "Chart Gilded Throne in Gilded Mirage Expanse.",
+        "unlock": "Airship region mastered"
+      }
+    ],
+    "boss": {
+      "id": "mirage_pharaoh",
+      "name": "Mirage Pharaoh",
+      "monster_id": "mirage_pharaoh",
+      "unlock_progress": 75,
+      "stages": 4,
+      "travel_seconds": 720,
+      "reward_mult": 2.14,
+      "guaranteed_rewards": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 3
+        },
+        {
+          "item_id": "ancient_coin",
+          "quantity": 1
+        }
+      ]
+    },
+    "rare_encounters": [
+      {
+        "monster_id": "varuna",
+        "weight": 5
+      }
+    ],
+    "mastery": {
+      "title_id": "",
+      "bonus": "Airship survey events +5%",
+      "event_type": "discovery",
+      "event_mult": 1.05
+    },
+    "landmarks": [
+      {
+        "name": "Sandfall Gate",
+        "unlock_progress": 10,
+        "description": "Sandfall Gate mapped by the Guild Airship."
+      },
+      {
+        "name": "Blue Oasis",
+        "unlock_progress": 35,
+        "description": "Blue Oasis mapped by the Guild Airship."
+      },
+      {
+        "name": "Hourglass Necropolis",
+        "unlock_progress": 60,
+        "description": "Hourglass Necropolis mapped by the Guild Airship."
+      },
+      {
+        "name": "Gilded Throne",
+        "unlock_progress": 85,
+        "description": "Gilded Throne mapped by the Guild Airship."
+      }
+    ],
+    "regional_events": {
+      "resource": [
+        "The Cargo Hold harvests rare materials from Gilded Mirage Expanse."
+      ],
+      "treasure": [
+        "An uncharted cache emerges from the ruins of Gilded Mirage Expanse."
+      ],
+      "hazard": [
+        "Temporal Sandstorm strikes the Guild Airship and forces an evasive maneuver."
+      ],
+      "traveler": [
+        "A stranded navigator trades supplies for a safe route through the skies."
+      ]
+    },
+    "rare_events": [
+      {
+        "id": "gilded_mirage_expanse_rare",
+        "name": "Lost Treasury",
+        "kind": "treasure",
+        "description": "The Survey Array pinpoints a treasure chamber hidden behind a shifting mirage."
+      }
+    ],
+    "transport": "airship",
+    "required_core": 3
   }
 ]
