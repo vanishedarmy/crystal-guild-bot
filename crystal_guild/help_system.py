@@ -51,7 +51,7 @@ HELP_TOPICS = {
         "Use !upgrade <item> to forge equipment toward +5. Use !resynthesize <weapon or armor> to break down unwanted gear into crafting materials. Relic and Artifact gear is protected.",
     ),
     "relics": (
-        "RELICS — !relics shows your Relic lines; !relic <name> shows stage requirements; !awaken <name> advances a completed stage.",
+        "RELICS — !relics shows Classic lines; !relics ultimate shows Lv.90 Ultimate lines; !relic <name> shows stage requirements; !awaken <name> advances a completed stage.",
         "Relics are long-term Job-specific weapons and intentionally sit above ordinary shop gear. Expect Hunts, crafting, boss loot and poor life choices.",
     ),
     "raids": (

@@ -598,6 +598,10 @@ class GameData:
                         require(self.monsters, req.get("monster_id"), f"relic {relic['id']} requirement")
                     elif req.get("type") == "hunt_clear":
                         require(self.hunts, req.get("hunt_id"), f"relic {relic['id']} requirement")
+                    elif req.get("type") == "relic_complete":
+                        require(self.relics, req.get("relic_id"), f"relic {relic['id']} prerequisite")
+                    elif req.get("type") == "boss_clear":
+                        require(self.bosses, req.get("boss_id"), f"relic {relic['id']} requirement")
 
         for offer in self.seal_shop.values():
             require(self.items, offer.get("item_id"), f"seal shop {offer['id']}")

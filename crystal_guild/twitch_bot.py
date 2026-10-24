@@ -600,9 +600,9 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.sealbuy(uid, query, qty))
 
     @commands.command()
-    async def relics(self, ctx: commands.Context) -> None:
+    async def relics(self, ctx: commands.Context, tier: str = "classic") -> None:
         uid, _, _ = self._identity(ctx)
-        await send_result(ctx, self.game.relics(uid))
+        await send_result(ctx, self.game.relics(uid, tier), limit=4)
 
     @commands.command()
     async def relic(self, ctx: commands.Context, *, relic_name: str) -> None:

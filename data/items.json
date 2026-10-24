@@ -8410,5 +8410,4135 @@
     "price": 0,
     "shop": false,
     "description": "An unstable remnant of the Eclipse Sovereign, ruler beyond Omega Ruins."
+  },
+  {
+    "id": "zephyr_titan_axe",
+    "name": "Zephyr Titan Axe",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 113,
+      "str": 13,
+      "vit": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_platinum_dirk",
+    "name": "Zephyr Platinum Dirk",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 108,
+      "dex": 13,
+      "lck": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_cerulean_rifle",
+    "name": "Zephyr Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 111,
+      "dex": 13,
+      "lck": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_seraph_harp",
+    "name": "Zephyr Seraph Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 104,
+      "magic_power": 104,
+      "spr": 13,
+      "dex": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_heavens_cloud",
+    "name": "Zephyr Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 111,
+      "str": 12,
+      "dex": 13
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_dragon_claws",
+    "name": "Zephyr Dragon Claws",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 110,
+      "str": 11,
+      "dex": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_crystal_rapier",
+    "name": "Zephyr Crystal Rapier",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 108,
+      "magic_power": 102,
+      "dex": 7,
+      "mag": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_dragon_lance",
+    "name": "Zephyr Dragon Lance",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 112,
+      "str": 13,
+      "dex": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_astral_staff",
+    "name": "Zephyr Astral Staff",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 112,
+      "mag": 13,
+      "spr": 7
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_crystal_sword",
+    "name": "Zephyr Crystal Sword",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 112,
+      "str": 9,
+      "vit": 3
+    },
+    "description": "Lv.70 weapon progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_crystal_coat",
+    "name": "Zephyr Crystal Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 31,
+      "spr": 13,
+      "dex": 7,
+      "hp": 308
+    },
+    "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_adamant_plate_shop",
+    "name": "Zephyr Adamant Plate",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 32,
+      "spr": 11,
+      "hp": 319
+    },
+    "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_black_garb",
+    "name": "Zephyr Black Garb",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 30,
+      "dex": 13,
+      "lck": 7,
+      "hp": 297
+    },
+    "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_oracle_robe",
+    "name": "Zephyr Oracle Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 15000,
+    "shop": true,
+    "shop_level": 70,
+    "min_level": 70,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 27,
+      "spr": 32,
+      "mag": 13,
+      "hp": 286
+    },
+    "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "zephyr_vanguard_signet",
+    "name": "Zephyr Vanguard Signet",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 7500,
+    "shop": true,
+    "min_level": 70,
+    "bonuses": {
+      "str": 11,
+      "dex": 9,
+      "attack": 20
+    },
+    "description": "Lv.70 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ],
+    "shop_level": 70
+  },
+  {
+    "id": "zephyr_oracle_signet",
+    "name": "Zephyr Oracle Signet",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 7500,
+    "shop": true,
+    "min_level": 70,
+    "bonuses": {
+      "mag": 13,
+      "spr": 12,
+      "magic_power": 20
+    },
+    "description": "Lv.70 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "shop_level": 70
+  },
+  {
+    "id": "zephyr_wayfinder_signet",
+    "name": "Zephyr Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 7500,
+    "shop": true,
+    "min_level": 70,
+    "bonuses": {
+      "vit": 11,
+      "dex": 11,
+      "lck": 11,
+      "hp": 134
+    },
+    "description": "Lv.70 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "shop_level": 70
+  },
+  {
+    "id": "mirage_titan_axe",
+    "name": "Mirage Titan Axe",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 126,
+      "str": 15,
+      "vit": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_platinum_dirk",
+    "name": "Mirage Platinum Dirk",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 120,
+      "dex": 15,
+      "lck": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_cerulean_rifle",
+    "name": "Mirage Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 124,
+      "dex": 15,
+      "lck": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_seraph_harp",
+    "name": "Mirage Seraph Harp",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 116,
+      "magic_power": 116,
+      "spr": 15,
+      "dex": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_heavens_cloud",
+    "name": "Mirage Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 124,
+      "str": 14,
+      "dex": 15
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_dragon_claws",
+    "name": "Mirage Dragon Claws",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 122,
+      "str": 12,
+      "dex": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_crystal_rapier",
+    "name": "Mirage Crystal Rapier",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 120,
+      "magic_power": 114,
+      "dex": 8,
+      "mag": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_dragon_lance",
+    "name": "Mirage Dragon Lance",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 125,
+      "str": 15,
+      "dex": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_astral_staff",
+    "name": "Mirage Astral Staff",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 125,
+      "mag": 15,
+      "spr": 8
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_crystal_sword",
+    "name": "Mirage Crystal Sword",
+    "type": "weapon",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 125,
+      "str": 10,
+      "vit": 4
+    },
+    "description": "Lv.75 weapon progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_crystal_coat",
+    "name": "Mirage Crystal Coat",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 35,
+      "spr": 15,
+      "dex": 8,
+      "hp": 344
+    },
+    "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_adamant_plate_shop",
+    "name": "Mirage Adamant Plate",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 36,
+      "spr": 12,
+      "hp": 356
+    },
+    "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_black_garb",
+    "name": "Mirage Black Garb",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 34,
+      "dex": 15,
+      "lck": 8,
+      "hp": 331
+    },
+    "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_oracle_robe",
+    "name": "Mirage Oracle Robe",
+    "type": "armor",
+    "rarity": "rare",
+    "price": 22000,
+    "shop": true,
+    "shop_level": 75,
+    "min_level": 75,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 30,
+      "spr": 36,
+      "mag": 15,
+      "hp": 319
+    },
+    "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "mirage_vanguard_signet",
+    "name": "Mirage Vanguard Signet",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 11000,
+    "shop": true,
+    "min_level": 75,
+    "bonuses": {
+      "str": 12,
+      "dex": 10,
+      "attack": 22
+    },
+    "description": "Lv.75 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ],
+    "shop_level": 75
+  },
+  {
+    "id": "mirage_oracle_signet",
+    "name": "Mirage Oracle Signet",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 11000,
+    "shop": true,
+    "min_level": 75,
+    "bonuses": {
+      "mag": 15,
+      "spr": 14,
+      "magic_power": 22
+    },
+    "description": "Lv.75 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "shop_level": 75
+  },
+  {
+    "id": "mirage_wayfinder_signet",
+    "name": "Mirage Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "rare",
+    "price": 11000,
+    "shop": true,
+    "min_level": 75,
+    "bonuses": {
+      "vit": 12,
+      "dex": 12,
+      "lck": 12,
+      "hp": 150
+    },
+    "description": "Lv.75 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "shop_level": 75
+  },
+  {
+    "id": "astral_titan_axe",
+    "name": "Astral Titan Axe",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 140,
+      "str": 17,
+      "vit": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_platinum_dirk",
+    "name": "Astral Platinum Dirk",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 133,
+      "dex": 17,
+      "lck": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_cerulean_rifle",
+    "name": "Astral Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 138,
+      "dex": 17,
+      "lck": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_seraph_harp",
+    "name": "Astral Seraph Harp",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 129,
+      "magic_power": 129,
+      "spr": 17,
+      "dex": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_heavens_cloud",
+    "name": "Astral Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 138,
+      "str": 15,
+      "dex": 17
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_dragon_claws",
+    "name": "Astral Dragon Claws",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 136,
+      "str": 14,
+      "dex": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_crystal_rapier",
+    "name": "Astral Crystal Rapier",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 133,
+      "magic_power": 126,
+      "dex": 8,
+      "mag": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_dragon_lance",
+    "name": "Astral Dragon Lance",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 139,
+      "str": 17,
+      "dex": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_astral_staff",
+    "name": "Astral Astral Staff",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 139,
+      "mag": 17,
+      "spr": 8
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_crystal_sword",
+    "name": "Astral Crystal Sword",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 139,
+      "str": 11,
+      "vit": 4
+    },
+    "description": "Lv.80 weapon progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_crystal_coat",
+    "name": "Astral Crystal Coat",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 39,
+      "spr": 17,
+      "dex": 8,
+      "hp": 382
+    },
+    "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_adamant_plate_shop",
+    "name": "Astral Adamant Plate",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 40,
+      "spr": 14,
+      "hp": 396
+    },
+    "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_black_garb",
+    "name": "Astral Black Garb",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 38,
+      "dex": 17,
+      "lck": 8,
+      "hp": 368
+    },
+    "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_oracle_robe",
+    "name": "Astral Oracle Robe",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 32000,
+    "shop": true,
+    "shop_level": 80,
+    "min_level": 80,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 33,
+      "spr": 40,
+      "mag": 17,
+      "hp": 354
+    },
+    "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "astral_vanguard_signet",
+    "name": "Astral Vanguard Signet",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 16000,
+    "shop": true,
+    "min_level": 80,
+    "bonuses": {
+      "str": 14,
+      "dex": 11,
+      "attack": 25
+    },
+    "description": "Lv.80 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ],
+    "shop_level": 80
+  },
+  {
+    "id": "astral_oracle_signet",
+    "name": "Astral Oracle Signet",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 16000,
+    "shop": true,
+    "min_level": 80,
+    "bonuses": {
+      "mag": 17,
+      "spr": 15,
+      "magic_power": 25
+    },
+    "description": "Lv.80 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "shop_level": 80
+  },
+  {
+    "id": "astral_wayfinder_signet",
+    "name": "Astral Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 16000,
+    "shop": true,
+    "min_level": 80,
+    "bonuses": {
+      "vit": 14,
+      "dex": 14,
+      "lck": 14,
+      "hp": 167
+    },
+    "description": "Lv.80 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "shop_level": 80
+  },
+  {
+    "id": "eclipseforged_titan_axe",
+    "name": "Eclipseforged Titan Axe",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 155,
+      "str": 18,
+      "vit": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_platinum_dirk",
+    "name": "Eclipseforged Platinum Dirk",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 147,
+      "dex": 18,
+      "lck": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_cerulean_rifle",
+    "name": "Eclipseforged Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 151,
+      "dex": 18,
+      "lck": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_seraph_harp",
+    "name": "Eclipseforged Seraph Harp",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 142,
+      "magic_power": 142,
+      "spr": 18,
+      "dex": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_heavens_cloud",
+    "name": "Eclipseforged Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 151,
+      "str": 17,
+      "dex": 18
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_dragon_claws",
+    "name": "Eclipseforged Dragon Claws",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 150,
+      "str": 15,
+      "dex": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_crystal_rapier",
+    "name": "Eclipseforged Crystal Rapier",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 147,
+      "magic_power": 139,
+      "dex": 9,
+      "mag": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_dragon_lance",
+    "name": "Eclipseforged Dragon Lance",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 153,
+      "str": 18,
+      "dex": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_astral_staff",
+    "name": "Eclipseforged Astral Staff",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 153,
+      "mag": 18,
+      "spr": 9
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_crystal_sword",
+    "name": "Eclipseforged Crystal Sword",
+    "type": "weapon",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 153,
+      "str": 12,
+      "vit": 5
+    },
+    "description": "Lv.85 weapon progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_crystal_coat",
+    "name": "Eclipseforged Crystal Coat",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 43,
+      "spr": 18,
+      "dex": 9,
+      "hp": 421
+    },
+    "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_adamant_plate_shop",
+    "name": "Eclipseforged Adamant Plate",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 44,
+      "spr": 15,
+      "hp": 436
+    },
+    "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_black_garb",
+    "name": "Eclipseforged Black Garb",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 41,
+      "dex": 18,
+      "lck": 9,
+      "hp": 405
+    },
+    "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_oracle_robe",
+    "name": "Eclipseforged Oracle Robe",
+    "type": "armor",
+    "rarity": "epic",
+    "price": 44000,
+    "shop": true,
+    "shop_level": 85,
+    "min_level": 85,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 37,
+      "spr": 44,
+      "mag": 18,
+      "hp": 390
+    },
+    "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "eclipseforged_vanguard_signet",
+    "name": "Eclipseforged Vanguard Signet",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 22000,
+    "shop": true,
+    "min_level": 85,
+    "bonuses": {
+      "str": 15,
+      "dex": 12,
+      "attack": 28
+    },
+    "description": "Lv.85 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ],
+    "shop_level": 85
+  },
+  {
+    "id": "eclipseforged_oracle_signet",
+    "name": "Eclipseforged Oracle Signet",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 22000,
+    "shop": true,
+    "min_level": 85,
+    "bonuses": {
+      "mag": 18,
+      "spr": 17,
+      "magic_power": 28
+    },
+    "description": "Lv.85 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "shop_level": 85
+  },
+  {
+    "id": "eclipseforged_wayfinder_signet",
+    "name": "Eclipseforged Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "epic",
+    "price": 22000,
+    "shop": true,
+    "min_level": 85,
+    "bonuses": {
+      "vit": 15,
+      "dex": 15,
+      "lck": 15,
+      "hp": 184
+    },
+    "description": "Lv.85 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "shop_level": 85
+  },
+  {
+    "id": "ascendant_titan_axe",
+    "name": "Ascendant Titan Axe",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 170,
+      "str": 20,
+      "vit": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_platinum_dirk",
+    "name": "Ascendant Platinum Dirk",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 161,
+      "dex": 20,
+      "lck": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_cerulean_rifle",
+    "name": "Ascendant Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 166,
+      "dex": 20,
+      "lck": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_seraph_harp",
+    "name": "Ascendant Seraph Harp",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 156,
+      "magic_power": 156,
+      "spr": 20,
+      "dex": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_heavens_cloud",
+    "name": "Ascendant Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 166,
+      "str": 18,
+      "dex": 20
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_dragon_claws",
+    "name": "Ascendant Dragon Claws",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 165,
+      "str": 17,
+      "dex": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_crystal_rapier",
+    "name": "Ascendant Crystal Rapier",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 161,
+      "magic_power": 153,
+      "dex": 10,
+      "mag": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_dragon_lance",
+    "name": "Ascendant Dragon Lance",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 168,
+      "str": 20,
+      "dex": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_astral_staff",
+    "name": "Ascendant Astral Staff",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 168,
+      "mag": 20,
+      "spr": 10
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_crystal_sword",
+    "name": "Ascendant Crystal Sword",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 168,
+      "str": 13,
+      "vit": 5
+    },
+    "description": "Lv.90 weapon progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_crystal_coat",
+    "name": "Ascendant Crystal Coat",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 47,
+      "spr": 20,
+      "dex": 10,
+      "hp": 462
+    },
+    "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_adamant_plate_shop",
+    "name": "Ascendant Adamant Plate",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 49,
+      "spr": 17,
+      "hp": 479
+    },
+    "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_black_garb",
+    "name": "Ascendant Black Garb",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 45,
+      "dex": 20,
+      "lck": 10,
+      "hp": 445
+    },
+    "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_oracle_robe",
+    "name": "Ascendant Oracle Robe",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 58000,
+    "shop": true,
+    "shop_level": 90,
+    "min_level": 90,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 40,
+      "spr": 49,
+      "mag": 20,
+      "hp": 428
+    },
+    "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "ascendant_vanguard_signet",
+    "name": "Ascendant Vanguard Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 29000,
+    "shop": true,
+    "min_level": 90,
+    "bonuses": {
+      "str": 17,
+      "dex": 13,
+      "attack": 30
+    },
+    "description": "Lv.90 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ],
+    "shop_level": 90
+  },
+  {
+    "id": "ascendant_oracle_signet",
+    "name": "Ascendant Oracle Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 29000,
+    "shop": true,
+    "min_level": 90,
+    "bonuses": {
+      "mag": 20,
+      "spr": 18,
+      "magic_power": 30
+    },
+    "description": "Lv.90 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "shop_level": 90
+  },
+  {
+    "id": "ascendant_wayfinder_signet",
+    "name": "Ascendant Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 29000,
+    "shop": true,
+    "min_level": 90,
+    "bonuses": {
+      "vit": 17,
+      "dex": 17,
+      "lck": 17,
+      "hp": 202
+    },
+    "description": "Lv.90 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "shop_level": 90
+  },
+  {
+    "id": "singularity_titan_axe",
+    "name": "Singularity Titan Axe",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 185,
+      "str": 22,
+      "vit": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_platinum_dirk",
+    "name": "Singularity Platinum Dirk",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 176,
+      "dex": 22,
+      "lck": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_cerulean_rifle",
+    "name": "Singularity Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 181,
+      "dex": 22,
+      "lck": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_seraph_harp",
+    "name": "Singularity Seraph Harp",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 170,
+      "magic_power": 170,
+      "spr": 22,
+      "dex": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_heavens_cloud",
+    "name": "Singularity Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 181,
+      "str": 20,
+      "dex": 22
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_dragon_claws",
+    "name": "Singularity Dragon Claws",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 179,
+      "str": 18,
+      "dex": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_crystal_rapier",
+    "name": "Singularity Crystal Rapier",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 176,
+      "magic_power": 167,
+      "dex": 11,
+      "mag": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_dragon_lance",
+    "name": "Singularity Dragon Lance",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 183,
+      "str": 22,
+      "dex": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_astral_staff",
+    "name": "Singularity Astral Staff",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 183,
+      "mag": 22,
+      "spr": 11
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_crystal_sword",
+    "name": "Singularity Crystal Sword",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 183,
+      "str": 15,
+      "vit": 5
+    },
+    "description": "Lv.95 weapon progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_crystal_coat",
+    "name": "Singularity Crystal Coat",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 51,
+      "spr": 22,
+      "dex": 11,
+      "hp": 503
+    },
+    "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_adamant_plate_shop",
+    "name": "Singularity Adamant Plate",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 53,
+      "spr": 18,
+      "hp": 522
+    },
+    "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_black_garb",
+    "name": "Singularity Black Garb",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 49,
+      "dex": 22,
+      "lck": 11,
+      "hp": 485
+    },
+    "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_oracle_robe",
+    "name": "Singularity Oracle Robe",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 76000,
+    "shop": true,
+    "shop_level": 95,
+    "min_level": 95,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 44,
+      "spr": 53,
+      "mag": 22,
+      "hp": 467
+    },
+    "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "singularity_vanguard_signet",
+    "name": "Singularity Vanguard Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 38000,
+    "shop": true,
+    "min_level": 95,
+    "bonuses": {
+      "str": 18,
+      "dex": 15,
+      "attack": 33
+    },
+    "description": "Lv.95 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ],
+    "shop_level": 95
+  },
+  {
+    "id": "singularity_oracle_signet",
+    "name": "Singularity Oracle Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 38000,
+    "shop": true,
+    "min_level": 95,
+    "bonuses": {
+      "mag": 22,
+      "spr": 20,
+      "magic_power": 33
+    },
+    "description": "Lv.95 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "shop_level": 95
+  },
+  {
+    "id": "singularity_wayfinder_signet",
+    "name": "Singularity Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 38000,
+    "shop": true,
+    "min_level": 95,
+    "bonuses": {
+      "vit": 18,
+      "dex": 18,
+      "lck": 18,
+      "hp": 220
+    },
+    "description": "Lv.95 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "shop_level": 95
+  },
+  {
+    "id": "paragon_titan_axe",
+    "name": "Paragon Titan Axe",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "beastmaster",
+      "warrior",
+      "darkknight"
+    ],
+    "bonuses": {
+      "attack": 202,
+      "str": 24,
+      "vit": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "axe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_platinum_dirk",
+    "name": "Paragon Platinum Dirk",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "thief",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 192,
+      "dex": 24,
+      "lck": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "dagger",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_cerulean_rifle",
+    "name": "Paragon Cerulean Rifle",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "bonuses": {
+      "attack": 198,
+      "dex": 24,
+      "lck": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "firearm",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_seraph_harp",
+    "name": "Paragon Seraph Harp",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "bard"
+    ],
+    "bonuses": {
+      "attack": 186,
+      "magic_power": 186,
+      "spr": 24,
+      "dex": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "instrument",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_heavens_cloud",
+    "name": "Paragon Heaven's Cloud",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "samurai",
+      "ninja"
+    ],
+    "bonuses": {
+      "attack": 198,
+      "str": 22,
+      "dex": 24
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "katana",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_dragon_claws",
+    "name": "Paragon Dragon Claws",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "monk"
+    ],
+    "bonuses": {
+      "attack": 196,
+      "str": 20,
+      "dex": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "knuckles",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_crystal_rapier",
+    "name": "Paragon Crystal Rapier",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 192,
+      "magic_power": 182,
+      "dex": 12,
+      "mag": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "rapier",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_dragon_lance",
+    "name": "Paragon Dragon Lance",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "bonuses": {
+      "attack": 200,
+      "str": 24,
+      "dex": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "spear",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_astral_staff",
+    "name": "Paragon Astral Staff",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage"
+    ],
+    "bonuses": {
+      "magic_power": 200,
+      "mag": 24,
+      "spr": 12
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "staff",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_crystal_sword",
+    "name": "Paragon Crystal Sword",
+    "type": "weapon",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "warrior",
+      "redmage",
+      "paladin",
+      "darkknight",
+      "bluemage"
+    ],
+    "bonuses": {
+      "attack": 200,
+      "str": 16,
+      "vit": 6
+    },
+    "description": "Lv.99 weapon progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "sword",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_crystal_coat",
+    "name": "Paragon Crystal Coat",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "dragoon",
+      "samurai",
+      "beastmaster",
+      "redmage",
+      "bluemage",
+      "bard",
+      "machinist"
+    ],
+    "bonuses": {
+      "vit": 56,
+      "spr": 24,
+      "dex": 12,
+      "hp": 550
+    },
+    "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "coat",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_adamant_plate_shop",
+    "name": "Paragon Adamant Plate",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "warrior",
+      "paladin",
+      "darkknight",
+      "dragoon",
+      "samurai",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 58,
+      "spr": 20,
+      "hp": 570
+    },
+    "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "heavy",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_black_garb",
+    "name": "Paragon Black Garb",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "monk",
+      "thief",
+      "ninja",
+      "bard",
+      "machinist",
+      "redmage",
+      "bluemage",
+      "beastmaster"
+    ],
+    "bonuses": {
+      "vit": 54,
+      "dex": 24,
+      "lck": 12,
+      "hp": 530
+    },
+    "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "light",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_oracle_robe",
+    "name": "Paragon Oracle Robe",
+    "type": "armor",
+    "rarity": "legendary",
+    "price": 100000,
+    "shop": false,
+    "min_level": 99,
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ],
+    "bonuses": {
+      "vit": 48,
+      "spr": 58,
+      "mag": 24,
+      "hp": 510
+    },
+    "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
+    "gear_family": "robe",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "paragon_vanguard_signet",
+    "name": "Paragon Vanguard Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 50000,
+    "shop": false,
+    "min_level": 99,
+    "bonuses": {
+      "str": 20,
+      "dex": 16,
+      "attack": 36
+    },
+    "description": "Lv.99 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "warrior",
+      "monk",
+      "dragoon",
+      "samurai",
+      "darkknight",
+      "beastmaster",
+      "paladin"
+    ]
+  },
+  {
+    "id": "paragon_oracle_signet",
+    "name": "Paragon Oracle Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 50000,
+    "shop": false,
+    "min_level": 99,
+    "bonuses": {
+      "mag": 24,
+      "spr": 22,
+      "magic_power": 36
+    },
+    "description": "Lv.99 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10",
+    "allowed_jobs": [
+      "blackmage",
+      "whitemage",
+      "summoner",
+      "timemage",
+      "sage",
+      "redmage",
+      "bluemage"
+    ]
+  },
+  {
+    "id": "paragon_wayfinder_signet",
+    "name": "Paragon Wayfinder Signet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "price": 50000,
+    "shop": false,
+    "min_level": 99,
+    "bonuses": {
+      "vit": 20,
+      "dex": 20,
+      "lck": 20,
+      "hp": 240
+    },
+    "description": "Lv.99 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "gear_family": "spear",
+    "id": "ultimate_dragoon_awakened",
+    "name": "Gae Bolg Infinity — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 224,
+      "str": 28,
+      "dex": 23,
+      "lck": 11
+    },
+    "relic_id": "ultimate_dragoon",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for dragoon. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "gear_family": "spear",
+    "id": "ultimate_dragoon_transcendent",
+    "name": "Gae Bolg Infinity — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 270,
+      "str": 34,
+      "dex": 27,
+      "lck": 14
+    },
+    "relic_id": "ultimate_dragoon",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for dragoon. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "dragoon"
+    ],
+    "gear_family": "spear",
+    "id": "ultimate_dragoon_eternal",
+    "name": "Gae Bolg Infinity — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 332,
+      "str": 42,
+      "dex": 34,
+      "lck": 17
+    },
+    "relic_id": "ultimate_dragoon",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for dragoon. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_paladin_awakened",
+    "name": "Excalibur Prime — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 216,
+      "str": 26,
+      "vit": 31,
+      "spr": 14
+    },
+    "relic_id": "ultimate_paladin",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for paladin. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_paladin_transcendent",
+    "name": "Excalibur Prime — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 260,
+      "str": 31,
+      "vit": 38,
+      "spr": 17
+    },
+    "relic_id": "ultimate_paladin",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for paladin. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "paladin"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_paladin_eternal",
+    "name": "Excalibur Prime — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 319,
+      "str": 38,
+      "vit": 46,
+      "spr": 21
+    },
+    "relic_id": "ultimate_paladin",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for paladin. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "darkknight"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_darkknight_awakened",
+    "name": "Apocalypse Reborn — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 236,
+      "str": 36,
+      "vit": 17,
+      "lck": 10
+    },
+    "relic_id": "ultimate_darkknight",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for darkknight. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "darkknight"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_darkknight_transcendent",
+    "name": "Apocalypse Reborn — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 284,
+      "str": 43,
+      "vit": 21,
+      "lck": 12
+    },
+    "relic_id": "ultimate_darkknight",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for darkknight. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "darkknight"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_darkknight_eternal",
+    "name": "Apocalypse Reborn — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 349,
+      "str": 52,
+      "vit": 25,
+      "lck": 15
+    },
+    "relic_id": "ultimate_darkknight",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for darkknight. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "monk"
+    ],
+    "gear_family": "knuckles",
+    "id": "ultimate_monk_awakened",
+    "name": "Celestial Godhand — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 210,
+      "str": 33,
+      "dex": 28,
+      "lck": 14
+    },
+    "relic_id": "ultimate_monk",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for monk. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "monk"
+    ],
+    "gear_family": "knuckles",
+    "id": "ultimate_monk_transcendent",
+    "name": "Celestial Godhand — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 253,
+      "str": 39,
+      "dex": 34,
+      "lck": 17
+    },
+    "relic_id": "ultimate_monk",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for monk. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "monk"
+    ],
+    "gear_family": "knuckles",
+    "id": "ultimate_monk_eternal",
+    "name": "Celestial Godhand — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 311,
+      "str": 48,
+      "dex": 42,
+      "lck": 21
+    },
+    "relic_id": "ultimate_monk",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for monk. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "samurai"
+    ],
+    "gear_family": "katana",
+    "id": "ultimate_samurai_awakened",
+    "name": "Masamune Eternal — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 227,
+      "str": 30,
+      "dex": 31,
+      "lck": 16
+    },
+    "relic_id": "ultimate_samurai",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for samurai. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "samurai"
+    ],
+    "gear_family": "katana",
+    "id": "ultimate_samurai_transcendent",
+    "name": "Masamune Eternal — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 274,
+      "str": 36,
+      "dex": 38,
+      "lck": 19
+    },
+    "relic_id": "ultimate_samurai",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for samurai. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "samurai"
+    ],
+    "gear_family": "katana",
+    "id": "ultimate_samurai_eternal",
+    "name": "Masamune Eternal — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 336,
+      "str": 44,
+      "dex": 46,
+      "lck": 23
+    },
+    "relic_id": "ultimate_samurai",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for samurai. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "blackmage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_blackmage_awakened",
+    "name": "Stardust Cataclysm — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "magic_power": 239,
+      "mag": 36,
+      "spr": 18,
+      "lck": 11
+    },
+    "relic_id": "ultimate_blackmage",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for blackmage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "blackmage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_blackmage_transcendent",
+    "name": "Stardust Cataclysm — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "magic_power": 287,
+      "mag": 43,
+      "spr": 22,
+      "lck": 14
+    },
+    "relic_id": "ultimate_blackmage",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for blackmage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "blackmage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_blackmage_eternal",
+    "name": "Stardust Cataclysm — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "magic_power": 353,
+      "mag": 52,
+      "spr": 27,
+      "lck": 17
+    },
+    "relic_id": "ultimate_blackmage",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for blackmage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "whitemage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_whitemage_awakened",
+    "name": "Nirvana Eternal — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "magic_power": 213,
+      "spr": 40,
+      "mag": 18,
+      "vit": 11
+    },
+    "relic_id": "ultimate_whitemage",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for whitemage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "whitemage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_whitemage_transcendent",
+    "name": "Nirvana Eternal — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "magic_power": 256,
+      "spr": 48,
+      "mag": 22,
+      "vit": 14
+    },
+    "relic_id": "ultimate_whitemage",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for whitemage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "whitemage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_whitemage_eternal",
+    "name": "Nirvana Eternal — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "magic_power": 315,
+      "spr": 59,
+      "mag": 27,
+      "vit": 17
+    },
+    "relic_id": "ultimate_whitemage",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for whitemage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "thief"
+    ],
+    "gear_family": "dagger",
+    "id": "ultimate_thief_awakened",
+    "name": "Last Shadow — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 206,
+      "dex": 38,
+      "lck": 34,
+      "str": 14
+    },
+    "relic_id": "ultimate_thief",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for thief. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "thief"
+    ],
+    "gear_family": "dagger",
+    "id": "ultimate_thief_transcendent",
+    "name": "Last Shadow — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 248,
+      "dex": 46,
+      "lck": 41,
+      "str": 17
+    },
+    "relic_id": "ultimate_thief",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for thief. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "thief"
+    ],
+    "gear_family": "dagger",
+    "id": "ultimate_thief_eternal",
+    "name": "Last Shadow — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 304,
+      "dex": 57,
+      "lck": 50,
+      "str": 21
+    },
+    "relic_id": "ultimate_thief",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for thief. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "warrior"
+    ],
+    "gear_family": "axe",
+    "id": "ultimate_warrior_awakened",
+    "name": "Worldbreaker Bravura — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 230,
+      "str": 33,
+      "vit": 28,
+      "lck": 10
+    },
+    "relic_id": "ultimate_warrior",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for warrior. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "warrior"
+    ],
+    "gear_family": "axe",
+    "id": "ultimate_warrior_transcendent",
+    "name": "Worldbreaker Bravura — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 277,
+      "str": 39,
+      "vit": 34,
+      "lck": 12
+    },
+    "relic_id": "ultimate_warrior",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for warrior. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "warrior"
+    ],
+    "gear_family": "axe",
+    "id": "ultimate_warrior_eternal",
+    "name": "Worldbreaker Bravura — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 340,
+      "str": 48,
+      "vit": 42,
+      "lck": 15
+    },
+    "relic_id": "ultimate_warrior",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for warrior. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "redmage"
+    ],
+    "gear_family": "rapier",
+    "id": "ultimate_redmage_awakened",
+    "name": "Murgleis Ascendant — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 209,
+      "magic_power": 209,
+      "dex": 26,
+      "mag": 26,
+      "spr": 14
+    },
+    "relic_id": "ultimate_redmage",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for redmage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "redmage"
+    ],
+    "gear_family": "rapier",
+    "id": "ultimate_redmage_transcendent",
+    "name": "Murgleis Ascendant — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 251,
+      "magic_power": 251,
+      "dex": 31,
+      "mag": 31,
+      "spr": 17
+    },
+    "relic_id": "ultimate_redmage",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for redmage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "redmage"
+    ],
+    "gear_family": "rapier",
+    "id": "ultimate_redmage_eternal",
+    "name": "Murgleis Ascendant — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 309,
+      "magic_power": 309,
+      "dex": 38,
+      "mag": 38,
+      "spr": 21
+    },
+    "relic_id": "ultimate_redmage",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for redmage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "ninja"
+    ],
+    "gear_family": "dagger",
+    "id": "ultimate_ninja_awakened",
+    "name": "Yoshimitsu Phantom — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 214,
+      "dex": 38,
+      "lck": 33,
+      "mag": 13
+    },
+    "relic_id": "ultimate_ninja",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for ninja. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "ninja"
+    ],
+    "gear_family": "dagger",
+    "id": "ultimate_ninja_transcendent",
+    "name": "Yoshimitsu Phantom — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 258,
+      "dex": 46,
+      "lck": 39,
+      "mag": 15
+    },
+    "relic_id": "ultimate_ninja",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for ninja. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "ninja"
+    ],
+    "gear_family": "dagger",
+    "id": "ultimate_ninja_eternal",
+    "name": "Yoshimitsu Phantom — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 317,
+      "dex": 57,
+      "lck": 48,
+      "mag": 19
+    },
+    "relic_id": "ultimate_ninja",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for ninja. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "summoner"
+    ],
+    "gear_family": "tome",
+    "id": "ultimate_summoner_awakened",
+    "name": "Veil of Creation — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "magic_power": 247,
+      "mag": 40,
+      "spr": 27,
+      "lck": 11
+    },
+    "relic_id": "ultimate_summoner",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for summoner. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "summoner"
+    ],
+    "gear_family": "tome",
+    "id": "ultimate_summoner_transcendent",
+    "name": "Veil of Creation — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "magic_power": 298,
+      "mag": 48,
+      "spr": 32,
+      "lck": 14
+    },
+    "relic_id": "ultimate_summoner",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for summoner. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "summoner"
+    ],
+    "gear_family": "tome",
+    "id": "ultimate_summoner_eternal",
+    "name": "Veil of Creation — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "magic_power": 365,
+      "mag": 59,
+      "spr": 40,
+      "lck": 17
+    },
+    "relic_id": "ultimate_summoner",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for summoner. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "bluemage"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_bluemage_awakened",
+    "name": "Almace Unbound — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 214,
+      "magic_power": 210,
+      "vit": 23,
+      "mag": 26,
+      "dex": 14
+    },
+    "relic_id": "ultimate_bluemage",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for bluemage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "bluemage"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_bluemage_transcendent",
+    "name": "Almace Unbound — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 258,
+      "magic_power": 253,
+      "vit": 27,
+      "mag": 31,
+      "dex": 17
+    },
+    "relic_id": "ultimate_bluemage",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for bluemage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "bluemage"
+    ],
+    "gear_family": "sword",
+    "id": "ultimate_bluemage_eternal",
+    "name": "Almace Unbound — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 317,
+      "magic_power": 311,
+      "vit": 34,
+      "mag": 38,
+      "dex": 21
+    },
+    "relic_id": "ultimate_bluemage",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for bluemage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "timemage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_timemage_awakened",
+    "name": "Chronos Paradox — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "magic_power": 236,
+      "mag": 36,
+      "dex": 26,
+      "spr": 16
+    },
+    "relic_id": "ultimate_timemage",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for timemage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "timemage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_timemage_transcendent",
+    "name": "Chronos Paradox — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "magic_power": 284,
+      "mag": 43,
+      "dex": 31,
+      "spr": 19
+    },
+    "relic_id": "ultimate_timemage",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for timemage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "timemage"
+    ],
+    "gear_family": "staff",
+    "id": "ultimate_timemage_eternal",
+    "name": "Chronos Paradox — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "magic_power": 349,
+      "mag": 52,
+      "dex": 38,
+      "spr": 23
+    },
+    "relic_id": "ultimate_timemage",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for timemage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "bard"
+    ],
+    "gear_family": "bow",
+    "id": "ultimate_bard_awakened",
+    "name": "Artemis Requiem — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 209,
+      "magic_power": 209,
+      "spr": 31,
+      "dex": 26,
+      "lck": 14
+    },
+    "relic_id": "ultimate_bard",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for bard. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "bard"
+    ],
+    "gear_family": "bow",
+    "id": "ultimate_bard_transcendent",
+    "name": "Artemis Requiem — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 251,
+      "magic_power": 251,
+      "spr": 38,
+      "dex": 31,
+      "lck": 17
+    },
+    "relic_id": "ultimate_bard",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for bard. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "bard"
+    ],
+    "gear_family": "bow",
+    "id": "ultimate_bard_eternal",
+    "name": "Artemis Requiem — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 309,
+      "magic_power": 309,
+      "spr": 46,
+      "dex": 38,
+      "lck": 21
+    },
+    "relic_id": "ultimate_bard",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for bard. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "gear_family": "firearm",
+    "id": "ultimate_machinist_awakened",
+    "name": "Armageddon Nova — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 227,
+      "dex": 37,
+      "lck": 30,
+      "str": 13
+    },
+    "relic_id": "ultimate_machinist",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for machinist. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "gear_family": "firearm",
+    "id": "ultimate_machinist_transcendent",
+    "name": "Armageddon Nova — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 274,
+      "dex": 44,
+      "lck": 36,
+      "str": 15
+    },
+    "relic_id": "ultimate_machinist",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for machinist. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "machinist"
+    ],
+    "gear_family": "firearm",
+    "id": "ultimate_machinist_eternal",
+    "name": "Armageddon Nova — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 336,
+      "dex": 55,
+      "lck": 44,
+      "str": 19
+    },
+    "relic_id": "ultimate_machinist",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for machinist. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "beastmaster"
+    ],
+    "gear_family": "axe",
+    "id": "ultimate_beastmaster_awakened",
+    "name": "Guttler Primal — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "attack": 230,
+      "str": 31,
+      "vit": 26,
+      "lck": 13
+    },
+    "relic_id": "ultimate_beastmaster",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for beastmaster. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "beastmaster"
+    ],
+    "gear_family": "axe",
+    "id": "ultimate_beastmaster_transcendent",
+    "name": "Guttler Primal — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "attack": 277,
+      "str": 38,
+      "vit": 31,
+      "lck": 15
+    },
+    "relic_id": "ultimate_beastmaster",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for beastmaster. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "beastmaster"
+    ],
+    "gear_family": "axe",
+    "id": "ultimate_beastmaster_eternal",
+    "name": "Guttler Primal — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "attack": 340,
+      "str": 46,
+      "vit": 38,
+      "lck": 19
+    },
+    "relic_id": "ultimate_beastmaster",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for beastmaster. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "sage"
+    ],
+    "gear_family": "tome",
+    "id": "ultimate_sage_awakened",
+    "name": "Astral Codex Absolute — Awakening",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 80000,
+    "min_level": 90,
+    "bonuses": {
+      "magic_power": 236,
+      "spr": 41,
+      "mag": 31,
+      "vit": 13
+    },
+    "relic_id": "ultimate_sage",
+    "relic_stage": 1,
+    "unsellable": true,
+    "description": "Ultimate Relic for sage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "sage"
+    ],
+    "gear_family": "tome",
+    "id": "ultimate_sage_transcendent",
+    "name": "Astral Codex Absolute — Transcendence",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 120000,
+    "min_level": 95,
+    "bonuses": {
+      "magic_power": 284,
+      "spr": 50,
+      "mag": 38,
+      "vit": 15
+    },
+    "relic_id": "ultimate_sage",
+    "relic_stage": 2,
+    "unsellable": true,
+    "description": "Ultimate Relic for sage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
+  },
+  {
+    "type": "weapon",
+    "allowed_jobs": [
+      "sage"
+    ],
+    "gear_family": "tome",
+    "id": "ultimate_sage_eternal",
+    "name": "Astral Codex Absolute — Eternal",
+    "rarity": "legendary",
+    "shop": false,
+    "price": 200000,
+    "min_level": 99,
+    "bonuses": {
+      "magic_power": 349,
+      "spr": 61,
+      "mag": 46,
+      "vit": 19
+    },
+    "relic_id": "ultimate_sage",
+    "relic_stage": 3,
+    "unsellable": true,
+    "description": "Ultimate Relic for sage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
+    "introduced_in": "1.9.10"
   }
 ]

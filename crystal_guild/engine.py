@@ -15455,19 +15455,31 @@ class CrystalGuildEngine:
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, 'seal_shop')", (twitch_id, entry["item_id"], out_qty))
         return GameResult.success(f"Quartermaster purchase: {self.data.items[entry['item_id']]['name']} x{out_qty} for {cost} Hunt Seals.")
 
-    def relics(self, twitch_id: str) -> GameResult:
+    def relics(self, twitch_id: str, tier: str = "classic") -> GameResult:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
+        selection = str(tier or "classic").strip().lower()
+        if selection not in {"classic", "ultimate"}:
+            return GameResult.fail("Choose !relics or !relics ultimate. Both paths are also visible in the Portal Relic Arsenal.")
         parts = []
         for relic in self.data.relics.values():
+            if relic.get("tier", "classic") != selection:
+                continue
             row = self.db.one("SELECT stage FROM player_relics WHERE player_id=? AND relic_id=?", (twitch_id, relic["id"]))
             stage = int(row["stage"]) if row else 0
             total = len(relic.get("stages", []))
-            eligible = self._job_level(twitch_id, relic["job_id"]) >= 50
-            state = "ZENITH" if stage >= total else f"{stage}/{total}" if eligible or stage else "locked"
+            eligible = (self._job_level(twitch_id, relic["job_id"]) >= 50
+                        and (selection != "ultimate" or int(p["level"]) >= 90))
+            finished_label = "ETERNAL" if selection == "ultimate" else "ZENITH"
+            state = finished_label if stage >= total else f"{stage}/{total}" if eligible or stage else "locked"
             parts.append(f"{relic['name']} [{state}]")
-        return GameResult.success("Relic Arsenal — " + " | ".join(parts), "Inspect with !relic <name>; advance a ready stage with !awaken <name>.")
+        label = "Ultimate Relics (Lv.90+, Classic Zenith required)" if selection == "ultimate" else "Classic Relic Arsenal"
+        # Keep Twitch messages readable and under chat size limits.
+        messages = [f"{label} — " + " | ".join(parts[start:start+6]) for start in range(0, len(parts), 6)]
+        messages.append("Inspect with !relic <name>; advance with !awaken <name>. "
+                        + ("View classic lines with !relics." if selection == "ultimate" else "View Ultimate lines with !relics ultimate."))
+        return GameResult.success(*messages)
 
     def relic(self, twitch_id: str, relic_query: str) -> GameResult:
         p = self._player(twitch_id)
@@ -15481,7 +15493,8 @@ class CrystalGuildEngine:
         total = len(relic["stages"])
         if stage >= total:
             final_item = relic["stages"][-1]["reward_item"]
-            return GameResult.success(f"{relic['name']} — ZENITH COMPLETE | Final weapon: {self.data.items[final_item]['name']}")
+            achievement = "ULTIMATE COMPLETE" if relic.get("tier") == "ultimate" else "ZENITH COMPLETE"
+            return GameResult.success(f"{relic['name']} — {achievement} | Final weapon: {self.data.items[final_item]['name']}")
         step = relic["stages"][stage]
         met, missing = self._requirements_met(twitch_id, step.get("requirements", []))
         cost_missing = self._cost_missing(twitch_id, step.get("cost", {}))
@@ -15505,7 +15518,7 @@ class CrystalGuildEngine:
         stage = int(row["stage"]) if row else 0
         total = len(relic["stages"])
         if stage >= total:
-            return GameResult.fail(f"{relic['name']} is already at Zenith.")
+            return GameResult.fail(f"{relic['name']} is already fully awakened.")
         step = relic["stages"][stage]
         met, missing = self._requirements_met(twitch_id, step.get("requirements", []))
         missing.extend(self._cost_missing(twitch_id, step.get("cost", {})))
@@ -15534,7 +15547,10 @@ class CrystalGuildEngine:
         unlocked = self._check_achievements(twitch_id)
         msg = f"RELIC AWAKENED — {relic['name']} advances to Stage {stage+1}/{total}: {step['name']}. Obtained {reward_name}."
         if stage + 1 >= total:
-            msg += " ZENITH COMPLETE. The blacksmith has stopped pretending this is normal equipment."
+            if relic.get("tier") == "ultimate":
+                msg += " ULTIMATE COMPLETE. This weapon has transcended the ordinary Relic Arsenal."
+            else:
+                msg += " ZENITH COMPLETE. The blacksmith has stopped pretending this is normal equipment."
         if unlocked:
             return GameResult.success(msg, "Achievement unlocked: " + " | ".join(unlocked))
         return GameResult.success(msg)

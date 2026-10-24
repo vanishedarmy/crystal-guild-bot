@@ -57,12 +57,12 @@ class RelicOverhaulTests(unittest.TestCase):
         payload = self.view()
         with self.repo.connect() as conn:
             conn.set_trace_callback(None)
-        self.assertEqual(payload["summary"]["total"], 18)
-        self.assertEqual(payload["summary"]["total_stages"], 54)
+        self.assertEqual(payload["summary"]["total"], 36)
+        self.assertEqual(payload["summary"]["total_stages"], 108)
         self.assertEqual(payload["summary"]["complete"], 0)
-        self.assertEqual(len(payload["relics"]), 18)
+        self.assertEqual(len(payload["relics"]), 36)
         self.assertTrue(all(len(row["path"]) == 3 for row in payload["relics"]))
-        self.assertEqual(len([sql for sql in statements if sql.strip().upper().startswith("SELECT")]), 6)
+        self.assertEqual(len([sql for sql in statements if sql.strip().upper().startswith("SELECT")]), 7)
         for row in payload["relics"]:
             self.assertEqual(row["stages"], [step["name"] for step in row["path"]])
             self.assertEqual(row["final_reward"]["id"], self.data.relics[row["id"]]["stages"][-1]["reward_item"])

@@ -1,1 +1,1 @@
-__version__ = "1.9.9-skybound-singularity"
+__version__ = "1.9.91-equipment-expansion"

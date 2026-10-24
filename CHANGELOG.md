@@ -1,3 +1,16 @@
+## v1.9.91 — Equipment Expansion
+- Integrated all 173 item illustrations (119 regular gear; 54 Ultimate forms) into Web and refreshed Player Guide. Gameplay catalogs and player state remain unchanged.
+
+## v1.9.10 — Ultimate Relics and Equipment Beyond Lv.65
+
+- Added 7 regular equipment tiers: Lv.70, 75, 80, 85, 90, 95, and crafted-only Lv.99 Paragon; 119 new equipment choices and 119 new recipes.
+- Added 18 new Ultimate Relic lines, one per Job, with Lv.90/95/99 forms (54 new weapons).
+- Ultimate starting objective requires the Job’s existing Zenith Relic, a mastered JLv.50 Job, and character Lv.90.
+- Eternal completion requires an Eclipse Sovereign raid clear and final-world materials.
+- Moogle Emporium and Twitch quick-buy use normal level and Job restrictions for new stock.
+- Portal Relic Arsenal adds Classic and Ultimate filters; Ultimate visuals fall back to already existing Zenith artwork.
+- No changes to stored equipment schema or existing Relic progression IDs.
+
 ## v1.9.8 Stream Mist Party Support — Ventures & Raids
 
 Twitch `!healparty`/`!healparty 1` (100 Gil), `!healparty 2` (250 Gil),

@@ -4689,5 +4689,2742 @@
       "quantity": 1
     },
     "introduced_in": "1.9.4"
+  },
+  {
+    "id": "endgame_zephyr_titan_axe",
+    "name": "Zephyr Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_platinum_dirk",
+    "name": "Zephyr Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_cerulean_rifle",
+    "name": "Zephyr Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_seraph_harp",
+    "name": "Zephyr Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_heavens_cloud",
+    "name": "Zephyr Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_dragon_claws",
+    "name": "Zephyr Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_crystal_rapier",
+    "name": "Zephyr Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_dragon_lance",
+    "name": "Zephyr Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_astral_staff",
+    "name": "Zephyr Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_crystal_sword",
+    "name": "Zephyr Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_crystal_coat",
+    "name": "Zephyr Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_adamant_plate_shop",
+    "name": "Zephyr Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_black_garb",
+    "name": "Zephyr Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_oracle_robe",
+    "name": "Zephyr Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 3750,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_vanguard_signet",
+    "name": "Zephyr Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 1875,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_oracle_signet",
+    "name": "Zephyr Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 1875,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_zephyr_wayfinder_signet",
+    "name": "Zephyr Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 70,
+    "gil": 1875,
+    "materials": [
+      {
+        "item_id": "mythril_ore",
+        "quantity": 8
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 5
+      }
+    ],
+    "output": {
+      "item_id": "zephyr_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_titan_axe",
+    "name": "Mirage Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_platinum_dirk",
+    "name": "Mirage Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_cerulean_rifle",
+    "name": "Mirage Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_seraph_harp",
+    "name": "Mirage Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_heavens_cloud",
+    "name": "Mirage Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_dragon_claws",
+    "name": "Mirage Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_crystal_rapier",
+    "name": "Mirage Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_dragon_lance",
+    "name": "Mirage Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_astral_staff",
+    "name": "Mirage Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_crystal_sword",
+    "name": "Mirage Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_crystal_coat",
+    "name": "Mirage Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_adamant_plate_shop",
+    "name": "Mirage Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_black_garb",
+    "name": "Mirage Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_oracle_robe",
+    "name": "Mirage Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_vanguard_signet",
+    "name": "Mirage Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 2750,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_oracle_signet",
+    "name": "Mirage Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 2750,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_mirage_wayfinder_signet",
+    "name": "Mirage Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 75,
+    "gil": 2750,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 1
+      },
+      {
+        "item_id": "elemental_crystal",
+        "quantity": 6
+      }
+    ],
+    "output": {
+      "item_id": "mirage_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_titan_axe",
+    "name": "Astral Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_platinum_dirk",
+    "name": "Astral Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_cerulean_rifle",
+    "name": "Astral Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_seraph_harp",
+    "name": "Astral Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_heavens_cloud",
+    "name": "Astral Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_dragon_claws",
+    "name": "Astral Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_crystal_rapier",
+    "name": "Astral Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_dragon_lance",
+    "name": "Astral Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_astral_staff",
+    "name": "Astral Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_crystal_sword",
+    "name": "Astral Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_crystal_coat",
+    "name": "Astral Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_adamant_plate_shop",
+    "name": "Astral Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_black_garb",
+    "name": "Astral Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_oracle_robe",
+    "name": "Astral Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 8000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_vanguard_signet",
+    "name": "Astral Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 4000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_oracle_signet",
+    "name": "Astral Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 4000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_astral_wayfinder_signet",
+    "name": "Astral Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 80,
+    "gil": 4000,
+    "materials": [
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 1
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "astral_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_titan_axe",
+    "name": "Eclipseforged Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_platinum_dirk",
+    "name": "Eclipseforged Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_cerulean_rifle",
+    "name": "Eclipseforged Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_seraph_harp",
+    "name": "Eclipseforged Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_heavens_cloud",
+    "name": "Eclipseforged Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_dragon_claws",
+    "name": "Eclipseforged Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_crystal_rapier",
+    "name": "Eclipseforged Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_dragon_lance",
+    "name": "Eclipseforged Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_astral_staff",
+    "name": "Eclipseforged Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_crystal_sword",
+    "name": "Eclipseforged Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_crystal_coat",
+    "name": "Eclipseforged Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_adamant_plate_shop",
+    "name": "Eclipseforged Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_black_garb",
+    "name": "Eclipseforged Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_oracle_robe",
+    "name": "Eclipseforged Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 11000,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_vanguard_signet",
+    "name": "Eclipseforged Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_oracle_signet",
+    "name": "Eclipseforged Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_eclipseforged_wayfinder_signet",
+    "name": "Eclipseforged Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 85,
+    "gil": 5500,
+    "materials": [
+      {
+        "item_id": "emberglass_core",
+        "quantity": 2
+      },
+      {
+        "item_id": "dark_matter",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "eclipseforged_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_titan_axe",
+    "name": "Ascendant Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_platinum_dirk",
+    "name": "Ascendant Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_cerulean_rifle",
+    "name": "Ascendant Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_seraph_harp",
+    "name": "Ascendant Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_heavens_cloud",
+    "name": "Ascendant Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_dragon_claws",
+    "name": "Ascendant Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_crystal_rapier",
+    "name": "Ascendant Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_dragon_lance",
+    "name": "Ascendant Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_astral_staff",
+    "name": "Ascendant Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_crystal_sword",
+    "name": "Ascendant Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_crystal_coat",
+    "name": "Ascendant Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_adamant_plate_shop",
+    "name": "Ascendant Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_black_garb",
+    "name": "Ascendant Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_oracle_robe",
+    "name": "Ascendant Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 14500,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_vanguard_signet",
+    "name": "Ascendant Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 7250,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_oracle_signet",
+    "name": "Ascendant Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 7250,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_ascendant_wayfinder_signet",
+    "name": "Ascendant Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 90,
+    "gil": 7250,
+    "materials": [
+      {
+        "item_id": "mirage_hourglass",
+        "quantity": 2
+      },
+      {
+        "item_id": "frostveil_prism",
+        "quantity": 2
+      }
+    ],
+    "output": {
+      "item_id": "ascendant_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_titan_axe",
+    "name": "Singularity Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_platinum_dirk",
+    "name": "Singularity Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_cerulean_rifle",
+    "name": "Singularity Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_seraph_harp",
+    "name": "Singularity Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_heavens_cloud",
+    "name": "Singularity Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_dragon_claws",
+    "name": "Singularity Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_crystal_rapier",
+    "name": "Singularity Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_dragon_lance",
+    "name": "Singularity Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_astral_staff",
+    "name": "Singularity Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_crystal_sword",
+    "name": "Singularity Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_crystal_coat",
+    "name": "Singularity Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_adamant_plate_shop",
+    "name": "Singularity Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_black_garb",
+    "name": "Singularity Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_oracle_robe",
+    "name": "Singularity Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 19000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_vanguard_signet",
+    "name": "Singularity Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 9500,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_oracle_signet",
+    "name": "Singularity Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 9500,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_singularity_wayfinder_signet",
+    "name": "Singularity Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 95,
+    "gil": 9500,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 1
+      },
+      {
+        "item_id": "emberglass_core",
+        "quantity": 3
+      }
+    ],
+    "output": {
+      "item_id": "singularity_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_titan_axe",
+    "name": "Paragon Titan Axe Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_titan_axe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_platinum_dirk",
+    "name": "Paragon Platinum Dirk Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_platinum_dirk",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_cerulean_rifle",
+    "name": "Paragon Cerulean Rifle Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_cerulean_rifle",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_seraph_harp",
+    "name": "Paragon Seraph Harp Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_seraph_harp",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_heavens_cloud",
+    "name": "Paragon Heaven's Cloud Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_heavens_cloud",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_dragon_claws",
+    "name": "Paragon Dragon Claws Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_dragon_claws",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_crystal_rapier",
+    "name": "Paragon Crystal Rapier Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_crystal_rapier",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_dragon_lance",
+    "name": "Paragon Dragon Lance Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_dragon_lance",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_astral_staff",
+    "name": "Paragon Astral Staff Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_astral_staff",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_crystal_sword",
+    "name": "Paragon Crystal Sword Pattern",
+    "category": "weapons",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_crystal_sword",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_crystal_coat",
+    "name": "Paragon Crystal Coat Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_crystal_coat",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_adamant_plate_shop",
+    "name": "Paragon Adamant Plate Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_adamant_plate_shop",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_black_garb",
+    "name": "Paragon Black Garb Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_black_garb",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_oracle_robe",
+    "name": "Paragon Oracle Robe Pattern",
+    "category": "armor",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 25000,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_oracle_robe",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_vanguard_signet",
+    "name": "Paragon Vanguard Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 12500,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_vanguard_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_oracle_signet",
+    "name": "Paragon Oracle Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 12500,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_oracle_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
+  },
+  {
+    "id": "endgame_paragon_wayfinder_signet",
+    "name": "Paragon Wayfinder Signet Pattern",
+    "category": "accessories",
+    "known_by_default": true,
+    "min_level": 99,
+    "gil": 12500,
+    "materials": [
+      {
+        "item_id": "singularity_shard",
+        "quantity": 3
+      },
+      {
+        "item_id": "eclipse_core",
+        "quantity": 1
+      }
+    ],
+    "output": {
+      "item_id": "paragon_wayfinder_signet",
+      "quantity": 1
+    },
+    "introduced_in": "1.9.10"
   }
 ]

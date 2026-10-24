@@ -9,8 +9,8 @@ REGIONAL_SHOPS = {
     "crystal_expanse": (18, 30, 54, "Crystal Counter", "Crystal gear and powerful recovery", ("x_potion", "hi_ether", "mages_incense")),
     "riftlands": (18, 40, 69, "Wayfarer's Counter", "Survival equipment and status recovery", ("remedy", "regen_tonic", "smoke_bomb")),
     "interdimensional_rift": (18, 50, 81, "Astral Counter", "Veteran gear and magical support", ("x_potion", "hi_ether", "mages_incense")),
-    "omega_ruins": (18, 55, 99, "Last Light Counter", "Endgame field supplies and veteran gear", ("x_potion", "remedy", "phoenix_down")),
-    "eclipsed_singularity_citadel": (18, 65, 99, "Eclipse Refuge", "Last-chance provisions beyond Omega Ruins", ("x_potion", "remedy", "phoenix_down")),
+    "omega_ruins": (18, 65, 99, "Last Light Counter", "Endgame field supplies and veteran gear", ("x_potion", "remedy", "phoenix_down")),
+    "eclipsed_singularity_citadel": (18, 75, 99, "Eclipse Refuge", "Last-chance provisions beyond Omega Ruins", ("x_potion", "remedy", "phoenix_down")),
 }
 
 

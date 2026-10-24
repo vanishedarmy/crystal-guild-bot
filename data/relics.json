@@ -100,7 +100,8 @@
         },
         "reward_item": "gae_bolg_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "excalibur",
@@ -203,7 +204,8 @@
         },
         "reward_item": "excalibur_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "apocalypse",
@@ -306,7 +308,8 @@
         },
         "reward_item": "apocalypse_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "godhand",
@@ -409,7 +412,8 @@
         },
         "reward_item": "godhand_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "masamune",
@@ -512,7 +516,8 @@
         },
         "reward_item": "masamune_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "stardust_rod",
@@ -615,7 +620,8 @@
         },
         "reward_item": "stardust_rod_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "nirvana",
@@ -718,7 +724,8 @@
         },
         "reward_item": "nirvana_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "last_knife",
@@ -821,7 +828,8 @@
         },
         "reward_item": "last_knife_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "bravura",
@@ -924,7 +932,8 @@
         },
         "reward_item": "bravura_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "murgleis",
@@ -1027,7 +1036,8 @@
         },
         "reward_item": "murgleis_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "yoshimitsu",
@@ -1130,7 +1140,8 @@
         },
         "reward_item": "yoshimitsu_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "veil_of_wiyu",
@@ -1233,7 +1244,8 @@
         },
         "reward_item": "veil_of_wiyu_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "almace",
@@ -1336,7 +1348,8 @@
         },
         "reward_item": "almace_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "chronos",
@@ -1439,7 +1452,8 @@
         },
         "reward_item": "chronos_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "artemis_bow",
@@ -1542,7 +1556,8 @@
         },
         "reward_item": "artemis_bow_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "armageddon",
@@ -1645,7 +1660,8 @@
         },
         "reward_item": "armageddon_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "guttler",
@@ -1748,7 +1764,8 @@
         },
         "reward_item": "guttler_zenith"
       }
-    ]
+    ],
+    "tier": "classic"
   },
   {
     "id": "astral_codex",
@@ -1850,6 +1867,2113 @@
           ]
         },
         "reward_item": "astral_codex_zenith"
+      }
+    ],
+    "tier": "classic"
+  },
+  {
+    "id": "ultimate_dragoon",
+    "name": "Gae Bolg Infinity",
+    "job_id": "dragoon",
+    "tier": "ultimate",
+    "artwork_relic_id": "gae_bolg",
+    "description": "A new Ultimate Relic for the Dragoon, beginning at character Lv.90 after mastering Gae Bolg. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "dragoon",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "gae_bolg",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_dragoon_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_dragoon_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_dragoon_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_paladin",
+    "name": "Excalibur Prime",
+    "job_id": "paladin",
+    "tier": "ultimate",
+    "artwork_relic_id": "excalibur",
+    "description": "A new Ultimate Relic for the Paladin, beginning at character Lv.90 after mastering Excalibur. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "paladin",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "excalibur",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_paladin_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_paladin_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_paladin_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_darkknight",
+    "name": "Apocalypse Reborn",
+    "job_id": "darkknight",
+    "tier": "ultimate",
+    "artwork_relic_id": "apocalypse",
+    "description": "A new Ultimate Relic for the Darkknight, beginning at character Lv.90 after mastering Apocalypse. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "darkknight",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "apocalypse",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_darkknight_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_darkknight_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_darkknight_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_monk",
+    "name": "Celestial Godhand",
+    "job_id": "monk",
+    "tier": "ultimate",
+    "artwork_relic_id": "godhand",
+    "description": "A new Ultimate Relic for the Monk, beginning at character Lv.90 after mastering Godhand. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "monk",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "godhand",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_monk_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_monk_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_monk_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_samurai",
+    "name": "Masamune Eternal",
+    "job_id": "samurai",
+    "tier": "ultimate",
+    "artwork_relic_id": "masamune",
+    "description": "A new Ultimate Relic for the Samurai, beginning at character Lv.90 after mastering Masamune. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "samurai",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "masamune",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_samurai_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_samurai_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_samurai_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_blackmage",
+    "name": "Stardust Cataclysm",
+    "job_id": "blackmage",
+    "tier": "ultimate",
+    "artwork_relic_id": "stardust_rod",
+    "description": "A new Ultimate Relic for the Blackmage, beginning at character Lv.90 after mastering Stardust Rod. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "blackmage",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "stardust_rod",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_blackmage_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_blackmage_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_blackmage_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_whitemage",
+    "name": "Nirvana Eternal",
+    "job_id": "whitemage",
+    "tier": "ultimate",
+    "artwork_relic_id": "nirvana",
+    "description": "A new Ultimate Relic for the Whitemage, beginning at character Lv.90 after mastering Nirvana. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "whitemage",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "nirvana",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_whitemage_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_whitemage_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_whitemage_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_thief",
+    "name": "Last Shadow",
+    "job_id": "thief",
+    "tier": "ultimate",
+    "artwork_relic_id": "last_knife",
+    "description": "A new Ultimate Relic for the Thief, beginning at character Lv.90 after mastering Last Knife. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "thief",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "last_knife",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_thief_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_thief_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_thief_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_warrior",
+    "name": "Worldbreaker Bravura",
+    "job_id": "warrior",
+    "tier": "ultimate",
+    "artwork_relic_id": "bravura",
+    "description": "A new Ultimate Relic for the Warrior, beginning at character Lv.90 after mastering Bravura. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "warrior",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "bravura",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_warrior_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_warrior_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_warrior_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_redmage",
+    "name": "Murgleis Ascendant",
+    "job_id": "redmage",
+    "tier": "ultimate",
+    "artwork_relic_id": "murgleis",
+    "description": "A new Ultimate Relic for the Redmage, beginning at character Lv.90 after mastering Murgleis. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "redmage",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "murgleis",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_redmage_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_redmage_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_redmage_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_ninja",
+    "name": "Yoshimitsu Phantom",
+    "job_id": "ninja",
+    "tier": "ultimate",
+    "artwork_relic_id": "yoshimitsu",
+    "description": "A new Ultimate Relic for the Ninja, beginning at character Lv.90 after mastering Yoshimitsu. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "ninja",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "yoshimitsu",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_ninja_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_ninja_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_ninja_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_summoner",
+    "name": "Veil of Creation",
+    "job_id": "summoner",
+    "tier": "ultimate",
+    "artwork_relic_id": "veil_of_wiyu",
+    "description": "A new Ultimate Relic for the Summoner, beginning at character Lv.90 after mastering Veil of Wiyu. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "summoner",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "veil_of_wiyu",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_summoner_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_summoner_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_summoner_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_bluemage",
+    "name": "Almace Unbound",
+    "job_id": "bluemage",
+    "tier": "ultimate",
+    "artwork_relic_id": "almace",
+    "description": "A new Ultimate Relic for the Bluemage, beginning at character Lv.90 after mastering Almace. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "bluemage",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "almace",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_bluemage_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_bluemage_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_bluemage_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_timemage",
+    "name": "Chronos Paradox",
+    "job_id": "timemage",
+    "tier": "ultimate",
+    "artwork_relic_id": "chronos",
+    "description": "A new Ultimate Relic for the Timemage, beginning at character Lv.90 after mastering Chronos. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "timemage",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "chronos",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_timemage_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_timemage_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_timemage_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_bard",
+    "name": "Artemis Requiem",
+    "job_id": "bard",
+    "tier": "ultimate",
+    "artwork_relic_id": "artemis_bow",
+    "description": "A new Ultimate Relic for the Bard, beginning at character Lv.90 after mastering Artemis Bow. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "bard",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "artemis_bow",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_bard_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_bard_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_bard_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_machinist",
+    "name": "Armageddon Nova",
+    "job_id": "machinist",
+    "tier": "ultimate",
+    "artwork_relic_id": "armageddon",
+    "description": "A new Ultimate Relic for the Machinist, beginning at character Lv.90 after mastering Armageddon. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "machinist",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "armageddon",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_machinist_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_machinist_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_machinist_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_beastmaster",
+    "name": "Guttler Primal",
+    "job_id": "beastmaster",
+    "tier": "ultimate",
+    "artwork_relic_id": "guttler",
+    "description": "A new Ultimate Relic for the Beastmaster, beginning at character Lv.90 after mastering Guttler. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "beastmaster",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "guttler",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_beastmaster_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_beastmaster_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_beastmaster_eternal"
+      }
+    ]
+  },
+  {
+    "id": "ultimate_sage",
+    "name": "Astral Codex Absolute",
+    "job_id": "sage",
+    "tier": "ultimate",
+    "artwork_relic_id": "astral_codex",
+    "description": "A new Ultimate Relic for the Sage, beginning at character Lv.90 after mastering Astral Codex. Ascend through the forgotten sky realms and challenge the Eclipse Sovereign to attain the Eternal form.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Awakening",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 90
+          },
+          {
+            "type": "job_level",
+            "job_id": "sage",
+            "amount": 50
+          },
+          {
+            "type": "relic_complete",
+            "relic_id": "astral_codex",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 50000,
+          "hunt_seals": 300,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 2
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 2
+            },
+            {
+              "item_id": "adamantite",
+              "quantity": 2
+            }
+          ]
+        },
+        "reward_item": "ultimate_sage_awakened"
+      },
+      {
+        "stage": 2,
+        "name": "Transcendence",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 95
+          },
+          {
+            "type": "hunt_rank_clears",
+            "rank": "S",
+            "amount": 3
+          }
+        ],
+        "cost": {
+          "gil": 90000,
+          "hunt_seals": 500,
+          "items": [
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 3
+            },
+            {
+              "item_id": "frostveil_prism",
+              "quantity": 3
+            },
+            {
+              "item_id": "emberglass_core",
+              "quantity": 3
+            }
+          ]
+        },
+        "reward_item": "ultimate_sage_transcendent"
+      },
+      {
+        "stage": 3,
+        "name": "Eternal",
+        "requirements": [
+          {
+            "type": "character_level",
+            "amount": 99
+          },
+          {
+            "type": "boss_clear",
+            "boss_id": "eclipse_sovereign",
+            "amount": 1
+          }
+        ],
+        "cost": {
+          "gil": 150000,
+          "hunt_seals": 800,
+          "items": [
+            {
+              "item_id": "singularity_shard",
+              "quantity": 3
+            },
+            {
+              "item_id": "eclipse_core",
+              "quantity": 1
+            },
+            {
+              "item_id": "mirage_hourglass",
+              "quantity": 4
+            }
+          ]
+        },
+        "reward_item": "ultimate_sage_eternal"
       }
     ]
   }

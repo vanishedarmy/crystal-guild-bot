@@ -1046,6 +1046,11 @@ class PortalRepository:
                     "SELECT hunt_id,clears FROM player_hunts WHERE player_id=?", (player_id,),
                 )
             }
+            boss_clears = {
+                row["boss_id"]: int(row["clears"] or 0) for row in conn.execute(
+                    "SELECT boss_id,clears FROM player_boss_clears WHERE player_id=?", (player_id,),
+                )
+            }
             unique_ranks: dict[str, int] = {}
             for hunt_id, clears in hunt_clears.items():
                 hunt = self.data.hunts.get(hunt_id)
@@ -1078,6 +1083,17 @@ class PortalRepository:
                     rank = str(req.get("rank") or "")
                     label = f"Unique {rank}-Rank Hunts cleared"
                     current = int(unique_ranks.get(rank, 0))
+                elif kind == "relic_complete":
+                    needed_id = str(req.get("relic_id") or "")
+                    needed = self.data.relics.get(needed_id) or {}
+                    label = f"Complete {needed.get('name', 'the prerequisite Relic')}"
+                    prereq = progress.get(needed_id)
+                    current = int(bool(prereq and int(prereq["stage"]) >= len(needed.get("stages") or [])))
+                elif kind == "boss_clear":
+                    needed_id = str(req.get("boss_id") or "")
+                    needed = self.data.bosses.get(needed_id) or {}
+                    label = f"Defeat {needed.get('name', 'the ultimate boss')}"
+                    current = int(boss_clears.get(needed_id, 0))
                 else:
                     # New requirement types should not be falsely marked as met.
                     label = kind.replace("_", " ").capitalize()
@@ -1161,6 +1177,8 @@ class PortalRepository:
                     "id": relic["id"],
                     "name": relic["name"],
                     "description": relic.get("description") or "",
+                    "tier": relic.get("tier", "classic"),
+                    "artwork_relic_id": relic.get("artwork_relic_id", relic["id"]),
                     "job": job.get("name", relic["job_id"]),
                     "job_id": relic["job_id"],
                     "job_level": job_level,
