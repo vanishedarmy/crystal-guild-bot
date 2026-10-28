@@ -685,11 +685,11 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.raid_join(uid))
 
     @commands.command()
-    async def limit(self, ctx: commands.Context) -> None:
-        if not await self._require_stream_live(ctx, "Raid actions"):
+    async def limit(self, ctx: commands.Context, tier: str | None = None) -> None:
+        if not await self._require_stream_live(ctx, "Combat actions"):
             return
         uid, _, _ = self._identity(ctx)
-        await send_result(ctx, self.game.limit_break(uid))
+        await send_result(ctx, self.game.limit_break(uid, tier))
 
     @commands.command()
     async def summon(self, ctx: commands.Context, *, summon_name: str | None = None) -> None:

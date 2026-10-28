@@ -1,5 +1,5 @@
-Crystal Guild v1.9.92 — Job Ascension
-Sanitized Bot source inventory (excludes secret/runtime data, state.json and bytecode).
+Crystal Guild v1.9.93 — Limit Break Awakening
+Sanitized Bot source inventory (excludes secrets, transient state and bytecode).
 
 .env.example
 .gitignore
@@ -92,6 +92,7 @@ data/forge.json
 data/hunts.json
 data/items.json
 data/jobs.json
+data/limit_breaks.json
 data/moment_titles.json
 data/moments.json
 data/monsters.json
@@ -202,6 +203,7 @@ tests/test_item_usage_copy_hotfix2.py
 tests/test_job_ascension_1992.py
 tests/test_job_resource_switching.py
 tests/test_language_hotfix1.py
+tests/test_limit_ascension_1993.py
 tests/test_merc_recruitment_181.py
 tests/test_merc_service_alpha1.py
 tests/test_merc_service_alpha2.py

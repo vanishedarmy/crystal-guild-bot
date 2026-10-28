@@ -200,7 +200,7 @@ def action_priority(action: dict[str, Any], actor_statuses: dict[str, dict[str, 
     resolver so it can explicitly report the lost turn.
     """
     kind = action.get("kind")
-    base = {"defend": 10, "item": 20, "ability": 30, "attack": 40}.get(kind, 50)
+    base = {"defend": 10, "item": 20, "limit": 25, "ability": 30, "attack": 40}.get(kind, 50)
     if has_status(actor_statuses, "haste"):
         base -= 3
     if has_status(actor_statuses, "slow"):

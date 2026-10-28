@@ -16,6 +16,13 @@ html,body{margin:0;background:transparent;color:#fff;font-family:Segoe UI,Arial,
 #phase{font-weight:700}
 #status.enraged{font-weight:800}
 #mechanic{margin-top:10px;padding:8px 10px;border-left:3px solid #f0c15d;background:rgba(255,255,255,.06);font-size:14px;font-weight:700}
+#limits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
+.lb-member{background:rgba(255,212,114,.08);border-radius:7px;border:1px solid rgba(255,212,114,.27);padding:5px 8px;font-size:11px;overflow:hidden}
+.lb-member.ready{border-color:#ffd673;background:rgba(156,101,28,.32)}
+.lb-label{display:flex;justify-content:space-between;gap:6px;white-space:nowrap;font-weight:700}
+.lb-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-track{background:rgba(255,255,255,.15);border-radius:20px;height:5px;margin-top:5px;overflow:hidden}
+.lb-fill{height:100%;background:linear-gradient(90deg,#b97525,#ffe59f)}
 #top{margin-top:10px;font-size:14px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
@@ -25,6 +32,7 @@ html,body{margin:0;background:transparent;color:#fff;font-family:Segoe UI,Arial,
   <div class="bar"><div id="hpbar"></div></div>
   <div class="row"><div id="hp"></div><div id="phase"></div><div id="status"></div></div>
   <div id="mechanic"></div>
+  <div id="limits" aria-label="Raid Limit Break gauges"></div>
   <div id="top"></div>
 </div>
 <script>
@@ -43,6 +51,16 @@ async function refresh(){
     document.getElementById('phase').textContent='R'+(s.round||0)+' • '+(s.phase||'Battle');
     const status=document.getElementById('status'); status.textContent=(s.enraged?'ENRAGED • ':'')+'SUMMON '+(s.summon_gauge||0)+'%'; status.className=s.enraged?'enraged':'';
     const m=s.mechanic||{}; const cue=m.kind==='wind_pressure'?' • DEFEND':m.kind==='wind_mark'?' • CONTAIN':''; document.getElementById('mechanic').textContent=m.name?(['damage_check','break_check','guard_check','heart_check'].includes(m.kind)?m.name+' • '+Number(m.progress||0).toLocaleString()+'/'+Number(m.required||0).toLocaleString()+' • '+Number(m.rounds_remaining||0)+'R':m.name+(m.target?' → '+m.target:'')+cue):'Standard boss pressure';
+    const holder=document.getElementById('limits'); holder.replaceChildren();
+    const raiders=(s.members||[]).filter(x=>x.state!=='KO' && Number(x.limit||0)>0).sort((a,b)=>Number(b.limit||0)-Number(a.limit||0)).slice(0,6);
+    for(const m of raiders){
+      const row=document.createElement('div');row.className='lb-member'+(m.limit_ready?' ready':'');
+      const head=document.createElement('div');head.className='lb-label';
+      const n=document.createElement('span');n.className='lb-name';n.textContent=m.name+(m.limit_ready?' • LIMIT READY':'');
+      const charge=document.createElement('span');charge.textContent=String(Math.min(100,Math.max(0,Number(m.limit||0))))+'%';
+      head.append(n,charge);const track=document.createElement('div');track.className='lb-track';
+      const fill=document.createElement('div');fill.className='lb-fill';fill.style.width=Math.min(100,Math.max(0,Number(m.limit||0)))+'%';track.append(fill);row.append(head,track);holder.append(row);
+    }
     const top=(s.top||[]).map((x,i)=>'#'+(i+1)+' '+x.name+' '+Number(x.score||0).toLocaleString()+' pts').join('   •   ');
     document.getElementById('top').textContent=top;
   }catch(e){}

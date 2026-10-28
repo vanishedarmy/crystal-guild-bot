@@ -35,6 +35,7 @@ class GameData:
         self.seal_shop = self._load_map("seal_shop.json")
         self.forge = sorted(self._load_list("forge.json"), key=lambda r: r["level"])
         self.active_abilities = self._load_active_abilities()
+        self.limit_breaks = self._load_limits()
         self.enemy_profiles = self._load_map("enemy_profiles.json")
         self.enemy_actions = self._load_map("enemy_actions.json")
         self.bestiary_research = json.loads((self.data_dir / "bestiary_research.json").read_text(encoding="utf-8"))
@@ -67,6 +68,20 @@ class GameData:
                 )
             result[job_id] = row.get("abilities", [])
         return result
+
+    def _load_limits(self) -> dict[str, list[dict[str, Any]]]:
+        limits: dict[str, list[dict[str, Any]]] = {}
+        known: set[tuple[str, int]] = set()
+        for entry in self._load_list("limit_breaks.json"):
+            job_id, level = str(entry.get("job_id", "")), int(entry.get("level", 0))
+            if job_id not in self.jobs or (job_id, level) in known or level not in (50, 75, 90, 99):
+                raise ValueError(f"limit_breaks.json: invalid or duplicate Job milestone {job_id} {level}")
+            known.add((job_id, level))
+            limits.setdefault(job_id, []).append(entry)
+        for job_id in self.jobs:
+            if [row["level"] for row in limits.get(job_id, [])] != [50, 75, 90, 99]:
+                raise ValueError(f"limit_breaks.json: missing or unsorted milestones for {job_id}")
+        return limits
 
     def validate(self) -> list[str]:
         errors: list[str] = []

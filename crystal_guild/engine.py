@@ -2432,8 +2432,12 @@ class CrystalGuildEngine:
             self._resolve_active_item(str(twitch_id), meta, action, log)
         elif action["kind"] == "ability":
             self._resolve_active_ability(meta, action, monster, log)
+        elif action["kind"] == "limit":
+            self._resolve_active_limit(str(twitch_id), meta, action, monster, log)
         else:
             self._resolve_active_attack(meta, monster, log)
+        if action["kind"] != "limit":
+            self._gain_limit(meta, 12)
 
         if int(encounter.get("monster_hp", 0)) <= 0:
             return self._finish_solo_stage_victory(twitch_id, expedition, monster, meta, round_no, log)
@@ -2563,7 +2567,8 @@ class CrystalGuildEngine:
                 "round": int(encounter.get("round", 1)),
                 "enemy": {"id": str(monster.get("id") or ""), "name": str(monster.get("name") or "Unknown Enemy"), "level": int(monster.get("level", 1)), "art": str(monster.get("art") or ""), "seasonal_variant_id": str(encounter.get("seasonal_variant_id") or ""), "hp": int(encounter.get("monster_hp", 0)), "max_hp": int(encounter.get("monster_max_hp", 0)), "statuses": status_text(encounter.get("monster_statuses", {}), limit=3), "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action")},
                 "player": {"name": str(meta.get("name") or "Hero"), "job_id": str(meta.get("job_id") or ""), "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"), "hp": int(meta.get("hp", 0)), "max_hp": int(meta.get("max_hp", 0)), "mp": int(meta.get("mp", 0)), "max_mp": int(meta.get("max_mp", 0)), "ap": int(meta.get("ap", 0)), "max_ap": int(meta.get("max_ap", 0)), "statuses": status_text(meta.get("statuses", {}), limit=4)},
-                "abilities": self._solo_ability_rows(meta), "items": self._solo_owned_battle_items(twitch_id, meta),
+                "limit": self._limit_status(meta),
+            "abilities": self._solo_ability_rows(meta), "items": self._solo_owned_battle_items(twitch_id, meta),
             }
         return payload
 
@@ -2628,6 +2633,16 @@ class CrystalGuildEngine:
             meta["action"] = {"kind": "attack"}
         elif action_kind == "defend":
             meta["action"] = {"kind": "defend"}
+        elif action_kind == "limit" or action_kind.startswith("limit:"):
+            requested = action_kind.partition(":")[2]
+            if requested and not requested.isdigit():
+                return GameResult.fail("Choose a Limit Break tier: 50, 75, 90 or 99.")
+            tech = self._limit_selected(meta, int(requested) if requested else None)
+            if not tech:
+                return GameResult.fail("Limit Break locked. First unlock is Job Level 50.")
+            if int(meta.get("limit", 0)) < 100:
+                return GameResult.fail(f"Limit Gauge {int(meta.get('limit',0))}% / 100% — not ready.")
+            meta["action"] = {"kind": "limit", "limit_level": int(tech["level"])}
         elif action_kind.startswith("ability:"):
             ability_id = action_kind.split(":", 1)[1]
             ability = next((row for row in self.data.active_abilities.get(str(meta.get("job_id")), []) if str(row.get("id")) == ability_id), None)
@@ -3193,6 +3208,7 @@ class CrystalGuildEngine:
                 "statuses": {},
                 "action": None,
                 "defending": False,
+                "limit": 0,
                 "damage": 0,
                 "healing": 0,
                 "damage_taken": 0,
@@ -3274,6 +3290,117 @@ class CrystalGuildEngine:
         )
 
     # ---------- Battle presentation ----------
+    def _limit_options(self, meta: dict[str, Any]) -> list[dict[str, Any]]:
+        job_id = str(meta.get("job_id") or "")
+        level = int(meta.get("job_level", 0))
+        return [tech for tech in self.data.limit_breaks.get(job_id, []) if int(tech["level"]) <= level]
+
+    def _limit_selected(self, meta: dict[str, Any], level: int | None = None) -> dict[str, Any] | None:
+        available = self._limit_options(meta)
+        if level is None:
+            return available[-1] if available else None
+        return next((tech for tech in available if int(tech["level"]) == int(level)), None)
+
+    def _limit_status(self, meta: dict[str, Any]) -> dict[str, Any]:
+        available = self._limit_options(meta)
+        gauge = min(100, max(0, int(meta.get("limit", 0)))) if available else 0
+        return {
+            "charge": gauge, "max": 100, "ready": gauge >= 100 and int(meta.get("hp", 0)) > 0,
+            "unlocked": bool(available),
+            "selected": int((meta.get("action") or {}).get("limit_level") or available[-1]["level"]) if available else 0,
+            "techniques": [{"level": int(t["level"]), "name": t["name"], "description": t["description"], "kind": t["kind"]} for t in available],
+        }
+
+    @staticmethod
+    def _gain_limit(meta: dict[str, Any], amount: int) -> None:
+        if int(meta.get("job_level", 0)) >= 50 and int(meta.get("hp", 0)) > 0:
+            meta["limit"] = min(100, max(0, int(meta.get("limit", 0))) + max(0, int(amount)))
+
+    def _resolve_active_limit(self, pid: str, meta: dict[str, Any], action: dict[str, Any], monster: dict[str, Any], log: list[str]) -> None:
+        tech = self._limit_selected(meta, action.get("limit_level"))
+        if not tech or int(meta.get("limit", 0)) < 100:
+            log.append(f"{meta['name']}'s Limit Break is no longer available.")
+            return
+        meta["limit"] = 0
+        kind = tech["kind"]
+        if kind != "restoration":
+            base, _ = self._basic_active_damage(meta, monster)
+            dealt = max(1, int(base * float(tech["power"])))
+            before = int(self.active_encounter.get("monster_hp", 0))
+            self.active_encounter["monster_hp"] = max(0, before - dealt)
+            self._moment_field_direct_hit(meta, dealt, before)
+            meta["damage"] = int(meta.get("damage", 0)) + min(before, dealt)
+            meta["best_hit"] = max(int(meta.get("best_hit", 0)), min(before, dealt))
+            log.append(f"LIMIT BREAK — {meta['name']} unleashes {tech['name']} for {min(before, dealt):,} damage!")
+        if kind == "restoration":
+            total = 0
+            revives = 0
+            for ally in self.encounter_roster.values():
+                before = int(ally.get("hp", 0))
+                if before <= 0 and int(tech["level"]) >= 90:
+                    revives += 1
+                elif before <= 0:
+                    continue
+                healed_to = min(int(ally["max_hp"]), max(0, before) + max(1, int(int(ally["max_hp"]) * float(tech["healing_fraction"]))))
+                ally["hp"] = healed_to
+                total += healed_to - max(0, before)
+            meta["healing"] = int(meta.get("healing", 0)) + total
+            log.append(f"LIMIT BREAK — {meta['name']} invokes {tech['name']}: {total:,} party healing" + (f", {revives} allies raised!" if revives else "!"))
+        elif kind == "bulwark":
+            for ally in self.encounter_roster.values():
+                if int(ally.get("hp", 0)) > 0:
+                    apply_status(ally.setdefault("statuses", {}), "protect", int(tech["duration"]), float(tech["guard_fraction"]))
+            log.append(f"{tech['name']} shields the party for {tech['duration']} rounds.")
+        elif kind == "inspiration":
+            total = 0
+            for ally in self.encounter_roster.values():
+                if int(ally.get("hp", 0)) > 0:
+                    apply_status(ally.setdefault("statuses", {}), "power_up", int(tech["duration"]), 0.10 + 0.04 * int(tech["tier"]))
+                    before = int(ally["hp"])
+                    ally["hp"] = min(int(ally["max_hp"]), before + int(int(ally["max_hp"]) * float(tech["healing_fraction"])))
+                    total += int(ally["hp"]) - before
+            meta["healing"] = int(meta.get("healing", 0)) + total
+            log.append(f"{tech['name']} empowers allies and restores {total:,} HP.")
+        if pid:
+            self.db.execute("UPDATE players SET limit_breaks=limit_breaks+1 WHERE twitch_id=?", (pid,))
+
+    def _resolve_raid_limit(self, pid: str, meta: dict[str, Any], action: dict[str, Any], log: list[str], limit_users: list[str]) -> tuple[int, int]:
+        tech = self._limit_selected(meta, action.get("limit_level"))
+        if not tech or int(meta.get("limit", 0)) < 100:
+            log.append(f"{meta['name']}'s Limit Break fizzles; gauge was not ready")
+            return 0, 0
+        meta["limit"] = 0
+        meta["limit_armed"] = False
+        kind = tech["kind"]
+        dealt = 0
+        healed = 0
+        if kind != "restoration":
+            raw = self._raid_base_damage(meta, power=float(tech["power"]))
+            dealt = self._raid_damage_boss(pid, meta, raw, limit_users, use_limit=False)
+        if kind in {"restoration", "inspiration"}:
+            for ally in self.raid_roster.values():
+                before = int(ally.get("hp", 0))
+                if before <= 0 and (kind != "restoration" or int(tech["level"]) < 90):
+                    continue
+                ally["hp"] = min(int(ally["max_hp"]), max(0, before) + max(1, int(int(ally["max_hp"]) * float(tech["healing_fraction"]))))
+                if before <= 0 and int(ally["hp"]) > 0:
+                    ally["ko_counted"] = False
+                    ally["_moment_revived_during_raid"] = True
+                healed += int(ally["hp"]) - max(0, before)
+            meta["healing"] = int(meta.get("healing", 0)) + healed
+        if kind == "bulwark":
+            for ally in self.raid_roster.values():
+                if int(ally.get("hp", 0)) > 0:
+                    apply_status(ally.setdefault("statuses", {}), "protect", int(tech["duration"]), float(tech["guard_fraction"]))
+        elif kind == "inspiration":
+            for ally in self.raid_roster.values():
+                if int(ally.get("hp", 0)) > 0:
+                    apply_status(ally.setdefault("statuses", {}), "power_up", int(tech["duration"]), 0.10 + 0.04 * int(tech["tier"]))
+        self.db.execute("UPDATE players SET limit_breaks=limit_breaks+1 WHERE twitch_id=?", (pid,))
+        limit_users.append(f"{meta['name']} — {tech['name']}")
+        log.append(f"LIMIT BREAK {tech['name']} — {meta['name']}: {dealt:,} damage / {healed:,} healing" + (" / party protected" if kind == "bulwark" else " / party inspired" if kind == "inspiration" else ""))
+        return dealt, healed
+
     def _queued_action_label(self, row: dict[str, Any]) -> str:
         """Return the player-facing name of one queued action.
 
@@ -3288,6 +3415,9 @@ class CrystalGuildEngine:
             ability_id = action.get("ability_id")
             ability = next((a for a in self.data.active_abilities.get(row.get("job_id"), []) if a.get("id") == ability_id), None)
             return str(ability.get("name")) if ability else "Ability"
+        if kind == "limit":
+            tech = self._limit_selected(row, action.get("limit_level"))
+            return str(tech["name"]) if tech else "Limit Break"
         if kind == "item":
             item = self.data.items.get(action.get("item_id"), {})
             return str(item.get("name") or "Item")
@@ -4447,6 +4577,7 @@ class CrystalGuildEngine:
         before_hp = int(target["hp"])
         target["hp"] = max(0, before_hp - damage)
         target["damage_taken"] += damage
+        self._gain_limit(target, max(5, int(damage * 35 / max(1, int(target.get("max_hp", 1))))))
         if before_hp > 0 and int(target["hp"]) == 0 and damage > 0:
             guard = target.get("_moment_last_self_item") or {}
             action_serial = int(self.active_encounter.get("_moment_hostile_serial", 0))
@@ -4750,8 +4881,12 @@ class CrystalGuildEngine:
                 self._resolve_active_item(pid, meta, action, log)
             elif action["kind"] == "ability":
                 self._resolve_active_ability(meta, action, monster, log)
+            elif action["kind"] == "limit":
+                self._resolve_active_limit(pid, meta, action, monster, log)
             else:
                 self._resolve_active_attack(meta, monster, log)
+            if action["kind"] != "limit":
+                self._gain_limit(meta, 12)
 
             if int(self.active_encounter["monster_hp"]) <= 0:
                 break
@@ -4822,7 +4957,7 @@ class CrystalGuildEngine:
             f"NEXT R{round_no + 1} · {self._format_seconds(self.encounter_round_seconds)} | "
             f"{monster['name']} {resource_text('HP', enemy_hp, enemy_max)} {enemy_status} | "
             f"{party_condition_text(self.encounter_roster.values())} | "
-            "!attack · !ability · !defend · !use",
+            "!attack · !ability · !defend · !use · !limit",
             round_resolved=True,
             next_round_at=self.active_encounter["next_round_at"],
             notification_limit=2,
@@ -8064,6 +8199,7 @@ class CrystalGuildEngine:
                 "max_ap": int(meta.get("max_ap", 0)),
                 "statuses": status_text(meta.get("statuses", {}), limit=4),
             },
+            "limit": self._limit_status(meta),
             "abilities": self._solo_ability_rows(meta),
             "items": self._solo_owned_battle_items(twitch_id, meta),
         }
@@ -8208,6 +8344,16 @@ class CrystalGuildEngine:
             meta["action"] = {"kind": "attack"}
         elif action_kind == "defend":
             meta["action"] = {"kind": "defend"}
+        elif action_kind == "limit" or action_kind.startswith("limit:"):
+            requested = action_kind.partition(":")[2]
+            if requested and not requested.isdigit():
+                return GameResult.fail("Choose a Limit Break tier: 50, 75, 90 or 99.")
+            tech = self._limit_selected(meta, int(requested) if requested else None)
+            if not tech:
+                return GameResult.fail("Limit Break locked. First unlock is Job Level 50.")
+            if int(meta.get("limit", 0)) < 100:
+                return GameResult.fail(f"Limit Gauge {int(meta.get('limit',0))}% / 100% — not ready.")
+            meta["action"] = {"kind": "limit", "limit_level": int(tech["level"])}
         elif action_kind.startswith("ability:"):
             ability_id = action_kind.split(":", 1)[1]
             ability = next(
@@ -8278,8 +8424,12 @@ class CrystalGuildEngine:
                 self._resolve_active_item(str(twitch_id), actor, action, log)
             elif action["kind"] == "ability":
                 self._resolve_active_ability(actor, action, monster, log)
+            elif action["kind"] == "limit":
+                self._resolve_active_limit(str(twitch_id), actor, action, monster, log)
             else:
                 self._resolve_active_attack(actor, monster, log)
+            if action["kind"] != "limit":
+                self._gain_limit(actor, 12)
 
             if int(encounter.get("monster_hp", 0)) <= 0:
                 return self._finish_expedition_combat_victory(twitch_id, state, monster, actor, round_no, log)
@@ -9001,7 +9151,8 @@ class CrystalGuildEngine:
                 "round": int(encounter.get("round", 1)),
                 "enemy": {"id": str(monster.get("id") or ""), "name": str(monster.get("name") or "Unknown Enemy"), "level": int(monster.get("level", 1)), "hp": int(encounter.get("monster_hp", 0)), "max_hp": int(encounter.get("monster_max_hp", 0)), "statuses": status_text(encounter.get("monster_statuses", {}), limit=3), "intent": str((encounter.get("enemy_intent") or {}).get("label") or "Preparing an action")},
                 "player": {"name": str(meta.get("name") or "Hero"), "job_id": str(meta.get("job_id") or ""), "job_name": str((self.data.jobs.get(str(meta.get("job_id"))) or {}).get("name") or "Adventurer"), "hp": int(meta.get("hp", 0)), "max_hp": int(meta.get("max_hp", 0)), "mp": int(meta.get("mp", 0)), "max_mp": int(meta.get("max_mp", 0)), "ap": int(meta.get("ap", 0)), "max_ap": int(meta.get("max_ap", 0)), "statuses": status_text(meta.get("statuses", {}), limit=4)},
-                "abilities": self._solo_ability_rows(meta),
+                "limit": self._limit_status(meta),
+            "abilities": self._solo_ability_rows(meta),
                 "items": self._solo_owned_battle_items(twitch_id, meta),
                 "route_effects": copy.deepcopy(list(combat.get("route_effects") or [])),
                 "mechanics": copy.deepcopy(list(combat.get("mechanics") or [])),
@@ -9124,6 +9275,16 @@ class CrystalGuildEngine:
             meta["action"] = {"kind": "attack"}
         elif action_kind == "defend":
             meta["action"] = {"kind": "defend"}
+        elif action_kind == "limit" or action_kind.startswith("limit:"):
+            requested = action_kind.partition(":")[2]
+            if requested and not requested.isdigit():
+                return GameResult.fail("Choose a Limit Break tier: 50, 75, 90 or 99.")
+            tech = self._limit_selected(meta, int(requested) if requested else None)
+            if not tech:
+                return GameResult.fail("Limit Break locked. First unlock is Job Level 50.")
+            if int(meta.get("limit", 0)) < 100:
+                return GameResult.fail(f"Limit Gauge {int(meta.get('limit',0))}% / 100% — not ready.")
+            meta["action"] = {"kind": "limit", "limit_level": int(tech["level"])}
         elif action_kind.startswith("ability:"):
             ability_id = action_kind.split(":", 1)[1]
             ability = next((row for row in self.data.active_abilities.get(str(meta.get("job_id")), []) if str(row.get("id")) == ability_id), None)
@@ -9190,8 +9351,12 @@ class CrystalGuildEngine:
             self._resolve_active_item(str(twitch_id), meta, action, log)
         elif action["kind"] == "ability":
             self._resolve_active_ability(meta, action, monster, log)
+        elif action["kind"] == "limit":
+            self._resolve_active_limit(str(twitch_id), meta, action, monster, log)
         else:
             self._resolve_active_attack(meta, monster, log)
+        if action["kind"] != "limit":
+            self._gain_limit(meta, 12)
         if int(encounter.get("monster_hp", 0)) <= 0:
             return self._dungeon_finish_room_victory(twitch_id, state, monster, meta, round_no, log)
         self._solo_resolve_enemy_intent(monster, encounter, log)
@@ -9484,6 +9649,7 @@ class CrystalGuildEngine:
             "can_act": bool(can_act),
             "reason": reason,
             "queued_action": self._queued_action_label(meta),
+            "limit": self._limit_status(meta),
             "actor": {
                 "username": str(meta.get("username") or "").strip().lower(),
                 "display_name": str(meta.get("name") or meta.get("username") or "Adventurer"),
@@ -9624,6 +9790,8 @@ class CrystalGuildEngine:
                 result = GameResult.fail("Choose an ability first.")
             else:
                 result = self.battle_ability(twitch_id, query)
+        elif kind == "limit":
+            result = self.limit_break(twitch_id, choice or None)
         elif kind == "item":
             if not choice:
                 result = GameResult.fail("Choose a battle item first.")
@@ -15937,6 +16105,7 @@ class CrystalGuildEngine:
                 "mp": int(resources["mp"]), "max_mp": int(resources["max_mp"]),
                 "ap": int(resources["ap"]), "max_ap": int(resources["max_ap"]),
                 "statuses": {}, "action": None, "defending": False,
+                "limit": 0, "limit_armed": False,
                 "actions": int(meta.get("actions", 0)), "abilities_used": int(meta.get("abilities_used", 0)),
                 "items_used": int(meta.get("items_used", 0)), "defends": int(meta.get("defends", 0)),
             })
@@ -15958,15 +16127,8 @@ class CrystalGuildEngine:
         return max(1, int(base * float(job.get("damage_mod", 1.0)) * float(power) * self.rng.uniform(1.05, 1.45) * multiplier))
 
     def _apply_raid_limit(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str]) -> int:
-        if meta.get("limit_armed") and int(meta.get("limit", 0)) >= 100:
-            job = self.data.jobs[meta["job_id"]]
-            damage = int(damage * 3.25)
-            meta["limit"] = 0
-            meta["limit_armed"] = False
-            limit_users.append(f"{meta['name']} — {job.get('signature', 'Limit Break')}")
-            self.db.execute("UPDATE players SET limit_breaks=limit_breaks+1 WHERE twitch_id=?", (pid,))
-        else:
-            meta["limit"] = min(100, int(meta.get("limit", 0)) + self.rng.randint(10, 18))
+        """Attacks build LB meter; only an explicit queued Limit Break spends it."""
+        self._gain_limit(meta, self.rng.randint(10, 18))
         return damage
 
     @staticmethod
@@ -17192,7 +17354,7 @@ class CrystalGuildEngine:
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
-        messages = [f"RAID BEGIN — {self.active_boss['name']} | {len(self.raid_roster)} heroes | Phase: {phase['name']}. Limit gauges start at 0%; survive long enough to regret that."]
+        messages = [f"RAID BEGIN — {self.active_boss['name']} | {len(self.raid_roster)} heroes | Phase: {phase['name']}. Job Limit Gauges start at 0%; at JLv.50+ use !limit when charged."]
         telegraph = self._raid_telegraph_text(self.active_boss)
         if telegraph:
             messages.append(telegraph)
@@ -17298,10 +17460,15 @@ class CrystalGuildEngine:
             elif kind == "item":
                 dealt, healed = self._resolve_raid_item(pid, meta, action, limit_users, action_log)
                 round_damage += dealt; round_healing += healed
+            elif kind == "limit":
+                dealt, healed = self._resolve_raid_limit(pid, meta, action, action_log, limit_users)
+                round_damage += dealt; round_healing += healed
             else:
                 dealt = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, support_bonus=support_bonus), limit_users)
                 round_damage += dealt
                 action_log.append(f"{meta['name']} attacks for {dealt:,}")
+            if kind in {"defend", "item", "ability"}:
+                self._gain_limit(meta, 8)
             if boss["current_hp"] <= 0:
                 break
 
@@ -17438,7 +17605,7 @@ class CrystalGuildEngine:
         if limit_users:
             messages.append("LIMIT BREAK — " + " | ".join(limit_users[:4]))
         elif ready_limits:
-            messages.append("Limit ready: " + ", ".join(ready_limits[:5]) + " — use !limit to arm it for the next round.")
+            messages.append("Limit ready: " + ", ".join(ready_limits[:5]) + " — use !limit to queue your Job Limit Break this round.")
         if boss.get("summon_gauge",0) >= 100 and not boss.get("summon_armed"):
             messages.append("Guild Summon Gauge: 100% — a raider can use !summon <eidolon>.")
         if enraged:
@@ -17460,23 +17627,38 @@ class CrystalGuildEngine:
         return GameResult.success(*messages, raid_finished=False, boss_id=boss["id"], next_round_at=boss["next_round_at"])
 
     @_state_guard
-    def limit_break(self, twitch_id: str) -> GameResult:
-        if not self.active_boss or self.active_boss.get("state") != "combat":
-            return GameResult.fail("Limit Breaks can only be armed during an active raid.")
-        meta=self.raid_roster.get(twitch_id)
-        if not meta:
-            return GameResult.fail("You are not participating in this raid.")
-        if meta.get("hp",0)<=0:
-            return GameResult.fail("You are KO'd. Even dramatic music has limits.")
-        if meta.get("limit_armed"):
-            return GameResult.success(f"{meta['name']}'s Limit Break is already armed for the next round.")
-        gauge=int(meta.get("limit",0))
-        if gauge<100:
-            return GameResult.fail(f"Limit Gauge: {gauge}%. Take more damage heroically and try again.")
-        meta["limit_armed"]=True
-        self._update_raid_overlay()
-        job=self.data.jobs[meta["job_id"]]
-        return GameResult.success(f"LIMIT ARMED — {meta['name']} prepares {job.get('signature','Limit Break')} for the next raid round.")
+    def limit_break(self, twitch_id: str, tier: str | None = None) -> GameResult:
+        is_raid = bool(self.active_boss and self.active_boss.get("state") == "combat" and str(twitch_id) in self.raid_roster)
+        if not is_raid and not (self.active_encounter and self.active_encounter.get("state") == "combat" and str(twitch_id) in self.encounter_roster):
+            requested = str(tier).strip() if tier else ""
+            for load, method in ((self._solo_expedition_load, self.solo_expedition_action), (self._expedition_load, self.expedition_combat_action), (self._dungeon_load, self.dungeon_action)):
+                state = load(str(twitch_id))
+                if state and state.get("status") == "combat":
+                    return method(str(twitch_id), "limit:" + requested if requested else "limit")
+        if is_raid:
+            meta, error = self._raid_actor(str(twitch_id))
+        else:
+            meta, error = self._active_actor(str(twitch_id))
+        if error:
+            return error
+        assert meta is not None
+        level = None
+        if tier:
+            try:
+                level = int(str(tier).strip())
+            except ValueError:
+                return GameResult.fail("Use !limit or !limit 50 / 75 / 90 / 99.")
+        tech = self._limit_selected(meta, level)
+        if not tech:
+            return GameResult.fail("No Limit Break unlocked at that tier. Your first Limit Break unlocks at Job Level 50.")
+        charge = min(100, max(0, int(meta.get("limit", 0))))
+        if charge < 100:
+            return GameResult.fail(f"LIMIT {charge}% / 100% — {tech['name']} (JLv.{tech['level']}). Charge by fighting and surviving!")
+        action = {"kind": "limit", "limit_level": int(tech["level"])}
+        if is_raid:
+            action.update(self._raid_action_stamp())
+        meta["action"] = action
+        return GameResult.success(f"LIMIT READY — {meta['name']} queues {tech['name']} (Tier {tech['tier']}) for this round. Gauge spent when the attack resolves.", all_actions_queued=self._all_raid_actions_queued() if is_raid else self._all_round_actions_queued())
 
     @_state_guard
     def summon_raid(self, twitch_id: str, summon_query: str | None = None) -> GameResult:
@@ -17860,7 +18042,9 @@ class CrystalGuildEngine:
             return "", "", "", False
         action = meta.get("action") or {}
         kind = str(action.get("kind") or "").lower()
-        if kind == "ability":
+        if kind == "limit":
+            label = str((self._limit_selected(meta, action.get("limit_level")) or {}).get("name") or "Limit Break")
+        elif kind == "ability":
             catalog = self.data.active_abilities.get(meta.get("job_id"), [])
             ability = next((row for row in catalog if row.get("id") == action.get("ability_id")), None)
             label = str((ability or {}).get("name") or "Ability")
@@ -17907,6 +18091,9 @@ class CrystalGuildEngine:
             "hp": min(hp, max_hp), "max_hp": max_hp,
             "resource": resource, "resource_value": current_resource,
             "resource_max": max_resource,
+            "limit": self._limit_status(meta)["charge"],
+            "limit_ready": self._limit_status(meta)["ready"],
+            "limit_name": (self._limit_selected(meta) or {}).get("name", ""),
             "state": state, "action": label, "action_kind": action_kind,
             "target": target, "statuses": self._raid_overlay_statuses(meta.get("statuses")),
         }

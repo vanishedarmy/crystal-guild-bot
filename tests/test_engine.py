@@ -886,10 +886,11 @@ class EngineTests(unittest.TestCase):
         self.game.spawn_boss("ifrit")
         self.game.raid_join("1")
         self.game.start_raid()
+        self.game.raid_roster["1"]["job_level"] = 50
         self.game.raid_roster["1"]["limit"] = 100
         armed = self.game.limit_break("1")
         self.assertTrue(armed.ok, armed.messages)
-        self.assertTrue(self.game.raid_roster["1"]["limit_armed"])
+        self.assertEqual(self.game.raid_roster["1"]["action"]["kind"], "limit")
         self.game.active_boss["current_hp"] = 999999
         self.game.active_boss["max_hp"] = 999999
         self.game.raid_round()
