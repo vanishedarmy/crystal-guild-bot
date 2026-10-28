@@ -117,7 +117,7 @@ def match_ability(abilities: Iterable[dict[str, Any]], query: str) -> tuple[dict
         return None, ""
     matches: list[tuple[int, dict[str, Any], str]] = []
     for ability in abilities:
-        for key in {ability.get("id", ""), ability.get("name", "")}:
+        for key in {ability.get("id", ""), ability.get("name", ""), *(ability.get("aliases") or [])}:
             token = normalize_action_text(str(key))
             if not token:
                 continue

@@ -193,12 +193,12 @@ class CombatBalanceTests(unittest.TestCase):
 
     def test_shipping_ability_and_enemy_data_meet_balance_guardrails(self):
         self.assertEqual(self.data.validate(), [])
-        self.assertEqual(sum(len(v) for v in self.data.active_abilities.values()), 172)
+        self.assertEqual(sum(len(v) for v in self.data.active_abilities.values()), 341)
         aetherflow = next(a for a in self.data.active_abilities["summoner"] if a["id"] == "aetherflow")
         fraction = next(e["fraction"] for e in aetherflow["effects"] if e["type"] == "restore_mp")
         self.assertLessEqual(float(fraction), 0.25)
 
-    def test_all_172_player_abilities_resolve_after_resource_tuning(self):
+    def test_all_341_player_abilities_resolve_after_resource_tuning(self):
         self._start_venture()
         monster = self.data.monsters[self.game.active_encounter["monster_id"]]
         actor = self.game.encounter_roster["1"]
@@ -240,7 +240,7 @@ class CombatBalanceTests(unittest.TestCase):
                 self.assertTrue(log, f"{job_id}:{ability['id']} produced no resolver log")
                 self.assertIn(ability["name"], log[-1])
                 resolved += 1
-        self.assertEqual(resolved, 172)
+        self.assertEqual(resolved, 341)
 
     def test_repeated_battles_leave_only_bounded_presentation_state(self):
         for index in range(20):

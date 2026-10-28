@@ -103,8 +103,8 @@ class GameData:
             previous = 0
             for ability in job.get("abilities", []):
                 level = int(ability.get("level", 0))
-                if not 1 <= level <= 50 or level <= previous:
-                    errors.append(f"job {job['id']}: ability levels must increase within 1..50")
+                if not 1 <= level <= 99 or level <= previous:
+                    errors.append(f"job {job['id']}: ability levels must increase within 1..99")
                 previous = level
 
         # Active battle abilities are intentionally stored separately from
@@ -160,9 +160,9 @@ class GameData:
                     errors.append(f"active ability {job_id}:{aid}: missing description")
 
                 level = int(ability.get("level", 0))
-                if not 1 <= level <= 50 or level < previous_level:
+                if not 1 <= level <= 99 or level < previous_level:
                     errors.append(
-                        f"active ability {job_id}:{aid}: level must increase within 1..50"
+                        f"active ability {job_id}:{aid}: level must increase within 1..99"
                     )
                 previous_level = level
 
@@ -221,7 +221,7 @@ class GameData:
                                 f"active ability {job_id}:{aid}: {effect_type} fraction "
                                 "must be within 0..1"
                             )
-                        caps = {"restore_mp": 0.25, "restore_ap": 0.25, "revive": 0.50, "drain": 0.40}
+                        caps = {"restore_mp": 0.25, "restore_ap": 0.25, "revive": 1.00, "drain": 0.40}
                         if fraction > caps[effect_type]:
                             errors.append(
                                 f"active ability {job_id}:{aid}: {effect_type} fraction exceeds "

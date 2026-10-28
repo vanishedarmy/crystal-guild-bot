@@ -1,1 +1,1 @@
-__version__ = "1.9.91-equipment-expansion"
+__version__ = "1.9.92-job-ascension"

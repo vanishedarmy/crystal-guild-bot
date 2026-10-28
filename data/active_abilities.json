@@ -185,6 +185,172 @@
         ],
         "cost": 18,
         "resource": "ap"
+      },
+      {
+        "id": "steel_cyclone",
+        "name": "Steel Cyclone",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "shield_wall",
+        "name": "Shield Wall",
+        "level": 58,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "fell_cleave",
+        "name": "Fell Cleave",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "inner_beast",
+        "name": "Inner Beast",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage and restores HP from damage dealt.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          },
+          {
+            "type": "drain",
+            "fraction": 0.35
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "upheaval",
+        "name": "Upheaval",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage and can expose the foe for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.14,
+            "chance": 0.8
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "defiance",
+        "name": "Defiance",
+        "level": 82,
+        "target": "self",
+        "description": "Greatly protects the caster for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.4,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "decimating_strike",
+        "name": "Decimating Strike",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.26
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "inner_release",
+        "name": "Inner Release",
+        "level": 94,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 16,
+        "resource": "ap"
+      },
+      {
+        "id": "primal_rend",
+        "name": "Primal Rend",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -355,6 +521,164 @@
         "cost": 18,
         "resource": "ap",
         "element": "Wind"
+      },
+      {
+        "id": "rockbreaker",
+        "name": "Rockbreaker",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "mantra",
+        "name": "Mantra",
+        "level": 58,
+        "target": "party",
+        "description": "Grants all living allies Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "rising_phoenix",
+        "name": "Rising Phoenix",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "six_sided_star",
+        "name": "Six-Sided Star",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage and has a chance to stun for 1 round.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.3
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "chakra_surge",
+        "name": "Chakra Surge",
+        "level": 76,
+        "target": "self",
+        "description": "Restores HP to yourself.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.35,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "phantom_rush",
+        "name": "Phantom Rush",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.19
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "enlightenment",
+        "name": "Enlightenment",
+        "level": 88,
+        "target": "self",
+        "description": "Concentrates the caster’s attacks for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "focus",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "celestial_revolution",
+        "name": "Celestial Revolution",
+        "level": 94,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.34,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
+      },
+      {
+        "id": "hundred_fists",
+        "name": "Hundred Fists",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -528,6 +852,185 @@
           }
         ],
         "cost": 18,
+        "resource": "ap"
+      },
+      {
+        "id": "blindside",
+        "name": "Blindside",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage and can blind the foe for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          },
+          {
+            "type": "status",
+            "status": "blind",
+            "turns": 2,
+            "magnitude": 0.25,
+            "chance": 0.8
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "venom_burst",
+        "name": "Venom Burst",
+        "level": 58,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.89
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "mirage_veil",
+        "name": "Mirage Veil",
+        "level": 64,
+        "target": "self",
+        "description": "Increases evasion for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 3,
+            "magnitude": 0.3,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "shadow_fang",
+        "name": "Shadow Fang",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage and can expose the foe for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.14,
+            "chance": 0.8
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "lucky_strike",
+        "name": "Lucky Strike",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "trickster_s_gambit",
+        "name": "Trickster’s Gambit",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals physical damage and can weaken enemy attacks for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.19
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.16,
+            "chance": 0.85
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "phantom_edge",
+        "name": "Phantom Edge",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.26,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "master_of_shadows",
+        "name": "Master of Shadows",
+        "level": 94,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 16,
+        "resource": "ap"
+      },
+      {
+        "id": "perfect_assassination",
+        "name": "Perfect Assassination",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
         "resource": "ap"
       }
     ]
@@ -720,6 +1223,23 @@
         "resource": "mp"
       },
       {
+        "id": "watera",
+        "name": "Watera",
+        "level": 33,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.82
+          }
+        ],
+        "cost": 8,
+        "resource": "mp",
+        "element": "water"
+      },
+      {
         "id": "bio",
         "name": "Bio",
         "level": 35,
@@ -751,6 +1271,22 @@
         "element": "Dark"
       },
       {
+        "id": "osmose",
+        "name": "Osmose",
+        "level": 38,
+        "target": "self",
+        "description": "Restores 25% of maximum MP to yourself.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.25,
+            "recipient": "self"
+          }
+        ],
+        "cost": 9,
+        "resource": "mp"
+      },
+      {
         "id": "freeze",
         "name": "Freeze",
         "level": 40,
@@ -775,6 +1311,30 @@
         "element": "Ice"
       },
       {
+        "id": "quake",
+        "name": "Quake",
+        "level": 43,
+        "target": "enemy",
+        "description": "Deals magic damage and can expose the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.82
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.13,
+            "chance": 0.8
+          }
+        ],
+        "cost": 9,
+        "resource": "mp",
+        "element": "Earth"
+      },
+      {
         "id": "ultima",
         "name": "Ultima",
         "level": 45,
@@ -792,6 +1352,223 @@
             "turns": 2,
             "magnitude": 0.1,
             "chance": 0.65
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
+      },
+      {
+        "id": "tornado",
+        "name": "Tornado",
+        "level": 48,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.82
+          }
+        ],
+        "cost": 10,
+        "resource": "mp",
+        "element": "Wind"
+      },
+      {
+        "id": "firaga",
+        "name": "Firaga",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.14
+          }
+        ],
+        "cost": 11,
+        "resource": "mp",
+        "element": "fire"
+      },
+      {
+        "id": "blizzaga",
+        "name": "Blizzaga",
+        "level": 58,
+        "target": "enemy",
+        "description": "Deals magic damage and can Slow the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.17
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.2,
+            "chance": 0.8
+          }
+        ],
+        "cost": 11,
+        "resource": "mp",
+        "element": "ice"
+      },
+      {
+        "id": "thundaga",
+        "name": "Thundaga",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals magic damage and can Stun the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.21
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.22
+          }
+        ],
+        "cost": 12,
+        "resource": "mp",
+        "element": "lightning"
+      },
+      {
+        "id": "waterga",
+        "name": "Waterga",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.24
+          }
+        ],
+        "cost": 13,
+        "resource": "mp",
+        "element": "water"
+      },
+      {
+        "id": "firaja",
+        "name": "Firaja",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals magic damage and can expose the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.27
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.12,
+            "chance": 0.75
+          }
+        ],
+        "cost": 14,
+        "resource": "mp",
+        "element": "fire"
+      },
+      {
+        "id": "blizzaja",
+        "name": "Blizzaja",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals magic damage and can Slow the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.31
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.2,
+            "chance": 0.8
+          }
+        ],
+        "cost": 14,
+        "resource": "mp",
+        "element": "ice"
+      },
+      {
+        "id": "thundaja",
+        "name": "Thundaja",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals magic damage and can Stun the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.34
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.22
+          }
+        ],
+        "cost": 15,
+        "resource": "mp",
+        "element": "lightning"
+      },
+      {
+        "id": "meteor",
+        "name": "Meteor",
+        "level": 94,
+        "target": "enemy",
+        "description": "Deals magic damage with a chance to expose the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.37
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
+      },
+      {
+        "id": "apocalypse",
+        "name": "Apocalypse",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals magic damage and can suppress the foe’s damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.4
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.18,
+            "chance": 0.85
           }
         ],
         "cost": 20,
@@ -867,10 +1644,10 @@
       },
       {
         "id": "cure_ii",
-        "name": "Cure II",
+        "name": "Cura",
         "level": 12,
         "target": "ally",
-        "description": "Restore a larger amount of HP to one ally.",
+        "description": "Restores HP to one ally; preserves the legacy Cure II command.",
         "effects": [
           {
             "type": "heal",
@@ -879,7 +1656,10 @@
           }
         ],
         "cost": 8,
-        "resource": "mp"
+        "resource": "mp",
+        "aliases": [
+          "Cure II"
+        ]
       },
       {
         "id": "protect",
@@ -971,6 +1751,21 @@
         "resource": "mp"
       },
       {
+        "id": "curaga",
+        "name": "Curaga",
+        "level": 33,
+        "target": "ally",
+        "description": "Restores a large amount of HP to one living ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.5
+          }
+        ],
+        "cost": 8,
+        "resource": "mp"
+      },
+      {
         "id": "banish",
         "name": "Banish",
         "level": 35,
@@ -993,6 +1788,23 @@
         "cost": 15,
         "resource": "mp",
         "element": "Holy"
+      },
+      {
+        "id": "aeroga",
+        "name": "Aeroga",
+        "level": 38,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 1.82
+          }
+        ],
+        "cost": 9,
+        "resource": "mp",
+        "element": "Wind"
       },
       {
         "id": "holy",
@@ -1036,6 +1848,181 @@
           }
         ],
         "cost": 20,
+        "resource": "mp"
+      },
+      {
+        "id": "medica",
+        "name": "Medica",
+        "level": 48,
+        "target": "party",
+        "description": "Restores HP to each living party member.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 0.92,
+            "recipient": "party"
+          }
+        ],
+        "cost": 10,
+        "resource": "mp"
+      },
+      {
+        "id": "curaja",
+        "name": "Curaja",
+        "level": 52,
+        "target": "ally",
+        "description": "Restores a large amount of HP to one living ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.8
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "protectra",
+        "name": "Protectra",
+        "level": 58,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "shellra",
+        "name": "Shellra",
+        "level": 64,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 12,
+        "resource": "mp"
+      },
+      {
+        "id": "esunaga",
+        "name": "Esunaga",
+        "level": 70,
+        "target": "ally",
+        "description": "Removes up to six harmful statuses from one ally.",
+        "effects": [
+          {
+            "type": "cleanse",
+            "count": 6
+          }
+        ],
+        "cost": 13,
+        "resource": "mp"
+      },
+      {
+        "id": "arise",
+        "name": "Arise",
+        "level": 76,
+        "target": "ally",
+        "description": "Revives one KO’d ally at full HP.",
+        "effects": [
+          {
+            "type": "revive",
+            "fraction": 1.0
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "holyga",
+        "name": "Holyga",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.31
+          }
+        ],
+        "cost": 14,
+        "resource": "mp",
+        "element": "holy"
+      },
+      {
+        "id": "regenra",
+        "name": "Regenra",
+        "level": 88,
+        "target": "party",
+        "description": "Grants all living allies Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "divine_benison",
+        "name": "Divine Benison",
+        "level": 94,
+        "target": "party",
+        "description": "Restores HP to each living party member.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "afflatus_rapture",
+        "name": "Afflatus Rapture",
+        "level": 99,
+        "target": "party",
+        "description": "Restores HP to each living party member and grants party Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          },
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
         "resource": "mp"
       }
     ]
@@ -1290,6 +2277,164 @@
         ],
         "cost": 20,
         "resource": "mp"
+      },
+      {
+        "id": "verthundaga",
+        "name": "Verthundaga",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals magic damage and can Stun the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.14
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.22
+          }
+        ],
+        "cost": 11,
+        "resource": "mp",
+        "element": "lightning"
+      },
+      {
+        "id": "vercuraga",
+        "name": "Vercuraga",
+        "level": 58,
+        "target": "ally",
+        "description": "Restores a large amount of HP to one living ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.8
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "manafication",
+        "name": "Manafication",
+        "level": 64,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 12,
+        "resource": "mp"
+      },
+      {
+        "id": "verflare_ii",
+        "name": "Verflare II",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.24
+          }
+        ],
+        "cost": 13,
+        "resource": "mp",
+        "element": "fire"
+      },
+      {
+        "id": "verholy_ii",
+        "name": "Verholy II",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.27
+          }
+        ],
+        "cost": 14,
+        "resource": "mp",
+        "element": "holy"
+      },
+      {
+        "id": "embolden",
+        "name": "Embolden",
+        "level": 82,
+        "target": "party",
+        "description": "Increases party damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.18,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "grand_impact",
+        "name": "Grand Impact",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.34
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "verraise",
+        "name": "Verraise",
+        "level": 94,
+        "target": "ally",
+        "description": "Revives one KO’d ally at 50% HP.",
+        "effects": [
+          {
+            "type": "revive",
+            "fraction": 0.5
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "dualcast_finale",
+        "name": "Dualcast Finale",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -1461,6 +2606,175 @@
         "cost": 19,
         "resource": "mp",
         "element": "Holy"
+      },
+      {
+        "id": "divine_veil",
+        "name": "Divine Veil",
+        "level": 52,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "atonement",
+        "name": "Atonement",
+        "level": 58,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.89
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "intervention",
+        "name": "Intervention",
+        "level": 64,
+        "target": "ally",
+        "description": "Grants a strong protective shield to an ally for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.35,
+            "chance": 1.0
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "requiescat",
+        "name": "Requiescat",
+        "level": 70,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "circle_of_scorn",
+        "name": "Circle of Scorn",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage and can expose the foe for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.14,
+            "chance": 0.8
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "holy_sheltron",
+        "name": "Holy Sheltron",
+        "level": 82,
+        "target": "self",
+        "description": "Greatly protects the caster for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.4,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "blade_of_faith",
+        "name": "Blade of Faith",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.34
+          }
+        ],
+        "cost": 15,
+        "resource": "mp",
+        "element": "holy"
+      },
+      {
+        "id": "divine_might",
+        "name": "Divine Might",
+        "level": 94,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "passage_of_arms",
+        "name": "Passage of Arms",
+        "level": 99,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
       }
     ]
   },
@@ -1644,6 +2958,177 @@
         "cost": 18,
         "resource": "ap",
         "element": "Dark"
+      },
+      {
+        "id": "dark_passenger",
+        "name": "Dark Passenger",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.14
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "delirium",
+        "name": "Delirium",
+        "level": 58,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "stalwart_soul",
+        "name": "Stalwart Soul",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage and restores HP from damage dealt.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97
+          },
+          {
+            "type": "drain",
+            "fraction": 0.35
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "salted_earth",
+        "name": "Salted Earth",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "shadowbringer",
+        "name": "Shadowbringer",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "oblation",
+        "name": "Oblation",
+        "level": 82,
+        "target": "ally",
+        "description": "Grants a strong protective shield to an ally for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.35,
+            "chance": 1.0
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "eventide",
+        "name": "Eventide",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals physical damage and restores HP from damage dealt.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.26
+          },
+          {
+            "type": "drain",
+            "fraction": 0.35
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "abyssal_eclipse",
+        "name": "Abyssal Eclipse",
+        "level": 94,
+        "target": "enemy",
+        "description": "Deals physical damage and can expose the foe for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.34
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.14,
+            "chance": 0.8
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
+      },
+      {
+        "id": "living_shadow_prime",
+        "name": "Living Shadow Prime",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -1812,6 +3297,163 @@
         "cost": 18,
         "resource": "ap",
         "element": "Wind"
+      },
+      {
+        "id": "fang_and_claw",
+        "name": "Fang and Claw",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "wheeling_thrust",
+        "name": "Wheeling Thrust",
+        "level": 58,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.89
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "high_jump",
+        "name": "High Jump",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "drakesbane",
+        "name": "Drakesbane",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage and can expose the foe for 2 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.14,
+            "chance": 0.8
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "geirskogul",
+        "name": "Geirskogul",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "wyrmwind_thrust",
+        "name": "Wyrmwind Thrust",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.19
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "dragon_s_wrath",
+        "name": "Dragon’s Wrath",
+        "level": 88,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "heavens_thrust",
+        "name": "Heavens’ Thrust",
+        "level": 94,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.34,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
+      },
+      {
+        "id": "dragonheart",
+        "name": "Dragonheart",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -1988,6 +3630,169 @@
         "cost": 18,
         "resource": "ap",
         "element": "Lightning"
+      },
+      {
+        "id": "doton",
+        "name": "Doton",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "huton",
+        "name": "Huton",
+        "level": 58,
+        "target": "self",
+        "description": "Hastens the caster for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "haste",
+            "turns": 3,
+            "magnitude": 0.15,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "goka_mekkyaku",
+        "name": "Goka Mekkyaku",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.21
+          }
+        ],
+        "cost": 12,
+        "resource": "ap",
+        "element": "fire"
+      },
+      {
+        "id": "meisui",
+        "name": "Meisui",
+        "level": 70,
+        "target": "self",
+        "description": "Restores 25% of maximum AP to yourself.",
+        "effects": [
+          {
+            "type": "restore_ap",
+            "fraction": 0.25,
+            "recipient": "self"
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "bunshin",
+        "name": "Bunshin",
+        "level": 76,
+        "target": "self",
+        "description": "Increases evasion for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 3,
+            "magnitude": 0.3,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "hyosho_ranryu",
+        "name": "Hyosho Ranryu",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.31
+          }
+        ],
+        "cost": 14,
+        "resource": "ap",
+        "element": "ice"
+      },
+      {
+        "id": "fleeting_raiju",
+        "name": "Fleeting Raiju",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals hybrid damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "hybrid",
+            "power": 2.34
+          }
+        ],
+        "cost": 15,
+        "resource": "ap",
+        "element": "lightning"
+      },
+      {
+        "id": "ten_chi_jin",
+        "name": "Ten Chi Jin",
+        "level": 94,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 16,
+        "resource": "ap"
+      },
+      {
+        "id": "kassatsu_finale",
+        "name": "Kassatsu Finale",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -2159,6 +3964,161 @@
           }
         ],
         "cost": 18,
+        "resource": "ap"
+      },
+      {
+        "id": "kasha",
+        "name": "Kasha",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "kaeshi_higanbana",
+        "name": "Kaeshi: Higanbana",
+        "level": 58,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.89
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "tsubame_gaeshi",
+        "name": "Tsubame-gaeshi",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "senei",
+        "name": "Senei",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "tenka_goken",
+        "name": "Tenka Goken",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "kaeshi_setsugekka",
+        "name": "Kaeshi: Setsugekka",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.19
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "shoha_ii",
+        "name": "Shoha II",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.26
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "zanshin",
+        "name": "Zanshin",
+        "level": 94,
+        "target": "self",
+        "description": "Greatly protects the caster for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.4,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 16,
+        "resource": "ap"
+      },
+      {
+        "id": "dawnstrike",
+        "name": "Dawnstrike",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
         "resource": "ap"
       }
     ]
@@ -2417,6 +4377,190 @@
         "cost": 20,
         "resource": "mp",
         "element": "Fire"
+      },
+      {
+        "id": "inferno",
+        "name": "Inferno",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.14
+          }
+        ],
+        "cost": 11,
+        "resource": "mp",
+        "element": "fire"
+      },
+      {
+        "id": "diamond_dust",
+        "name": "Diamond Dust",
+        "level": 58,
+        "target": "enemy",
+        "description": "Deals magic damage and can Slow the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.17
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.2,
+            "chance": 0.8
+          }
+        ],
+        "cost": 11,
+        "resource": "mp",
+        "element": "ice"
+      },
+      {
+        "id": "judgment_bolt",
+        "name": "Judgment Bolt",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals magic damage and can Stun the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.21
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.22
+          }
+        ],
+        "cost": 12,
+        "resource": "mp",
+        "element": "lightning"
+      },
+      {
+        "id": "tidal_wave",
+        "name": "Tidal Wave",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.24
+          }
+        ],
+        "cost": 13,
+        "resource": "mp",
+        "element": "water"
+      },
+      {
+        "id": "earthen_fury",
+        "name": "Earthen Fury",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals magic damage and can expose the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.27
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.13,
+            "chance": 0.8
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "aerial_blast",
+        "name": "Aerial Blast",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.31
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "megaflare",
+        "name": "Megaflare",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.34
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "phoenix_rebirth",
+        "name": "Phoenix Rebirth",
+        "level": 94,
+        "target": "party",
+        "description": "Restores HP to each living party member and grants party Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          },
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "teraflare",
+        "name": "Teraflare",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals magic damage and can suppress the foe’s damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.4
+          },
+          {
+            "type": "status",
+            "status": "weaken",
+            "turns": 2,
+            "magnitude": 0.18,
+            "chance": 0.85
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -2692,6 +4836,160 @@
         "cost": 20,
         "resource": "mp",
         "element": "Dark"
+      },
+      {
+        "id": "dragon_breath",
+        "name": "Dragon Breath",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.14
+          }
+        ],
+        "cost": 11,
+        "resource": "mp",
+        "element": "fire"
+      },
+      {
+        "id": "moon_flute",
+        "name": "Moon Flute",
+        "level": 58,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "magic_hammer",
+        "name": "Magic Hammer",
+        "level": 64,
+        "target": "self",
+        "description": "Restores 25% of maximum MP to yourself.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.25,
+            "recipient": "self"
+          }
+        ],
+        "cost": 12,
+        "resource": "mp"
+      },
+      {
+        "id": "matra_magic",
+        "name": "Matra Magic",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.24
+          }
+        ],
+        "cost": 13,
+        "resource": "mp"
+      },
+      {
+        "id": "angel_whisper",
+        "name": "Angel Whisper",
+        "level": 76,
+        "target": "ally",
+        "description": "Revives one KO’d ally at 50% HP.",
+        "effects": [
+          {
+            "type": "revive",
+            "fraction": 0.5
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "bad_breath_ii",
+        "name": "Bad Breath II",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals magic damage and can poison the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.31
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.07,
+            "chance": 0.85
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "level_5_flare",
+        "name": "Level 5 Flare",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.34
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "white_wind_ii",
+        "name": "White Wind II",
+        "level": 94,
+        "target": "party",
+        "description": "Restores HP to each living party member.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "grand_delta",
+        "name": "Grand Delta",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -2937,6 +5235,176 @@
         ],
         "cost": 20,
         "resource": "mp"
+      },
+      {
+        "id": "slowga",
+        "name": "Slowga",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals magic damage and slows the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.14
+          },
+          {
+            "type": "status",
+            "status": "slow",
+            "turns": 2,
+            "magnitude": 0.25,
+            "chance": 1.0
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "hastega",
+        "name": "Hastega",
+        "level": 58,
+        "target": "party",
+        "description": "Hastens the party for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "haste",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "graviga",
+        "name": "Graviga",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.21
+          }
+        ],
+        "cost": 12,
+        "resource": "mp"
+      },
+      {
+        "id": "regen_haste",
+        "name": "Regen Haste",
+        "level": 70,
+        "target": "party",
+        "description": "Grants all living allies Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 13,
+        "resource": "mp"
+      },
+      {
+        "id": "quickened_pulse",
+        "name": "Quickened Pulse",
+        "level": 76,
+        "target": "self",
+        "description": "Restores 25% of maximum MP to yourself.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.25,
+            "recipient": "self"
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "comet_ii",
+        "name": "Comet II",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.31
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "stopga",
+        "name": "Stopga",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals magic damage with a chance to stun.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.34
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.35
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "temporal_reversal",
+        "name": "Temporal Reversal",
+        "level": 94,
+        "target": "ally",
+        "description": "Restores a large amount of HP to one living ally.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.8
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "time_compression",
+        "name": "Time Compression",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals magic damage with a chance to expose the foe.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.4
+          },
+          {
+            "type": "status",
+            "status": "vulnerable",
+            "turns": 2,
+            "magnitude": 0.1,
+            "chance": 0.65
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
       }
     ]
   },
@@ -3112,6 +5580,167 @@
         "cost": 18,
         "resource": "ap",
         "element": "Wind"
+      },
+      {
+        "id": "battle_voice",
+        "name": "Battle Voice",
+        "level": 52,
+        "target": "party",
+        "description": "Increases party damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.18,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "nature_s_minne",
+        "name": "Nature’s Minne",
+        "level": 58,
+        "target": "party",
+        "description": "Grants all living allies Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "pitch_perfect",
+        "name": "Pitch Perfect",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "shadowbite",
+        "name": "Shadowbite",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "blast_arrow",
+        "name": "Blast Arrow",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "resonant_arrow",
+        "name": "Resonant Arrow",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.19
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "radiant_encore",
+        "name": "Radiant Encore",
+        "level": 88,
+        "target": "party",
+        "description": "Increases party damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.18,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "hero_s_ballad",
+        "name": "Hero’s Ballad",
+        "level": 94,
+        "target": "party",
+        "description": "Restores HP to each living party member.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
+        "resource": "mp"
+      },
+      {
+        "id": "last_requiem",
+        "name": "Last Requiem",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -3285,6 +5914,165 @@
         ],
         "cost": 18,
         "resource": "ap"
+      },
+      {
+        "id": "heated_slug_shot",
+        "name": "Heated Slug Shot",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "barrel_stabilizer",
+        "name": "Barrel Stabilizer",
+        "level": 58,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "chainsaw",
+        "name": "Chainsaw",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "scattergun",
+        "name": "Scattergun",
+        "level": 70,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.04
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "automaton_queen",
+        "name": "Automaton Queen",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "bioblaster",
+        "name": "Bioblaster",
+        "level": 82,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.19
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "excavator",
+        "name": "Excavator",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.26,
+            "pierce": 0.2
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "full_metal_field",
+        "name": "Full Metal Field",
+        "level": 94,
+        "target": "self",
+        "description": "Greatly protects the caster for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.4,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 16,
+        "resource": "ap"
+      },
+      {
+        "id": "hypercharge_finale",
+        "name": "Hypercharge Finale",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -3456,6 +6244,175 @@
         "cost": 18,
         "resource": "ap",
         "element": "Lightning"
+      },
+      {
+        "id": "wild_fang",
+        "name": "Wild Fang",
+        "level": 52,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.82
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "pack_s_blessing",
+        "name": "Pack’s Blessing",
+        "level": 58,
+        "target": "party",
+        "description": "Grants all living allies Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.12,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "ap"
+      },
+      {
+        "id": "behemoth_swipe",
+        "name": "Behemoth Swipe",
+        "level": 64,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 1.97
+          }
+        ],
+        "cost": 12,
+        "resource": "ap"
+      },
+      {
+        "id": "wyvern_s_guard",
+        "name": "Wyvern’s Guard",
+        "level": 70,
+        "target": "ally",
+        "description": "Grants a strong protective shield to an ally for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.35,
+            "chance": 1.0
+          }
+        ],
+        "cost": 13,
+        "resource": "ap"
+      },
+      {
+        "id": "coeurl_pounce",
+        "name": "Coeurl Pounce",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals physical damage and has a chance to stun for 1 round.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.12
+          },
+          {
+            "type": "status",
+            "status": "stun",
+            "turns": 1,
+            "magnitude": 1.0,
+            "chance": 0.3
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "fenrir_howl",
+        "name": "Fenrir Howl",
+        "level": 82,
+        "target": "party",
+        "description": "Increases party damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.18,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 14,
+        "resource": "ap"
+      },
+      {
+        "id": "chimera_breath",
+        "name": "Chimera Breath",
+        "level": 88,
+        "target": "enemy",
+        "description": "Deals physical damage and can poison the foe for 3 rounds.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.26
+          },
+          {
+            "type": "status",
+            "status": "poison",
+            "turns": 3,
+            "magnitude": 0.06,
+            "chance": 0.8
+          }
+        ],
+        "cost": 15,
+        "resource": "ap"
+      },
+      {
+        "id": "primal_bond",
+        "name": "Primal Bond",
+        "level": 94,
+        "target": "self",
+        "description": "Raises personal damage for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "power_up",
+            "turns": 3,
+            "magnitude": 0.2,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 16,
+        "resource": "ap"
+      },
+      {
+        "id": "king_of_beasts",
+        "name": "King of Beasts",
+        "level": 99,
+        "target": "enemy",
+        "description": "Deals physical damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "physical",
+            "power": 2.4
+          }
+        ],
+        "cost": 20,
+        "resource": "ap"
       }
     ]
   },
@@ -3718,6 +6675,167 @@
           }
         ],
         "cost": 19,
+        "resource": "mp"
+      },
+      {
+        "id": "prognosis",
+        "name": "Prognosis",
+        "level": 52,
+        "target": "party",
+        "description": "Restores HP to each living party member.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "eukrasian_prognosis",
+        "name": "Eukrasian Prognosis",
+        "level": 58,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 11,
+        "resource": "mp"
+      },
+      {
+        "id": "icarus",
+        "name": "Icarus",
+        "level": 64,
+        "target": "self",
+        "description": "Increases evasion for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "evade",
+            "turns": 3,
+            "magnitude": 0.3,
+            "chance": 1.0,
+            "recipient": "self"
+          }
+        ],
+        "cost": 12,
+        "resource": "mp"
+      },
+      {
+        "id": "holos",
+        "name": "Holos",
+        "level": 70,
+        "target": "party",
+        "description": "Restores HP to each living party member.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          }
+        ],
+        "cost": 13,
+        "resource": "mp"
+      },
+      {
+        "id": "eukrasian_phlegma",
+        "name": "Eukrasian Phlegma",
+        "level": 76,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.27
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "panhaima",
+        "name": "Panhaima",
+        "level": 82,
+        "target": "party",
+        "description": "Grants Protect to all living party members for 3 rounds.",
+        "effects": [
+          {
+            "type": "status",
+            "status": "protect",
+            "turns": 3,
+            "magnitude": 0.28,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 14,
+        "resource": "mp"
+      },
+      {
+        "id": "rhizomata",
+        "name": "Rhizomata",
+        "level": 88,
+        "target": "self",
+        "description": "Restores 25% of maximum MP to yourself.",
+        "effects": [
+          {
+            "type": "restore_mp",
+            "fraction": 0.25,
+            "recipient": "self"
+          }
+        ],
+        "cost": 15,
+        "resource": "mp"
+      },
+      {
+        "id": "psyche",
+        "name": "Psyche",
+        "level": 94,
+        "target": "enemy",
+        "description": "Deals magic damage.",
+        "effects": [
+          {
+            "type": "damage",
+            "scaling": "magic",
+            "power": 2.37
+          }
+        ],
+        "cost": 20,
+        "resource": "mp"
+      },
+      {
+        "id": "philosophia_prime",
+        "name": "Philosophia Prime",
+        "level": 99,
+        "target": "party",
+        "description": "Restores HP to each living party member and grants party Regen for 3 rounds.",
+        "effects": [
+          {
+            "type": "heal",
+            "power": 1.1,
+            "recipient": "party"
+          },
+          {
+            "type": "status",
+            "status": "regen",
+            "turns": 3,
+            "magnitude": 0.1,
+            "chance": 1.0,
+            "recipient": "party"
+          }
+        ],
+        "cost": 16,
         "resource": "mp"
       }
     ]

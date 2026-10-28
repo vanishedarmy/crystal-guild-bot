@@ -1078,7 +1078,7 @@ class CrystalGuildEngine:
             hunt = available[0]
             extra = f" Next Job milestone: JLv.{next_ability['level']} {next_ability['name']}." if next_ability else ""
             return GameResult.success(f"NEXT — Try the {hunt['rank']}-Rank Hunt '{hunt['name']}' with !hunt {hunt['name']}.{extra}")
-        milestone = f"JLv.{next_ability['level']} {next_ability['name']}" if next_ability else f"JLv.50 Mastery: {job['mastery']['name']}"
+        milestone = f"JLv.{next_ability['level']} {next_ability['name']}" if next_ability else "JLv.99 Job Ascension complete"
         cooldown = self._cooldown_remaining(twitch_id, "venture")
         if cooldown > 0:
             return GameResult.success(
@@ -5520,7 +5520,7 @@ class CrystalGuildEngine:
             j = conn.execute("SELECT level, jp FROM player_jobs WHERE player_id=? AND job_id=?", (player_id, job_id)).fetchone()
             if j:
                 jlevel, jp = j["level"], j["jp"]
-                while jlevel < 50 and jp >= jp_to_next(jlevel):
+                while jlevel < 99 and jp >= jp_to_next(jlevel):
                     jp -= jp_to_next(jlevel)
                     jlevel += 1
                     passive = next((a for a in self.data.jobs[job_id].get("abilities", []) if a["level"] == jlevel), None)
@@ -6787,7 +6787,7 @@ class CrystalGuildEngine:
                 "current": p["current_job"] == job["id"],
                 "level": level,
                 "jp": jp,
-                "jp_next": jp_to_next(level) if level else 0,
+                "jp_next": jp_to_next(level) if 0 < level < 99 else 0,
                 "mastered": level >= 50,
                 "signature": job.get("signature", "—"),
                 "resource_mode": job_resource_mode(job),

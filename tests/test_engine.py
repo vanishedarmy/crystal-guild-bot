@@ -305,7 +305,7 @@ class EngineTests(unittest.TestCase):
             self.assertIn("mastery", job)
             for ability in job.get("abilities", []):
                 self.assertGreaterEqual(ability["level"], 1)
-                self.assertLessEqual(ability["level"], 50)
+                self.assertLessEqual(ability["level"], 99)
             for req in job.get("unlock", []):
                 if req["type"] == "job_level":
                     self.assertIn(req["job_id"], self.game.data.jobs)

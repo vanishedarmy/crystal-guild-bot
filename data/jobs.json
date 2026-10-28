@@ -58,6 +58,46 @@
         "effects": {
           "hp_mult": 0.1
         }
+      },
+      {
+        "level": 55,
+        "name": "Iron Fortress",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Battle Rage",
+        "description": "Physical Potency +4%.",
+        "effects": {
+          "physical_mult": 0.04
+        }
+      },
+      {
+        "level": 75,
+        "name": "Stoneguard",
+        "description": "Hp Potency +4%.",
+        "effects": {
+          "hp_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Untamed Will",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 95,
+        "name": "Legendary Vanguard",
+        "description": "Defense Potency +4%.",
+        "effects": {
+          "defense_mult": 0.04
+        }
       }
     ],
     "mastery": {
@@ -127,6 +167,46 @@
         "description": "Critical chance +5%.",
         "effects": {
           "crit_bonus": 0.05
+        }
+      },
+      {
+        "level": 55,
+        "name": "Inner Focus",
+        "description": "Crit Bonus +1%.",
+        "effects": {
+          "crit_bonus": 0.01
+        }
+      },
+      {
+        "level": 65,
+        "name": "Flowing Fists",
+        "description": "Physical Potency +4%.",
+        "effects": {
+          "physical_mult": 0.04
+        }
+      },
+      {
+        "level": 75,
+        "name": "Perfect Chakra",
+        "description": "Hp Potency +4%.",
+        "effects": {
+          "hp_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Lightning Stance",
+        "description": "Double Strike Chance +2%.",
+        "effects": {
+          "double_strike_chance": 0.02
+        }
+      },
+      {
+        "level": 95,
+        "name": "Enlightened Body",
+        "description": "Damage Potency +4%.",
+        "effects": {
+          "damage_mult": 0.04
         }
       }
     ],
@@ -200,6 +280,46 @@
         "effects": {
           "loot_bonus": 0.1
         }
+      },
+      {
+        "level": 55,
+        "name": "Keen Fingers",
+        "description": "Loot Bonus +3%.",
+        "effects": {
+          "loot_bonus": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Silent Footfalls",
+        "description": "Evade Chance +2%.",
+        "effects": {
+          "evade_chance": 0.02
+        }
+      },
+      {
+        "level": 75,
+        "name": "Shadowcraft",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 85,
+        "name": "Golden Opportunity",
+        "description": "Physical Potency +4%.",
+        "effects": {
+          "physical_mult": 0.04
+        }
+      },
+      {
+        "level": 95,
+        "name": "Phantom Mastery",
+        "description": "Damage Potency +4%.",
+        "effects": {
+          "damage_mult": 0.04
+        }
       }
     ],
     "mastery": {
@@ -269,6 +389,46 @@
         "description": "Magic damage +10%.",
         "effects": {
           "magic_mult": 0.1
+        }
+      },
+      {
+        "level": 55,
+        "name": "Greater Aether",
+        "description": "Mag Potency +4%.",
+        "effects": {
+          "mag_mult": 0.04
+        }
+      },
+      {
+        "level": 65,
+        "name": "Elemental Overdrive",
+        "description": "Magic Potency +4%.",
+        "effects": {
+          "magic_mult": 0.04
+        }
+      },
+      {
+        "level": 75,
+        "name": "Astral Convergence",
+        "description": "Magic Potency +4%.",
+        "effects": {
+          "magic_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Arcane Dominion",
+        "description": "Mag Potency +4%.",
+        "effects": {
+          "mag_mult": 0.04
+        }
+      },
+      {
+        "level": 95,
+        "name": "Cataclysmic Focus",
+        "description": "Magic Potency +5%.",
+        "effects": {
+          "magic_mult": 0.05
         }
       }
     ],
@@ -340,6 +500,46 @@
         "description": "Magic damage +8%.",
         "effects": {
           "magic_mult": 0.08
+        }
+      },
+      {
+        "level": 55,
+        "name": "Healing Grace",
+        "description": "Heal Bonus +4%.",
+        "effects": {
+          "heal_bonus": 0.04
+        }
+      },
+      {
+        "level": 65,
+        "name": "Radiant Resolve",
+        "description": "Magic Potency +3%.",
+        "effects": {
+          "magic_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Sacred Wellspring",
+        "description": "Heal Bonus +4%.",
+        "effects": {
+          "heal_bonus": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Seraphic Ward",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 95,
+        "name": "Blessed Miracle",
+        "description": "Heal Bonus +5%.",
+        "effects": {
+          "heal_bonus": 0.05
         }
       }
     ],
@@ -413,6 +613,46 @@
         "description": "All damage +8%.",
         "effects": {
           "damage_mult": 0.08
+        }
+      },
+      {
+        "level": 55,
+        "name": "Dual Arcana",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Fencing Grace",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 75,
+        "name": "Magical Synergy",
+        "description": "Magic Potency +3%.",
+        "effects": {
+          "magic_mult": 0.03
+        }
+      },
+      {
+        "level": 85,
+        "name": "Blade Sorcery",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 95,
+        "name": "Crimson Virtuoso",
+        "description": "Damage Potency +5%.",
+        "effects": {
+          "damage_mult": 0.05
         }
       }
     ],
@@ -501,6 +741,46 @@
         "effects": {
           "defense_mult": 0.1
         }
+      },
+      {
+        "level": 55,
+        "name": "Sacred Aegis",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Oathkeeper",
+        "description": "Hp Potency +4%.",
+        "effects": {
+          "hp_mult": 0.04
+        }
+      },
+      {
+        "level": 75,
+        "name": "Divine Edge",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 85,
+        "name": "Unbroken Shield",
+        "description": "Defense Potency +4%.",
+        "effects": {
+          "defense_mult": 0.04
+        }
+      },
+      {
+        "level": 95,
+        "name": "Hallowed Champion",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
       }
     ],
     "mastery": {
@@ -581,6 +861,46 @@
         "description": "All damage +10%.",
         "effects": {
           "damage_mult": 0.1
+        }
+      },
+      {
+        "level": 55,
+        "name": "Voidheart",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Obsidian Guard",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Abyssal Edge",
+        "description": "Physical Potency +4%.",
+        "effects": {
+          "physical_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Bloodletting",
+        "description": "Hp Potency +4%.",
+        "effects": {
+          "hp_mult": 0.04
+        }
+      },
+      {
+        "level": 95,
+        "name": "Knight of Night",
+        "description": "Damage Potency +5%.",
+        "effects": {
+          "damage_mult": 0.05
         }
       }
     ],
@@ -667,6 +987,46 @@
         "effects": {
           "signature_mult": 0.2
         }
+      },
+      {
+        "level": 55,
+        "name": "Wyrmspirit",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Skyward Focus",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 75,
+        "name": "Dragon Force",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 85,
+        "name": "Heavensward",
+        "description": "Signature Potency +8%.",
+        "effects": {
+          "signature_mult": 0.08
+        }
+      },
+      {
+        "level": 95,
+        "name": "Highwind Legend",
+        "description": "Physical Potency +5%.",
+        "effects": {
+          "physical_mult": 0.05
+        }
       }
     ],
     "mastery": {
@@ -748,6 +1108,46 @@
         "description": "All damage +10%.",
         "effects": {
           "damage_mult": 0.1
+        }
+      },
+      {
+        "level": 55,
+        "name": "Swift Shadows",
+        "description": "Evade Chance +2%.",
+        "effects": {
+          "evade_chance": 0.02
+        }
+      },
+      {
+        "level": 65,
+        "name": "Master Ninjutsu",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Silent Blade",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 85,
+        "name": "Shadow Twin",
+        "description": "Double Strike Chance +2%.",
+        "effects": {
+          "double_strike_chance": 0.02
+        }
+      },
+      {
+        "level": 95,
+        "name": "Night Walker",
+        "description": "Physical Potency +5%.",
+        "effects": {
+          "physical_mult": 0.05
         }
       }
     ],
@@ -835,6 +1235,46 @@
         "effects": {
           "damage_mult": 0.1
         }
+      },
+      {
+        "level": 55,
+        "name": "Keen Blade",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 65,
+        "name": "Samurai Spirit",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Sword Saint",
+        "description": "Damage Potency +4%.",
+        "effects": {
+          "damage_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Perfect Iaijutsu",
+        "description": "Signature Potency +8%.",
+        "effects": {
+          "signature_mult": 0.08
+        }
+      },
+      {
+        "level": 95,
+        "name": "Way of the Blade",
+        "description": "Physical Potency +5%.",
+        "effects": {
+          "physical_mult": 0.05
+        }
       }
     ],
     "mastery": {
@@ -921,6 +1361,46 @@
         "effects": {
           "magic_mult": 0.12
         }
+      },
+      {
+        "level": 55,
+        "name": "Greater Aetherflow",
+        "description": "Magic Potency +3%.",
+        "effects": {
+          "magic_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Eikon Attunement",
+        "description": "Mag Potency +4%.",
+        "effects": {
+          "mag_mult": 0.04
+        }
+      },
+      {
+        "level": 75,
+        "name": "Summon Potency",
+        "description": "Magic Potency +4%.",
+        "effects": {
+          "magic_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Primal Bond",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 95,
+        "name": "Astral Dominance",
+        "description": "Magic Potency +5%.",
+        "effects": {
+          "magic_mult": 0.05
+        }
       }
     ],
     "mastery": {
@@ -1000,6 +1480,46 @@
         "description": "Hunt damage +12%.",
         "effects": {
           "hunt_damage_mult": 0.12
+        }
+      },
+      {
+        "level": 55,
+        "name": "Monster Insight",
+        "description": "Magic Potency +3%.",
+        "effects": {
+          "magic_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Arcane Mimicry",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Beast Lore",
+        "description": "Hunt Damage Potency +4%.",
+        "effects": {
+          "hunt_damage_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Ancient Tongue",
+        "description": "Magic Potency +4%.",
+        "effects": {
+          "magic_mult": 0.04
+        }
+      },
+      {
+        "level": 95,
+        "name": "Perfect Learning",
+        "description": "Damage Potency +5%.",
+        "effects": {
+          "damage_mult": 0.05
         }
       }
     ],
@@ -1081,6 +1601,46 @@
         "description": "Signature damage +18%.",
         "effects": {
           "signature_mult": 0.18
+        }
+      },
+      {
+        "level": 55,
+        "name": "Temporal Awareness",
+        "description": "Defense Potency +2%.",
+        "effects": {
+          "defense_mult": 0.02
+        }
+      },
+      {
+        "level": 65,
+        "name": "Chronomancy",
+        "description": "Magic Potency +4%.",
+        "effects": {
+          "magic_mult": 0.04
+        }
+      },
+      {
+        "level": 75,
+        "name": "Timeflow Focus",
+        "description": "Mag Potency +3%.",
+        "effects": {
+          "mag_mult": 0.03
+        }
+      },
+      {
+        "level": 85,
+        "name": "Paradox Mind",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 95,
+        "name": "Master of Ages",
+        "description": "Magic Potency +5%.",
+        "effects": {
+          "magic_mult": 0.05
         }
       }
     ],
@@ -1166,6 +1726,46 @@
         "description": "All damage +8%.",
         "effects": {
           "damage_mult": 0.08
+        }
+      },
+      {
+        "level": 55,
+        "name": "Resonant Strings",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Inspiring Refrain",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Silver Voice",
+        "description": "Defense Potency +2%.",
+        "effects": {
+          "defense_mult": 0.02
+        }
+      },
+      {
+        "level": 85,
+        "name": "Battle Canticle",
+        "description": "Damage Potency +4%.",
+        "effects": {
+          "damage_mult": 0.04
+        }
+      },
+      {
+        "level": 95,
+        "name": "Last Verse",
+        "description": "Physical Potency +5%.",
+        "effects": {
+          "physical_mult": 0.05
         }
       }
     ],
@@ -1254,6 +1854,46 @@
         "effects": {
           "signature_mult": 0.18
         }
+      },
+      {
+        "level": 55,
+        "name": "Target Lock",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 65,
+        "name": "Improved Ammunition",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Precision Mechanism",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 85,
+        "name": "Full Barrel",
+        "description": "Signature Potency +8%.",
+        "effects": {
+          "signature_mult": 0.08
+        }
+      },
+      {
+        "level": 95,
+        "name": "Mechanical Genius",
+        "description": "Physical Potency +5%.",
+        "effects": {
+          "physical_mult": 0.05
+        }
       }
     ],
     "mastery": {
@@ -1335,6 +1975,46 @@
         "description": "Hunt damage +12%.",
         "effects": {
           "hunt_damage_mult": 0.12
+        }
+      },
+      {
+        "level": 55,
+        "name": "Pack Awareness",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 65,
+        "name": "Wild Strength",
+        "description": "Physical Potency +3%.",
+        "effects": {
+          "physical_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Primal Endurance",
+        "description": "Hp Potency +4%.",
+        "effects": {
+          "hp_mult": 0.04
+        }
+      },
+      {
+        "level": 85,
+        "name": "Predator Instinct",
+        "description": "Crit Bonus +2%.",
+        "effects": {
+          "crit_bonus": 0.02
+        }
+      },
+      {
+        "level": 95,
+        "name": "Alpha Beast",
+        "description": "Damage Potency +5%.",
+        "effects": {
+          "damage_mult": 0.05
         }
       }
     ],
@@ -1428,6 +2108,46 @@
         "effects": {
           "damage_mult": 0.1,
           "heal_bonus": 0.1
+        }
+      },
+      {
+        "level": 55,
+        "name": "Healing Philosophy",
+        "description": "Heal Bonus +4%.",
+        "effects": {
+          "heal_bonus": 0.04
+        }
+      },
+      {
+        "level": 65,
+        "name": "Advanced Kardia",
+        "description": "Magic Potency +3%.",
+        "effects": {
+          "magic_mult": 0.03
+        }
+      },
+      {
+        "level": 75,
+        "name": "Shielded Wisdom",
+        "description": "Defense Potency +3%.",
+        "effects": {
+          "defense_mult": 0.03
+        }
+      },
+      {
+        "level": 85,
+        "name": "Aetherial Balance",
+        "description": "Damage Potency +3%.",
+        "effects": {
+          "damage_mult": 0.03
+        }
+      },
+      {
+        "level": 95,
+        "name": "Crystal Transcendence",
+        "description": "Heal Bonus +5%.",
+        "effects": {
+          "heal_bonus": 0.05
         }
       }
     ],

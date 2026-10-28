@@ -568,7 +568,7 @@ class PortalRepository:
                         "current": player["current_job"] == job["id"],
                         "level": level,
                         "jp": jp,
-                        "jp_next": jp_to_next(level) if level else 0,
+                        "jp_next": jp_to_next(level) if 0 < level < 99 else 0,
                         "mastered": level >= 50,
                         "signature": job.get("signature", "—"),
                         "abilities": learned,

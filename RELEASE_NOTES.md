@@ -1,3 +1,13 @@
+## v1.9.92 — Job Ascension (Character and Job cap: 99)
+
+- All 18 Jobs advance from JLv.50 to JLv.99 while retaining cross-Job Mastery at JLv.50 and the existing Ultimate Relic prerequisites.
+- 169 new active abilities across the 18 Jobs, including seven missing Black/White Mage middle-tier spells; 90 new passive milestones. All Jobs gain high-level actions at JLv.52, 58, 64, 70, 76, 82, 88, 94 and 99, plus passives at 55, 65, 75, 85 and 95.
+- Black Mage adds Watera, Osmose, Quake, Tornado, Firaga, Blizzaga, Thundaga, Waterga, Firaja, Blizzaja, Thundaja, Meteor and Apocalypse.
+- White Mage adds Curaga, Aeroga, Medica, Curaja, Protectra, Shellra, Esunaga, Arise, Holyga, Regenra, Divine Benison and Afflatus Rapture. Cura is the canonical display name for the existing Cure II ID; legacy !ability Cure II targeting continues to work.
+- Job JP processing, validation, server/Portal job levels, Guide and Portal ability reference updated. Existing saved Job Level 50 characters continue leveling normally. No database schema migration.
+- Uses supported Active Battle effect types and existing resource/damage/heal limits; Arise is a full-HP revive. Includes new progression tests and updated catalog-total expectations.
+- Source-only Web distribution requires an ordinary frontend build/deploy. Preserve deployment databases, environment variables, secrets, existing artwork and existing Web public assets.
+
 ## v1.9.9 — Skybound Singularity
 
 - Three additional Airship Expedition regions (6 total), each with a regional boss, exploration landmarks, materials and illustrated backdrops.
