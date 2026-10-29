@@ -36,9 +36,60 @@
         "monster_id": "holy_dragon",
         "hp_multiplier": 0.8,
         "mechanics": [
-          "Choose your damage and recovery carefully; the warded guardian strikes back."
+          "Choose your damage and recovery carefully; the warded guardian strikes back.",
+          "Elemental affinities shift when the foe loses HP.",
+          "A visible warning marks the next heavy strike; Defend to survive."
         ],
-        "description": "The guardian tests your defenses."
+        "description": "The guardian tests your defenses.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Crystal Ward",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Crystal Ward",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "lightning"
+                ],
+                "resist": [
+                  "earth"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Crystal Ward",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "ice"
+                ],
+                "resist": [
+                  "fire"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Crystalline Burst",
+            "every": 4,
+            "power": 1.12,
+            "scaling": "magic"
+          }
+        }
       },
       {
         "id": "crossroads",
@@ -101,9 +152,268 @@
         "hp_multiplier": 1.05,
         "opening_resource_drain_percent": 0,
         "mechanics": [
-          "The guardian tests timing, resource management, and the use of advanced Job techniques."
+          "The guardian tests timing, resource management, and the use of advanced Job techniques.",
+          "Elemental affinities shift when the foe loses HP.",
+          "A visible warning marks the next heavy strike; Defend to survive."
         ],
-        "description": "The guardian awakens for a final decisive battle."
+        "description": "The guardian awakens for a final decisive battle.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Astral Flare",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Astral Flare",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "fire"
+                ],
+                "resist": [
+                  "ice"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Astral Flare",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "holy"
+                ],
+                "resist": [
+                  "dark"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Rift Cataclysm",
+            "every": 3,
+            "power": 1.3,
+            "scaling": "magic"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "abyssal_foundry",
+    "name": "Abyssal Foundry",
+    "subtitle": "An ancient forge where molten armor and corrupted aether demand tactical defense.",
+    "identity": "Ascension Dungeon",
+    "min_level": 65,
+    "recommended_level": 68,
+    "completion_bonus": {
+      "xp": 10725,
+      "jp": 2275,
+      "gil": 6240
+    },
+    "first_clear_bonus": {
+      "xp": 9750,
+      "jp": 2860,
+      "gil": 6825,
+      "items": [
+        {
+          "item_id": "emberglass_core",
+          "quantity": 3
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "gate",
+        "name": "The Outer Seal",
+        "type": "entrance",
+        "description": "An ancient threshold leads into Abyssal Foundry."
+      },
+      {
+        "id": "ward",
+        "name": "Watchkeeper Chamber",
+        "type": "combat",
+        "monster_id": "rift_dragon",
+        "hp_multiplier": 0.8,
+        "mechanics": [
+          "Observe the changing elemental wards.",
+          "Guard against a telegraphed strike."
+        ],
+        "description": "The first guardian probes your elemental mastery.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "fire"
+            ],
+            "resist": [
+              "ice"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Molten Armor",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Molten Armor",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "water"
+                ],
+                "resist": [
+                  "lightning"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Molten Armor",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "fire"
+                ],
+                "resist": [
+                  "ice"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Foundry Eruption",
+            "every": 4,
+            "power": 1.12,
+            "scaling": "magic"
+          }
+        }
+      },
+      {
+        "id": "crossroads",
+        "name": "The Divergent Path",
+        "type": "choice",
+        "description": "Two routes offer different risks before the final guardian.",
+        "options": [
+          {
+            "id": "shield",
+            "label": "Sanctuary Route",
+            "description": "Restore resources and reduce damage from the next hazard.",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 20
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "power",
+            "label": "High-Risk Route",
+            "description": "Increased combat spoils at the cost of heightened enemy HP.",
+            "effects": [
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 25
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 35
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aetherfall",
+        "name": "Unstable Aether",
+        "type": "hazard",
+        "damage_percent": 15,
+        "description": "The chamber trembles with dangerous magic."
+      },
+      {
+        "id": "sanctuary",
+        "name": "Last Refuge",
+        "type": "sanctuary",
+        "hp_restore_percent": 22,
+        "resource_restore_percent": 35,
+        "description": "A moment to recover before the final battle."
+      },
+      {
+        "id": "guardian",
+        "name": "Sovereign Arena",
+        "type": "boss",
+        "monster_id": "great_wyrm",
+        "hp_multiplier": 1.15,
+        "opening_resource_drain_percent": 0,
+        "mechanics": [
+          "The guardian becomes more dangerous below 60% and 25% HP.",
+          "Read the incoming attack and Defend to reduce its power."
+        ],
+        "description": "The guardian shifts through escalating combat phases.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "fire"
+            ],
+            "resist": [
+              "ice"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Molten Armor",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Molten Armor",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "water"
+                ],
+                "resist": [
+                  "lightning"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Molten Armor",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "fire"
+                ],
+                "resist": [
+                  "ice"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Foundry Eruption",
+            "every": 3,
+            "power": 1.34,
+            "scaling": "magic"
+          }
+        }
       }
     ]
   },
@@ -144,9 +454,60 @@
         "monster_id": "archeodemon",
         "hp_multiplier": 0.8,
         "mechanics": [
-          "Choose your damage and recovery carefully; the warded guardian strikes back."
+          "Choose your damage and recovery carefully; the warded guardian strikes back.",
+          "Elemental affinities shift when the foe loses HP.",
+          "A visible warning marks the next heavy strike; Defend to survive."
         ],
-        "description": "The guardian tests your defenses."
+        "description": "The guardian tests your defenses.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Aether Vortex",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Aether Vortex",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "earth"
+                ],
+                "resist": [
+                  "wind"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Aether Vortex",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "water"
+                ],
+                "resist": [
+                  "lightning"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Celestial Tempest",
+            "every": 4,
+            "power": 1.12,
+            "scaling": "magic"
+          }
+        }
       },
       {
         "id": "crossroads",
@@ -209,9 +570,268 @@
         "hp_multiplier": 1.05,
         "opening_resource_drain_percent": 8,
         "mechanics": [
-          "The guardian tests timing, resource management, and the use of advanced Job techniques."
+          "The guardian tests timing, resource management, and the use of advanced Job techniques.",
+          "Elemental affinities shift when the foe loses HP.",
+          "A visible warning marks the next heavy strike; Defend to survive."
         ],
-        "description": "The guardian awakens for a final decisive battle."
+        "description": "The guardian awakens for a final decisive battle.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Sky Dominion",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Sky Dominion",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "ice"
+                ],
+                "resist": [
+                  "fire"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Sky Dominion",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "lightning"
+                ],
+                "resist": [
+                  "earth"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Thunderstorm Judgment",
+            "every": 3,
+            "power": 1.3,
+            "scaling": "magic"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "void_cathedral",
+    "name": "Void Cathedral",
+    "subtitle": "A sanctuary swallowed by void magic; overcome shifting wards and deceptive blessings.",
+    "identity": "Ascension Dungeon",
+    "min_level": 85,
+    "recommended_level": 88,
+    "completion_bonus": {
+      "xp": 14025,
+      "jp": 2975,
+      "gil": 8160
+    },
+    "first_clear_bonus": {
+      "xp": 12750,
+      "jp": 3740,
+      "gil": 8925,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 3
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "gate",
+        "name": "The Outer Seal",
+        "type": "entrance",
+        "description": "An ancient threshold leads into Void Cathedral."
+      },
+      {
+        "id": "ward",
+        "name": "Watchkeeper Chamber",
+        "type": "combat",
+        "monster_id": "dark_element",
+        "hp_multiplier": 0.8,
+        "mechanics": [
+          "Observe the changing elemental wards.",
+          "Guard against a telegraphed strike."
+        ],
+        "description": "The first guardian probes your elemental mastery.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Void Cloister",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Void Cloister",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "fire"
+                ],
+                "resist": [
+                  "ice"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Void Cloister",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "holy"
+                ],
+                "resist": [
+                  "dark"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Abyssal Benediction",
+            "every": 4,
+            "power": 1.12,
+            "scaling": "magic"
+          }
+        }
+      },
+      {
+        "id": "crossroads",
+        "name": "The Divergent Path",
+        "type": "choice",
+        "description": "Two routes offer different risks before the final guardian.",
+        "options": [
+          {
+            "id": "shield",
+            "label": "Sanctuary Route",
+            "description": "Restore resources and reduce damage from the next hazard.",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 20
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "power",
+            "label": "High-Risk Route",
+            "description": "Increased combat spoils at the cost of heightened enemy HP.",
+            "effects": [
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 25
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 35
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aetherfall",
+        "name": "Unstable Aether",
+        "type": "hazard",
+        "damage_percent": 15,
+        "description": "The chamber trembles with dangerous magic."
+      },
+      {
+        "id": "sanctuary",
+        "name": "Last Refuge",
+        "type": "sanctuary",
+        "hp_restore_percent": 22,
+        "resource_restore_percent": 35,
+        "description": "A moment to recover before the final battle."
+      },
+      {
+        "id": "guardian",
+        "name": "Sovereign Arena",
+        "type": "boss",
+        "monster_id": "mirage_pharaoh",
+        "hp_multiplier": 1.15,
+        "opening_resource_drain_percent": 0,
+        "mechanics": [
+          "The guardian becomes more dangerous below 60% and 25% HP.",
+          "Read the incoming attack and Defend to reduce its power."
+        ],
+        "description": "The guardian shifts through escalating combat phases.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Void Cloister",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Void Cloister",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "fire"
+                ],
+                "resist": [
+                  "ice"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Void Cloister",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "holy"
+                ],
+                "resist": [
+                  "dark"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Abyssal Benediction",
+            "every": 3,
+            "power": 1.34,
+            "scaling": "magic"
+          }
+        }
       }
     ]
   },
@@ -252,9 +872,60 @@
         "monster_id": "mimic_king",
         "hp_multiplier": 0.8,
         "mechanics": [
-          "Choose your damage and recovery carefully; the warded guardian strikes back."
+          "Choose your damage and recovery carefully; the warded guardian strikes back.",
+          "Elemental affinities shift when the foe loses HP.",
+          "A visible warning marks the next heavy strike; Defend to survive."
         ],
-        "description": "The guardian tests your defenses."
+        "description": "The guardian tests your defenses.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Astral Mantle",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Astral Mantle",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "lightning"
+                ],
+                "resist": [
+                  "earth"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Astral Mantle",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "holy"
+                ],
+                "resist": [
+                  "dark"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Void Requiem",
+            "every": 4,
+            "power": 1.12,
+            "scaling": "magic"
+          }
+        }
       },
       {
         "id": "crossroads",
@@ -317,9 +988,268 @@
         "hp_multiplier": 1.05,
         "opening_resource_drain_percent": 8,
         "mechanics": [
-          "The guardian tests timing, resource management, and the use of advanced Job techniques."
+          "The guardian tests timing, resource management, and the use of advanced Job techniques.",
+          "Elemental affinities shift when the foe loses HP.",
+          "A visible warning marks the next heavy strike; Defend to survive."
         ],
-        "description": "The guardian awakens for a final decisive battle."
+        "description": "The guardian awakens for a final decisive battle.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "dark"
+            ],
+            "resist": [
+              "holy"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Void Singularity",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Void Singularity",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "ice"
+                ],
+                "resist": [
+                  "fire"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Void Singularity",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "dark"
+                ],
+                "resist": [
+                  "holy"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Singularity Pulse",
+            "every": 3,
+            "power": 1.3,
+            "scaling": "magic"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "throne_eternity",
+    "name": "Throne of Eternity",
+    "subtitle": "At the edge of the heavens, an ancient sovereign awakens to test legendary heroes.",
+    "identity": "Ascension Dungeon",
+    "min_level": 99,
+    "recommended_level": 99,
+    "completion_bonus": {
+      "xp": 16335,
+      "jp": 3465,
+      "gil": 9504
+    },
+    "first_clear_bonus": {
+      "xp": 14850,
+      "jp": 4356,
+      "gil": 10395,
+      "items": [
+        {
+          "item_id": "eclipse_core",
+          "quantity": 3
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "gate",
+        "name": "The Outer Seal",
+        "type": "entrance",
+        "description": "An ancient threshold leads into Throne of Eternity."
+      },
+      {
+        "id": "ward",
+        "name": "Watchkeeper Chamber",
+        "type": "combat",
+        "monster_id": "omega_sentinel",
+        "hp_multiplier": 0.8,
+        "mechanics": [
+          "Observe the changing elemental wards.",
+          "Guard against a telegraphed strike."
+        ],
+        "description": "The first guardian probes your elemental mastery.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Eternal Sovereignty",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Eternal Sovereignty",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "holy"
+                ],
+                "resist": [
+                  "dark"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Eternal Sovereignty",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "lightning"
+                ],
+                "resist": [
+                  "earth"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Eternal Rupture",
+            "every": 4,
+            "power": 1.12,
+            "scaling": "magic"
+          }
+        }
+      },
+      {
+        "id": "crossroads",
+        "name": "The Divergent Path",
+        "type": "choice",
+        "description": "Two routes offer different risks before the final guardian.",
+        "options": [
+          {
+            "id": "shield",
+            "label": "Sanctuary Route",
+            "description": "Restore resources and reduce damage from the next hazard.",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 20
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "power",
+            "label": "High-Risk Route",
+            "description": "Increased combat spoils at the cost of heightened enemy HP.",
+            "effects": [
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 25
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 35
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aetherfall",
+        "name": "Unstable Aether",
+        "type": "hazard",
+        "damage_percent": 15,
+        "description": "The chamber trembles with dangerous magic."
+      },
+      {
+        "id": "sanctuary",
+        "name": "Last Refuge",
+        "type": "sanctuary",
+        "hp_restore_percent": 22,
+        "resource_restore_percent": 35,
+        "description": "A moment to recover before the final battle."
+      },
+      {
+        "id": "guardian",
+        "name": "Sovereign Arena",
+        "type": "boss",
+        "monster_id": "singularity_archon",
+        "hp_multiplier": 1.15,
+        "opening_resource_drain_percent": 0,
+        "mechanics": [
+          "The guardian becomes more dangerous below 60% and 25% HP.",
+          "Read the incoming attack and Defend to reduce its power."
+        ],
+        "description": "The guardian shifts through escalating combat phases.",
+        "advanced_combat": {
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          },
+          "phases": [
+            {
+              "threshold": 1.0,
+              "name": "Eternal Sovereignty",
+              "pressure": 1.0
+            },
+            {
+              "threshold": 0.6,
+              "name": "Fractured Eternal Sovereignty",
+              "pressure": 1.12,
+              "affinities": {
+                "weak": [
+                  "holy"
+                ],
+                "resist": [
+                  "dark"
+                ]
+              }
+            },
+            {
+              "threshold": 0.25,
+              "name": "Desperate Eternal Sovereignty",
+              "pressure": 1.23,
+              "affinities": {
+                "weak": [
+                  "lightning"
+                ],
+                "resist": [
+                  "earth"
+                ]
+              }
+            }
+          ],
+          "telegraph": {
+            "name": "Eternal Rupture",
+            "every": 3,
+            "power": 1.34,
+            "scaling": "magic"
+          }
+        }
       }
     ]
   }

@@ -80,8 +80,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_warrior_90",
@@ -123,8 +173,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_warrior_99",
@@ -167,8 +267,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_monk_60",
@@ -251,8 +401,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_monk_90",
@@ -294,8 +494,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_monk_99",
@@ -338,8 +588,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_thief_60",
@@ -422,8 +722,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_thief_90",
@@ -465,8 +815,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_thief_99",
@@ -509,8 +909,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_blackmage_60",
@@ -593,8 +1043,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_blackmage_90",
@@ -636,8 +1136,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_blackmage_99",
@@ -680,8 +1230,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_whitemage_60",
@@ -764,8 +1364,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_whitemage_90",
@@ -807,8 +1457,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_whitemage_99",
@@ -851,8 +1551,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_redmage_60",
@@ -935,8 +1685,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_redmage_90",
@@ -978,8 +1778,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_redmage_99",
@@ -1022,8 +1872,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_paladin_60",
@@ -1106,8 +2006,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_paladin_90",
@@ -1149,8 +2099,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_paladin_99",
@@ -1193,8 +2193,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_darkknight_60",
@@ -1277,8 +2327,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_darkknight_90",
@@ -1320,8 +2420,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_darkknight_99",
@@ -1364,8 +2514,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "lightning"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_dragoon_60",
@@ -1448,8 +2648,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_dragoon_90",
@@ -1491,8 +2741,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_dragoon_99",
@@ -1535,8 +2835,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_ninja_60",
@@ -1619,8 +2969,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_ninja_90",
@@ -1662,8 +3062,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_ninja_99",
@@ -1706,8 +3156,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_samurai_60",
@@ -1790,8 +3290,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_samurai_90",
@@ -1833,8 +3383,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_samurai_99",
@@ -1877,8 +3477,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_summoner_60",
@@ -1961,8 +3611,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_summoner_90",
@@ -2004,8 +3704,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_summoner_99",
@@ -2048,8 +3798,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_bluemage_60",
@@ -2132,8 +3932,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_bluemage_90",
@@ -2175,8 +4025,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_bluemage_99",
@@ -2219,8 +4119,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_timemage_60",
@@ -2303,8 +4253,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "wind"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "wind"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_timemage_90",
@@ -2346,8 +4346,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "wind"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "wind"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_timemage_99",
@@ -2390,8 +4440,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "wind"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "wind"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_bard_60",
@@ -2474,8 +4574,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "wind"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "wind"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_bard_90",
@@ -2517,8 +4667,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "wind"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "wind"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_bard_99",
@@ -2561,8 +4761,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "wind"
+        ],
+        "resist": [
+          "earth"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "wind"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_machinist_60",
@@ -2645,8 +4895,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_machinist_90",
@@ -2688,8 +4988,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_machinist_99",
@@ -2732,8 +5082,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_beastmaster_60",
@@ -2816,8 +5216,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_beastmaster_90",
@@ -2859,8 +5309,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_beastmaster_99",
@@ -2903,8 +5403,58 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "ice"
+        ],
+        "resist": [
+          "fire"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "lightning"
+            ],
+            "resist": [
+              "earth"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "ice"
+            ],
+            "resist": [
+              "fire"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_sage_60",
@@ -2987,8 +5537,58 @@
     "hp_multiplier": 0.85,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Mastery Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Mastery Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Mastery Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Mastery Judgment",
+        "every": 4,
+        "power": 1.1,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_sage_90",
@@ -3030,8 +5630,58 @@
     "hp_multiplier": 0.75,
     "mechanics": [
       "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Transcendence Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Transcendence Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Transcendence Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Transcendence Judgment",
+        "every": 4,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   },
   {
     "id": "ascension_sage_99",
@@ -3074,7 +5724,57 @@
     "hp_multiplier": 0.5,
     "mechanics": [
       "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
-      "Your Job must match the trial to enter; clear earlier milestones first."
-    ]
+      "Your Job must match the trial to enter; clear earlier milestones first.",
+      "The guardian signals heavy attacks and shifts elemental affinities as HP falls."
+    ],
+    "advanced_combat": {
+      "affinities": {
+        "weak": [
+          "holy"
+        ],
+        "resist": [
+          "dark"
+        ]
+      },
+      "phases": [
+        {
+          "threshold": 1.0,
+          "name": "Legend Ward",
+          "pressure": 1.0
+        },
+        {
+          "threshold": 0.6,
+          "name": "Fractured Legend Ward",
+          "pressure": 1.12,
+          "affinities": {
+            "weak": [
+              "water"
+            ],
+            "resist": [
+              "lightning"
+            ]
+          }
+        },
+        {
+          "threshold": 0.25,
+          "name": "Desperate Legend Ward",
+          "pressure": 1.23,
+          "affinities": {
+            "weak": [
+              "holy"
+            ],
+            "resist": [
+              "dark"
+            ]
+          }
+        }
+      ],
+      "telegraph": {
+        "name": "Legend Judgment",
+        "every": 3,
+        "power": 1.22,
+        "scaling": "magic"
+      }
+    }
   }
 ]

@@ -1,3 +1,10 @@
+## v1.9.96 — Sovereign Encounters
+- Three new six-room high-level Dungeons: Abyssal Foundry (Lv.65), Void Cathedral (Lv.85), Throne of Eternity (Lv.99). The existing Lv.55/75/95 Ascension Dungeons remain fully playable and now include advanced guardians.
+- Advanced guardian combat in six Ascension Dungeons and JLv.75/90/99 Job Trials: phase shifts at 60% and 25% HP change elemental weaknesses/resistances and raise enemy pressure. Matching elemental attacks receive a 40% weakness bonus or 35% resistance penalty against these bosses; existing normal monster elemental logic is preserved.
+- Telegraph heavy attacks before the acting hero chooses their next turn. Defend provides normal protection plus an additional special guard counter (40% reduced power) for the marked strike. Statuses (including stun) still interact with monster turns.
+- Portal combat displays phase name, current elemental weaknesses/resistances and a prominent DEFEND warning. Public Player Guide and What's New now include this release. Existing player saves, Job Trials, Limit Break unlocks, equipment and item fixes remain intact; no SQL schema or protocol migration.
+- Validation: dedicated advanced encounter regression suite and focused combat/Portal tests; production frontend compilation and live Twitch/Portal E2E require staging validation.
+
 ## v1.9.95 — Trials of Ascension
 - Introduces 72 unique Job Ascension Trials (18 Jobs × JLv.60/75/90/99), using persistent Dungeon combat, guardian-seal objectives, job/character level gates, and prerequisite clears.
 - First clears award XP/JP/Gil and high-level materials, milestone passives at 60/90/99, and permanent Job titles at 75/99. Existing JLv.50 Mastery and Limit Breaks are retained.

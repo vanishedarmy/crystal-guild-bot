@@ -36,6 +36,7 @@ from .active_battle import (
     incoming_vulnerability_multiplier,
     job_resource_mode,
 )
+from .advanced_encounters import phase_for_hp, affinities as advanced_affinities, affinity_multiplier, telegraph_for_round
 from .battle_presentation import (
     party_condition_text,
     party_status_lines,
@@ -4070,7 +4071,17 @@ class CrystalGuildEngine:
         )
         if monster_protect:
             dmg = max(1, int(dmg * max(0.20, 1 - monster_protect)))
-        if element and monster.get("weakness") and str(monster["weakness"]).lower() == str(element).lower():
+        advanced = self.active_encounter.get("advanced_combat") or {}
+        if advanced and element:
+            multiplier, kind = affinity_multiplier(advanced, int(self.active_encounter.get("monster_hp", 1)),
+                                                   int(self.active_encounter.get("monster_max_hp", 1)), element)
+            if kind == "WEAKNESS":
+                multiplier += float(effects.get("weakness_bonus", 0))
+            if kind:
+                dmg = max(1, int(dmg * multiplier))
+            elif monster.get("weakness") and str(monster["weakness"]).lower() == str(element).lower():
+                dmg = int(dmg * (1.30 + effects.get("weakness_bonus", 0)))
+        elif element and monster.get("weakness") and str(monster["weakness"]).lower() == str(element).lower():
             dmg = int(dmg * (1.30 + effects.get("weakness_bonus", 0)))
         critical = False
         if chosen == "physical":
@@ -4389,7 +4400,12 @@ class CrystalGuildEngine:
                 amount = max(0, int(effect.get("amount", 0)))
                 element = effect.get("element")
                 monster_weakness = self._encounter_monster(self.active_encounter).get("weakness")
-                if element and monster_weakness and str(monster_weakness).lower() == str(element).lower():
+                advanced = self.active_encounter.get("advanced_combat") or {}
+                modifier, match = affinity_multiplier(advanced, before,
+                                    int(self.active_encounter.get("monster_max_hp", 1)), element) if advanced else (1.0, "")
+                if match:
+                    amount = max(1, int(amount * modifier))
+                elif element and monster_weakness and str(monster_weakness).lower() == str(element).lower():
                     amount = int(amount * 1.30)
                 self.active_encounter["monster_hp"] = max(0, before - amount)
                 self._moment_field_direct_hit(meta, amount, before)
@@ -8780,7 +8796,7 @@ class CrystalGuildEngine:
                        "hp_multiplier": trial["hp_multiplier"],
                        "opening_damage_percent": trial["opening_damage_percent"],
                        "opening_resource_drain_percent": trial["opening_resource_drain_percent"],
-                       "mechanics": trial["mechanics"], "description": trial["description"]}],
+                       "mechanics": trial["mechanics"], "advanced_combat": trial.get("advanced_combat", {}), "description": trial["description"]}],
         }
 
     def _ascension_trial_state(self, twitch_id: str) -> dict[str, Any]:
@@ -9084,6 +9100,50 @@ class CrystalGuildEngine:
                     drops.append({"id": item_id, "name": str(self.data.items[item_id]["name"]), "quantity": qty})
         return {"xp": xp, "jp": jp, "gil": gil, "items": drops}
 
+    @staticmethod
+    def _dungeon_sync_phase(encounter: dict[str, Any], log: list[str] | None = None) -> None:
+        config = encounter.get("advanced_combat") or {}
+        if not config:
+            return
+        phase = phase_for_hp(config, int(encounter.get("monster_hp", 1)), int(encounter.get("monster_max_hp", 1)))
+        name = str(phase.get("name") or "Guardian")
+        previous = str(encounter.get("advanced_phase") or "")
+        if log is not None and previous and previous != name:
+            log.append(f"PHASE SHIFT — {name}! The guardian's element and power have changed.")
+        encounter["advanced_phase"] = name
+        encounter["enemy_pressure_mult"] = max(0.5, min(1.5, float(phase.get("pressure", 1.0))))
+
+    def _dungeon_enemy_intent(self, monster: dict[str, Any], encounter: dict[str, Any]) -> dict[str, Any]:
+        config = encounter.get("advanced_combat") or {}
+        if config and not has_status(encounter.setdefault("monster_statuses", {}), "stun"):
+            warning = telegraph_for_round(config, int(encounter.get("round", 1)))
+            if warning:
+                return warning
+        return self._solo_enemy_intent(monster, encounter)
+
+    def _dungeon_enemy_response(self, monster: dict[str, Any], encounter: dict[str, Any], log: list[str]) -> None:
+        intent = encounter.get("enemy_intent") or {}
+        if intent.get("kind") != "dungeon_telegraph":
+            self._solo_resolve_enemy_intent(monster, encounter, log)
+            return
+        if has_status(encounter.setdefault("monster_statuses", {}), "stun"):
+            log.append(f"{monster['name']} is stunned and cannot unleash {intent.get('name')}.")
+            return
+        tid = self._enemy_target_id()
+        if not tid:
+            return
+        target = self.encounter_roster[tid]
+        # Guard reduces base damage through ordinary combat mitigation, plus a
+        # further 40% counter bonus against explicitly telegraphed strikes.
+        power = float(intent.get("power", 1.2)) * (0.60 if target.get("defending") else 1.0)
+        profile = self.data.enemy_profiles.get("caster", self.data.enemy_profiles["balanced"])
+        dealt = self._apply_enemy_hit(monster, target, profile,
+                   scaling=str(intent.get("scaling") or "magic"), power=power)
+        if target.get("defending"):
+            log.append(f"GUARDED — {target['name']} braces against {intent['name']} and takes {dealt} damage.")
+        else:
+            log.append(f"WARNING RESOLVED — {monster['name']} unleashes {intent['name']} on {target['name']} for {dealt} damage! (Defend next time.)")
+
     def _dungeon_begin_combat(self, twitch_id: str, state: dict[str, Any], room: dict[str, Any]) -> GameResult:
         p = self._player(twitch_id)
         monster = self.data.monsters.get(str(room.get("monster_id") or ""))
@@ -9109,6 +9169,9 @@ class CrystalGuildEngine:
             encounter["monster_hp"] = scaled_hp
             encounter["monster_max_hp"] = scaled_hp
             encounter["max_rounds"] = 0
+            if room.get("advanced_combat"):
+                encounter["advanced_combat"] = copy.deepcopy(room["advanced_combat"])
+                self._dungeon_sync_phase(encounter)
             room_mechanics = [str(value) for value in list(room.get("mechanics") or []) if str(value).strip()]
             opening_effects: list[str] = []
             actor = self.encounter_roster.get(str(twitch_id))
@@ -9142,7 +9205,7 @@ class CrystalGuildEngine:
                 # Level-99 capstone requires a real Limit Break. Seed a gauge
                 # so players can earn the remaining charge through combat.
                 actor["limit"] = max(int(actor.get("limit", 0)), 65)
-            encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+            encounter["enemy_intent"] = self._dungeon_enemy_intent(monster, encounter)
             route_effects: list[str] = []
             if route_hp_pct:
                 route_effects.append(f"Foe HP {'+' if route_hp_pct > 0 else '−'}{abs(route_hp_pct)}%")
@@ -9307,6 +9370,15 @@ class CrystalGuildEngine:
                 "opening_effects": copy.deepcopy(list(combat.get("opening_effects") or [])),
                 "max_rounds": max(0, int(encounter.get("max_rounds", 0) or 0)),
             }
+            config = encounter.get("advanced_combat") or {}
+            if config:
+                profile = advanced_affinities(config, int(encounter.get("monster_hp", 0)), int(encounter.get("monster_max_hp", 1)))
+                payload["combat"]["advanced"] = {
+                    "phase": str(encounter.get("advanced_phase") or "Guardian"),
+                    "weak": profile["weak"], "resist": profile["resist"],
+                    "warning": (encounter.get("enemy_intent") or {}).get("kind") == "dungeon_telegraph",
+                    "hint": "Defend against marked attacks; elemental wards can change below 60% and 25% HP.",
+                }
         return payload
 
     def _dungeon_board_state(self, twitch_id: str) -> dict[str, Any]:
@@ -9342,6 +9414,28 @@ class CrystalGuildEngine:
                 entry["first_clear_claimed"] = True
             entries.append(entry)
         return {"dungeons": entries, "active": active, "ascension": self._ascension_trial_state(twitch_id)}
+
+    def dungeon_status(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        board = self._dungeon_board_state(twitch_id)
+        active = board.get("active") or {}
+        if active:
+            lines = [f"DUNGEON — {active['name']} Room {active['room_number']}/{active['room_count']} ({active['status']})."]
+            battle = active.get("combat") or {}
+            if battle:
+                enemy = battle.get("enemy") or {}
+                lines.append(f"FOE: {enemy.get('name','Guardian')} HP {enemy.get('hp',0)}/{enemy.get('max_hp',0)}. {enemy.get('intent','')}")
+                advanced = battle.get("advanced") or {}
+                if advanced:
+                    lines.append(f"PHASE: {advanced.get('phase','?')} | Weak: {', '.join(advanced.get('weak',[])) or 'none'} | Resists: {', '.join(advanced.get('resist',[])) or 'none'}.")
+                lines.append("Use !dungeonaction attack / defend / ability:<id> / limit:<tier> / item:<id>.")
+            else:
+                lines.append("Use !dungeoncontinue or !dungeonchoose <route>; !dungeonretreat to exit.")
+            return GameResult.success(*lines)
+        options = [d for d in board.get("dungeons", []) if d.get("identity") == "Ascension Dungeon"]
+        names = ", ".join(f"{d['id']} (Lv.{d['min_level']})" for d in options)
+        return GameResult.success(f"ASCENSION DUNGEONS — {names}", "Use !dungeonstart <id> or visit the Portal Adventure Board.")
 
     def dungeon_start(self, twitch_id: str, dungeon_id: str) -> GameResult:
         p = self._player(twitch_id)
@@ -9525,7 +9619,8 @@ class CrystalGuildEngine:
                 log.append("ASCENSION SEAL BROKEN — the guardian can now fall!")
         if int(encounter.get("monster_hp", 0)) <= 0:
             return self._dungeon_finish_room_victory(twitch_id, state, monster, meta, round_no, log)
-        self._solo_resolve_enemy_intent(monster, encounter, log)
+        self._dungeon_sync_phase(encounter, log)
+        self._dungeon_enemy_response(monster, encounter, log)
         if int(encounter.get("monster_hp", 0)) <= 0:
             return self._dungeon_finish_room_victory(twitch_id, state, monster, meta, round_no, log)
         if has_status(meta.get("statuses", {}), "poison") and int(meta.get("hp", 0)) > 0:
@@ -9548,9 +9643,11 @@ class CrystalGuildEngine:
         if int(meta.get("hp", 0)) <= 0:
             return self._dungeon_finish(twitch_id, state, outcome="defeat")
         encounter["round"] = round_no + 1
-        encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
+        encounter["enemy_intent"] = self._dungeon_enemy_intent(monster, encounter)
         state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
-        return GameResult.success(f"DUNGEON ROUND {round_no} — {round_summary(log)}", dungeon_round=True, round_log=list(log))
+        next_intent = str((encounter.get("enemy_intent") or {}).get("label") or "")
+        note = f" NEXT: {next_intent}" if encounter.get("advanced_combat") and next_intent else ""
+        return GameResult.success(f"DUNGEON ROUND {round_no} — {round_summary(log)}{note}", dungeon_round=True, round_log=list(log))
 
     def _dungeon_finish_room_victory(self, twitch_id: str, state: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
         self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)

@@ -31,7 +31,7 @@ class Ascension1995Tests(unittest.TestCase):
 
     def test_catalogs_are_complete_and_legacy_dungeons_unchanged(self):
         self.assertEqual(len(self.data.ascension_trials), 72)
-        self.assertEqual(len(self.data.ascension_dungeons), 3)
+        self.assertEqual(len(self.data.ascension_dungeons), 6)
         self.assertEqual(len(self.data.dungeons), 4)
         self.assertEqual(self.data.validate(), [])
         for job_id in self.data.jobs:
@@ -95,7 +95,7 @@ class Ascension1995Tests(unittest.TestCase):
         self.assertEqual(self.engine._inventory_qty('195',self.data.ascension_trials['ascension_warrior_75']['first_clear_bonus']['items'][0]['item_id']),first_qty)
 
     def test_new_high_level_dungeon_route_choice_is_effective(self):
-        self.assertEqual([r['id'] for r in self.engine._dungeon_board_state('195')['dungeons'][-3:]], ['crystal_sanctum','celestial_spire','astral_crucible'])
+        self.assertTrue({'crystal_sanctum','celestial_spire','astral_crucible'} <= {r['id'] for r in self.engine._dungeon_board_state('195')['dungeons']})
         self.assertTrue(self.engine.dungeon_start('195','crystal_sanctum').ok)
         self.assertTrue(self.engine.dungeon_continue('195').ok)
         # The ward combat chamber must have a real monster and playable actions.

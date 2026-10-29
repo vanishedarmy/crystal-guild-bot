@@ -8,6 +8,7 @@ from .crafting_catalog import CATEGORIES, build_source_index, recipe_category
 from .bestiary_research import validate_research_overlay
 from .moments import validate_moment_catalog
 from .supply_cache import SPOOKY_CACHE_ID, SPOOKY_CACHE_TIERS
+from .advanced_encounters import validate_config
 
 
 class GameData:
@@ -57,6 +58,11 @@ class GameData:
             for room in dungeon.get("rooms", []):
                 if room.get("monster_id") and room["monster_id"] not in self.monsters:
                     raise ValueError(f"Unknown Ascension dungeon monster {room['monster_id']}")
+        for trial in self.ascension_trials.values():
+            validate_config(trial.get("advanced_combat") or {}, trial["id"])
+        for dungeon in self.ascension_dungeons.values():
+            for room in dungeon.get("rooms", []):
+                validate_config(room.get("advanced_combat") or {}, f"{dungeon['id']}/{room['id']}")
         self.enemy_profiles = self._load_map("enemy_profiles.json")
         self.enemy_actions = self._load_map("enemy_actions.json")
         self.bestiary_research = json.loads((self.data_dir / "bestiary_research.json").read_text(encoding="utf-8"))

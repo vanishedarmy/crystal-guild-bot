@@ -1,4 +1,4 @@
-Crystal Guild v1.9.95 — Trials of Ascension
+Crystal Guild v1.9.96 — Sovereign Encounters
 Sanitized Bot source inventory (excludes secrets, runtime data, caches and bytecode).
 
 .env.example
@@ -28,6 +28,7 @@ RELEASE_NOTES.md
 RENDER_CLOUD_SETUP.md
 SIMPLE_RENDER_SETUP.md
 SKYBOUND_SINGULARITY_199.md
+SOVEREIGN_ENCOUNTERS_1996.md
 TITLE_EXPANSION.md
 UPGRADE_GUIDE.md
 VALIDATION_REPORT.md
@@ -37,6 +38,7 @@ WORLD_EVENTS.md
 backup_database.bat
 crystal_guild/__init__.py
 crystal_guild/active_battle.py
+crystal_guild/advanced_encounters.py
 crystal_guild/balance.py
 crystal_guild/battle_presentation.py
 crystal_guild/bestiary_progress.py
@@ -245,6 +247,7 @@ tests/test_seasonal_events_alpha8.py
 tests/test_seasonal_venture_1946.py
 tests/test_setup.py
 tests/test_skybound_singularity_v199.py
+tests/test_sovereign_encounters_1996.py
 tests/test_spooky_inventory_cache.py
 tests/test_stream_repair_198.py
 tests/test_stream_status.py

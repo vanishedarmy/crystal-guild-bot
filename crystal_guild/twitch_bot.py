@@ -157,6 +157,36 @@ class RPGCommands(commands.Component):
         uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.set_stance(uid, stance_name))
 
+    @commands.command()
+    async def dungeon(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.dungeon_status(uid), limit=4)
+
+    @commands.command()
+    async def dungeonstart(self, ctx: commands.Context, dungeon_id: str | None = None) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.dungeon_start(uid, dungeon_id) if dungeon_id else self.game.dungeon_status(uid), limit=3)
+
+    @commands.command()
+    async def dungeoncontinue(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.dungeon_continue(uid), limit=3)
+
+    @commands.command()
+    async def dungeonchoose(self, ctx: commands.Context, route: str | None = None) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.dungeon_choose(uid, route or ""), limit=3)
+
+    @commands.command()
+    async def dungeonaction(self, ctx: commands.Context, *, action: str = "attack") -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.dungeon_action(uid, action.strip().lower()), limit=3)
+
+    @commands.command()
+    async def dungeonretreat(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.dungeon_retreat(uid), limit=3)
+
     @commands.command(aliases=["jobtrials"])
     async def ascension(self, ctx: commands.Context) -> None:
         uid, _, _ = self._identity(ctx)
