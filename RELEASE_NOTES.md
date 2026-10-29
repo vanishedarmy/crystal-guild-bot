@@ -1,3 +1,15 @@
+# Crystal Guild v1.9.97 — Elite Hunts & World Events
+
+- Six high-level Hunt assignments: three S+ (Character Lv.80, 86, 92) and three SS (Lv.95, 99, 99).
+- Existing automatic personal Hunt simulation retained. S+ duration 5 hours; SS 6 hours. Lower ranks unchanged.
+- Unlock rules use unique clears in prior rank; Hunt first-clears award existing material + new exclusive title. Repeat wins have a chance to award a bonus rare endgame material (30–50% by mark).
+- Three new stream-only Elite World Event variants (eligible when highest Guild character reaches 80/85/95); normal variants remain available below that threshold. Shared event schedule and join flow unchanged.
+- Elite event victories award an extra guaranteed themed rare item and use a 45% premium drop chance; normal World Events retain their previous 20% premium chance and 4x XP/3x JP/2x Gil calculation.
+- Portal Hunt ranks and World Event roster, What's New, and public Player Guide updated. Guild Town and standalone Ascension Trials remain intact.
+- Existing player data, titles, trophies, progress, old events and database schema remain unchanged. No original Web art should be deleted.
+
+---
+
 ## v1.9.96 — Sovereign Encounters
 - Three new six-room high-level Dungeons: Abyssal Foundry (Lv.65), Void Cathedral (Lv.85), Throne of Eternity (Lv.99). The existing Lv.55/75/95 Ascension Dungeons remain fully playable and now include advanced guardians.
 - Advanced guardian combat in six Ascension Dungeons and JLv.75/90/99 Job Trials: phase shifts at 60% and 25% HP change elemental weaknesses/resistances and raise enemy pressure. Matching elemental attacks receive a 40% weakness bonus or 35% resistance penalty against these bosses; existing normal monster elemental logic is preserved.

@@ -1262,5 +1262,53 @@
     "category": "Ascension",
     "rarity": "legendary",
     "source": "Ascension Trial"
+  },
+  {
+    "id": "voidbreaker_elite",
+    "name": "Voidbreaker",
+    "description": "First-clear title for the The Hollow Sun S+-rank Hunt.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Elite Hunts"
+  },
+  {
+    "id": "hourglass_reaver",
+    "name": "Hourglass Reaver",
+    "description": "First-clear title for the The Pharaoh’s Last Hour S+-rank Hunt.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Elite Hunts"
+  },
+  {
+    "id": "blightbane_omega",
+    "name": "Omega Blightbane",
+    "description": "First-clear title for the Blight of Omega S+-rank Hunt.",
+    "category": "Hunts",
+    "rarity": "epic",
+    "source": "Elite Hunts"
+  },
+  {
+    "id": "omega_executioner",
+    "name": "Protocol Breaker",
+    "description": "First-clear title for the Omega: Final Protocol SS-rank Hunt.",
+    "category": "Hunts",
+    "rarity": "legendary",
+    "source": "Elite Hunts"
+  },
+  {
+    "id": "eclipse_judicator",
+    "name": "Eclipse Judicator",
+    "description": "First-clear title for the The Eclipse Verdict SS-rank Hunt.",
+    "category": "Hunts",
+    "rarity": "legendary",
+    "source": "Elite Hunts"
+  },
+  {
+    "id": "singularity_conqueror",
+    "name": "Singularity Conqueror",
+    "description": "First-clear title for the The Last Singularity SS-rank Hunt.",
+    "category": "Hunts",
+    "rarity": "legendary",
+    "source": "Elite Hunts"
   }
 ]

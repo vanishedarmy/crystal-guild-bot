@@ -3459,5 +3459,181 @@
         "chance": 0.15
       }
     ]
+  },
+  {
+    "id": "mark_the_hollow_sun",
+    "name": "Hollow Sun Avatar",
+    "level": 80,
+    "hp": 6919,
+    "attack": 268,
+    "defense": 174,
+    "spirit": 174,
+    "xp": 6820,
+    "jp": 350,
+    "gil": 4400,
+    "weakness": "Holy",
+    "special": {
+      "name": "Event Horizon",
+      "chance": 0.25,
+      "multiplier": 2.8
+    },
+    "drops": [
+      {
+        "item_id": "void_essence",
+        "chance": 0.45
+      }
+    ],
+    "pity_drops": [
+      {
+        "item_id": "dark_matter",
+        "chance": 0.07,
+        "guarantee_after": 12
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.05,
+        "guarantee_after": 15
+      }
+    ]
+  },
+  {
+    "id": "mark_pharaohs_last_hour",
+    "name": "Chrono Pharaoh",
+    "level": 86,
+    "hp": 18260,
+    "attack": 495,
+    "defense": 265,
+    "spirit": 295,
+    "xp": 13640,
+    "jp": 580,
+    "gil": 8600,
+    "weakness": "Wind",
+    "special": {
+      "name": "Hourglass Reversal",
+      "chance": 0.24,
+      "multiplier": 2.25
+    },
+    "drops": [
+      {
+        "item_id": "mirage_hourglass",
+        "chance": 0.58
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "mark_blight_of_omega",
+    "name": "Omega Malboro Ravager",
+    "level": 92,
+    "hp": 12493,
+    "attack": 419,
+    "defense": 212,
+    "spirit": 231,
+    "xp": 8521,
+    "jp": 391,
+    "gil": 5688,
+    "weakness": "Fire",
+    "special": {
+      "name": "Putrid Breath",
+      "chance": 0.275,
+      "multiplier": 3.0
+    },
+    "drops": [
+      {
+        "item_id": "morbol_bulb",
+        "chance": 0.3
+      },
+      {
+        "item_id": "dark_matter",
+        "chance": 0.065
+      }
+    ]
+  },
+  {
+    "id": "mark_omega_final_protocol",
+    "name": "Omega Prime Sentinel",
+    "level": 96,
+    "hp": 15440,
+    "attack": 455,
+    "defense": 263,
+    "spirit": 246,
+    "xp": 9274,
+    "jp": 408,
+    "gil": 6192,
+    "weakness": "Lightning",
+    "special": {
+      "name": "Wave Cannon",
+      "chance": 0.28,
+      "multiplier": 3.0
+    },
+    "drops": [
+      {
+        "item_id": "omega_core",
+        "chance": 0.025
+      },
+      {
+        "item_id": "magitek_core",
+        "chance": 0.5
+      }
+    ]
+  },
+  {
+    "id": "mark_eclipse_verdict",
+    "name": "Eclipse Verdict Harbinger",
+    "level": 100,
+    "hp": 24804,
+    "attack": 645,
+    "defense": 335,
+    "spirit": 355,
+    "xp": 16720,
+    "jp": 680,
+    "gil": 11500,
+    "weakness": "Holy",
+    "special": {
+      "name": "Event Horizon",
+      "chance": 0.3,
+      "multiplier": 2.8
+    },
+    "drops": [
+      {
+        "item_id": "singularity_shard",
+        "chance": 0.58
+      },
+      {
+        "item_id": "omega_core",
+        "chance": 0.15
+      }
+    ]
+  },
+  {
+    "id": "mark_the_last_singularity",
+    "name": "Final Singularity Archon",
+    "level": 103,
+    "hp": 31004,
+    "attack": 710,
+    "defense": 390,
+    "spirit": 385,
+    "xp": 19250,
+    "jp": 760,
+    "gil": 13000,
+    "weakness": "Holy",
+    "special": {
+      "name": "Reality Collapse",
+      "chance": 0.3,
+      "multiplier": 2.8
+    },
+    "drops": [
+      {
+        "item_id": "singularity_shard",
+        "chance": 0.58
+      },
+      {
+        "item_id": "eclipse_core",
+        "chance": 0.15
+      }
+    ]
   }
 ]

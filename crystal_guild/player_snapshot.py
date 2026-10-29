@@ -689,7 +689,7 @@ class PortalRepository:
                     }
                 )
             rank_summary = {}
-            for rank in ("C", "B", "A", "S", "S+"):
+            for rank in ("C", "B", "A", "S", "S+", "SS"):
                 group = [h for h in hunts if h["rank"] == rank]
                 if group:
                     rank_summary[rank] = {

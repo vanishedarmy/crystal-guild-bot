@@ -53,12 +53,13 @@ class WorldEventsAlpha6Tests(unittest.TestCase):
         self.assertTrue(result.data.get("world_event_spawned"))
         return result
 
-    def test_catalog_has_ten_distinct_notorious_variants(self):
+    def test_catalog_has_ten_notorious_and_three_elite_variants(self):
         catalog = self.game.world_event_catalog()
-        self.assertEqual(len(catalog), 10)
-        self.assertEqual(len({row["id"] for row in catalog}), 10)
-        self.assertTrue(all(row["art"].startswith("/world-events/a1/") for row in catalog))
-        self.assertEqual(len(WORLD_EVENTS), 10)
+        self.assertEqual(len(catalog), 13)
+        self.assertEqual(len({row["id"] for row in catalog}), 13)
+        self.assertTrue(all(row["art"].startswith("/") for row in catalog))
+        self.assertEqual(sum(row.get("tier") == "elite" for row in catalog), 3)
+        self.assertEqual(len(WORLD_EVENTS), 13)
 
     def test_spawn_is_stream_gated_and_never_exceeds_highest_plus_ten(self):
         offline = self.game.maybe_spawn_world_event(stream_live=False, now=time.time(), force=True)

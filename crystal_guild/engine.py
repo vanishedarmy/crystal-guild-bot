@@ -188,9 +188,9 @@ from .chocobo import (
 
 STARTER_JOBS = {"warrior", "monk", "thief", "blackmage", "whitemage", "redmage"}
 STANCES = {"balanced", "aggressive", "defensive", "magical", "cautious"}
-HUNT_RANKS = {"C": 1, "B": 2, "A": 3, "S": 4, "S+": 5}
-HUNT_DURATION_SECONDS = {"C": 15 * 60, "B": 30 * 60, "A": 2 * 60 * 60, "S": 5 * 60 * 60, "S+": 5 * 60 * 60}
-HUNT_AUTO_ITEM_CAP = {"C": 1, "B": 1, "A": 2, "S": 2, "S+": 3}
+HUNT_RANKS = {"C": 1, "B": 2, "A": 3, "S": 4, "S+": 5, "SS": 6}
+HUNT_DURATION_SECONDS = {"C": 15 * 60, "B": 30 * 60, "A": 2 * 60 * 60, "S": 5 * 60 * 60, "S+": 5 * 60 * 60, "SS": 6 * 60 * 60}
+HUNT_AUTO_ITEM_CAP = {"C": 1, "B": 1, "A": 2, "S": 2, "S+": 3, "SS": 3}
 HUNT_AUTOSIM_WATCHDOG_ROUNDS = 1000
 ADMIN_AUTOSIM_WATCHDOG_ROUNDS = 1000
 TANK_JOBS = {"warrior", "paladin", "darkknight"}
@@ -297,6 +297,9 @@ WORLD_EVENT_TREASURE = {
     "ravenous_dragon": (("dragon_fang", "wyvern_scale"), ("dragon_scale", "dragon_heart")),
     "bloodied_deathclaw": (("magitek_capacitor", "crystal_shard"), ("magitek_core",)),
     "hollow_warden": (("iron_giant_plate", "crystal_shard"), ("dark_matter",)),
+    "frostveil_tempest": (("frostveil_prism", "skyglass_shard"), ("stormheart_crystal",)),
+    "mirage_sovereign": (("mirage_hourglass", "dominion_relic"), ("singularity_shard",)),
+    "singularity_cataclysm": (("singularity_shard", "eclipse_core"), ("dominion_relic",)),
 }
 
 
@@ -2802,6 +2805,8 @@ class CrystalGuildEngine:
                 "threat": str(row["threat"]),
                 "art": str(row["art"]),
                 "max_level_above_highest": WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST,
+                "tier": str(row.get("tier") or "notorious"),
+                "min_level": int(row.get("min_level") or 1),
             }
             for row in WORLD_EVENTS
         ]
@@ -2832,7 +2837,11 @@ class CrystalGuildEngine:
             return GameResult.success(world_event_spawned=False, next_check_at=int(next_check))
 
         previous = str(schedule.get("last_event_id") or "")
-        choices = [row for row in WORLD_EVENTS if str(row["id"]) != previous] or list(WORLD_EVENTS)
+        # Existing notorious encounters remain available at any progression level;
+        # elite variants join the SAME director only when a Lv.80+ character exists.
+        highest = self._highest_character_level()
+        eligible = [row for row in WORLD_EVENTS if highest >= int(row.get("min_level") or 1)]
+        choices = [row for row in eligible if str(row["id"]) != previous] or eligible
         seasonal_world_event = False
         try:
             with self.db.tx() as conn:
@@ -2855,6 +2864,7 @@ class CrystalGuildEngine:
             "monster_id": str(event["base_monster_id"]),
             "monster_override": monster,
             "world_event_id": str(event["id"]),
+            "world_event_tier": str(event.get("tier") or "notorious"),
             "region_id": "world_event",
             "created_at": int(now),
             "closes_at": closes_at,
@@ -5692,7 +5702,12 @@ class CrystalGuildEngine:
                 self._change_item(player_id, item_id, 1, f"world_event:{world_event_id}:rare")
                 loot.append(f"{self.data.items[item_id]['name']} x1 (World Event rare)")
             upgrades = [item_id for item_id in premium if item_id in self.data.items]
-            if upgrades and self.rng.random() < 0.20:
+            elite = str(WORLD_EVENTS_BY_ID.get(world_event_id, {}).get("tier") or "") == "elite"
+            if elite and candidates:
+                item_id = self.rng.choice(candidates)
+                self._change_item(player_id, item_id, 1, f"world_event:{world_event_id}:elite")
+                loot.append(f"{self.data.items[item_id]['name']} x1 (Elite bonus)")
+            if upgrades and self.rng.random() < (0.45 if elite else 0.20):
                 item_id = self.rng.choice(upgrades)
                 self._change_item(player_id, item_id, 1, f"world_event:{world_event_id}:premium")
                 loot.append(f"{self.data.items[item_id]['name']} x1 (World Event bonus)")
@@ -5785,7 +5800,7 @@ class CrystalGuildEngine:
         if rank:
             rank = rank.upper()
             if rank not in HUNT_RANKS:
-                return GameResult.fail("Hunt rank must be C, B, A, S, or S+.")
+                return GameResult.fail("Hunt rank must be C, B, A, S, S+, or SS.")
             marks = [h for h in self.data.hunts.values() if h["rank"] == rank]
             parts = []
             for hunt in marks:
@@ -5802,7 +5817,7 @@ class CrystalGuildEngine:
                 messages.insert(0, f"HUNT IN PROGRESS [{active['rank']}] — {active['name']} returns in {self._format_seconds(active['remaining_seconds'])}.")
             return GameResult.success(*messages)
         counts = []
-        ranks = [name for name in ("C", "B", "A", "S", "S+") if any(h.get("rank") == name for h in self.data.hunts.values())]
+        ranks = [name for name in ("C", "B", "A", "S", "S+", "SS") if any(h.get("rank") == name for h in self.data.hunts.values())]
         for rank_name in ranks:
             total = len([h for h in self.data.hunts.values() if h["rank"] == rank_name])
             cleared = self._rank_unique_clears(twitch_id, rank_name)
@@ -5815,7 +5830,7 @@ class CrystalGuildEngine:
         suggestion = f" Suggested mark: {ready[0]['name']} ({ready[0]['rank']}-Rank)." if ready else " No marks currently meet your requirements."
         messages = [
             f"Hunt Board | {p['hunt_seals']:,} Hunt Seals | " + " | ".join(counts) + f" | Ready now: {len(ready)}",
-            "Timers — C 15m · B 30m · A 2h · S 5h. Dispatch with !hunt <name>; Hunts resolve automatically." + suggestion,
+            "Timers — C 15m · B 30m · A 2h · S/S+ 5h · SS 6h. Dispatch with !hunt <name>; Hunts resolve automatically." + suggestion,
         ]
         if active:
             messages.insert(0, f"HUNT IN PROGRESS [{active['rank']}] — {active['name']} · {active['monster']['name']} | returns in {self._format_seconds(active['remaining_seconds'])}.")
@@ -5882,7 +5897,7 @@ class CrystalGuildEngine:
 
         hunt = self._find_by_name_or_id(self.data.hunts, hunt_query)
         if not hunt:
-            return GameResult.fail("Hunt not found. Use !hunts <C|B|A|S|S+> to inspect the board.")
+            return GameResult.fail("Hunt not found. Use !hunts <C|B|A|S|S+|SS> to inspect the board.")
         met, missing = self._hunt_available(twitch_id, hunt)
         if not met:
             return GameResult.fail(f"{hunt['name']} is unavailable — " + "; ".join(missing[:5]))
@@ -6245,6 +6260,12 @@ class CrystalGuildEngine:
                 loot.append(f"{self.data.items[drop['item_id']]['name']} x{qty}")
         loot.extend(self._roll_pity_drops(player_id, monster, source=f"hunt:{hunt['id']}", loot_bonus=loot_bonus))
         loot.extend(self._roll_recipe_drops(player_id, monster, source=f"hunt:{hunt['id']}", loot_bonus=loot_bonus))
+        # Post-80 marks offer repeatable rare crafting materials; first-clear
+        # prizes remain independently earned and are never repeated.
+        bonus_item = str(hunt.get("elite_material") or "")
+        if bonus_item in self.data.items and self.rng.random() < min(1.0, max(0.0, float(hunt.get("elite_drop_chance") or 0))):
+            self._change_item(player_id, bonus_item, 1, f"hunt_elite:{hunt['id']}")
+            loot.append(f"{self.data.items[bonus_item]['name']} x1 (Elite Hunt drop)")
         first_rewards: list[str] = []
         if first_clear:
             item_id = hunt.get("first_clear_item")
@@ -10269,6 +10290,8 @@ class CrystalGuildEngine:
                     "name": str(event_def.get("name") or monster.get("name") or "World Event"),
                     "description": str(event_def.get("description") or ""),
                     "threat": str(event_def.get("threat") or "Notorious"),
+                    "tier": str(event_def.get("tier") or "notorious"),
+                    "min_level": int(event_def.get("min_level") or 1),
                     "art": str(event_def.get("art") or ""),
                 }
 

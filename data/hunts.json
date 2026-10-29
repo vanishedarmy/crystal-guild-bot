@@ -1,7 +1,7 @@
 [
   {
     "id": "chieftains_challenge",
-    "name": "Chieftain\u2019s Challenge",
+    "name": "Chieftain’s Challenge",
     "rank": "C",
     "monster_id": "goblin_chieftain",
     "min_level": 2,
@@ -351,5 +351,155 @@
     },
     "first_clear_item": "rift_lance",
     "first_clear_title": "riftwalker"
+  },
+  {
+    "id": "the_hollow_sun",
+    "name": "The Hollow Sun",
+    "rank": "S+",
+    "monster_id": "mark_the_hollow_sun",
+    "min_level": 80,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "S",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 18000,
+    "rewards": {
+      "xp": 10000,
+      "jp": 640,
+      "gil": 9200,
+      "seals": 160
+    },
+    "first_clear_item": "rift_crystal",
+    "first_clear_title": "voidbreaker_elite",
+    "elite_material": "dark_matter",
+    "elite_drop_chance": 0.3
+  },
+  {
+    "id": "pharaohs_last_hour",
+    "name": "The Pharaoh’s Last Hour",
+    "rank": "S+",
+    "monster_id": "mark_pharaohs_last_hour",
+    "min_level": 86,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "S",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 18000,
+    "rewards": {
+      "xp": 13500,
+      "jp": 760,
+      "gil": 11800,
+      "seals": 185
+    },
+    "first_clear_item": "mirage_hourglass",
+    "first_clear_title": "hourglass_reaver",
+    "elite_material": "mirage_hourglass",
+    "elite_drop_chance": 0.32
+  },
+  {
+    "id": "blight_of_omega",
+    "name": "Blight of Omega",
+    "rank": "S+",
+    "monster_id": "mark_blight_of_omega",
+    "min_level": 92,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "S",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 18000,
+    "rewards": {
+      "xp": 16000,
+      "jp": 870,
+      "gil": 14200,
+      "seals": 210
+    },
+    "first_clear_item": "frostveil_prism",
+    "first_clear_title": "blightbane_omega",
+    "elite_material": "frostveil_prism",
+    "elite_drop_chance": 0.34
+  },
+  {
+    "id": "omega_final_protocol",
+    "name": "Omega: Final Protocol",
+    "rank": "SS",
+    "monster_id": "mark_omega_final_protocol",
+    "min_level": 95,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "S+",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 21600,
+    "rewards": {
+      "xp": 20500,
+      "jp": 1100,
+      "gil": 18000,
+      "seals": 275
+    },
+    "first_clear_item": "singularity_shard",
+    "first_clear_title": "omega_executioner",
+    "elite_material": "singularity_shard",
+    "elite_drop_chance": 0.45
+  },
+  {
+    "id": "eclipse_verdict",
+    "name": "The Eclipse Verdict",
+    "rank": "SS",
+    "monster_id": "mark_eclipse_verdict",
+    "min_level": 99,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "S+",
+        "amount": 3
+      }
+    ],
+    "cooldown_seconds": 21600,
+    "rewards": {
+      "xp": 26500,
+      "jp": 1350,
+      "gil": 23500,
+      "seals": 340
+    },
+    "first_clear_item": "eclipse_core",
+    "first_clear_title": "eclipse_judicator",
+    "elite_material": "eclipse_core",
+    "elite_drop_chance": 0.48
+  },
+  {
+    "id": "the_last_singularity",
+    "name": "The Last Singularity",
+    "rank": "SS",
+    "monster_id": "mark_the_last_singularity",
+    "min_level": 99,
+    "requirements": [
+      {
+        "type": "hunt_rank_clears",
+        "rank": "SS",
+        "amount": 2
+      }
+    ],
+    "cooldown_seconds": 21600,
+    "rewards": {
+      "xp": 32000,
+      "jp": 1600,
+      "gil": 27500,
+      "seals": 400
+    },
+    "first_clear_item": "dominion_relic",
+    "first_clear_title": "singularity_conqueror",
+    "elite_material": "dominion_relic",
+    "elite_drop_chance": 0.5
   }
 ]

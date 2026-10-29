@@ -44,7 +44,7 @@
     },
     "birds": {
       "name": "Avian Beasts",
-      "description": "Feathers, talons, and a bird\u2019s-eye view of adventurers who forgot to look up."
+      "description": "Feathers, talons, and a bird’s-eye view of adventurers who forgot to look up."
     },
     "undead": {
       "name": "Undead",
@@ -56,7 +56,7 @@
     },
     "constructs": {
       "name": "Golems & Constructs",
-      "description": "Stone or steel, spellwork or machinery\u2014these guardians have outlasted the people who built them."
+      "description": "Stone or steel, spellwork or machinery—these guardians have outlasted the people who built them."
     },
     "aquatic": {
       "name": "Aquatic Beasts",
@@ -80,7 +80,7 @@
     },
     "wild_beasts": {
       "name": "Wild Beasts",
-      "description": "The wilds belong to them. Travelers are merely passing through\u2014if they\u2019re lucky."
+      "description": "The wilds belong to them. Travelers are merely passing through—if they’re lucky."
     },
     "dragons": {
       "name": "Dragons & Drakes",
@@ -112,7 +112,7 @@
     },
     "elementals": {
       "name": "Elementals",
-      "description": "The land\u2019s own magic, given shape and a rather unpredictable mood."
+      "description": "The land’s own magic, given shape and a rather unpredictable mood."
     },
     "spellcasters": {
       "name": "Sorcerers & Wanderers",
@@ -1347,6 +1347,60 @@
       ],
       "habitat_provenance": "region_encounters",
       "lore": "A reality-warping construct designed to guard the Sovereign."
+    },
+    "mark_the_hollow_sun": {
+      "category": "hunt",
+      "family": "fiends",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A high-level elite mark registered by the Crystal Guild, encountered only through special Hunts."
+    },
+    "mark_pharaohs_last_hour": {
+      "category": "hunt",
+      "family": "spellcasters",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A high-level elite mark registered by the Crystal Guild, encountered only through special Hunts."
+    },
+    "mark_blight_of_omega": {
+      "category": "hunt",
+      "family": "malboros",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A high-level elite mark registered by the Crystal Guild, encountered only through special Hunts."
+    },
+    "mark_omega_final_protocol": {
+      "category": "hunt",
+      "family": "magitek",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A high-level elite mark registered by the Crystal Guild, encountered only through special Hunts."
+    },
+    "mark_eclipse_verdict": {
+      "category": "hunt",
+      "family": "watchers",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A high-level elite mark registered by the Crystal Guild, encountered only through special Hunts."
+    },
+    "mark_the_last_singularity": {
+      "category": "hunt",
+      "family": "constructs",
+      "habitats": [
+        "riftlands"
+      ],
+      "habitat_provenance": "guild_survey",
+      "lore": "A high-level elite mark registered by the Crystal Guild, encountered only through special Hunts."
     }
   }
 }

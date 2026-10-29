@@ -35,7 +35,7 @@ HELP_TOPICS = {
     ),
     "hunts": (
         "HUNTS — !hunts shows C/B/A/S progress and remains readable off-stream. !hunt <name> dispatches your hero while the channel is LIVE; the Adventurer Portal Hunt Board remains available off-stream.",
-        "Hunts return automatically after their rank timer: C 15m, B 30m, A 2h, S 5h. No round commands are needed; your hero conserves supplies, uses learned abilities/Defend when useful, and only spends limited survival items when warranted. Rewards and first-clear prizes are committed when the Hunt resolves.",
+        "Hunts return automatically after their rank timer: C 15m, B 30m, A 2h, S/S+ 5h, SS 6h. No round commands are needed; your hero conserves supplies, uses learned abilities/Defend when useful, and only spends limited survival items when warranted. Rewards and first-clear prizes are committed when the Hunt resolves.",
     ),
     "mercs": (
         "MERC SERVICE — hire up to three unlocked Heroes from Adventurer Portal → Guild Services → Hero Merc Service: one Hunt contract, one Venture contract, and one Raid contract. Contracts use Hunt Seals earned through Hunts.",

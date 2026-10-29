@@ -2337,5 +2337,137 @@
         }
       ]
     }
+  },
+  {
+    "id": "mark_the_hollow_sun",
+    "profile": "caster",
+    "ability": {
+      "id": "event_horizon",
+      "name": "Event Horizon",
+      "chance": 0.3,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.827,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mark_pharaohs_last_hour",
+    "profile": "caster",
+    "ability": {
+      "id": "hourglass_reversal",
+      "name": "Hourglass Reversal",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.06,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mark_blight_of_omega",
+    "profile": "controller",
+    "ability": {
+      "id": "putrid_breath",
+      "name": "Putrid Breath",
+      "chance": 0.328,
+      "cooldown": 3,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.78,
+      "effects": [
+        {
+          "type": "damage"
+        },
+        {
+          "type": "status",
+          "status": "poison",
+          "turns": 3,
+          "magnitude": 0.05,
+          "chance": 0.46,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "weaken",
+          "turns": 2,
+          "magnitude": 0.12,
+          "chance": 0.34,
+          "recipient": "each"
+        },
+        {
+          "type": "status",
+          "status": "silence",
+          "turns": 2,
+          "magnitude": 0.0,
+          "chance": 0.2,
+          "recipient": "each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mark_omega_final_protocol",
+    "profile": "caster",
+    "ability": {
+      "id": "wave_cannon",
+      "name": "Wave Cannon",
+      "chance": 0.333,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 0.857,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mark_eclipse_verdict",
+    "profile": "caster",
+    "ability": {
+      "id": "event_horizon",
+      "name": "Event Horizon",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.12,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mark_the_last_singularity",
+    "profile": "caster",
+    "ability": {
+      "id": "reality_collapse",
+      "name": "Reality Collapse",
+      "chance": 0.285,
+      "cooldown": 2,
+      "target": "party",
+      "scaling": "magic",
+      "power": 1.13,
+      "effects": [
+        {
+          "type": "damage"
+        }
+      ]
+    }
   }
 ]

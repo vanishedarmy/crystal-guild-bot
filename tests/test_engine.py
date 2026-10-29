@@ -282,7 +282,7 @@ class EngineTests(unittest.TestCase):
 
     def test_v2_data_references_are_valid(self):
         for hunt in self.game.data.hunts.values():
-            self.assertIn(hunt["rank"], {"C", "B", "A", "S", "S+"})
+            self.assertIn(hunt["rank"], {"C", "B", "A", "S", "S+", "SS"})
             self.assertIn(hunt["monster_id"], self.game.data.monsters)
             if hunt.get("first_clear_item"):
                 self.assertIn(hunt["first_clear_item"], self.game.data.items)

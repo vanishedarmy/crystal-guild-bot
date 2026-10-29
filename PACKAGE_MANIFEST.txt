@@ -1,4 +1,4 @@
-Crystal Guild v1.9.96 — Sovereign Encounters
+Crystal Guild v1.9.97 — Elite Hunts & World Events
 Sanitized Bot source inventory (excludes secrets, runtime data, caches and bytecode).
 
 .env.example
@@ -9,6 +9,7 @@ CHANGELOG.md
 COMBAT_DEVELOPER_GUIDE.md
 COMBAT_GUIDE.md
 CRYSTAL_GUILD_CONTROL_PANEL.bat
+ELITE_HUNTS_WORLD_EVENTS_1997.md
 EQUIPMENT_EXPANSION_1991.md
 FULL_SETUP_README.md
 GAME_DESIGN.md
@@ -171,6 +172,7 @@ tests/test_dungeons_beta3.py
 tests/test_dungeons_rc1.py
 tests/test_dungeons_release.py
 tests/test_economy.py
+tests/test_elite_hunts_world_events_197.py
 tests/test_elite_mercs_182.py
 tests/test_emporium_annex_alpha3.py
 tests/test_encounter_variety.py

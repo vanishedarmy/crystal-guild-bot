@@ -54,6 +54,7 @@ class ActiveHuntTests(unittest.TestCase):
             "A": 2 * 60 * 60,
             "S": 5 * 60 * 60,
             "S+": 5 * 60 * 60,
+            "SS": 6 * 60 * 60,
         })
         for rank, seconds in HUNT_DURATION_SECONDS.items():
             self.assertEqual(self.game._hunt_duration_seconds(rank), seconds)

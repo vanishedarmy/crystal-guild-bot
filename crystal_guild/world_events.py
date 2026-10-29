@@ -70,5 +70,26 @@ WORLD_EVENTS = (
         "bonus_min": 5, "bonus_max": 9, "hp_mult": 1.24, "power_mult": 1.12, "reward_mult": 1.40,
         "art": "/world-events/a1/bloodied_deathclaw.webp",
     },
+    {
+        "id": "frostveil_tempest", "name": "Frostveil Tempest", "base_monster_id": "frostveil_astrolabe",
+        "description": "A living winter observatory that unleashes Absolute Zero on unwary parties.",
+        "threat": "Elite", "tier": "elite", "min_level": 80,
+        "bonus_min": 7, "bonus_max": 10, "hp_mult": 1.55, "power_mult": 1.16, "reward_mult": 1.65,
+        "art": "/elite-hunts-197/bosses/frostveil_tempest.webp",
+    },
+    {
+        "id": "mirage_sovereign", "name": "Mirage Sovereign", "base_monster_id": "mirage_pharaoh",
+        "description": "The hourglass turns backward as a timeless monarch prepares Hourglass Reversal.",
+        "threat": "Elite", "tier": "elite", "min_level": 85,
+        "bonus_min": 7, "bonus_max": 10, "hp_mult": 1.60, "power_mult": 1.18, "reward_mult": 1.72,
+        "art": "/elite-hunts-197/bosses/mirage_sovereign.webp",
+    },
+    {
+        "id": "singularity_cataclysm", "name": "Singularity Cataclysm", "base_monster_id": "singularity_archon",
+        "description": "An endgame threat whose Reality Collapse can overwhelm an unprepared guild.",
+        "threat": "Apex", "tier": "elite", "min_level": 95,
+        "bonus_min": 8, "bonus_max": 10, "hp_mult": 1.70, "power_mult": 1.20, "reward_mult": 1.85,
+        "art": "/elite-hunts-197/bosses/singularity_cataclysm.webp",
+    },
 )
 WORLD_EVENTS_BY_ID = {row["id"]: row for row in WORLD_EVENTS}
