@@ -974,5 +974,293 @@
     "category": "Seasonal",
     "rarity": "rare",
     "source": "Night of the Hollow Crystal"
+  },
+  {
+    "id": "ascension_warrior_75",
+    "name": "Warrior Exemplar",
+    "description": "Overcame the Berserker’s Oath Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_warrior_99",
+    "name": "Warrior Legendary",
+    "description": "Overcame the Titanbreaker Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_monk_75",
+    "name": "Monk Exemplar",
+    "description": "Overcame the Seven Chakras Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_monk_99",
+    "name": "Monk Legendary",
+    "description": "Overcame the One Hundred Strikes Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_thief_75",
+    "name": "Thief Exemplar",
+    "description": "Overcame the Night’s Shadow Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_thief_99",
+    "name": "Thief Legendary",
+    "description": "Overcame the Master of Shadows Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_blackmage_75",
+    "name": "Black Mage Exemplar",
+    "description": "Overcame the Arcane Convergence Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_blackmage_99",
+    "name": "Black Mage Legendary",
+    "description": "Overcame the The Last Apocalypse Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_whitemage_75",
+    "name": "White Mage Exemplar",
+    "description": "Overcame the Sanctuary of Light Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_whitemage_99",
+    "name": "White Mage Legendary",
+    "description": "Overcame the Everlasting Dawn Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_redmage_75",
+    "name": "Red Mage Exemplar",
+    "description": "Overcame the Duality of Spell and Steel Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_redmage_99",
+    "name": "Red Mage Legendary",
+    "description": "Overcame the The Crimson Paragon Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_paladin_75",
+    "name": "Paladin Exemplar",
+    "description": "Overcame the Oath of the Sentinel Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_paladin_99",
+    "name": "Paladin Legendary",
+    "description": "Overcame the The Eternal Oath Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_darkknight_75",
+    "name": "Dark Knight Exemplar",
+    "description": "Overcame the Heart of Darkness Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_darkknight_99",
+    "name": "Dark Knight Legendary",
+    "description": "Overcame the Nightfall Unbound Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_dragoon_75",
+    "name": "Dragoon Exemplar",
+    "description": "Overcame the Lances of the Sky Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_dragoon_99",
+    "name": "Dragoon Legendary",
+    "description": "Overcame the The Dragon’s Crown Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_ninja_75",
+    "name": "Ninja Exemplar",
+    "description": "Overcame the Veil of a Thousand Blades Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_ninja_99",
+    "name": "Ninja Legendary",
+    "description": "Overcame the The Silent Eclipse Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_samurai_75",
+    "name": "Samurai Exemplar",
+    "description": "Overcame the The Perfect Draw Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_samurai_99",
+    "name": "Samurai Legendary",
+    "description": "Overcame the Eternal Masamune Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_summoner_75",
+    "name": "Summoner Exemplar",
+    "description": "Overcame the Confluence of Primals Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_summoner_99",
+    "name": "Summoner Legendary",
+    "description": "Overcame the The Teraflare Covenant Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_bluemage_75",
+    "name": "Blue Mage Exemplar",
+    "description": "Overcame the Beast Within Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_bluemage_99",
+    "name": "Blue Mage Legendary",
+    "description": "Overcame the The Grand Delta Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_timemage_75",
+    "name": "Time Mage Exemplar",
+    "description": "Overcame the Future Unwritten Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_timemage_99",
+    "name": "Time Mage Legendary",
+    "description": "Overcame the Eternity’s Edge Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_bard_75",
+    "name": "Bard Exemplar",
+    "description": "Overcame the The Harmonized Chorus Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_bard_99",
+    "name": "Bard Legendary",
+    "description": "Overcame the The Final Requiem Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_machinist_75",
+    "name": "Machinist Exemplar",
+    "description": "Overcame the Automaton Assembly Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_machinist_99",
+    "name": "Machinist Legendary",
+    "description": "Overcame the The Overdrive Protocol Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_beastmaster_75",
+    "name": "Beastmaster Exemplar",
+    "description": "Overcame the The Pack’s Trial Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_beastmaster_99",
+    "name": "Beastmaster Legendary",
+    "description": "Overcame the King of Beasts Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_sage_75",
+    "name": "Sage Exemplar",
+    "description": "Overcame the The Fourfold Barrier Job Ascension Trial at JLv.75.",
+    "category": "Ascension",
+    "rarity": "epic",
+    "source": "Ascension Trial"
+  },
+  {
+    "id": "ascension_sage_99",
+    "name": "Sage Legendary",
+    "description": "Overcame the The Philosopher’s Dawn Job Ascension Trial at JLv.99.",
+    "category": "Ascension",
+    "rarity": "legendary",
+    "source": "Ascension Trial"
   }
 ]

@@ -1,6 +1,6 @@
 [project]
 name = "crystal-guild-bot"
-version = "1.9.94"
+version = "1.9.95"
 description = "Persistent Final Fantasy-inspired Twitch chat RPG with local and Render cloud runtimes"
 requires-python = ">=3.11"
 dependencies = ["twitchio==3.2.2"]

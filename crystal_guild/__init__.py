@@ -1,1 +1,3 @@
-__version__ = "1.9.94-battle-rewards-hotfix"
+from __future__ import annotations
+
+__version__ = "1.9.95-trials-of-ascension"

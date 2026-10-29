@@ -1,5 +1,5 @@
-Crystal Guild v1.9.94 — Battle & Rewards Hotfix
-Sanitized Bot source inventory (excludes secrets, transient state and bytecode).
+Crystal Guild v1.9.95 — Trials of Ascension
+Sanitized Bot source inventory (excludes secrets, runtime data, caches and bytecode).
 
 .env.example
 .gitignore
@@ -82,6 +82,8 @@ crystal_guild/twitch_bot.py
 crystal_guild/world_events.py
 data/achievements.json
 data/active_abilities.json
+data/ascension_dungeons.json
+data/ascension_trials.json
 data/bestiary_research.json
 data/bosses.json
 data/dungeons.json
@@ -136,8 +138,10 @@ tests/test_active_hunts.py
 tests/test_airship_expeditions_v198.py
 tests/test_arsenal.py
 tests/test_arsenal_ii.py
+tests/test_ascension_1995.py
 tests/test_balance.py
 tests/test_battle_presentation.py
+tests/test_battle_rewards_1994.py
 tests/test_bestiary_hardening_step6.py
 tests/test_bestiary_integration_step5.py
 tests/test_bestiary_research_step1.py

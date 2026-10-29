@@ -8761,6 +8761,83 @@ class CrystalGuildEngine:
 
 
     # ---------- v1.4 Dungeons & Delves ----------
+    def _dungeon_definition(self, dungeon_id: str) -> dict[str, Any] | None:
+        """Resolve old and new delves while keeping Trial battles job-scoped."""
+        dungeon_id = str(dungeon_id or "")
+        original = self.data.dungeons.get(dungeon_id) or self.data.ascension_dungeons.get(dungeon_id)
+        if original:
+            return original
+        trial = self.data.ascension_trials.get(dungeon_id)
+        if not trial:
+            return None
+        return {
+            "id": dungeon_id, "name": trial["name"], "subtitle": trial["description"],
+            "identity": "Job Ascension Trial", "min_level": trial["min_level"],
+            "recommended_level": trial["level"], "completion_bonus": trial["completion_bonus"],
+            "first_clear_bonus": trial["first_clear_bonus"], "ascension_trial": True,
+            "rooms": [{"id": "trial_guardian", "name": trial["stage"] + " Guardian",
+                       "type": "boss", "monster_id": trial["guardian"],
+                       "hp_multiplier": trial["hp_multiplier"],
+                       "opening_damage_percent": trial["opening_damage_percent"],
+                       "opening_resource_drain_percent": trial["opening_resource_drain_percent"],
+                       "mechanics": trial["mechanics"], "description": trial["description"]}],
+        }
+
+    def _ascension_trial_state(self, twitch_id: str) -> dict[str, Any]:
+        p = self._player(twitch_id)
+        if not p:
+            return {"job_id": "", "job_level": 0, "trials": []}
+        job_id = str(p["current_job"])
+        jlevel = self._job_level(twitch_id, job_id)
+        prior = True
+        rows = []
+        for tier in (60, 75, 90, 99):
+            trial = self.data.ascension_trials.get(f"ascension_{job_id}_{tier}")
+            if not trial:
+                continue
+            clears = self._dungeon_progress(twitch_id, trial["id"])["clears"]
+            eligible = prior and jlevel >= tier and int(p["level"]) >= tier
+            missing = []
+            if jlevel < tier: missing.append(f"JLv.{tier} required")
+            if int(p["level"]) < tier: missing.append(f"Character Lv.{tier} required")
+            if not prior: missing.append("Clear the previous Ascension Trial")
+            rows.append({"id": trial["id"], "name": trial["name"], "stage": trial["stage"],
+                         "level": tier, "role": trial["role"], "description": trial["description"],
+                         "required_actions": trial["required_actions"],
+                         "unlocked": bool(eligible), "clears": clears,
+                         "first_clear_claimed": bool(clears), "missing": missing,
+                         "reward": {"passives": trial["passive_effects"],
+                                    "title": self.data.titles.get(trial["title_id"], {}).get("name") if trial.get("title_id") else None}})
+            prior = bool(clears)
+        return {"job_id": job_id, "job_level": jlevel, "trials": rows, "completed": sum(bool(row["clears"]) for row in rows)}
+
+    def ascension_status(self, twitch_id: str) -> GameResult:
+        if not self._player(twitch_id):
+            return self._need_recruit()
+        board = self._ascension_trial_state(twitch_id)
+        if not board["trials"]:
+            return GameResult.fail("Choose a playable Job first. Then use !ascend 60, 75, 90, or 99.")
+        lines = [f"ASCENSION — {self.data.jobs[board['job_id']]['name']} JLv.{board['job_level']}"]
+        for trial in board["trials"]:
+            status = "CLEARED" if trial["clears"] else "READY" if trial["unlocked"] else "LOCKED"
+            lines.append(f"JLv.{trial['level']} {trial['stage']}: {status} — {trial['name']}" +
+                         (" (" + "; ".join(trial["missing"]) + ")" if trial["missing"] else ""))
+        lines.append("Use !ascend <60|75|90|99>, then !trialaction attack / defend / ability:<id> / limit:<tier>.")
+        return GameResult.success(*lines)
+
+    def ascension_start(self, twitch_id: str, tier: int) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        try:
+            tier = int(tier)
+        except (TypeError, ValueError):
+            return GameResult.fail("Choose Ascension level 60, 75, 90 or 99.")
+        trial_id = f"ascension_{p['current_job']}_{tier}"
+        if trial_id not in self.data.ascension_trials:
+            return GameResult.fail("Choose Ascension level 60, 75, 90 or 99.")
+        return self.dungeon_start(twitch_id, trial_id)
+
     def _dungeon_load(self, twitch_id: str) -> dict[str, Any] | None:
         row = self.db.one("SELECT state_json FROM player_dungeons WHERE player_id=?", (str(twitch_id),))
         if not row:
@@ -8811,6 +8888,16 @@ class CrystalGuildEngine:
         min_level = max(1, int(dungeon.get("min_level", 1) or 1))
         if int(p["level"] or 1) < min_level:
             missing.append(f"Requires Lv.{min_level}.")
+        trial = self.data.ascension_trials.get(str(dungeon.get("id") or ""))
+        if trial:
+            if str(p["current_job"]) != trial["job_id"]:
+                missing.append(f"Switch to {trial['job_name']} first.")
+            if self._job_level(twitch_id, trial["job_id"]) < trial["level"]:
+                missing.append(f"Requires {trial['job_name']} JLv.{trial['level']}.")
+            tiers = (60, 75, 90, 99)
+            previous = tiers[tiers.index(trial["level"])-1] if trial["level"] != 60 else None
+            if previous and not self._dungeon_progress(twitch_id, f"ascension_{trial['job_id']}_{previous}")["clears"]:
+                missing.append(f"Clear this Job's JLv.{previous} Ascension Trial first.")
         unlock = dungeon.get("unlock") if isinstance(dungeon.get("unlock"), dict) else {}
         region_id = str(unlock.get("expedition_region") or "").strip()
         required_progress = max(0, int(unlock.get("progress", 0) or 0))
@@ -9050,6 +9137,11 @@ class CrystalGuildEngine:
                 magnitude = max(0.0, min(1.0, float(row.get("magnitude", 0) or 0)))
                 if status_id:
                     apply_status(monster_statuses, status_id, turns, magnitude)
+            trial = self.data.ascension_trials.get(str(state.get("dungeon_id") or ""))
+            if trial and actor and trial["level"] == 99:
+                # Level-99 capstone requires a real Limit Break. Seed a gauge
+                # so players can earn the remaining charge through combat.
+                actor["limit"] = max(int(actor.get("limit", 0)), 65)
             encounter["enemy_intent"] = self._solo_enemy_intent(monster, encounter)
             route_effects: list[str] = []
             if route_hp_pct:
@@ -9066,7 +9158,7 @@ class CrystalGuildEngine:
         return GameResult.success(f"DUNGEON — {monster['name']} bars the way in {room.get('name', 'the next chamber')}.", dungeon_battle=True)
 
     def _dungeon_begin_room(self, twitch_id: str, state: dict[str, Any]) -> GameResult:
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0))
         if room_index < 0 or room_index >= len(rooms):
@@ -9154,16 +9246,27 @@ class CrystalGuildEngine:
         self._dungeon_save(twitch_id, state)
         return GameResult.success(f"DUNGEON · {room.get('name', 'Room')} — {room.get('description', '')}", dungeon_room_complete=True)
 
+    def _ascension_objectives(self, state: dict[str, Any]) -> list[dict[str, Any]]:
+        trial = self.data.ascension_trials.get(str(state.get("dungeon_id") or ""))
+        if not trial:
+            return []
+        done = state.get("trial_actions") or {}
+        return [{"action": key, "current": min(int(done.get(key, 0)), int(required)),
+                 "required": int(required), "complete": int(done.get(key, 0)) >= int(required)}
+                for key, required in trial["required_actions"].items()]
+
     def _dungeon_public(self, twitch_id: str) -> dict[str, Any] | None:
         state = self._dungeon_load(twitch_id)
         if not state:
             return None
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
         room_index = max(0, int(state.get("room_index", 0)))
         room = dict(rooms[room_index]) if room_index < len(rooms) else {}
         payload: dict[str, Any] = {
             "active": True,
+            "ascension_trial": bool(dungeon.get("ascension_trial")),
+            "trial_objective": self._ascension_objectives(state),
             "run_id": str(state.get("run_id") or ""),
             "revision": max(1, int(state.get("revision", 1) or 1)),
             "dungeon_id": str(state.get("dungeon_id") or ""),
@@ -9212,7 +9315,7 @@ class CrystalGuildEngine:
             return {"dungeons": [], "active": None}
         active = self._dungeon_public(twitch_id)
         entries: list[dict[str, Any]] = []
-        for dungeon in sorted(self.data.dungeons.values(), key=lambda row: (int(row.get("min_level", 1)), str(row.get("name") or ""))):
+        for dungeon in sorted([*self.data.dungeons.values(), *self.data.ascension_dungeons.values()], key=lambda row: (int(row.get("min_level", 1)), str(row.get("name") or ""))):
             unlocked, missing = self._dungeon_unlock(twitch_id, dungeon)
             progress = self._dungeon_progress(twitch_id, str(dungeon["id"]))
             entry = {
@@ -9238,15 +9341,18 @@ class CrystalGuildEngine:
             if int(progress.get("clears", 0)) > 0:
                 entry["first_clear_claimed"] = True
             entries.append(entry)
-        return {"dungeons": entries, "active": active}
+        return {"dungeons": entries, "active": active, "ascension": self._ascension_trial_state(twitch_id)}
 
     def dungeon_start(self, twitch_id: str, dungeon_id: str) -> GameResult:
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
-        if self._dungeon_load(twitch_id):
-            return GameResult.success("Your Dungeon delve is already in progress. Continue it from the Adventure Board.", dungeon_active=True)
-        dungeon = self.data.dungeons.get(str(dungeon_id))
+        current_delve = self._dungeon_load(twitch_id)
+        if current_delve:
+            if str(current_delve.get("dungeon_id")) == str(dungeon_id):
+                return GameResult.success("Your Dungeon delve is already in progress. Continue it from the Adventure Board.", dungeon_active=True)
+            return GameResult.fail("Finish or retreat from your current Dungeon or Job Trial before starting another.")
+        dungeon = self._dungeon_definition(str(dungeon_id))
         if not dungeon:
             return GameResult.fail("That Dungeon is not available.")
         if p["current_job"] == "adventurer":
@@ -9269,7 +9375,7 @@ class CrystalGuildEngine:
         state = self._dungeon_load(twitch_id)
         if not state or str(state.get("status")) != "choice":
             return GameResult.fail("Clear the current Dungeon room before moving deeper.")
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
         if int(state.get("room_index", 0)) >= len(rooms) - 1:
             return self._dungeon_finish(twitch_id, state, outcome="complete")
@@ -9282,7 +9388,7 @@ class CrystalGuildEngine:
         state = self._dungeon_load(twitch_id)
         if not state or str(state.get("status")) != "decision":
             return GameResult.fail("No Dungeon crossroads is waiting for a choice.")
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0) or 0)
         room = dict(rooms[room_index]) if 0 <= room_index < len(rooms) else {}
@@ -9402,6 +9508,21 @@ class CrystalGuildEngine:
             self._resolve_active_attack(meta, monster, log)
         if action["kind"] != "limit":
             self._gain_limit(meta, 12)
+        trial = self.data.ascension_trials.get(str(state.get("dungeon_id") or ""))
+        if trial:
+            if not has_status(meta.get("statuses", {}), "stun"):
+                actions = state.setdefault("trial_actions", {})
+                kind = str(action.get("kind") or "")
+                actions[kind] = max(0, int(actions.get(kind, 0))) + 1
+            objectives = self._ascension_objectives(state)
+            if not all(row["complete"] for row in objectives):
+                if int(encounter.get("monster_hp", 0)) < 1:
+                    encounter["monster_hp"] = 1
+                    log.append("ASCENSION SEAL — the guardian survives until your Job objectives are complete.")
+                missing = ", ".join(f"{row['action']} {row['current']}/{row['required']}" for row in objectives if not row["complete"])
+                log.append(f"Ascension objectives: {missing}")
+            else:
+                log.append("ASCENSION SEAL BROKEN — the guardian can now fall!")
         if int(encounter.get("monster_hp", 0)) <= 0:
             return self._dungeon_finish_room_victory(twitch_id, state, monster, meta, round_no, log)
         self._solo_resolve_enemy_intent(monster, encounter, log)
@@ -9433,7 +9554,7 @@ class CrystalGuildEngine:
 
     def _dungeon_finish_room_victory(self, twitch_id: str, state: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
         self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0))
         room = dict(rooms[room_index]) if room_index < len(rooms) else {}
@@ -9468,7 +9589,7 @@ class CrystalGuildEngine:
 
     def _dungeon_bank(self, twitch_id: str, state: dict[str, Any], ratio: float, *, include_completion_bonus: bool, include_first_clear_bonus: bool = False) -> dict[str, Any]:
         ratio = max(0.0, min(1.0, float(ratio)))
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         cache = copy.deepcopy(self._dungeon_cache(state))
         bonus_blocks: list[dict[str, Any]] = []
         if include_completion_bonus:
@@ -9505,7 +9626,7 @@ class CrystalGuildEngine:
         return kept
 
     def _dungeon_finish(self, twitch_id: str, state: dict[str, Any], *, outcome: str) -> GameResult:
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         room_count = len(list(dungeon.get("rooms") or []))
         reached = min(room_count, int(state.get("room_index", 0)) + 1)
         if outcome == "complete":
@@ -9526,7 +9647,13 @@ class CrystalGuildEngine:
             )
             if outcome == "defeat":
                 conn.execute("UPDATE players SET deaths=deaths+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (str(twitch_id),))
+        trial = self.data.ascension_trials.get(str(state.get("dungeon_id") or ""))
+        unlocked_title = None
+        if trial and first_clear and trial.get("title_id"):
+            if self._unlock_title(twitch_id, str(trial["title_id"])):
+                unlocked_title = self.data.titles[trial["title_id"]]["name"]
         summary = {
+            "ascension_trial": bool(trial), "ascension_title": unlocked_title,
             "type": "dungeon", "outcome": str(outcome),
             "title": f"{dungeon.get('name', 'Dungeon')} Cleared" if outcome == "complete" else f"{dungeon.get('name', 'Dungeon')} Retreat" if outcome == "retreat" else f"{dungeon.get('name', 'Dungeon')} Defeat",
             "dungeon_name": str(dungeon.get("name") or "Dungeon"), "rooms": int(reached), "room_count": int(room_count),
@@ -10884,7 +11011,7 @@ class CrystalGuildEngine:
             return False
         if max(0, int(state.get("revision", 0) or 0)) != max(0, int(revision or 0)):
             return False
-        dungeon = self.data.dungeons.get(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0) or 0)
         current_room_id = str((rooms[room_index] if 0 <= room_index < len(rooms) else {}).get("id") or "")
@@ -18432,6 +18559,13 @@ class CrystalGuildEngine:
             if jlevel >= ability["level"]:
                 for key, value in ability.get("effects", {}).items():
                     effects[key] = effects.get(key, 0.0) + float(value)
+        for tier in (60, 75, 90, 99):
+            trial = self.data.ascension_trials.get(f"ascension_{job_id}_{tier}")
+            if trial and trial.get("passive_effects"):
+                progress = self._dungeon_progress(player_id, trial["id"])
+                if progress["clears"]:
+                    for key, value in trial["passive_effects"].items():
+                        effects[key] = effects.get(key, 0.0) + float(value)
         rows = self.db.all("SELECT job_id FROM mastery_slots WHERE player_id=? ORDER BY slot", (player_id,))
         for row in rows:
             mastered_id = row["job_id"]

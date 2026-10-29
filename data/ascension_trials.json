@@ -1,0 +1,3080 @@
+[
+  {
+    "id": "ascension_warrior_60",
+    "job_id": "warrior",
+    "job_name": "Warrior",
+    "level": 60,
+    "min_level": 60,
+    "name": "Warrior: Iron Resolve",
+    "stage": "Awakening",
+    "role": "vanguard",
+    "description": "The awakening challenge for Warrior: show mastery of vanguard combat under pressure.",
+    "guardian": "ancient_adamantoise",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_warrior_75",
+    "job_id": "warrior",
+    "job_name": "Warrior",
+    "level": 75,
+    "min_level": 75,
+    "name": "Warrior: Berserker’s Oath",
+    "stage": "Mastery",
+    "role": "vanguard",
+    "description": "The mastery challenge for Warrior: show mastery of vanguard combat under pressure.",
+    "guardian": "astral_construct",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_warrior_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_warrior_90",
+    "job_id": "warrior",
+    "job_name": "Warrior",
+    "level": 90,
+    "min_level": 90,
+    "name": "Warrior: Unbroken Mountain",
+    "stage": "Transcendence",
+    "role": "vanguard",
+    "description": "The transcendence challenge for Warrior: show mastery of vanguard combat under pressure.",
+    "guardian": "demonolith",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_warrior_99",
+    "job_id": "warrior",
+    "job_name": "Warrior",
+    "level": 99,
+    "min_level": 99,
+    "name": "Warrior: Titanbreaker",
+    "stage": "Legend",
+    "role": "vanguard",
+    "description": "The legend challenge for Warrior: show mastery of vanguard combat under pressure.",
+    "guardian": "omega_sentinel",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.015
+    },
+    "title_id": "ascension_warrior_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_monk_60",
+    "job_id": "monk",
+    "job_name": "Monk",
+    "level": 60,
+    "min_level": 60,
+    "name": "Monk: The Open Palm",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Monk: show mastery of striker combat under pressure.",
+    "guardian": "rift_behemoth",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_monk_75",
+    "job_id": "monk",
+    "job_name": "Monk",
+    "level": 75,
+    "min_level": 75,
+    "name": "Monk: Seven Chakras",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Monk: show mastery of striker combat under pressure.",
+    "guardian": "crystal_dragon",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_monk_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_monk_90",
+    "job_id": "monk",
+    "job_name": "Monk",
+    "level": 90,
+    "min_level": 90,
+    "name": "Monk: Fist of the Phoenix",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Monk: show mastery of striker combat under pressure.",
+    "guardian": "machea",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_monk_99",
+    "job_id": "monk",
+    "job_name": "Monk",
+    "level": 99,
+    "min_level": 99,
+    "name": "Monk: One Hundred Strikes",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Monk: show mastery of striker combat under pressure.",
+    "guardian": "eclipse_harbinger",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_monk_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_thief_60",
+    "job_id": "thief",
+    "job_name": "Thief",
+    "level": 60,
+    "min_level": 60,
+    "name": "Thief: Silent Footfalls",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Thief: show mastery of striker combat under pressure.",
+    "guardian": "adamant_golem",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_thief_75",
+    "job_id": "thief",
+    "job_name": "Thief",
+    "level": 75,
+    "min_level": 75,
+    "name": "Thief: Night’s Shadow",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Thief: show mastery of striker combat under pressure.",
+    "guardian": "archeodemon",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_thief_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_thief_90",
+    "job_id": "thief",
+    "job_name": "Thief",
+    "level": 90,
+    "min_level": 90,
+    "name": "Thief: The Phantom Vault",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Thief: show mastery of striker combat under pressure.",
+    "guardian": "master_coeurl",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_thief_99",
+    "job_id": "thief",
+    "job_name": "Thief",
+    "level": 99,
+    "min_level": 99,
+    "name": "Thief: Master of Shadows",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Thief: show mastery of striker combat under pressure.",
+    "guardian": "singularity_archon",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_thief_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_blackmage_60",
+    "job_id": "blackmage",
+    "job_name": "Black Mage",
+    "level": 60,
+    "min_level": 60,
+    "name": "Black Mage: The Elemental Seal",
+    "stage": "Awakening",
+    "role": "arcanist",
+    "description": "The awakening challenge for Black Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "master_tonberry",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_blackmage_75",
+    "job_id": "blackmage",
+    "job_name": "Black Mage",
+    "level": 75,
+    "min_level": 75,
+    "name": "Black Mage: Arcane Convergence",
+    "stage": "Mastery",
+    "role": "arcanist",
+    "description": "The mastery challenge for Black Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "omega_fragment",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_blackmage_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_blackmage_90",
+    "job_id": "blackmage",
+    "job_name": "Black Mage",
+    "level": 90,
+    "min_level": 90,
+    "name": "Black Mage: Forbidden Meteor",
+    "stage": "Transcendence",
+    "role": "arcanist",
+    "description": "The transcendence challenge for Black Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "dark_element",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_blackmage_99",
+    "job_id": "blackmage",
+    "job_name": "Black Mage",
+    "level": 99,
+    "min_level": 99,
+    "name": "Black Mage: The Last Apocalypse",
+    "stage": "Legend",
+    "role": "arcanist",
+    "description": "The legend challenge for Black Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "great_malboro_omega",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.015
+    },
+    "title_id": "ascension_blackmage_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_whitemage_60",
+    "job_id": "whitemage",
+    "job_name": "White Mage",
+    "level": 60,
+    "min_level": 60,
+    "name": "White Mage: The Healing Oath",
+    "stage": "Awakening",
+    "role": "healer",
+    "description": "The awakening challenge for White Mage: show mastery of healer combat under pressure.",
+    "guardian": "abaddon",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_whitemage_75",
+    "job_id": "whitemage",
+    "job_name": "White Mage",
+    "level": 75,
+    "min_level": 75,
+    "name": "White Mage: Sanctuary of Light",
+    "stage": "Mastery",
+    "role": "healer",
+    "description": "The mastery challenge for White Mage: show mastery of healer combat under pressure.",
+    "guardian": "varuna",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_whitemage_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_whitemage_90",
+    "job_id": "whitemage",
+    "job_name": "White Mage",
+    "level": 90,
+    "min_level": 90,
+    "name": "White Mage: The Sacred Benediction",
+    "stage": "Transcendence",
+    "role": "healer",
+    "description": "The transcendence challenge for White Mage: show mastery of healer combat under pressure.",
+    "guardian": "malboro_menace",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_whitemage_99",
+    "job_id": "whitemage",
+    "job_name": "White Mage",
+    "level": 99,
+    "min_level": 99,
+    "name": "White Mage: Everlasting Dawn",
+    "stage": "Legend",
+    "role": "healer",
+    "description": "The legend challenge for White Mage: show mastery of healer combat under pressure.",
+    "guardian": "mimic_king",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.015
+    },
+    "title_id": "ascension_whitemage_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_redmage_60",
+    "job_id": "redmage",
+    "job_name": "Red Mage",
+    "level": 60,
+    "min_level": 60,
+    "name": "Red Mage: The Crimson Balance",
+    "stage": "Awakening",
+    "role": "arcanist",
+    "description": "The awakening challenge for Red Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "emberglass_wyrm",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_redmage_75",
+    "job_id": "redmage",
+    "job_name": "Red Mage",
+    "level": 75,
+    "min_level": 75,
+    "name": "Red Mage: Duality of Spell and Steel",
+    "stage": "Mastery",
+    "role": "arcanist",
+    "description": "The mastery challenge for Red Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "frostveil_astrolabe",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_redmage_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_redmage_90",
+    "job_id": "redmage",
+    "job_name": "Red Mage",
+    "level": 90,
+    "min_level": 90,
+    "name": "Red Mage: Vermilion Tempest",
+    "stage": "Transcendence",
+    "role": "arcanist",
+    "description": "The transcendence challenge for Red Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "mirage_pharaoh",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_redmage_99",
+    "job_id": "redmage",
+    "job_name": "Red Mage",
+    "level": 99,
+    "min_level": 99,
+    "name": "Red Mage: The Crimson Paragon",
+    "stage": "Legend",
+    "role": "arcanist",
+    "description": "The legend challenge for Red Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "spirit",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.015
+    },
+    "title_id": "ascension_redmage_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_paladin_60",
+    "job_id": "paladin",
+    "job_name": "Paladin",
+    "level": 60,
+    "min_level": 60,
+    "name": "Paladin: The Sacred Shield",
+    "stage": "Awakening",
+    "role": "vanguard",
+    "description": "The awakening challenge for Paladin: show mastery of vanguard combat under pressure.",
+    "guardian": "ancient_adamantoise",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_paladin_75",
+    "job_id": "paladin",
+    "job_name": "Paladin",
+    "level": 75,
+    "min_level": 75,
+    "name": "Paladin: Oath of the Sentinel",
+    "stage": "Mastery",
+    "role": "vanguard",
+    "description": "The mastery challenge for Paladin: show mastery of vanguard combat under pressure.",
+    "guardian": "astral_construct",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_paladin_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_paladin_90",
+    "job_id": "paladin",
+    "job_name": "Paladin",
+    "level": 90,
+    "min_level": 90,
+    "name": "Paladin: The Radiant Aegis",
+    "stage": "Transcendence",
+    "role": "vanguard",
+    "description": "The transcendence challenge for Paladin: show mastery of vanguard combat under pressure.",
+    "guardian": "demonolith",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_paladin_99",
+    "job_id": "paladin",
+    "job_name": "Paladin",
+    "level": 99,
+    "min_level": 99,
+    "name": "Paladin: The Eternal Oath",
+    "stage": "Legend",
+    "role": "vanguard",
+    "description": "The legend challenge for Paladin: show mastery of vanguard combat under pressure.",
+    "guardian": "omega_sentinel",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.015
+    },
+    "title_id": "ascension_paladin_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_darkknight_60",
+    "job_id": "darkknight",
+    "job_name": "Dark Knight",
+    "level": 60,
+    "min_level": 60,
+    "name": "Dark Knight: The Abyss Within",
+    "stage": "Awakening",
+    "role": "vanguard",
+    "description": "The awakening challenge for Dark Knight: show mastery of vanguard combat under pressure.",
+    "guardian": "rift_behemoth",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_darkknight_75",
+    "job_id": "darkknight",
+    "job_name": "Dark Knight",
+    "level": 75,
+    "min_level": 75,
+    "name": "Dark Knight: Heart of Darkness",
+    "stage": "Mastery",
+    "role": "vanguard",
+    "description": "The mastery challenge for Dark Knight: show mastery of vanguard combat under pressure.",
+    "guardian": "crystal_dragon",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_darkknight_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_darkknight_90",
+    "job_id": "darkknight",
+    "job_name": "Dark Knight",
+    "level": 90,
+    "min_level": 90,
+    "name": "Dark Knight: Shadow of the Fallen",
+    "stage": "Transcendence",
+    "role": "vanguard",
+    "description": "The transcendence challenge for Dark Knight: show mastery of vanguard combat under pressure.",
+    "guardian": "machea",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_darkknight_99",
+    "job_id": "darkknight",
+    "job_name": "Dark Knight",
+    "level": 99,
+    "min_level": 99,
+    "name": "Dark Knight: Nightfall Unbound",
+    "stage": "Legend",
+    "role": "vanguard",
+    "description": "The legend challenge for Dark Knight: show mastery of vanguard combat under pressure.",
+    "guardian": "eclipse_harbinger",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "defense_mult": 0.015
+    },
+    "title_id": "ascension_darkknight_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_dragoon_60",
+    "job_id": "dragoon",
+    "job_name": "Dragoon",
+    "level": 60,
+    "min_level": 60,
+    "name": "Dragoon: The First Leap",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Dragoon: show mastery of striker combat under pressure.",
+    "guardian": "adamant_golem",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_dragoon_75",
+    "job_id": "dragoon",
+    "job_name": "Dragoon",
+    "level": 75,
+    "min_level": 75,
+    "name": "Dragoon: Lances of the Sky",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Dragoon: show mastery of striker combat under pressure.",
+    "guardian": "archeodemon",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_dragoon_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_dragoon_90",
+    "job_id": "dragoon",
+    "job_name": "Dragoon",
+    "level": 90,
+    "min_level": 90,
+    "name": "Dragoon: Wrath of the Wyvern",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Dragoon: show mastery of striker combat under pressure.",
+    "guardian": "master_coeurl",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_dragoon_99",
+    "job_id": "dragoon",
+    "job_name": "Dragoon",
+    "level": 99,
+    "min_level": 99,
+    "name": "Dragoon: The Dragon’s Crown",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Dragoon: show mastery of striker combat under pressure.",
+    "guardian": "singularity_archon",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_dragoon_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_ninja_60",
+    "job_id": "ninja",
+    "job_name": "Ninja",
+    "level": 60,
+    "min_level": 60,
+    "name": "Ninja: The Hidden Sign",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Ninja: show mastery of striker combat under pressure.",
+    "guardian": "master_tonberry",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_ninja_75",
+    "job_id": "ninja",
+    "job_name": "Ninja",
+    "level": 75,
+    "min_level": 75,
+    "name": "Ninja: Veil of a Thousand Blades",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Ninja: show mastery of striker combat under pressure.",
+    "guardian": "omega_fragment",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_ninja_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_ninja_90",
+    "job_id": "ninja",
+    "job_name": "Ninja",
+    "level": 90,
+    "min_level": 90,
+    "name": "Ninja: Shadow Clone Rite",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Ninja: show mastery of striker combat under pressure.",
+    "guardian": "dark_element",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_ninja_99",
+    "job_id": "ninja",
+    "job_name": "Ninja",
+    "level": 99,
+    "min_level": 99,
+    "name": "Ninja: The Silent Eclipse",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Ninja: show mastery of striker combat under pressure.",
+    "guardian": "great_malboro_omega",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_ninja_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_samurai_60",
+    "job_id": "samurai",
+    "job_name": "Samurai",
+    "level": 60,
+    "min_level": 60,
+    "name": "Samurai: Way of the Blade",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Samurai: show mastery of striker combat under pressure.",
+    "guardian": "abaddon",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_samurai_75",
+    "job_id": "samurai",
+    "job_name": "Samurai",
+    "level": 75,
+    "min_level": 75,
+    "name": "Samurai: The Perfect Draw",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Samurai: show mastery of striker combat under pressure.",
+    "guardian": "varuna",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_samurai_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_samurai_90",
+    "job_id": "samurai",
+    "job_name": "Samurai",
+    "level": 90,
+    "min_level": 90,
+    "name": "Samurai: The Falling Sakura",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Samurai: show mastery of striker combat under pressure.",
+    "guardian": "malboro_menace",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_samurai_99",
+    "job_id": "samurai",
+    "job_name": "Samurai",
+    "level": 99,
+    "min_level": 99,
+    "name": "Samurai: Eternal Masamune",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Samurai: show mastery of striker combat under pressure.",
+    "guardian": "mimic_king",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_samurai_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_summoner_60",
+    "job_id": "summoner",
+    "job_name": "Summoner",
+    "level": 60,
+    "min_level": 60,
+    "name": "Summoner: The Eidolon Pact",
+    "stage": "Awakening",
+    "role": "arcanist",
+    "description": "The awakening challenge for Summoner: show mastery of arcanist combat under pressure.",
+    "guardian": "emberglass_wyrm",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_summoner_75",
+    "job_id": "summoner",
+    "job_name": "Summoner",
+    "level": 75,
+    "min_level": 75,
+    "name": "Summoner: Confluence of Primals",
+    "stage": "Mastery",
+    "role": "arcanist",
+    "description": "The mastery challenge for Summoner: show mastery of arcanist combat under pressure.",
+    "guardian": "frostveil_astrolabe",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_summoner_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_summoner_90",
+    "job_id": "summoner",
+    "job_name": "Summoner",
+    "level": 90,
+    "min_level": 90,
+    "name": "Summoner: The Phoenix Cycle",
+    "stage": "Transcendence",
+    "role": "arcanist",
+    "description": "The transcendence challenge for Summoner: show mastery of arcanist combat under pressure.",
+    "guardian": "mirage_pharaoh",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_summoner_99",
+    "job_id": "summoner",
+    "job_name": "Summoner",
+    "level": 99,
+    "min_level": 99,
+    "name": "Summoner: The Teraflare Covenant",
+    "stage": "Legend",
+    "role": "arcanist",
+    "description": "The legend challenge for Summoner: show mastery of arcanist combat under pressure.",
+    "guardian": "spirit",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.015
+    },
+    "title_id": "ascension_summoner_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bluemage_60",
+    "job_id": "bluemage",
+    "job_name": "Blue Mage",
+    "level": 60,
+    "min_level": 60,
+    "name": "Blue Mage: The Mimic’s Path",
+    "stage": "Awakening",
+    "role": "arcanist",
+    "description": "The awakening challenge for Blue Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "ancient_adamantoise",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bluemage_75",
+    "job_id": "bluemage",
+    "job_name": "Blue Mage",
+    "level": 75,
+    "min_level": 75,
+    "name": "Blue Mage: Beast Within",
+    "stage": "Mastery",
+    "role": "arcanist",
+    "description": "The mastery challenge for Blue Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "astral_construct",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_bluemage_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bluemage_90",
+    "job_id": "bluemage",
+    "job_name": "Blue Mage",
+    "level": 90,
+    "min_level": 90,
+    "name": "Blue Mage: The Forbidden Grimoire",
+    "stage": "Transcendence",
+    "role": "arcanist",
+    "description": "The transcendence challenge for Blue Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "demonolith",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bluemage_99",
+    "job_id": "bluemage",
+    "job_name": "Blue Mage",
+    "level": 99,
+    "min_level": 99,
+    "name": "Blue Mage: The Grand Delta",
+    "stage": "Legend",
+    "role": "arcanist",
+    "description": "The legend challenge for Blue Mage: show mastery of arcanist combat under pressure.",
+    "guardian": "omega_sentinel",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.015
+    },
+    "title_id": "ascension_bluemage_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_timemage_60",
+    "job_id": "timemage",
+    "job_name": "Time Mage",
+    "level": 60,
+    "min_level": 60,
+    "name": "Time Mage: The Clockwork Gate",
+    "stage": "Awakening",
+    "role": "support",
+    "description": "The awakening challenge for Time Mage: show mastery of support combat under pressure.",
+    "guardian": "rift_behemoth",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "damage_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_timemage_75",
+    "job_id": "timemage",
+    "job_name": "Time Mage",
+    "level": 75,
+    "min_level": 75,
+    "name": "Time Mage: Future Unwritten",
+    "stage": "Mastery",
+    "role": "support",
+    "description": "The mastery challenge for Time Mage: show mastery of support combat under pressure.",
+    "guardian": "crystal_dragon",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_timemage_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_timemage_90",
+    "job_id": "timemage",
+    "job_name": "Time Mage",
+    "level": 90,
+    "min_level": 90,
+    "name": "Time Mage: The Fractured Hour",
+    "stage": "Transcendence",
+    "role": "support",
+    "description": "The transcendence challenge for Time Mage: show mastery of support combat under pressure.",
+    "guardian": "machea",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "damage_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_timemage_99",
+    "job_id": "timemage",
+    "job_name": "Time Mage",
+    "level": 99,
+    "min_level": 99,
+    "name": "Time Mage: Eternity’s Edge",
+    "stage": "Legend",
+    "role": "support",
+    "description": "The legend challenge for Time Mage: show mastery of support combat under pressure.",
+    "guardian": "eclipse_harbinger",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "damage_mult": 0.015
+    },
+    "title_id": "ascension_timemage_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bard_60",
+    "job_id": "bard",
+    "job_name": "Bard",
+    "level": 60,
+    "min_level": 60,
+    "name": "Bard: Echoes of Courage",
+    "stage": "Awakening",
+    "role": "support",
+    "description": "The awakening challenge for Bard: show mastery of support combat under pressure.",
+    "guardian": "adamant_golem",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "damage_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bard_75",
+    "job_id": "bard",
+    "job_name": "Bard",
+    "level": 75,
+    "min_level": 75,
+    "name": "Bard: The Harmonized Chorus",
+    "stage": "Mastery",
+    "role": "support",
+    "description": "The mastery challenge for Bard: show mastery of support combat under pressure.",
+    "guardian": "archeodemon",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_bard_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bard_90",
+    "job_id": "bard",
+    "job_name": "Bard",
+    "level": 90,
+    "min_level": 90,
+    "name": "Bard: Radiant Encore",
+    "stage": "Transcendence",
+    "role": "support",
+    "description": "The transcendence challenge for Bard: show mastery of support combat under pressure.",
+    "guardian": "master_coeurl",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "damage_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_bard_99",
+    "job_id": "bard",
+    "job_name": "Bard",
+    "level": 99,
+    "min_level": 99,
+    "name": "Bard: The Final Requiem",
+    "stage": "Legend",
+    "role": "support",
+    "description": "The legend challenge for Bard: show mastery of support combat under pressure.",
+    "guardian": "singularity_archon",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "damage_mult": 0.015
+    },
+    "title_id": "ascension_bard_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_machinist_60",
+    "job_id": "machinist",
+    "job_name": "Machinist",
+    "level": 60,
+    "min_level": 60,
+    "name": "Machinist: The First Prototype",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Machinist: show mastery of striker combat under pressure.",
+    "guardian": "master_tonberry",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_machinist_75",
+    "job_id": "machinist",
+    "job_name": "Machinist",
+    "level": 75,
+    "min_level": 75,
+    "name": "Machinist: Automaton Assembly",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Machinist: show mastery of striker combat under pressure.",
+    "guardian": "omega_fragment",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_machinist_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_machinist_90",
+    "job_id": "machinist",
+    "job_name": "Machinist",
+    "level": 90,
+    "min_level": 90,
+    "name": "Machinist: The Full-Metal Arsenal",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Machinist: show mastery of striker combat under pressure.",
+    "guardian": "dark_element",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_machinist_99",
+    "job_id": "machinist",
+    "job_name": "Machinist",
+    "level": 99,
+    "min_level": 99,
+    "name": "Machinist: The Overdrive Protocol",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Machinist: show mastery of striker combat under pressure.",
+    "guardian": "great_malboro_omega",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_machinist_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_beastmaster_60",
+    "job_id": "beastmaster",
+    "job_name": "Beastmaster",
+    "level": 60,
+    "min_level": 60,
+    "name": "Beastmaster: Call of the Wild",
+    "stage": "Awakening",
+    "role": "striker",
+    "description": "The awakening challenge for Beastmaster: show mastery of striker combat under pressure.",
+    "guardian": "abaddon",
+    "required_actions": {
+      "attack": 1,
+      "ability": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 1 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_beastmaster_75",
+    "job_id": "beastmaster",
+    "job_name": "Beastmaster",
+    "level": 75,
+    "min_level": 75,
+    "name": "Beastmaster: The Pack’s Trial",
+    "stage": "Mastery",
+    "role": "striker",
+    "description": "The mastery challenge for Beastmaster: show mastery of striker combat under pressure.",
+    "guardian": "varuna",
+    "required_actions": {
+      "attack": 1,
+      "ability": 2
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_beastmaster_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 attack, 2 ability before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_beastmaster_90",
+    "job_id": "beastmaster",
+    "job_name": "Beastmaster",
+    "level": 90,
+    "min_level": 90,
+    "name": "Beastmaster: The Chimera Crown",
+    "stage": "Transcendence",
+    "role": "striker",
+    "description": "The transcendence challenge for Beastmaster: show mastery of striker combat under pressure.",
+    "guardian": "malboro_menace",
+    "required_actions": {
+      "ability": 3,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 3 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_beastmaster_99",
+    "job_id": "beastmaster",
+    "job_name": "Beastmaster",
+    "level": 99,
+    "min_level": 99,
+    "name": "Beastmaster: King of Beasts",
+    "stage": "Legend",
+    "role": "striker",
+    "description": "The legend challenge for Beastmaster: show mastery of striker combat under pressure.",
+    "guardian": "mimic_king",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "physical_mult": 0.015
+    },
+    "title_id": "ascension_beastmaster_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_sage_60",
+    "job_id": "sage",
+    "job_name": "Sage",
+    "level": 60,
+    "min_level": 60,
+    "name": "Sage: Aetheric Diagnosis",
+    "stage": "Awakening",
+    "role": "healer",
+    "description": "The awakening challenge for Sage: show mastery of healer combat under pressure.",
+    "guardian": "emberglass_wyrm",
+    "required_actions": {
+      "ability": 1,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 4500,
+      "jp": 1080,
+      "gil": 2400
+    },
+    "first_clear_bonus": {
+      "xp": 3600,
+      "jp": 1500,
+      "gil": 3600,
+      "items": [
+        {
+          "item_id": "stormheart_crystal",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.025
+    },
+    "title_id": null,
+    "opening_damage_percent": 0,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 1 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_sage_75",
+    "job_id": "sage",
+    "job_name": "Sage",
+    "level": 75,
+    "min_level": 75,
+    "name": "Sage: The Fourfold Barrier",
+    "stage": "Mastery",
+    "role": "healer",
+    "description": "The mastery challenge for Sage: show mastery of healer combat under pressure.",
+    "guardian": "frostveil_astrolabe",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1
+    },
+    "completion_bonus": {
+      "xp": 5625,
+      "jp": 1350,
+      "gil": 3000
+    },
+    "first_clear_bonus": {
+      "xp": 4500,
+      "jp": 1875,
+      "gil": 4500,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 1
+        }
+      ]
+    },
+    "passive_effects": {},
+    "title_id": "ascension_sage_75",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 0,
+    "hp_multiplier": 0.85,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_sage_90",
+    "job_id": "sage",
+    "job_name": "Sage",
+    "level": 90,
+    "min_level": 90,
+    "name": "Sage: Panhaima Ascendant",
+    "stage": "Transcendence",
+    "role": "healer",
+    "description": "The transcendence challenge for Sage: show mastery of healer combat under pressure.",
+    "guardian": "mirage_pharaoh",
+    "required_actions": {
+      "ability": 2,
+      "defend": 2
+    },
+    "completion_bonus": {
+      "xp": 6750,
+      "jp": 1620,
+      "gil": 3600
+    },
+    "first_clear_bonus": {
+      "xp": 5400,
+      "jp": 2250,
+      "gil": 5400,
+      "items": [
+        {
+          "item_id": "mirage_hourglass",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.035
+    },
+    "title_id": null,
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.75,
+    "mechanics": [
+      "Trial seal: use 2 ability, 2 defend before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  },
+  {
+    "id": "ascension_sage_99",
+    "job_id": "sage",
+    "job_name": "Sage",
+    "level": 99,
+    "min_level": 99,
+    "name": "Sage: The Philosopher’s Dawn",
+    "stage": "Legend",
+    "role": "healer",
+    "description": "The legend challenge for Sage: show mastery of healer combat under pressure.",
+    "guardian": "spirit",
+    "required_actions": {
+      "ability": 2,
+      "defend": 1,
+      "limit": 1
+    },
+    "completion_bonus": {
+      "xp": 7425,
+      "jp": 1782,
+      "gil": 3960
+    },
+    "first_clear_bonus": {
+      "xp": 5940,
+      "jp": 2475,
+      "gil": 5940,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 2
+        }
+      ]
+    },
+    "passive_effects": {
+      "mag_mult": 0.015
+    },
+    "title_id": "ascension_sage_99",
+    "opening_damage_percent": 4,
+    "opening_resource_drain_percent": 12,
+    "hp_multiplier": 0.5,
+    "mechanics": [
+      "Trial seal: use 2 ability, 1 defend, 1 limit before the guardian can fall.",
+      "Your Job must match the trial to enter; clear earlier milestones first."
+    ]
+  }
+]

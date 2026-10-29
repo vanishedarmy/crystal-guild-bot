@@ -157,6 +157,37 @@ class RPGCommands(commands.Component):
         uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.set_stance(uid, stance_name))
 
+    @commands.command(aliases=["jobtrials"])
+    async def ascension(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.ascension_status(uid), limit=6)
+
+    @commands.command(aliases=["jobtrial"])
+    async def ascend(self, ctx: commands.Context, level: str | None = None) -> None:
+        uid, _, _ = self._identity(ctx)
+        if not level:
+            await send_result(ctx, self.game.ascension_status(uid), limit=6)
+            return
+        await send_result(ctx, self.game.ascension_start(uid, level), limit=3)
+
+    @commands.command()
+    async def trialaction(self, ctx: commands.Context, *, action: str = "attack") -> None:
+        uid, _, _ = self._identity(ctx)
+        state = self.game._dungeon_load(uid)
+        if not state or str(state.get("dungeon_id")) not in self.game.data.ascension_trials:
+            await ctx.send("ASCENSION — No active Job Trial. Use !ascension to see your path.")
+            return
+        await send_result(ctx, self.game.dungeon_action(uid, action.strip().lower()), limit=3)
+
+    @commands.command()
+    async def trialretreat(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        state = self.game._dungeon_load(uid)
+        if not state or str(state.get("dungeon_id")) not in self.game.data.ascension_trials:
+            await ctx.send("ASCENSION — No active Job Trial.")
+            return
+        await send_result(ctx, self.game.dungeon_retreat(uid), limit=2)
+
     @commands.command(aliases=["adv", "adventure"])
     async def venture(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Rally Venture"):

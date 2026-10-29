@@ -18,6 +18,8 @@ class GameData:
         self.regions = self._load_map("regions.json")
         self.expedition_regions = self._load_map("expedition_regions.json")
         self.dungeons = self._load_map("dungeons.json")
+        self.ascension_trials = self._load_map("ascension_trials.json")
+        self.ascension_dungeons = self._load_map("ascension_dungeons.json")
         self.items = self._load_map("items.json")
         self.achievements = self._load_map("achievements.json")
         # Step 2: staged-only Moments. Kept OUT of the live achievements and
@@ -36,6 +38,25 @@ class GameData:
         self.forge = sorted(self._load_list("forge.json"), key=lambda r: r["level"])
         self.active_abilities = self._load_active_abilities()
         self.limit_breaks = self._load_limits()
+        # Reuse Dungeon persistence for Job Ascension. These are separate
+        # catalogs, so the original four Dungeon ids and public API remain intact.
+        for trial in self.ascension_trials.values():
+            if trial.get("job_id") not in self.jobs or trial.get("guardian") not in self.monsters:
+                raise ValueError(f"Invalid Ascension Trial {trial.get('id')}")
+            if int(trial.get("level", 0)) not in (60, 75, 90, 99):
+                raise ValueError(f"Invalid Ascension tier {trial.get('id')}")
+            for item in trial.get("first_clear_bonus", {}).get("items", []):
+                if item.get("item_id") not in self.items:
+                    raise ValueError(f"Unknown Ascension reward: {item}")
+            title = trial.get("title_id")
+            if title and title not in self.titles:
+                raise ValueError(f"Unknown Ascension title {title}")
+        for dungeon in self.ascension_dungeons.values():
+            if dungeon["id"] in self.dungeons or dungeon["id"] in self.ascension_trials:
+                raise ValueError(f"Duplicate Ascension dungeon {dungeon['id']}")
+            for room in dungeon.get("rooms", []):
+                if room.get("monster_id") and room["monster_id"] not in self.monsters:
+                    raise ValueError(f"Unknown Ascension dungeon monster {room['monster_id']}")
         self.enemy_profiles = self._load_map("enemy_profiles.json")
         self.enemy_actions = self._load_map("enemy_actions.json")
         self.bestiary_research = json.loads((self.data_dir / "bestiary_research.json").read_text(encoding="utf-8"))

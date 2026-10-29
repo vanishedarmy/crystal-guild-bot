@@ -1,0 +1,326 @@
+[
+  {
+    "id": "crystal_sanctum",
+    "name": "Forgotten Crystal Sanctum",
+    "subtitle": "Elemental wards reshape an ancient crystal citadel.",
+    "identity": "Ascension Dungeon",
+    "min_level": 55,
+    "recommended_level": 58,
+    "completion_bonus": {
+      "xp": 8800,
+      "jp": 1760,
+      "gil": 5225
+    },
+    "first_clear_bonus": {
+      "xp": 8250,
+      "jp": 2750,
+      "gil": 6050,
+      "items": [
+        {
+          "item_id": "skyglass_shard",
+          "quantity": 3
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "gate",
+        "name": "Sealed Passage",
+        "type": "entrance",
+        "description": "The gates to Forgotten Crystal Sanctum answer only those prepared for the challenge."
+      },
+      {
+        "id": "ward",
+        "name": "Elemental Ward",
+        "type": "combat",
+        "monster_id": "holy_dragon",
+        "hp_multiplier": 0.8,
+        "mechanics": [
+          "Choose your damage and recovery carefully; the warded guardian strikes back."
+        ],
+        "description": "The guardian tests your defenses."
+      },
+      {
+        "id": "crossroads",
+        "name": "Twofold Judgment",
+        "type": "choice",
+        "description": "Choose between an aggressive path and a safer restorative path.",
+        "options": [
+          {
+            "id": "shield",
+            "label": "Sanctuary Route",
+            "description": "Restore resources and reduce damage from the next hazard.",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 20
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "power",
+            "label": "High-Risk Route",
+            "description": "Increased combat spoils at the cost of heightened enemy HP.",
+            "effects": [
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 25
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 35
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aetherfall",
+        "name": "Aetherfall Passage",
+        "type": "hazard",
+        "damage_percent": 12,
+        "description": "Unstable magic forces you to guard your remaining strength."
+      },
+      {
+        "id": "sanctuary",
+        "name": "Crystal Sanctuary",
+        "type": "sanctuary",
+        "hp_restore_percent": 18,
+        "resource_restore_percent": 30,
+        "description": "A brief restoration before the final encounter."
+      },
+      {
+        "id": "guardian",
+        "name": "Ascension Guardian",
+        "type": "boss",
+        "monster_id": "behemoth_tyrant",
+        "hp_multiplier": 1.05,
+        "opening_resource_drain_percent": 0,
+        "mechanics": [
+          "The guardian tests timing, resource management, and the use of advanced Job techniques."
+        ],
+        "description": "The guardian awakens for a final decisive battle."
+      }
+    ]
+  },
+  {
+    "id": "celestial_spire",
+    "name": "Celestial Spire",
+    "subtitle": "Climb the stormbound spire, choosing protection or power.",
+    "identity": "Ascension Dungeon",
+    "min_level": 75,
+    "recommended_level": 78,
+    "completion_bonus": {
+      "xp": 12000,
+      "jp": 2400,
+      "gil": 7125
+    },
+    "first_clear_bonus": {
+      "xp": 11250,
+      "jp": 3750,
+      "gil": 8250,
+      "items": [
+        {
+          "item_id": "frostveil_prism",
+          "quantity": 3
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "gate",
+        "name": "Sealed Passage",
+        "type": "entrance",
+        "description": "The gates to Celestial Spire answer only those prepared for the challenge."
+      },
+      {
+        "id": "ward",
+        "name": "Elemental Ward",
+        "type": "combat",
+        "monster_id": "archeodemon",
+        "hp_multiplier": 0.8,
+        "mechanics": [
+          "Choose your damage and recovery carefully; the warded guardian strikes back."
+        ],
+        "description": "The guardian tests your defenses."
+      },
+      {
+        "id": "crossroads",
+        "name": "Twofold Judgment",
+        "type": "choice",
+        "description": "Choose between an aggressive path and a safer restorative path.",
+        "options": [
+          {
+            "id": "shield",
+            "label": "Sanctuary Route",
+            "description": "Restore resources and reduce damage from the next hazard.",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 20
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "power",
+            "label": "High-Risk Route",
+            "description": "Increased combat spoils at the cost of heightened enemy HP.",
+            "effects": [
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 25
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 35
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aetherfall",
+        "name": "Aetherfall Passage",
+        "type": "hazard",
+        "damage_percent": 12,
+        "description": "Unstable magic forces you to guard your remaining strength."
+      },
+      {
+        "id": "sanctuary",
+        "name": "Crystal Sanctuary",
+        "type": "sanctuary",
+        "hp_restore_percent": 18,
+        "resource_restore_percent": 30,
+        "description": "A brief restoration before the final encounter."
+      },
+      {
+        "id": "guardian",
+        "name": "Ascension Guardian",
+        "type": "boss",
+        "monster_id": "crystal_dragon",
+        "hp_multiplier": 1.05,
+        "opening_resource_drain_percent": 8,
+        "mechanics": [
+          "The guardian tests timing, resource management, and the use of advanced Job techniques."
+        ],
+        "description": "The guardian awakens for a final decisive battle."
+      }
+    ]
+  },
+  {
+    "id": "astral_crucible",
+    "name": "Astral Crucible",
+    "subtitle": "Master concentrated void pressure before the Astral Crucible awakens.",
+    "identity": "Ascension Dungeon",
+    "min_level": 95,
+    "recommended_level": 98,
+    "completion_bonus": {
+      "xp": 15200,
+      "jp": 3040,
+      "gil": 9025
+    },
+    "first_clear_bonus": {
+      "xp": 14250,
+      "jp": 4750,
+      "gil": 10450,
+      "items": [
+        {
+          "item_id": "singularity_shard",
+          "quantity": 3
+        }
+      ]
+    },
+    "rooms": [
+      {
+        "id": "gate",
+        "name": "Sealed Passage",
+        "type": "entrance",
+        "description": "The gates to Astral Crucible answer only those prepared for the challenge."
+      },
+      {
+        "id": "ward",
+        "name": "Elemental Ward",
+        "type": "combat",
+        "monster_id": "mimic_king",
+        "hp_multiplier": 0.8,
+        "mechanics": [
+          "Choose your damage and recovery carefully; the warded guardian strikes back."
+        ],
+        "description": "The guardian tests your defenses."
+      },
+      {
+        "id": "crossroads",
+        "name": "Twofold Judgment",
+        "type": "choice",
+        "description": "Choose between an aggressive path and a safer restorative path.",
+        "options": [
+          {
+            "id": "shield",
+            "label": "Sanctuary Route",
+            "description": "Restore resources and reduce damage from the next hazard.",
+            "effects": [
+              {
+                "type": "heal_percent",
+                "value": 20
+              },
+              {
+                "type": "next_hazard_reduction_percent",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "power",
+            "label": "High-Risk Route",
+            "description": "Increased combat spoils at the cost of heightened enemy HP.",
+            "effects": [
+              {
+                "type": "next_combat_enemy_hp_percent",
+                "value": 25
+              },
+              {
+                "type": "next_combat_reward_percent",
+                "value": 35
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aetherfall",
+        "name": "Aetherfall Passage",
+        "type": "hazard",
+        "damage_percent": 12,
+        "description": "Unstable magic forces you to guard your remaining strength."
+      },
+      {
+        "id": "sanctuary",
+        "name": "Crystal Sanctuary",
+        "type": "sanctuary",
+        "hp_restore_percent": 18,
+        "resource_restore_percent": 30,
+        "description": "A brief restoration before the final encounter."
+      },
+      {
+        "id": "guardian",
+        "name": "Ascension Guardian",
+        "type": "boss",
+        "monster_id": "omega_sentinel",
+        "hp_multiplier": 1.05,
+        "opening_resource_drain_percent": 8,
+        "mechanics": [
+          "The guardian tests timing, resource management, and the use of advanced Job techniques."
+        ],
+        "description": "The guardian awakens for a final decisive battle."
+      }
+    ]
+  }
+]

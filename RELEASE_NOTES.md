@@ -1,3 +1,10 @@
+## v1.9.95 — Trials of Ascension
+- 72 Job-specific, persistent guardian trials (18 Jobs × JLv.60/75/90/99) with separate character-level gates, sequential prerequisites, class-themed objectives, combat seals and first-clear rewards.
+- 36 new Job titles (JLv.75/99). Persistent Job-specific permanent passives at JLv.60/90/99 are awarded only once and never stack on replay.
+- Three six-room endgame Dungeons: Forgotten Crystal Sanctum (Lv.55), Celestial Spire (Lv.75), Astral Crucible (Lv.95), including meaningful route/hazard/sanctuary choices.
+- Twitch: `!ascension`, `!jobtrials`, `!ascend <60|75|90|99>`, `!trialaction <attack|defend|ability:id|limit:tier|item:id>`, `!trialretreat`. Portal: new current-Job trials board and live guardian-seal objective progress.
+- Updated Guide, What's New and release metadata; retains v1.9.94 fixes and all previous equipment, Job and Limit Break expansions. No DB schema or sync-protocol change. Rebuild and smoke-test Web before deployment.
+
 ## v1.9.94 — Battle & Rewards Hotfix
 - Audited all 34 consumables' effect definitions and tested full recovery for mixed MP/AP party members in both standard battles and raids. Megalixir sets all conscious allies to maximum HP and applicable MP/AP **at item resolution**; enemy retaliation later that round still causes damage. No unrequested invulnerability or global item rebalance.
 - World Event wins now grant 4× XP, 3× JP and 2× Gil relative to their normal scaled victories, plus one guaranteed thematic rare drop and a 20% premium-bonus roll. Existing normal monster drops and seasonal tokens still apply; no rewards on defeat.
