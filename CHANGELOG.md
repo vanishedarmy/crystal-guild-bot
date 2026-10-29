@@ -1,3 +1,6 @@
+## v1.9.94 — Battle & Rewards Hotfix
+- More rewarding World Events (XP, JP, Gil, themed rare/premium loot), reliable `!revive` during group live combat, mobile enemy HP visibility and consumable effect audit.
+
 ## v1.9.91 — Equipment Expansion
 - Integrated all 173 item illustrations (119 regular gear; 54 Ultimate forms) into Web and refreshed Player Guide. Gameplay catalogs and player state remain unchanged.
 

@@ -700,10 +700,10 @@ class RPGCommands(commands.Component):
 
     @commands.command()
     async def revive(self, ctx: commands.Context, *, target: str = "") -> None:
-        if not await self._require_stream_live(ctx, "Raid actions"):
+        if not await self._require_stream_live(ctx, "Combat revival"):
             return
         uid, _, _ = self._identity(ctx)
-        await send_result(ctx, self.game.revive_raid(uid, target))
+        await send_result(ctx, self.game.revive_active(uid, target))
 
     @commands.command(aliases=["raidcontrib", "raidboard"])
     async def raidstats(self, ctx: commands.Context) -> None:

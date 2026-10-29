@@ -282,6 +282,23 @@ class GameResult:
     def fail(cls, message: str, **data: Any) -> "GameResult":
         return cls(False, [message], data)
 
+# Themed, existing catalog items only. Guaranteed roll uses rare material
+# rewards; a secondary 20% roll offers a stronger regional trophy/material.
+WORLD_EVENT_TREASURE = {
+    "notorious_behemoth": (("behemoth_horn", "behemoth_hide"), ("dragon_scale", "adamantite")),
+    "tainted_malboro": (("morbol_spore", "poison_fang", "morbol_bulb"), ("dark_matter",)),
+    "dark_iron_giant": (("mythril_ore", "iron_giant_plate"), ("magitek_core",)),
+    "elder_adamantoise": (("ironclad_plate", "mythril_ore"), ("adamantite",)),
+    "cursed_tonberry_king": (("tonberry_lantern",), ("chef_knife", "ribbon")),
+    "savage_coeurl": (("crystal_shard", "elemental_crystal"), ("eidolon_shard",)),
+    "dread_bomb_king": (("bomb_core", "bomb_kings_fuse", "elemental_crystal"), ("magitek_core",)),
+    "twisted_ahriman": (("ahriman_lens", "crystal_shard"), ("rift_crystal",)),
+    "ravenous_dragon": (("dragon_fang", "wyvern_scale"), ("dragon_scale", "dragon_heart")),
+    "bloodied_deathclaw": (("magitek_capacitor", "crystal_shard"), ("magitek_core",)),
+    "hollow_warden": (("iron_giant_plate", "crystal_shard"), ("dark_matter",)),
+}
+
+
 
 class CrystalGuildEngine:
     def __init__(self, db: Database, data: GameData, venture_cooldown_seconds: int = 600, encounter_join_seconds: int = 60, camp_rest_seconds: int = 3600, raid_join_seconds: int = 90, raid_round_seconds: int = 60, overlay_state_path: str = "overlay/state.json", rng: random.Random | None = None, shop_refresh_seconds: int = 1800, encounter_round_seconds: int = 30, venture_treasure_chance: float = VENTURE_TREASURE_CHANCE):
@@ -5108,7 +5125,12 @@ class CrystalGuildEngine:
                         "merc": self._merc_public_result(meta),
                     }
                 elif won:
-                    rewards = self._award_victory(pid, p, monster, rally_venture=kind == "venture")
+                    rewards = self._award_victory(
+                        pid, p, monster, rally_venture=kind == "venture",
+                        world_event_id=str(encounter.get("world_event_id") or "") if kind == "world_event" else "",
+                    )
+                    if kind == "world_event":
+                        venture_rewards = rewards
                     if kind == "venture":
                         merc_bonus = self._merc_bonus_loot(pid, meta, list(monster.get("drops", [])), source=f"merc:venture:{active_id}")
                         if merc_bonus:
@@ -5607,6 +5629,7 @@ class CrystalGuildEngine:
         monster: dict[str, Any],
         *,
         rally_venture: bool = False,
+        world_event_id: str = "",
     ) -> dict[str, Any]:
         level_factor = encounter_reward_factor(p["level"], monster["level"])
         job_level = self._job_level(player_id, p["current_job"])
@@ -5615,6 +5638,13 @@ class CrystalGuildEngine:
         xp = max(5, int(monster["xp"] * level_factor * rally_multiplier * self.rng.uniform(0.92, 1.08)))
         jp = self.fellowship_system.apply_jp_bonus(max(2, int(monster["jp"] * jp_factor * rally_multiplier * self.rng.uniform(0.95, 1.10))))
         gil = max(1, int(monster["gil"] * level_factor * rally_multiplier * self.rng.uniform(0.85, 1.18)))
+        # World Events are infrequent communal battles, not ordinary monster
+        # encounters. Award a substantial participation victory payout while
+        # still respecting the existing level-difference and Fellowship rules.
+        if world_event_id:
+            xp = max(250, int(xp * 4.0))
+            jp = max(50, int(jp * 3.0))
+            gil = max(100, int(gil * 2.0))
         job = self.data.jobs[p["current_job"]]
         effects = self._effects(player_id, p["current_job"])
         gil = int(gil * (1 + job.get("gil_bonus", 0) + effects.get("gil_bonus", 0)))
@@ -5635,6 +5665,21 @@ class CrystalGuildEngine:
                 loot.append(f"{self.data.items[drop['item_id']]['name']} x{qty}")
         loot.extend(self._roll_pity_drops(player_id, monster, source=f"monster:{monster['id']}", loot_bonus=loot_bonus))
         loot.extend(self._roll_recipe_drops(player_id, monster, source=f"monster:{monster['id']}", loot_bonus=loot_bonus))
+        if world_event_id:
+            # One themed rare reward per victorious participant, with a chance
+            # for a second premium drop; no separate saleable currency, no
+            # reward on defeat and no new persistence/state schema.
+            rare, premium = WORLD_EVENT_TREASURE.get(world_event_id, ((), ()))
+            candidates = [item_id for item_id in rare if item_id in self.data.items]
+            if candidates:
+                item_id = self.rng.choice(candidates)
+                self._change_item(player_id, item_id, 1, f"world_event:{world_event_id}:rare")
+                loot.append(f"{self.data.items[item_id]['name']} x1 (World Event rare)")
+            upgrades = [item_id for item_id in premium if item_id in self.data.items]
+            if upgrades and self.rng.random() < 0.20:
+                item_id = self.rng.choice(upgrades)
+                self._change_item(player_id, item_id, 1, f"world_event:{world_event_id}:premium")
+                loot.append(f"{self.data.items[item_id]['name']} x1 (World Event bonus)")
         levelups = self._process_levels(player_id, p["current_job"])
         return {
             "xp": xp, "jp": jp, "gil": gil, "loot": loot, "levelups": levelups,
@@ -17688,6 +17733,49 @@ class CrystalGuildEngine:
         self.db.add_record_stat(twitch_id, "summons_called", 1)
         self._update_raid_overlay()
         return GameResult.success(f"SUMMON ARMED — {meta['name']} calls for {name}. The Eidolon will strike at the start of the next raid round.")
+
+    @_state_guard
+    def revive_active(self, reviver_id: str, target_query: str = "") -> GameResult:
+        """Use a Phoenix Down on a KO'd ally in any live shared combat.
+
+        Raid behavior is retained for compatibility; Stream Ventures and World
+        Events use the same targeting and immediate-inventory spending rule.
+        Instanced solo battles have no other party member to target.
+        """
+        reviver_id = str(reviver_id)
+        if self.active_boss and self.active_boss.get("state") == "combat" and reviver_id in self.raid_roster:
+            return self.revive_raid(reviver_id, target_query)
+        encounter = self.active_encounter
+        if not encounter or encounter.get("state") != "combat" or reviver_id not in self.encounter_roster:
+            return GameResult.fail("!revive requires a live Venture, World Event, or Raid with a KO'd teammate. Use Phoenix Down from Inventory outside combat.")
+        if str(encounter.get("kind") or "") not in {"venture", "world_event"}:
+            return GameResult.fail("!revive is for active group battles. Solo instances have no teammate to revive.")
+        actor = self.encounter_roster.get(reviver_id)
+        if not actor or int(actor.get("hp", 0)) <= 0:
+            return GameResult.fail("You must be alive and participating to revive a teammate.")
+        if float(encounter.get("next_round_at") or 0) and time.time() >= float(encounter["next_round_at"]):
+            return GameResult.fail("The combat round is resolving; try !revive in the next round.")
+        name = str(target_query or "").strip().lstrip("@").strip()
+        if not name:
+            return GameResult.fail("Usage: !revive <player> — requires one Phoenix Down.")
+        target_pid = self._battle_target_id(name)
+        if not target_pid:
+            return GameResult.fail("That adventurer is not in this battle, or the name is ambiguous. Use the full Twitch username.")
+        target = self.encounter_roster[target_pid]
+        if int(target.get("hp", 0)) > 0:
+            return GameResult.fail(f"{target['name']} is still standing; no Phoenix Down consumed.")
+        if int(target.get("max_hp", 0)) <= 0:
+            return GameResult.fail("That adventurer cannot be revived in this battle.")
+        if self._inventory_qty(reviver_id, "phoenix_down") <= 0:
+            return GameResult.fail("You need a Phoenix Down to revive another hero.")
+        self._change_item(reviver_id, "phoenix_down", -1, "world_event_revive" if encounter.get("kind") == "world_event" else "venture_revive")
+        target["hp"] = max(1, int(int(target["max_hp"]) * 0.30))
+        target["ko_counted"] = False
+        target["_moment_revived_during_raid"] = True
+        self._save_hp(target_pid, int(target["hp"]))
+        self.db.execute("UPDATE players SET raid_revives=raid_revives+1 WHERE twitch_id=?", (reviver_id,))
+        label = "World Event" if encounter.get("kind") == "world_event" else "Venture"
+        return GameResult.success(f"PHOENIX DOWN [{label}] — {actor['name']} revives {target['name']} at {target['hp']}/{target['max_hp']} HP.")
 
     @_state_guard
     def revive_raid(self, reviver_id: str, target_query: str) -> GameResult:

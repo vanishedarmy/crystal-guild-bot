@@ -23,4 +23,4 @@ World Events are spontaneous stream-only Notorious Monster encounters. They use 
 - Only one Guild-wide encounter can be active at once.
 
 ## Reward posture
-Each variant applies enhanced HP/power and a controlled reward multiplier to its familiar base monster. The intent is **better than an ordinary encounter, below Raid-scale rewards**, so World Events are exciting without becoming mandatory farming content.
+Since v1.9.94, World Event victories award **4× XP, 3× JP and 2× Gil** on top of their usual scaled monster rewards, after level-based reward factors. Every victorious participant also earns **one guaranteed thematic rare item** and has a **20% chance at a premium bonus item**. Existing monster drop rolls, seasonal token rewards and other progression bonuses still apply. Defeats never grant victory loot. This is designed to reward the relatively infrequent live group challenge rather than common encounters. Active party members can revive KO'd allies using `!revive <player>` and a Phoenix Down.

@@ -1,4 +1,4 @@
-Crystal Guild v1.9.93 — Limit Break Awakening
+Crystal Guild v1.9.94 — Battle & Rewards Hotfix
 Sanitized Bot source inventory (excludes secrets, transient state and bytecode).
 
 .env.example

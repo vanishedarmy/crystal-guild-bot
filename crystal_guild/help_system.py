@@ -56,7 +56,7 @@ HELP_TOPICS = {
     ),
     "raids": (
         "RAIDS — live-stream participation requires the channel to be LIVE: when a boss rally is active, !raid joins it and !boss shows status. Combat advances automatically after the rally closes.",
-        "During raids use !limit, !summon [name], !revive <hero>, and !raidstats. !healparty [1|2|3|4] pays 100/250/500/1,000 Gil to restore the living Raid party HP/MP, once per raider per Raid. Browse the catalog with !bosses and !bossinfo <name>.",
+        "During live Raids, Ventures and World Events use !revive <hero> (Phoenix Down required). During Raids use !limit, !summon [name], and !raidstats. !healparty [1|2|3|4] pays 100/250/500/1,000 Gil to restore the living Raid party HP/MP, once per raider per Raid. Browse the catalog with !bosses and !bossinfo <name>.",
     ),
     "bestiary": (
         "BESTIARY — !bestiary shows discovery progress. !monsters [region] browses encounters and !monster <name> inspects a creature.",

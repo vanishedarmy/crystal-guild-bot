@@ -1,3 +1,10 @@
+## v1.9.94 — Battle & Rewards Hotfix
+- Audited all 34 consumables' effect definitions and tested full recovery for mixed MP/AP party members in both standard battles and raids. Megalixir sets all conscious allies to maximum HP and applicable MP/AP **at item resolution**; enemy retaliation later that round still causes damage. No unrequested invulnerability or global item rebalance.
+- World Event wins now grant 4× XP, 3× JP and 2× Gil relative to their normal scaled victories, plus one guaranteed thematic rare drop and a 20% premium-bonus roll. Existing normal monster drops and seasonal tokens still apply; no rewards on defeat.
+- `!revive <player>` now works in active Stream Ventures and World Events as well as Raids. It consumes one Phoenix Down only on successful revival. Solo Expeditions/Dungeons remain single-player and are not ally-revive contexts.
+- Mobile combat quick bar prominently displays enemy name, current/max HP, percentage and large HP gauge in all six combat views. What's New and Guide updated.
+- No database schema or sync protocol changes. Bot/Web should deploy together.
+
 ## v1.9.93 — Limit Break Awakening (18 Jobs · 72 Limit Breaks)
 
 - Every playable Job unlocks four named Limit Break techniques at Job Levels 50, 75, 90 and 99. Job Mastery remains JLv.50, and the v1.9.92 169 active techniques and 90 passive milestones remain available.
