@@ -90,6 +90,7 @@ from .daily_provisions import (
     roll_daily_provisions,
     subscriber_perk,
 )
+from .balance import dungeon_repeat_bonus_factor
 from .data import GameData
 from .bestiary_progress import reconcile_mastery
 from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
@@ -2812,6 +2813,16 @@ class CrystalGuildEngine:
         ]
 
     @_state_guard
+    def end_world_event_if_offline(self) -> GameResult:
+        """Stop a World Event on loss of live-stream status; never award offline loot."""
+        encounter = self.active_encounter
+        if not encounter or str(encounter.get("kind") or "") != "world_event":
+            return GameResult.success(world_event_ended=False)
+        self._finish_world_event_schedule(str(encounter.get("world_event_id") or ""))
+        self._clear_encounter(int(encounter["id"]))
+        return GameResult.success("WORLD EVENT — Stream ended. The World Event has withdrawn; no rewards issued.", world_event_ended=True)
+
+    @_state_guard
     def maybe_spawn_world_event(self, *, stream_live: bool, now: float | None = None, force: bool = False) -> GameResult:
         now = float(time.time() if now is None else now)
         if not stream_live:
@@ -3155,6 +3166,14 @@ class CrystalGuildEngine:
         if blocked:
             return GameResult.fail(blocked)
         kind = str(self.active_encounter.get("kind") or "venture")
+        if kind == "world_event":
+            event_def = WORLD_EVENTS_BY_ID.get(str(self.active_encounter.get("world_event_id") or ""), {})
+            required_level = int(event_def.get("min_level") or 1)
+            if int(p["level"]) < required_level:
+                return GameResult.fail(
+                    f"This Elite World Event requires Character Lv.{required_level}. "
+                    "Train in level-appropriate Hunts and Dungeons first."
+                )
         if kind != "world_event":
             cooldown = self._cooldown_remaining(twitch_id, "venture")
             if cooldown > 0 and not bypass_cooldown:
@@ -5667,6 +5686,8 @@ class CrystalGuildEngine:
         # World Events are infrequent communal battles, not ordinary monster
         # encounters. Award a substantial participation victory payout while
         # still respecting the existing level-difference and Fellowship rules.
+        if world_event_id and world_event_id not in WORLD_EVENTS_BY_ID and world_event_id != "hollow_warden":
+            raise ValueError("Unknown World Event reward source")
         if world_event_id:
             xp = max(250, int(xp * 4.0))
             jp = max(50, int(jp * 3.0))
@@ -9722,10 +9743,17 @@ class CrystalGuildEngine:
             bonus_blocks.append(dungeon.get("completion_bonus") if isinstance(dungeon.get("completion_bonus"), dict) else {})
         if include_first_clear_bonus:
             bonus_blocks.append(dungeon.get("first_clear_bonus") if isinstance(dungeon.get("first_clear_bonus"), dict) else {})
+        player = self._player(twitch_id)
+        # Repeat completion cash/XP scales down when a high-level character
+        # clears a much easier dungeon. First-clear bonuses remain untouched.
+        repeat_factor = dungeon_repeat_bonus_factor(
+            int(player["level"]), int(dungeon.get("recommended_level") or dungeon.get("min_level") or 1),
+        ) if player and include_completion_bonus and not include_first_clear_bonus else 1.0
         for bonus in bonus_blocks:
-            cache["xp"] = int(cache.get("xp", 0)) + int(bonus.get("xp", 0) or 0)
-            cache["jp"] = int(cache.get("jp", 0)) + int(bonus.get("jp", 0) or 0)
-            cache["gil"] = int(cache.get("gil", 0)) + int(bonus.get("gil", 0) or 0)
+            factor = repeat_factor if bonus is dungeon.get("completion_bonus") else 1.0
+            cache["xp"] = int(cache.get("xp", 0)) + int(int(bonus.get("xp", 0) or 0) * factor)
+            cache["jp"] = int(cache.get("jp", 0)) + int(int(bonus.get("jp", 0) or 0) * factor)
+            cache["gil"] = int(cache.get("gil", 0)) + int(int(bonus.get("gil", 0) or 0) * factor)
             for loot in list(bonus.get("items") or []):
                 item_id = str(loot.get("item_id") or "")
                 qty = max(0, int(loot.get("quantity", 1) or 1))

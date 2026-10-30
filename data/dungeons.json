@@ -324,7 +324,7 @@
   {
     "id": "whiteglass_bastion",
     "name": "The Whiteglass Bastion",
-    "subtitle": "A half-buried northern fortress where whiteout winds, frozen wards, and an old Behemoth have turned every surviving route into a test of endurance.",
+    "subtitle": "A half-buried northern fortress where whiteout winds, frozen wards, and an ancient Chimera have turned every surviving route into a test of endurance.",
     "identity": "Endurance & Wards",
     "min_level": 26,
     "recommended_level": 30,
@@ -464,7 +464,7 @@
         "id": "iron_watch",
         "name": "The Iron Watch",
         "type": "miniboss",
-        "monster_id": "iron_giant",
+        "monster_id": "ironclad",
         "hp_multiplier": 1.22,
         "reward_multiplier": 1.35,
         "description": "An Iron Giant frozen upright beside the command hall tears free of the ice and resumes a patrol that should have ended generations ago."
@@ -534,7 +534,7 @@
         "id": "bastion_heart",
         "name": "Bastion Heart",
         "type": "boss",
-        "monster_id": "behemoth",
+        "monster_id": "chimera_brain",
         "hp_multiplier": 1.28,
         "reward_multiplier": 1.6,
         "description": "A Behemoth has claimed the command sanctum as its den. Frost coats its mane and every broken standard bends toward it in the gale."

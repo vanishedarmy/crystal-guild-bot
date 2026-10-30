@@ -34,7 +34,7 @@ class EconomyBalanceTests(unittest.TestCase):
     def test_new_job_jp_has_bounded_catchup(self):
         # A high-level character on a new Job can meaningfully catch up in
         # mid-game content, while trivial Lv.1 farming remains at the floor.
-        self.assertEqual(jp_reward_factor(50, 1, 1), 0.25)
+        self.assertAlmostEqual(jp_reward_factor(50, 1, 1), 0.175)
         self.assertEqual(jp_reward_factor(50, 1, 30), 1.5)
         self.assertLessEqual(jp_reward_factor(50, 1, 99), 1.5)
 

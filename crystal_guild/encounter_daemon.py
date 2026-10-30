@@ -406,6 +406,12 @@ class EncounterDaemon:
         except Exception:
             LOGGER.exception("World Event stream-status lookup failed")
             return False
+        if not live:
+            result = self.game.end_world_event_if_offline()
+            if result.ok and result.data.get("world_event_ended"):
+                self._last_action = "world-event-ended-offline"
+                self._publish(result)
+                return True
         result = self.game.maybe_spawn_world_event(stream_live=live, now=now)
         if result.ok and result.data.get("world_event_spawned"):
             self._last_action = f"world-event-spawn:{result.data.get('world_event_id', 'unknown')}"

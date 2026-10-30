@@ -125,13 +125,25 @@ def validate_research_overlay(
         if not isinstance(entry.get('lore'), str) or len(entry['lore'].strip()) < 20:
             errors.append(f'bestiary_research: {monster_id}: missing or short lore')
         habitats = entry.get('habitats')
-        if not isinstance(habitats, list) or not habitats or any(not isinstance(h, str) for h in habitats):
+        # Reserved Elite World Event templates are never ordinary regional
+        # encounters; they intentionally have no public exploration habitat.
+        from .world_events import WORLD_EVENTS
+        live_only = {
+            str(event['base_monster_id']) for event in WORLD_EVENTS
+            if event.get('tier') == 'elite'
+        }
+        event_only = monster_id in live_only and not official_habitats.get(monster_id)
+        if not isinstance(habitats, list) or any(not isinstance(h, str) for h in habitats) or (not habitats and not event_only):
             errors.append(f'bestiary_research: {monster_id}: habitats must be nonempty string array')
             continue
         if len(set(habitats)) != len(habitats):
             errors.append(f'bestiary_research: {monster_id}: duplicate habitats')
         source = entry.get('habitat_provenance')
         if expected_category == 'regional':
+            if event_only:
+                if source != 'world_event_live' or habitats:
+                    errors.append(f'bestiary_research: {monster_id}: exclusive World Event must have no region habitat')
+                continue
             if source != 'region_encounters':
                 errors.append(f'bestiary_research: {monster_id}: regional habitat provenance must be region_encounters')
             if set(habitats) != official_habitats.get(monster_id, set()):

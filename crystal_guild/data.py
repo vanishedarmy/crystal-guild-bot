@@ -39,6 +39,29 @@ class GameData:
         self.forge = sorted(self._load_list("forge.json"), key=lambda r: r["level"])
         self.active_abilities = self._load_active_abilities()
         self.limit_breaks = self._load_limits()
+        # World Events have exclusive named bosses and generous live-only
+        # rewards. Keep their base boss templates out of Dungeon/Trial catalogs,
+        # and reserve Elite templates from all offline exploration activities.
+        from .world_events import WORLD_EVENTS
+        event_templates = {row["base_monster_id"] for row in WORLD_EVENTS}
+        elite_templates = {row["base_monster_id"] for row in WORLD_EVENTS if row.get("tier") == "elite"}
+        for dungeon in (*self.dungeons.values(), *self.ascension_dungeons.values()):
+            for room in dungeon.get("rooms", []):
+                if room.get("monster_id") in event_templates:
+                    raise ValueError(f"World Event boss cannot be a Dungeon enemy: {dungeon['id']}")
+        for trial in self.ascension_trials.values():
+            if trial.get("guardian") in event_templates:
+                raise ValueError(f"World Event boss cannot be a Job Trial guardian: {trial['id']}")
+        for region in self.regions.values():
+            if any(e.get("monster_id") in elite_templates for e in region.get("encounters", [])):
+                raise ValueError(f"Elite World Event boss is in region {region['id']}")
+        for region in self.expedition_regions.values():
+            encounters = region.get("encounters", []) + region.get("rare_encounters", [])
+            if (region.get("boss") or {}).get("monster_id") in elite_templates or any(
+                e.get("monster_id") in elite_templates for e in encounters
+            ):
+                raise ValueError(f"Elite World Event boss is in Expedition {region['id']}")
+
         # Reuse Dungeon persistence for Job Ascension. These are separate
         # catalogs, so the original four Dungeon ids and public API remain intact.
         for trial in self.ascension_trials.values():

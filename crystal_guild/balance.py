@@ -16,7 +16,7 @@ XP_EXPONENT = 1.55
 JP_BASE = 35
 JP_EXPONENT = 1.35
 
-ENCOUNTER_REWARD_MIN = 0.25
+ENCOUNTER_REWARD_MIN = 0.05
 ENCOUNTER_REWARD_MAX = 1.50
 
 # Rally Ventures are Twitch-live, higher-risk encounters. A victory against an
@@ -197,8 +197,30 @@ def jp_to_next(level: int) -> int:
 
 def encounter_reward_factor(player_level: int, monster_level: int) -> float:
     """Reward level-appropriate adventuring and sharply reduce trivial farming."""
-    ratio = max(1, int(monster_level)) / max(1, int(player_level))
-    return max(ENCOUNTER_REWARD_MIN, min(ENCOUNTER_REWARD_MAX, ratio))
+    player = max(1, int(player_level))
+    enemy = max(1, int(monster_level))
+    gap = player - enemy
+    # FF-style level bands: nearby foes award their full value, while fights
+    # more than 10-25 levels below the adventurer become poor XP/JP farms.
+    # Preserve the legacy +50% ceiling for genuinely dangerous encounters.
+    if gap <= 0:
+        return min(ENCOUNTER_REWARD_MAX, enemy / player)
+    if gap <= 3:
+        return max(0.85, 1.0 - 0.05 * gap)
+    if gap <= 10:
+        return 0.85 - (gap - 3) * (0.50 / 7.0)
+    if gap <= 20:
+        return 0.35 - (gap - 10) * 0.025
+    return max(ENCOUNTER_REWARD_MIN, 0.10 - (gap - 20) * 0.005)
+
+
+def dungeon_repeat_bonus_factor(player_level: int, recommended_level: int) -> float:
+    """Scale *repeat* dungeon completion payouts to the current level band.
+
+    First-clears are achievements and keep their full one-time bonus; this
+    factor applies only to repeat completion XP/JP/Gil, not crafting materials.
+    """
+    return encounter_reward_factor(player_level, recommended_level)
 
 
 def rally_venture_reward_multiplier(player_level: int, monster_level: int) -> float:

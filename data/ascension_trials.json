@@ -878,7 +878,7 @@
     "stage": "Legend",
     "role": "striker",
     "description": "The legend challenge for Thief: show mastery of striker combat under pressure.",
-    "guardian": "singularity_archon",
+    "guardian": "eclipse_harbinger",
     "required_actions": {
       "ability": 2,
       "defend": 1,
@@ -1657,7 +1657,7 @@
     "stage": "Mastery",
     "role": "arcanist",
     "description": "The mastery challenge for Red Mage: show mastery of arcanist combat under pressure.",
-    "guardian": "frostveil_astrolabe",
+    "guardian": "crystal_dragon",
     "required_actions": {
       "ability": 2,
       "defend": 1
@@ -1748,7 +1748,7 @@
     "stage": "Transcendence",
     "role": "arcanist",
     "description": "The transcendence challenge for Red Mage: show mastery of arcanist combat under pressure.",
-    "guardian": "mirage_pharaoh",
+    "guardian": "machea",
     "required_actions": {
       "ability": 3,
       "defend": 1
@@ -2804,7 +2804,7 @@
     "stage": "Legend",
     "role": "striker",
     "description": "The legend challenge for Dragoon: show mastery of striker combat under pressure.",
-    "guardian": "singularity_archon",
+    "guardian": "eclipse_harbinger",
     "required_actions": {
       "ability": 2,
       "defend": 1,
@@ -3583,7 +3583,7 @@
     "stage": "Mastery",
     "role": "arcanist",
     "description": "The mastery challenge for Summoner: show mastery of arcanist combat under pressure.",
-    "guardian": "frostveil_astrolabe",
+    "guardian": "crystal_dragon",
     "required_actions": {
       "ability": 2,
       "defend": 1
@@ -3674,7 +3674,7 @@
     "stage": "Transcendence",
     "role": "arcanist",
     "description": "The transcendence challenge for Summoner: show mastery of arcanist combat under pressure.",
-    "guardian": "mirage_pharaoh",
+    "guardian": "machea",
     "required_actions": {
       "ability": 3,
       "defend": 1
@@ -4730,7 +4730,7 @@
     "stage": "Legend",
     "role": "support",
     "description": "The legend challenge for Bard: show mastery of support combat under pressure.",
-    "guardian": "singularity_archon",
+    "guardian": "eclipse_harbinger",
     "required_actions": {
       "ability": 2,
       "defend": 1,
@@ -5509,7 +5509,7 @@
     "stage": "Mastery",
     "role": "healer",
     "description": "The mastery challenge for Sage: show mastery of healer combat under pressure.",
-    "guardian": "frostveil_astrolabe",
+    "guardian": "crystal_dragon",
     "required_actions": {
       "ability": 2,
       "defend": 1
@@ -5600,7 +5600,7 @@
     "stage": "Transcendence",
     "role": "healer",
     "description": "The transcendence challenge for Sage: show mastery of healer combat under pressure.",
-    "guardian": "mirage_pharaoh",
+    "guardian": "machea",
     "required_actions": {
       "ability": 2,
       "defend": 2

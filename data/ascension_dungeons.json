@@ -775,7 +775,7 @@
         "id": "guardian",
         "name": "Sovereign Arena",
         "type": "boss",
-        "monster_id": "mirage_pharaoh",
+        "monster_id": "machea",
         "hp_multiplier": 1.15,
         "opening_resource_drain_percent": 0,
         "mechanics": [
@@ -1193,7 +1193,7 @@
         "id": "guardian",
         "name": "Sovereign Arena",
         "type": "boss",
-        "monster_id": "singularity_archon",
+        "monster_id": "eclipse_harbinger",
         "hp_multiplier": 1.15,
         "opening_resource_drain_percent": 0,
         "mechanics": [

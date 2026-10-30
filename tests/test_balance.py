@@ -29,7 +29,7 @@ class BalanceTests(unittest.TestCase):
 
     def test_overlevel_reward_factor_discourages_trivial_farming(self):
         self.assertEqual(encounter_reward_factor(50, 50), 1.0)
-        self.assertEqual(encounter_reward_factor(50, 1), 0.25)
+        self.assertEqual(encounter_reward_factor(50, 1), 0.05)
         self.assertEqual(encounter_reward_factor(10, 30), 1.5)
 
 
@@ -84,9 +84,9 @@ class BalanceTests(unittest.TestCase):
                     def random(): return 1.0
                 game.rng = FixedRng()
                 award = game._award_victory("1", p, monster)
-                self.assertEqual(award["xp"], max(5, int(monster["xp"] * 0.25)))
-                self.assertEqual(award["jp"], max(2, int(monster["jp"] * 0.25)))
-                self.assertEqual(award["gil"], max(1, int(monster["gil"] * 0.25)))
+                self.assertEqual(award["xp"], max(5, int(monster["xp"] * 0.05)))
+                self.assertEqual(award["jp"], max(2, int(monster["jp"] * 0.05)))
+                self.assertEqual(award["gil"], max(1, int(monster["gil"] * 0.05)))
             finally:
                 db.close()
 

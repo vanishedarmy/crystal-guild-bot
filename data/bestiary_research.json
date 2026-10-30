@@ -1116,12 +1116,12 @@
       "lore": "A broken part of an unknown machine continues to execute fragments of its last directive."
     },
     "varuna": {
-      "category": "regional",
+      "category": "expedition",
       "family": "fiends",
       "habitats": [
-        "interdimensional_rift"
+        "frostveil_observatory"
       ],
-      "habitat_provenance": "region_encounters",
+      "habitat_provenance": "expedition_registry",
       "lore": "An elusive rift-dweller appears where magical currents have become dangerously unstable."
     },
     "void_avatar": {
@@ -1156,13 +1156,12 @@
       "lore": "An enormous hovering eye studies intruders from the ruins' highest chambers."
     },
     "machea": {
-      "category": "regional",
+      "category": "expedition",
       "family": "fiends",
       "habitats": [
-        "interdimensional_rift",
-        "omega_ruins"
+        "gilded_mirage_expanse"
       ],
-      "habitat_provenance": "region_encounters",
+      "habitat_provenance": "expedition_registry",
       "lore": "A strange fiend patrols the shattered approaches to Omega's forgotten domain."
     },
     "master_coeurl": {
@@ -1313,22 +1312,18 @@
       "lore": "An ancient guardian of Emberglass Caldera that challenges even veteran airship explorers."
     },
     "frostveil_astrolabe": {
-      "category": "expedition",
+      "category": "regional",
       "family": "constructs",
-      "habitats": [
-        "frostveil_observatory"
-      ],
-      "habitat_provenance": "expedition_registry",
-      "lore": "An ancient guardian of Frostveil Observatory that challenges even veteran airship explorers."
+      "habitats": [],
+      "habitat_provenance": "world_event_live",
+      "lore": "An ancient guardian of Frostveil Observatory that challenges even veteran airship explorers. This notorious foe is now encountered exclusively during live World Events."
     },
     "mirage_pharaoh": {
-      "category": "expedition",
+      "category": "regional",
       "family": "spellcasters",
-      "habitats": [
-        "gilded_mirage_expanse"
-      ],
-      "habitat_provenance": "expedition_registry",
-      "lore": "An ancient guardian of Gilded Mirage Expanse that challenges even veteran airship explorers."
+      "habitats": [],
+      "habitat_provenance": "world_event_live",
+      "lore": "An ancient guardian of Gilded Mirage Expanse that challenges even veteran airship explorers. This notorious foe is now encountered exclusively during live World Events."
     },
     "eclipse_harbinger": {
       "category": "regional",
@@ -1342,11 +1337,9 @@
     "singularity_archon": {
       "category": "regional",
       "family": "constructs",
-      "habitats": [
-        "eclipsed_singularity_citadel"
-      ],
-      "habitat_provenance": "region_encounters",
-      "lore": "A reality-warping construct designed to guard the Sovereign."
+      "habitats": [],
+      "habitat_provenance": "world_event_live",
+      "lore": "A reality-warping construct designed to guard the Sovereign. This notorious foe is now encountered exclusively during live World Events."
     },
     "mark_the_hollow_sun": {
       "category": "hunt",

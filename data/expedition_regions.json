@@ -1657,9 +1657,9 @@
       }
     ],
     "boss": {
-      "id": "frostveil_astrolabe",
-      "name": "Frostveil Astrolabe",
-      "monster_id": "frostveil_astrolabe",
+      "id": "varuna",
+      "name": "Tempest Varuna",
+      "monster_id": "varuna",
       "unlock_progress": 75,
       "stages": 4,
       "travel_seconds": 660,
@@ -1808,9 +1808,9 @@
       }
     ],
     "boss": {
-      "id": "mirage_pharaoh",
-      "name": "Mirage Pharaoh",
-      "monster_id": "mirage_pharaoh",
+      "id": "machea",
+      "name": "Gilded Machea",
+      "monster_id": "machea",
       "unlock_progress": 75,
       "stages": 4,
       "travel_seconds": 720,

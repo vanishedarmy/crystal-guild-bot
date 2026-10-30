@@ -1,1 +1,1 @@
-1.9.97.1-service-relic-quests
+1.9.97.2-encounter-balance
