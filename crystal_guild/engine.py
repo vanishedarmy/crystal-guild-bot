@@ -6704,26 +6704,29 @@ class CrystalGuildEngine:
         return guild_commerce(self.fellowship_system.facility_tiers())
 
     def _roll_shop_stock(self, p: Any) -> list[str]:
-        """Regional gear, guaranteed staples and themed supplies within a modest cap."""
+        """Sell ALL region/level eligible shop supplies; rotate only ordinary gear.
+
+        Unlike the old slot-cap system, adding a new consumable never removes
+        an existing regional consumable. Craft-only and Relic gear stay excluded.
+        """
         context = self._emporium_context(p)
         eligible = eligible_stock(p, self.data.items, context)
         by_id = {item["id"]: item for item in eligible}
-        stock = [by_id[item_id] for item_id in (*STAPLES, *context["featured_supplies"]) if item_id in by_id]
-        # Themes may include a staple; a listing appears only once.
-        stock = list({item["id"]: item for item in stock}.values())
+        featured = list(dict.fromkeys((*STAPLES, *context["featured_supplies"])))
+        supplies = sorted((item for item in eligible if item["type"] == "consumable"),
+                          key=lambda item: (featured.index(item["id"]) if item["id"] in featured else len(featured),
+                                            int(item.get("shop_level", 1)), item["id"]))
+        stock = list(supplies)
         slots = context["stock_slots"]
         quotas = (("weapon", 3 if slots >= 16 else 2), ("armor", 3 if slots >= 16 else 2), ("accessory", 2))
         level = min(int(p["level"]), context["stock_level_cap"])
         for kind, count in quotas:
-            pool = [item for item in eligible if item["type"] == kind and item not in stock]
-            # Always offer the strongest local compatible gear, then vary alternatives.
+            pool = [item for item in eligible if item["type"] == kind]
             pool.sort(key=lambda item: (int(item.get("shop_level", 1)), item["id"]), reverse=True)
             if pool:
                 stock.append(pool.pop(0))
                 stock.extend(self._weighted_shop_sample(pool, count - 1, level, p["current_job"]))
-        remaining = [item for item in eligible if item not in stock]
-        stock.extend(self._weighted_shop_sample(remaining, max(0, slots - len(stock)), level, p["current_job"]))
-        return [item["id"] for item in stock[:slots]]
+        return [item["id"] for item in stock]
 
     def _shop_stock(self, twitch_id: str, force_refresh: bool = False) -> tuple[list[dict[str, Any]], int]:
         p = self._player(twitch_id)
@@ -6734,8 +6737,9 @@ class CrystalGuildEngine:
         row = self.db.one("SELECT * FROM player_regional_shops WHERE player_id=? AND region_id=? AND job_id=?",
                           (twitch_id, context["id"], p["current_job"]))
         eligible_ids = {item["id"] for item in eligible_stock(p, self.data.items, context)}
-        expected_count = min(context["stock_slots"], len(eligible_ids))
-        required_ids = set((*STAPLES, *context["featured_supplies"])) & eligible_ids
+        # Every shop-eligible consumable must be available regardless of the
+        # size of the optional gear rotation or how many item types are added.
+        required_ids = {item_id for item_id in eligible_ids if self.data.items[item_id]["type"] == "consumable"}
         valid = False
         ids: list[str] = []
         if row and not force_refresh:
@@ -6744,8 +6748,12 @@ class CrystalGuildEngine:
                 ids = parsed if isinstance(parsed, list) and all(isinstance(value, str) for value in parsed) else []
                 valid = (int(row["expires_at"]) > now
                          and int(row["level_at_roll"]) == int(p["level"])
-                         and len(ids) == expected_count and len(set(ids)) == len(ids)
-                         and set(ids) <= eligible_ids and required_ids <= set(ids))
+                         and len(ids) == len(set(ids))
+                         and set(ids) <= eligible_ids and required_ids <= set(ids)
+                         and all(sum(self.data.items[item_id]["type"] == kind for item_id in ids) <= count
+                                 for kind, count in (("weapon", 3 if context["stock_slots"] >= 16 else 2),
+                                                     ("armor", 3 if context["stock_slots"] >= 16 else 2),
+                                                     ("accessory", 2))))
             except (TypeError, ValueError, OverflowError):
                 valid = False
         if not valid:
@@ -6773,36 +6781,36 @@ class CrystalGuildEngine:
                 return item, expires
         return None, expires
 
-    def shop(self, twitch_id: str) -> GameResult:
+    def shop(self, twitch_id: str, category: str = "all", page: int = 1) -> GameResult:
+        """Paged Twitch listing; the actual stock and slot IDs remain unchanged."""
         p = self._player(twitch_id)
         if not p:
             return self._need_recruit()
         stock, expires = self._shop_stock(twitch_id)
         if not stock:
             return GameResult.fail("The Moogle Emporium has somehow run out of merchandise. This is deeply un-Moogle-like.")
-        job = self.data.jobs.get(p["current_job"], {"name": "Adventurer"})["name"]
-        remaining = max(0, expires - int(time.time()))
-        groups: dict[str, list[str]] = {"weapon": [], "armor": [], "accessory": [], "consumable": []}
-        for slot, item in enumerate(stock, start=1):
-            groups.setdefault(item["type"], []).append(f"#{slot} {item['name']} {purchase_price(item, self._emporium_perks()):,}g")
+        category = str(category or "all").lower().strip()
+        aliases = {"all": "all", "items": "consumable", "supplies": "consumable", "consumables": "consumable",
+                   "weapons": "weapon", "weapon": "weapon", "armor": "armor", "armour": "armor",
+                   "accessory": "accessory", "accessories": "accessory"}
+        if category not in aliases:
+            return GameResult.fail("Use !shop [supplies|weapons|armor|accessories] [page], or !shop 2.")
+        filtered = [(index, item) for index, item in enumerate(stock, start=1)
+                    if aliases[category] == "all" or item["type"] == aliases[category]]
+        page = max(1, int(page))
+        pages = max(1, (len(filtered) + 7) // 8)
+        if page > pages:
+            return GameResult.fail(f"Only {pages} page(s) of {category} are available here.")
+        listing = filtered[(page - 1) * 8:page * 8]
         context = self._emporium_context(p)
-        perks = self._emporium_perks()
-        messages = [f"Moogle Emporium — {context['region_name']} · {context['name']} | {job} Lv.{p['level']} | {len(stock)}/{context['stock_slots']} listings | Guild discount {int(perks['purchase_discount'] * 100)}% | refresh {self._format_seconds(remaining)} | !buy <# or item> [qty]"]
-        gear_parts: list[str] = []
-        if groups["weapon"]:
-            gear_parts.append("Weapons — " + " | ".join(groups["weapon"]))
-        if groups["armor"]:
-            gear_parts.append("Armor — " + " | ".join(groups["armor"]))
-        if gear_parts:
-            messages.append(" | ".join(gear_parts))
-        tail: list[str] = []
-        if groups["accessory"]:
-            tail.append("Accessories — " + " | ".join(groups["accessory"]))
-        if groups["consumable"]:
-            tail.append("Supplies — " + " | ".join(groups["consumable"]))
-        if tail:
-            messages.append(" | ".join(tail))
-        return GameResult.success(*messages, stock=[i["id"] for i in stock], expires_at=expires)
+        remaining = max(0, expires - int(time.time()))
+        header = (f"Moogle Emporium · {context['region_name']} | {len(stock)} listings | "
+                  f"{category.title()} {page}/{pages} | Refresh {self._format_seconds(remaining)}")
+        rows = [f"#{slot} {item['name']} {purchase_price(item, self._emporium_perks()):,}g"
+                for slot, item in listing]
+        return GameResult.success(header, " | ".join(rows) if rows else "No items in this category.",
+                                  "Buy: !buy <item or #> [qty] · More: !shop supplies 2 · Gear: !shop weapons",
+                                  stock=[i["id"] for i in stock], expires_at=expires)
 
     def _moment_purchase_sql(self, conn: Any, player_id: str, row_id: int, cost: int, *, source: str) -> None:
         """Only an actual committed single storefront debit may award Retail Therapy."""
@@ -14401,14 +14409,29 @@ class CrystalGuildEngine:
             self._portal_action_store_sql(conn, action_id, result)
             return result
 
+    @staticmethod
+    def _utc_daily_reset(now: int) -> tuple[int, int]:
+        """All daily rewards and Gold Saucer activities reset at 00:00 UTC."""
+        start = int(now) - (int(now) % 86400)
+        return start, start + 86400
+
+    def _daily_claimed_today(self, twitch_id: str, now: int, conn: Any | None = None) -> bool:
+        """The settlement ledger is authoritative even for old rolling cooldowns."""
+        start, _ = self._utc_daily_reset(now)
+        sql = ("SELECT 1 FROM transactions WHERE player_id=? AND source='daily' AND kind='gil' "
+               "AND created_at>=datetime(?,'unixepoch') LIMIT 1")
+        if conn is None:
+            return bool(self.db.one(sql, (twitch_id, start)))
+        return bool(conn.execute(sql, (twitch_id, start)).fetchone())
+
     def _portal_daily_state_data(self, twitch_id: str, subscriber_tier: int = 0) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:
             return {}
         now = int(time.time())
-        row = self.db.one("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,))
-        available_at = int(row["available_at"] or 0) if row else 0
-        remaining = max(0, available_at - now)
+        _, tomorrow = self._utc_daily_reset(now)
+        remaining = tomorrow - now if self._daily_claimed_today(twitch_id, now) else 0
+        available_at = tomorrow if remaining else 0
         dungeon_blocked = bool(self._dungeon_load(twitch_id))
         solo_blocked = bool(self._solo_expedition_load(twitch_id))
         base_low, base_high = daily_gil_range(int(p["level"] or 1))
@@ -14488,9 +14511,8 @@ class CrystalGuildEngine:
             )
         now = int(time.time())
         with self.db.tx() as conn:
-            cooldown = conn.execute("SELECT available_at FROM cooldowns WHERE player_id=? AND action='daily'", (twitch_id,)).fetchone()
-            available_at = int(cooldown["available_at"] or 0) if cooldown else 0
-            remaining = max(0, available_at - now)
+            _, tomorrow = self._utc_daily_reset(now)
+            remaining = tomorrow - now if self._daily_claimed_today(twitch_id, now, conn) else 0
             if remaining > 0:
                 result = GameResult.fail(
                     f"Daily provisions already claimed. Return in {self._format_seconds(remaining)}.",
@@ -14500,7 +14522,7 @@ class CrystalGuildEngine:
                 return result
             gil, provisions, perk = self._daily_reward(twitch_id, subscriber_tier)
             self._grant_daily_sql(conn, twitch_id, gil, provisions)
-            next_at = now + 24 * 3600
+            next_at = tomorrow
             conn.execute("INSERT INTO cooldowns(player_id,action,available_at) VALUES (?, 'daily', ?) ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at", (twitch_id, next_at))
             perk_note = ""
             if int(perk["tier"]) > 0:
@@ -14641,7 +14663,7 @@ class CrystalGuildEngine:
             job_name=str(job.get("name", "Adventurer")),
             expires_at=int(expires),
             stock=[item_payload(item) for item in stock],
-            stock_slots=self._emporium_context(p)["stock_slots"],
+            stock_slots=len(stock),
             regional_shop=self._emporium_context(p),
             guild_perks=self._emporium_perks(),
             annex_unlocked=self.fellowship_system.emporium_annex_level() >= 1,
@@ -15915,6 +15937,46 @@ class CrystalGuildEngine:
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, 'seal_shop')", (twitch_id, entry["item_id"], out_qty))
         return GameResult.success(f"Quartermaster purchase: {self.data.items[entry['item_id']]['name']} x{out_qty} for {cost} Hunt Seals.")
 
+    def begin_relic_quest(self, twitch_id: str, relic_query: str) -> GameResult:
+        """Accept the named Job's relic quest; never award or remove gear here."""
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        relic = self._find_by_name_or_id(self.data.relics, relic_query)
+        if not relic:
+            return GameResult.fail("Relic not found. Open your Relic Arsenal to choose a quest.")
+        job = relic["job_id"]
+        if str(p["current_job"]) != job:
+            return GameResult.fail(f"Change to {self.data.jobs[job]['name']} to begin {relic['name']}.")
+        if self._job_level(twitch_id, job) < 50:
+            return GameResult.fail(f"Master {self.data.jobs[job]['name']} to Job Level 50 first.")
+        if relic.get("tier") == "ultimate":
+            if int(p["level"]) < 90:
+                return GameResult.fail("Ultimate Relic quests require character level 90.")
+            classic_id = str(relic.get("classic_relic_id") or "")
+            if not classic_id:
+                for candidate in self.data.relics.values():
+                    if candidate.get("tier", "classic") == "classic" and candidate["job_id"] == job:
+                        classic_id = candidate["id"]
+                        break
+            if classic_id:
+                row = self.db.one("SELECT stage FROM player_relics WHERE player_id=? AND relic_id=?",
+                                  (twitch_id, classic_id))
+                if not row or int(row["stage"]) < len(self.data.relics[classic_id]["stages"]):
+                    return GameResult.fail("Complete your matching Classic Zenith Relic before its Ultimate quest.")
+        with self.db.tx() as conn:
+            conn.execute("INSERT OR IGNORE INTO player_relic_quests(player_id,relic_id) VALUES (?,?)", (twitch_id, relic["id"]))
+        return GameResult.success(f"RELIC QUEST — {relic['name']} accepted for {self.data.jobs[job]['name']}. Complete its stage objectives in the Relic Arsenal, then use !awaken {relic['name']}.", relic_id=relic["id"])
+
+    def portal_begin_relic_quest(self, twitch_id: str, relic_id: str, action_id: str) -> GameResult:
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.begin_relic_quest(twitch_id, relic_id)
+        with self.db.tx() as conn:
+            self._portal_action_store_sql(conn, action_id, result)
+        return result
+
     def relics(self, twitch_id: str, tier: str = "classic") -> GameResult:
         p = self._player(twitch_id)
         if not p:
@@ -15932,7 +15994,9 @@ class CrystalGuildEngine:
             eligible = (self._job_level(twitch_id, relic["job_id"]) >= 50
                         and (selection != "ultimate" or int(p["level"]) >= 90))
             finished_label = "ETERNAL" if selection == "ultimate" else "ZENITH"
-            state = finished_label if stage >= total else f"{stage}/{total}" if eligible or stage else "locked"
+            started = stage > 0 or bool(self.db.one(
+                "SELECT 1 FROM player_relic_quests WHERE player_id=? AND relic_id=?", (twitch_id, relic["id"])))
+            state = finished_label if stage >= total else f"{stage}/{total}" if started else "quest available" if eligible else "locked"
             parts.append(f"{relic['name']} [{state}]")
         label = "Ultimate Relics (Lv.90+, Classic Zenith required)" if selection == "ultimate" else "Classic Relic Arsenal"
         # Keep Twitch messages readable and under chat size limits.
@@ -15959,7 +16023,8 @@ class CrystalGuildEngine:
         met, missing = self._requirements_met(twitch_id, step.get("requirements", []))
         cost_missing = self._cost_missing(twitch_id, step.get("cost", {}))
         cost_text = self._cost_text(step.get("cost", {}))
-        status = "READY TO AWAKEN" if met and not cost_missing else "IN PROGRESS"
+        quest_active = stage > 0 or bool(self.db.one("SELECT 1 FROM player_relic_quests WHERE player_id=? AND relic_id=?", (twitch_id, relic["id"])))
+        status = "BEGIN JOB QUEST FIRST" if not quest_active else "READY TO AWAKEN" if met and not cost_missing else "IN PROGRESS"
         detail = missing + cost_missing
         return GameResult.success(f"{relic['name']} — Stage {stage+1}/{total}: {step['name']} | {status}", f"Requirements/Cost: {'; '.join(detail) if detail else cost_text}. Reward: {self.data.items[step['reward_item']]['name']}")
 
@@ -15979,6 +16044,14 @@ class CrystalGuildEngine:
         total = len(relic["stages"])
         if stage >= total:
             return GameResult.fail(f"{relic['name']} is already fully awakened.")
+        # Existing progressed weapons are grandfathered in, without changes to
+        # inventory/equipment. New lines must be explicitly accepted on the
+        # Relics page by the matching active Job.
+        if stage == 0 and not self.db.one("SELECT 1 FROM player_relic_quests WHERE player_id=? AND relic_id=?",
+                                           (twitch_id, relic["id"])):
+            return GameResult.fail(f"Begin the {self.data.jobs[relic['job_id']]['name']} Relic quest on the Relics page first (!relicquest {relic['id']}).")
+        if str(p["current_job"]) != relic["job_id"]:
+            return GameResult.fail(f"Equip the {self.data.jobs[relic['job_id']]['name']} Job to advance its Relic quest.")
         step = relic["stages"][stage]
         met, missing = self._requirements_met(twitch_id, step.get("requirements", []))
         missing.extend(self._cost_missing(twitch_id, step.get("cost", {})))
@@ -16204,13 +16277,15 @@ class CrystalGuildEngine:
             return GameResult.fail("Finish or retreat from your Dungeon before collecting new Daily Guild Provisions.")
         if self._solo_expedition_load(twitch_id):
             return GameResult.fail("Return or retreat from your Solo Venture before collecting new Daily Guild Provisions.")
-        remaining = self._cooldown_remaining(twitch_id, "daily")
-        if remaining > 0:
-            return GameResult.fail(f"Daily provisions already claimed. Return in {self._format_seconds(remaining)}.")
+        now = int(time.time())
+        _, tomorrow = self._utc_daily_reset(now)
         gil, provisions, perk = self._daily_reward(twitch_id, subscriber_tier)
         with self.db.tx() as conn:
+            if self._daily_claimed_today(twitch_id, now, conn):
+                return GameResult.fail(f"Daily provisions already claimed. Reset in {self._format_seconds(tomorrow - now)}.")
             self._grant_daily_sql(conn, twitch_id, gil, provisions)
-        self._set_cooldown(twitch_id, "daily", 24 * 3600)
+            conn.execute("INSERT INTO cooldowns(player_id,action,available_at) VALUES (?, 'daily', ?) "
+                         "ON CONFLICT(player_id,action) DO UPDATE SET available_at=excluded.available_at", (twitch_id, tomorrow))
         perk_note = ""
         if int(perk["tier"]) > 0:
             perk_note = f" [{perk['label']}: +{perk['gil_bonus_percent']}% Gil, {perk['rolls']} provision rolls]"

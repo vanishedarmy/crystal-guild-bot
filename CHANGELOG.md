@@ -1,3 +1,12 @@
+# Crystal Guild v1.9.97.1 — Daily Resets, Regional Shops & Relic Quests
+
+- Daily Guild Provisions now share Gold Saucer's 00:00 UTC calendar reset. Existing rolling 24-hour cooldowns are superseded by the daily settlement ledger, avoiding midnight lockouts and duplicate claims.
+- Moogle Emporium shows every eligible regional consumable and a limited rotating selection of ordinary equipment. Added Turbo Ether, Hero's Brew, Panacea, and Shadow Gem to appropriate shop stock; restricted gear and rare Elixir/Megalixir stay exclusive. Twitch shop now pages results.
+- Relic Arsenal gains Begin Relic Quest per Job, with server-validated matching Job and quest acceptance required before first new weapon-stage reward. Existing Relics and player equipment are preserved; subsequent Relic stages use the normal requirements. Ultimate quests additionally enforce level and Classic Zenith prerequisites.
+- Portal action, guide, and What's New are updated. Preserves all v1.9.97 elite artwork.
+
+---
+
 # Crystal Guild v1.9.97 — Elite Hunts & World Events
 
 - Six high-level Hunt assignments: three S+ (Character Lv.80, 86, 92) and three SS (Lv.95, 99, 99).

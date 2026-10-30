@@ -62,7 +62,7 @@ class RelicOverhaulTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["complete"], 0)
         self.assertEqual(len(payload["relics"]), 36)
         self.assertTrue(all(len(row["path"]) == 3 for row in payload["relics"]))
-        self.assertEqual(len([sql for sql in statements if sql.strip().upper().startswith("SELECT")]), 7)
+        self.assertEqual(len([sql for sql in statements if sql.strip().upper().startswith("SELECT")]), 8)
         for row in payload["relics"]:
             self.assertEqual(row["stages"], [step["name"] for step in row["path"]])
             self.assertEqual(row["final_reward"]["id"], self.data.relics[row["id"]]["stages"][-1]["reward_item"])
@@ -74,6 +74,8 @@ class RelicOverhaulTests(unittest.TestCase):
         self.assertEqual(before["status"], "not_started")
         self.assertFalse(before["ready"])
         self.supply(0)
+        self.assertFalse(self.own()["ready"])
+        self.assertTrue(self.engine.begin_relic_quest("100", "bravura").ok)
         ready = self.own()
         self.assertEqual(ready["job_level"], 99)
         self.assertTrue(ready["ready"])
@@ -106,6 +108,7 @@ class RelicOverhaulTests(unittest.TestCase):
 
     def test_other_players_resources_never_leak(self):
         self.supply(0)
+        self.assertTrue(self.engine.begin_relic_quest("100", "bravura").ok)
         first = self.own()
         other = next(row for row in self.repo.relics("other")["relics"] if row["id"] == "bravura")
         self.assertTrue(first["ready"])

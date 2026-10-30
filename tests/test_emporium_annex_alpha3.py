@@ -61,8 +61,8 @@ class MoogleEmporiumAnnexAlpha3Tests(unittest.TestCase):
         self.assertEqual(stock_before, stock_after)
         self.assertEqual(expiry, expiry_after)
         after = self.game.portal_shop_state("100").data
-        self.assertEqual(before["stock_slots"], 12)
-        self.assertEqual(after["stock_slots"], 12)
+        self.assertEqual(before["stock_slots"], len(before["stock"]))
+        self.assertEqual(after["stock_slots"], len(after["stock"]))
         for item in after["stock"]:
             self.assertEqual(item["price"], item["base_price"] * 90 // 100)
 

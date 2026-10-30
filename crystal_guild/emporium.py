@@ -34,6 +34,13 @@ def eligible_stock(player, items, context):
         item_level = max(int(item.get("shop_level", 1)), int(item.get("min_level", 1)))
         if not item.get("shop") or item_level > level:
             continue
+        # Relic/unique/crafting-only equipment must NEVER become purchasable,
+        # regardless of malformed source flags or a previous cached rotation.
+        if item.get("relic_id") or item.get("unsellable") or (
+            item["type"] in {"weapon", "armor"}
+            and str(item.get("rarity", "common")).lower() in {"relic", "artifact", "legendary"}
+        ):
+            continue
         if item.get("allowed_jobs") and job not in item["allowed_jobs"]:
             continue
         if job == "adventurer" and (item["type"] not in {"consumable", "accessory"} or item.get("allowed_jobs")):

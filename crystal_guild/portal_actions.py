@@ -397,6 +397,13 @@ class PortalActionWorker:
                 return False, "Character request has an invalid Mastery slot.", {}
             result = self.game.portal_clear_mastery(twitch_id, slot, str(action.get("id") or ""))
             return self._game_result(result)
+        if action_type == "RELIC_BEGIN":
+            if set(payload) != {"relic_id"}:
+                return False, "A Relic quest requires only its relic_id.", {}
+            relic_id = str(payload.get("relic_id") or "").strip().lower()
+            if not re.fullmatch(r"[a-z0-9_]{1,100}", relic_id):
+                return False, "Invalid Relic quest ID.", {}
+            return self._game_result(self.game.portal_begin_relic_quest(twitch_id, relic_id, str(action.get("id") or "")))
         if action_type == "SHOP_STATE":
             result = self.game.portal_shop_state(twitch_id)
             return self._game_result(result)

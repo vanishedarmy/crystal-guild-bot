@@ -29,7 +29,7 @@ HELP_TOPICS = {
         "For quick chat-only gearing, !buyweapon, !buyarmor, or !buyaccessory picks the best current Emporium stock for your Job and level, buys it, and equips it. Not enough Gil? The command tells you the exact shortfall.",
     ),
     "shop": (
-        "SHOP — !shop shows your personal Moogle Emporium rotation. Buy with !buy <slot or item> [qty]; consumables can be bought in quantity.",
+        "SHOP — !shop lists every eligible regional consumable and a rotating selection of regular Job gear. Browse !shop supplies [page] or !shop weapons; buy with !buy <slot or item> [qty]; consumables can be bought in quantity.",
         "Stock is Job- and level-aware and does not reroll every time you type !shop. Use !item <name> to inspect something you own or discover.",
         "No Portal required: !buyweapon | !buyarmor | !buyaccessory buys and equips suitable current stock automatically. Already owned? It equips for free. Insufficient Gil? No purchase is made.",
     ),
@@ -51,7 +51,7 @@ HELP_TOPICS = {
         "Use !upgrade <item> to forge equipment toward +5. Use !resynthesize <weapon or armor> to break down unwanted gear into crafting materials. Relic and Artifact gear is protected.",
     ),
     "relics": (
-        "RELICS — !relics shows Classic lines; !relics ultimate shows Lv.90 Ultimate lines; !relic <name> shows stage requirements; !awaken <name> advances a completed stage.",
+        "RELICS — !relics shows Classic lines; !relics ultimate shows Lv.90 Ultimate lines; !relic <name> shows stage requirements; !relicquest <name> accepts your current Job's quest; !awaken <name> advances a completed stage.",
         "Relics are long-term Job-specific weapons and intentionally sit above ordinary shop gear. Expect Hunts, crafting, boss loot and poor life choices.",
     ),
     "raids": (
@@ -96,7 +96,7 @@ ALIASES = {
     "merc": "mercs", "mercs": "mercs", "mercenary": "mercs", "mercenaries": "mercs",
     "quest": "quests",
     "blacksmith": "crafting", "forge": "crafting", "recipes": "crafting", "recipe": "crafting", "craft": "crafting", "upgrade": "crafting", "resynthesize": "crafting", "desynth": "crafting", "dismantle": "crafting",
-    "relic": "relics", "awaken": "relics",
+    "relic": "relics", "relicquest": "relics", "awaken": "relics",
     "raid": "raids", "boss": "raids", "bosses": "raids", "bossinfo": "raids", "limit": "raids", "summon": "raids", "revive": "raids",
     "monster": "bestiary", "monsters": "bestiary",
     "achievement": "achievements", "achievements": "achievements", "ach": "achievements", "titles": "achievements", "title": "achievements",

@@ -11,7 +11,7 @@ from pathlib import Path
 from crystal_guild.balance import sell_value
 from crystal_guild.data import GameData
 from crystal_guild.database import Database
-from crystal_guild.emporium import REGIONAL_SHOPS, STAPLES
+from crystal_guild.emporium import REGIONAL_SHOPS, STAPLES, eligible_stock, shop_context
 from crystal_guild.engine import CrystalGuildEngine
 from crystal_guild.player_snapshot import PortalRepository
 
@@ -50,7 +50,12 @@ class RegionalEmporiumTests(unittest.TestCase):
                     state = self.game.portal_shop_state("100").data
                     stock = state["stock"]
                     self.assertTrue(stock)
-                    self.assertLessEqual(len(stock), cap)
+                    self.assertLessEqual(len([item for item in stock if item["type"] == "weapon"]), 3 if cap >= 16 else 2)
+                    self.assertLessEqual(len([item for item in stock if item["type"] == "armor"]), 3 if cap >= 16 else 2)
+                    self.assertEqual({i["id"] for i in stock if i["type"] == "consumable"},
+                                     {i["id"] for i in eligible_stock(self.game._player("100"), self.data.items,
+                                                                shop_context(self.game._player("100"), self.data.regions))
+                                      if i["type"] == "consumable"})
                     self.assertEqual(len(stock), len({item["id"] for item in stock}))
                     self.assertTrue(set(STAPLES) <= {item["id"] for item in stock})
                     for item in stock:
@@ -76,7 +81,7 @@ class RegionalEmporiumTests(unittest.TestCase):
     def test_sparse_starter_shop_is_cached_and_invalid_cache_repairs(self):
         self.db.execute("UPDATE players SET level=1,current_job='adventurer' WHERE twitch_id='100'")
         first = self.game.portal_shop_state("100").data
-        self.assertLess(len(first["stock"]), first["stock_slots"])
+        self.assertEqual(len(first["stock"]), first["stock_slots"])
         before = dict(self.db.one("SELECT * FROM player_regional_shops WHERE player_id='100'"))
         self.game.portal_shop_state("100")
         self.assertEqual(before, dict(self.db.one("SELECT * FROM player_regional_shops WHERE player_id='100'")))

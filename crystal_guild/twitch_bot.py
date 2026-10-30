@@ -371,9 +371,14 @@ class RPGCommands(commands.Component):
         await send_result(ctx, self.game.quick_buy_gear(uid, "accessory"))
 
     @commands.command()
-    async def shop(self, ctx: commands.Context) -> None:
+    async def shop(self, ctx: commands.Context, category: str = "all", page: str = "1") -> None:
         uid, _, _ = self._identity(ctx)
-        await send_result(ctx, self.game.shop(uid))
+        if category.isdigit() and page == "1":
+            category, page = "all", category
+        if not page.isdigit():
+            await ctx.send("Use !shop [supplies|weapons|armor|accessories] [page].")
+            return
+        await send_result(ctx, self.game.shop(uid, category, int(page)))
 
     @commands.command()
     async def item(self, ctx: commands.Context, *, item_name: str) -> None:
@@ -669,6 +674,11 @@ class RPGCommands(commands.Component):
     async def relic(self, ctx: commands.Context, *, relic_name: str) -> None:
         uid, _, _ = self._identity(ctx)
         await send_result(ctx, self.game.relic(uid, relic_name))
+
+    @commands.command()
+    async def relicquest(self, ctx: commands.Context, *, relic_name: str) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.begin_relic_quest(uid, relic_name))
 
     @commands.command()
     async def awaken(self, ctx: commands.Context, *, relic_name: str) -> None:

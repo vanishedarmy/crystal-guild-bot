@@ -494,6 +494,8 @@ class EngineTests(unittest.TestCase):
         self.game._change_item("1", "crystal_shard", 4, "test")
         inspect = self.game.relic("1", "gae bolg")
         self.assertTrue(inspect.ok)
+        self.db.execute("UPDATE players SET current_job='dragoon' WHERE twitch_id='1'")
+        self.assertTrue(self.game.begin_relic_quest("1", "gae bolg").ok)
         result = self.game.awaken_relic("1", "gae bolg")
         self.assertTrue(result.ok, result.messages)
         self.assertEqual(self.game._inventory_qty("1", "gae_bolg_dormant"), 1)
@@ -513,6 +515,8 @@ class EngineTests(unittest.TestCase):
             "adamantite": 1,
         }.items():
             self.game._change_item("1", item_id, qty, "test")
+        self.db.execute("UPDATE players SET current_job='dragoon' WHERE twitch_id='1'")
+        self.assertTrue(self.game.begin_relic_quest("1", "gae bolg").ok)
         self.assertTrue(self.game.awaken_relic("1", "gae bolg").ok)
         self.db.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES ('1','wyrm',10)")
         self.db.execute("INSERT INTO player_hunts(player_id,hunt_id,clears,first_cleared_at,last_cleared_at) VALUES ('1','dragon_beyond_the_veil',1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)")

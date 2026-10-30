@@ -142,6 +142,14 @@ CREATE TABLE IF NOT EXISTS player_relics (
     FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS player_relic_quests (
+    player_id TEXT NOT NULL,
+    relic_id TEXT NOT NULL,
+    started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, relic_id),
+    FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS drop_pity (
     player_id TEXT NOT NULL,
     pity_key TEXT NOT NULL,

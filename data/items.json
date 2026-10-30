@@ -5632,7 +5632,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 2600,
-    "shop": false,
+    "shop": true,
     "shop_level": 40,
     "description": "An exceptionally potent aether concentrate saved for emergencies when a caster is completely spent. Fully restores MP and can be used in or out of Active Battle.",
     "use": {
@@ -5692,7 +5692,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 2700,
-    "shop": false,
+    "shop": true,
     "shop_level": 40,
     "description": "A rare restorative brew that floods an exhausted fighter with enough vigor to rejoin the fray at full strength. Fully restores AP and can be used in or out of Active Battle.",
     "use": {
@@ -5778,7 +5778,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 3500,
-    "shop": false,
+    "shop": true,
     "shop_level": 45,
     "description": "Removes all harmful Active Battle statuses from one hero.",
     "use": {
@@ -6070,7 +6070,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 1800,
-    "shop": false,
+    "shop": true,
     "shop_level": 38,
     "description": "Deals 700 Dark damage to the enemy in Active Battle.",
     "use": {

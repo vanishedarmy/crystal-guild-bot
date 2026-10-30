@@ -1024,6 +1024,9 @@ class PortalRepository:
                     (player_id,),
                 )
             }
+            quests_started = {str(row["relic_id"]) for row in conn.execute(
+                "SELECT relic_id FROM player_relic_quests WHERE player_id=?", (player_id,),
+            )}
             # Read each source just once.  18 Relics x 3 stages should not
             # become hundreds of per-material/per-Hunt SQLite queries.
             job_levels = {
@@ -1166,12 +1169,13 @@ class PortalRepository:
                             "materials": materials,
                         },
                         "costs_met": costs_met,
-                        "ready": bool(current and costs_met and all(req["met"] for req in requirements)),
+                        "ready": bool(current and costs_met and all(req["met"] for req in requirements) and (stage > 0 or relic["id"] in quests_started)),
                         "reward": reward_info(step["reward_item"]),
                     })
-                ready = bool(stage < total and path[stage]["ready"])
+                quest_started = relic["id"] in quests_started or stage > 0
+                ready = bool(quest_started and stage < total and path[stage]["ready"])
                 status = ("complete" if stage >= total else "ready" if ready
-                          else "not_started" if stage == 0 else "in_progress")
+                          else "not_started" if not quest_started else "in_progress")
                 current_reward = path[stage - 1]["reward"]["name"] if stage else None
                 relics.append({
                     "id": relic["id"],
@@ -1182,6 +1186,7 @@ class PortalRepository:
                     "job": job.get("name", relic["job_id"]),
                     "job_id": relic["job_id"],
                     "job_level": job_level,
+                    "quest_started": quest_started,
                     "stage": stage,
                     "total_stages": total,
                     "completed": stage >= total,
