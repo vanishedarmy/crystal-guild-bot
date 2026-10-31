@@ -2,15 +2,17 @@
 
 STAPLES = ("potion", "antidote", "echo_herbs", "trail_rations")
 REGIONAL_SHOPS = {
-    "greenwind_plains": (12, 1, 7, "Trailside Counter", "Travel supplies and starter gear", ("eye_drops",)),
-    "whispering_caverns": (14, 5, 15, "Lantern Counter", "Recovery supplies for the caverns", ("ether", "tent", "phoenix_down")),
-    "sable_coast": (16, 12, 27, "Harbor Counter", "Coastal gear and elemental supplies", ("arctic_wind", "lightning_marble", "water_gem")),
-    "magitek_wastes": (18, 20, 41, "Salvager's Counter", "Battle gear and field support", ("warriors_tonic", "war_horn", "earth_drum")),
-    "crystal_expanse": (18, 30, 54, "Crystal Counter", "Crystal gear and powerful recovery", ("x_potion", "hi_ether", "mages_incense")),
-    "riftlands": (18, 40, 69, "Wayfarer's Counter", "Survival equipment and status recovery", ("remedy", "regen_tonic", "smoke_bomb")),
-    "interdimensional_rift": (18, 50, 81, "Astral Counter", "Veteran gear and magical support", ("x_potion", "hi_ether", "mages_incense")),
-    "omega_ruins": (18, 65, 99, "Last Light Counter", "Endgame field supplies and veteran gear", ("x_potion", "remedy", "phoenix_down")),
-    "eclipsed_singularity_citadel": (18, 75, 99, "Eclipse Refuge", "Last-chance provisions beyond Omega Ruins", ("x_potion", "remedy", "phoenix_down")),
+    'greenwind_plains': (18, 1, 9, 'Trailside Counter', 'Starter supplies and first equipment', ('eye_drops',)),
+    'whispering_caverns': (18, 10, 19, 'Lantern Counter', 'Cavern recovery and status cures', ('ether', 'tent', 'phoenix_down')),
+    'sable_coast': (18, 20, 29, 'Harbor Counter', 'Coastal elemental supplies', ('arctic_wind', 'lightning_marble', 'water_gem')),
+    'magitek_wastes': (18, 30, 39, "Salvager's Counter", 'Salvaged battle gear and field support', ('warriors_tonic', 'war_horn', 'earth_drum')),
+    'crystal_expanse': (18, 40, 49, 'Crystal Counter', 'Crystal weapons and Relic foundation supplies', ('x_potion', 'hi_ether', 'mages_incense')),
+    'riftlands': (18, 50, 59, "Wayfarer's Counter", 'Rift survival supplies and intermediate gear', ('remedy', 'regen_tonic', 'smoke_bomb')),
+    'shattered_frontier': (18, 60, 69, 'Frontier Outpost', 'Relic-awakening field supplies and balanced gear', ('remedy', 'hi_ether', 'regen_tonic')),
+    'interdimensional_rift': (18, 70, 79, 'Astral Counter', 'Dimensional exploration gear and support', ('x_potion', 'hi_ether', 'mages_incense')),
+    'omega_ruins': (18, 80, 89, 'Last Light Counter', 'High-level combat supplies', ('x_potion', 'remedy', 'phoenix_down')),
+    'astral_threshold': (18, 90, 98, 'Starwatch Outpost', 'Elite supplies and veteran gear', ('x_potion', 'hi_ether', 'remedy')),
+    'eclipsed_singularity_citadel': (18, 99, 99, 'Eclipse Refuge', 'Capstone provisions; specialized equipment remains exclusive', ('x_potion', 'remedy', 'phoenix_down')),
 }
 
 

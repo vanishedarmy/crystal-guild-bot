@@ -3,7 +3,7 @@
     "id": "greenwind_plains",
     "name": "Greenwind Plains",
     "min_level": 1,
-    "description": "Rolling fields where even the rabbits seem judgmental.",
+    "description": "Lv.1–9. The safe Guild foothills and beginner crystal trails.",
     "encounters": [
       {
         "monster_id": "goblin",
@@ -23,15 +23,11 @@
       },
       {
         "monster_id": "flan",
-        "weight": 10
+        "weight": 16
       },
       {
         "monster_id": "bomb",
-        "weight": 7
-      },
-      {
-        "monster_id": "cactuar",
-        "weight": 1
+        "weight": 16
       },
       {
         "monster_id": "goblin_guard",
@@ -50,32 +46,29 @@
         "weight": 7
       },
       {
-        "monster_id": "spriggan",
-        "weight": 5
-      }
-    ]
-  },
-  {
-    "id": "whispering_caverns",
-    "name": "Whispering Caverns",
-    "min_level": 8,
-    "description": "Dark tunnels full of bats, crystals, and avoidable life choices.",
-    "encounters": [
-      {
         "monster_id": "bat",
         "weight": 22
       },
       {
         "monster_id": "skeleton",
         "weight": 18
+      }
+    ],
+    "recommended_max_level": 9
+  },
+  {
+    "id": "whispering_caverns",
+    "name": "Whispering Caverns",
+    "min_level": 10,
+    "description": "Lv.10–19. Echoing grottoes inhabited by undead and lesser magical threats.",
+    "encounters": [
+      {
+        "monster_id": "cactuar",
+        "weight": 2
       },
       {
-        "monster_id": "flan",
-        "weight": 16
-      },
-      {
-        "monster_id": "bomb",
-        "weight": 16
+        "monster_id": "spriggan",
+        "weight": 5
       },
       {
         "monster_id": "gigas",
@@ -106,26 +99,6 @@
         "weight": 7
       },
       {
-        "monster_id": "piscodemon",
-        "weight": 6
-      },
-      {
-        "monster_id": "black_flan",
-        "weight": 5
-      },
-      {
-        "monster_id": "magic_pot",
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "sable_coast",
-    "name": "Sable Coast",
-    "min_level": 16,
-    "description": "Salt spray, ruined docks, and Sahagin who absolutely saw you coming.",
-    "encounters": [
-      {
         "monster_id": "sahagin",
         "weight": 25
       },
@@ -138,6 +111,31 @@
         "weight": 15
       },
       {
+        "monster_id": "gigantoad",
+        "weight": 11
+      }
+    ],
+    "recommended_max_level": 19
+  },
+  {
+    "id": "sable_coast",
+    "name": "Sable Coast",
+    "min_level": 20,
+    "description": "Lv.20–29. Reefs, storm-worn harbors and seasoned coastal predators.",
+    "encounters": [
+      {
+        "monster_id": "piscodemon",
+        "weight": 6
+      },
+      {
+        "monster_id": "black_flan",
+        "weight": 5
+      },
+      {
+        "monster_id": "magic_pot",
+        "weight": 2
+      },
+      {
         "monster_id": "coeurl",
         "weight": 13
       },
@@ -148,14 +146,6 @@
       {
         "monster_id": "malboro",
         "weight": 5
-      },
-      {
-        "monster_id": "cactuar",
-        "weight": 1
-      },
-      {
-        "monster_id": "gigantoad",
-        "weight": 11
       },
       {
         "monster_id": "antlion",
@@ -178,28 +168,25 @@
         "weight": 4
       },
       {
-        "monster_id": "garuda",
-        "weight": 3
+        "monster_id": "magitek_drone",
+        "weight": 24
       }
-    ]
+    ],
+    "recommended_max_level": 29
   },
   {
     "id": "magitek_wastes",
     "name": "Magitek Wastes",
-    "min_level": 28,
-    "description": "A scarred mechanical deadland humming with deeply irresponsible technology.",
+    "min_level": 30,
+    "description": "Lv.30–39. Salvage fields where machines and wandering beasts collide.",
     "encounters": [
       {
-        "monster_id": "magitek_drone",
-        "weight": 24
+        "monster_id": "garuda",
+        "weight": 3
       },
       {
         "monster_id": "iron_giant",
         "weight": 18
-      },
-      {
-        "monster_id": "death_machine",
-        "weight": 8
       },
       {
         "monster_id": "ahriman",
@@ -212,10 +199,6 @@
       {
         "monster_id": "malboro_great",
         "weight": 6
-      },
-      {
-        "monster_id": "tonberry_king",
-        "weight": 1
       },
       {
         "monster_id": "death_claw",
@@ -232,6 +215,23 @@
       {
         "monster_id": "evil_eye",
         "weight": 7
+      }
+    ],
+    "recommended_max_level": 39
+  },
+  {
+    "id": "crystal_expanse",
+    "name": "Crystal Expanse",
+    "min_level": 40,
+    "description": "Lv.40–49. Crystal-bearing ruins; the first reliable source of Relic Crystal Cores.",
+    "encounters": [
+      {
+        "monster_id": "death_machine",
+        "weight": 8
+      },
+      {
+        "monster_id": "tonberry_king",
+        "weight": 2
       },
       {
         "monster_id": "magitek_armor",
@@ -240,15 +240,7 @@
       {
         "monster_id": "mover",
         "weight": 3
-      }
-    ]
-  },
-  {
-    "id": "crystal_expanse",
-    "name": "Crystal Expanse",
-    "min_level": 42,
-    "description": "A glittering wasteland where the crystals are beautiful, valuable, and occasionally homicidal.",
-    "encounters": [
+      },
       {
         "monster_id": "crystal_wolf",
         "weight": 24
@@ -266,14 +258,6 @@
         "weight": 10
       },
       {
-        "monster_id": "wyrm",
-        "weight": 9
-      },
-      {
-        "monster_id": "tonberry_king",
-        "weight": 2
-      },
-      {
         "monster_id": "red_dragon",
         "weight": 8
       },
@@ -284,6 +268,19 @@
       {
         "monster_id": "gold_dragon",
         "weight": 6
+      }
+    ],
+    "recommended_max_level": 49
+  },
+  {
+    "id": "riftlands",
+    "name": "Riftlands",
+    "min_level": 50,
+    "description": "Lv.50–59. The warped outer frontier where Classic Relics begin to awaken.",
+    "encounters": [
+      {
+        "monster_id": "wyrm",
+        "weight": 9
       },
       {
         "monster_id": "holy_dragon",
@@ -300,15 +297,7 @@
       {
         "monster_id": "brachosaur",
         "weight": 2
-      }
-    ]
-  },
-  {
-    "id": "riftlands",
-    "name": "Riftlands",
-    "min_level": 55,
-    "description": "Reality is optional here. The monsters have noticed and are taking advantage of it.",
-    "encounters": [
+      },
       {
         "monster_id": "rift_hound",
         "weight": 24
@@ -318,8 +307,26 @@
         "weight": 19
       },
       {
+        "monster_id": "catoblepas",
+        "weight": 8
+      },
+      {
+        "monster_id": "death_rider",
+        "weight": 7
+      }
+    ],
+    "recommended_max_level": 59
+  },
+  {
+    "id": "shattered_frontier",
+    "name": "Shattered Frontier",
+    "min_level": 60,
+    "recommended_max_level": 69,
+    "description": "Lv.60–69. Fractured pathways, floating ruins and unstable crystal currents between the Riftlands and the dimensional breach. Eidolon Shards and other midgame Relic materials can be earned here.",
+    "encounters": [
+      {
         "monster_id": "rift_behemoth",
-        "weight": 15
+        "weight": 4
       },
       {
         "monster_id": "adamant_golem",
@@ -327,19 +334,11 @@
       },
       {
         "monster_id": "rift_drake",
-        "weight": 10
+        "weight": 14
       },
       {
         "monster_id": "void_tonberry",
-        "weight": 3
-      },
-      {
-        "monster_id": "catoblepas",
         "weight": 8
-      },
-      {
-        "monster_id": "death_rider",
-        "weight": 7
       },
       {
         "monster_id": "master_tonberry",
@@ -363,7 +362,7 @@
     "id": "interdimensional_rift",
     "name": "Interdimensional Rift",
     "min_level": 70,
-    "description": "Endgame territory. Geometry has resigned and the encounter table is actively hostile.",
+    "description": "Lv.70–79. Reality folds upon itself; advanced dimensional guardians and rare materials await.",
     "encounters": [
       {
         "monster_id": "astral_construct",
@@ -372,22 +371,6 @@
       {
         "monster_id": "omega_fragment",
         "weight": 16
-      },
-      {
-        "monster_id": "void_avatar",
-        "weight": 11
-      },
-      {
-        "monster_id": "rift_drake",
-        "weight": 14
-      },
-      {
-        "monster_id": "void_tonberry",
-        "weight": 8
-      },
-      {
-        "monster_id": "rift_behemoth",
-        "weight": 4
       },
       {
         "monster_id": "crystal_dragon",
@@ -400,30 +383,23 @@
       {
         "monster_id": "varuna",
         "weight": 4
-      },
-      {
-        "monster_id": "demonolith",
-        "weight": 3
-      },
-      {
-        "monster_id": "floating_death",
-        "weight": 3
-      },
-      {
-        "monster_id": "machea",
-        "weight": 3
       }
-    ]
+    ],
+    "recommended_max_level": 79
   },
   {
     "id": "omega_ruins",
     "name": "Omega Ruins",
-    "min_level": 82,
-    "description": "A sealed ruin where the Guild handbook simply says: perhaps do not.",
+    "min_level": 80,
+    "description": "Lv.80–89. The fallen mechanical sanctuary and its elite anomalies.",
     "encounters": [
       {
+        "monster_id": "void_avatar",
+        "weight": 7
+      },
+      {
         "monster_id": "demonolith",
-        "weight": 12
+        "weight": 7
       },
       {
         "monster_id": "floating_death",
@@ -444,63 +420,50 @@
       {
         "monster_id": "malboro_menace",
         "weight": 9
-      },
+      }
+    ],
+    "recommended_max_level": 89
+  },
+  {
+    "id": "astral_threshold",
+    "name": "Astral Threshold",
+    "min_level": 90,
+    "recommended_max_level": 98,
+    "description": "Lv.90–98. A luminous precipice overlooking the final singularity. Veteran adventurers confront cosmic threats before the Citadel.",
+    "encounters": [
       {
         "monster_id": "spirit",
         "weight": 9
       },
       {
         "monster_id": "great_malboro_omega",
-        "weight": 6
+        "weight": 8
       },
       {
         "monster_id": "mimic_king",
-        "weight": 5
+        "weight": 8
       },
       {
         "monster_id": "omega_sentinel",
-        "weight": 2
-      },
-      {
-        "monster_id": "magic_pot",
-        "weight": 1
+        "weight": 10
       }
     ]
   },
   {
     "id": "eclipsed_singularity_citadel",
     "name": "Eclipsed Singularity Citadel",
-    "min_level": 97,
-    "description": "Beyond Omega Ruins, broken god-machines and black crystal spires encircle an eclipse at the edge of reality. The Eclipse Sovereign awaits.",
+    "min_level": 99,
+    "description": "Lv.99. An optional capstone beyond the ordinary ten-level progression, home to endgame guardians.",
     "encounters": [
+      {
+        "monster_id": "eclipse_harbinger",
+        "weight": 10
+      },
       {
         "monster_id": "omega_sentinel",
         "weight": 10
-      },
-      {
-        "monster_id": "great_malboro_omega",
-        "weight": 8
-      },
-      {
-        "monster_id": "mimic_king",
-        "weight": 8
-      },
-      {
-        "monster_id": "eclipse_harbinger",
-        "weight": 17
-      },
-      {
-        "monster_id": "eclipse_harbinger",
-        "weight": 10
-      },
-      {
-        "monster_id": "demonolith",
-        "weight": 7
-      },
-      {
-        "monster_id": "void_avatar",
-        "weight": 7
       }
-    ]
+    ],
+    "recommended_max_level": 99
   }
 ]

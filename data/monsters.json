@@ -1804,6 +1804,10 @@
       {
         "item_id": "elemental_crystal",
         "chance": 0.25
+      },
+      {
+        "item_id": "crystal_core",
+        "chance": 0.14
       }
     ],
     "pity_drops": [
@@ -1923,6 +1927,10 @@
       {
         "item_id": "archon_shard",
         "chance": 0.04
+      },
+      {
+        "item_id": "crystal_core",
+        "chance": 0.11
       }
     ]
   },
@@ -2020,6 +2028,10 @@
       {
         "item_id": "blood_sword",
         "chance": 0.012
+      },
+      {
+        "item_id": "crystal_core",
+        "chance": 0.09
       }
     ],
     "recipe_drops": [
@@ -2398,6 +2410,10 @@
       {
         "item_id": "adamantite",
         "chance": 0.12
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.09
       }
     ],
     "pity_drops": [
@@ -2529,6 +2545,10 @@
       {
         "item_id": "rift_crystal",
         "chance": 0.34
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.13
       }
     ],
     "recipe_drops": [
@@ -2592,6 +2612,10 @@
       {
         "item_id": "dragon_fang",
         "chance": 0.36
+      },
+      {
+        "item_id": "eidolon_shard",
+        "chance": 0.18
       }
     ]
   },

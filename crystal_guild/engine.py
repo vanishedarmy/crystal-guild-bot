@@ -2614,6 +2614,9 @@ class CrystalGuildEngine:
         if remaining > 0 and not bypass_cooldown:
             return GameResult.fail(f"Solo Venture ready in {self._format_seconds(remaining)}.")
         p = self._player(twitch_id)
+        region = self.data.regions.get(str(p["current_region"]))
+        if region is None or int(p["level"]) < int(region["min_level"]):
+            return GameResult.fail("Your saved region has a higher level requirement. Travel to an unlocked region before beginning a Solo Venture.")
         now = int(time.time())
         plan = self._camp_plan_row(twitch_id)
         active_meal = plan["meal_until"] > now
@@ -3159,6 +3162,11 @@ class CrystalGuildEngine:
 
         p = self._player(twitch_id)
         region = self.data.regions[p["current_region"]]
+        if int(p["level"]) < int(region["min_level"]):
+            return GameResult.fail(
+                f"{region['name']} now requires Lv.{region['min_level']}. "
+                "Your saved location was preserved; use !travel to an unlocked region before venturing."
+            )
 
         # Stream/Rally Ventures are encounter-only. Treasure remains a separate
         # Portal Solo Venture outcome; legacy venture_treasure_chance overrides

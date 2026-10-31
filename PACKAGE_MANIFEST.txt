@@ -1,5 +1,5 @@
-Crystal Guild v1.9.97.6 — Job-Level Reward Balance
-Sanitized Bot source inventory (excludes secrets, runtime data, caches and bytecode).
+Crystal Guild v1.9.97.7 — Regional Progression
+Sanitized Bot source inventory (excludes runtime, secrets, caches and bytecode).
 
 .env.example
 .gitignore
@@ -25,6 +25,7 @@ README_FIRST.txt
 README_MOOGLE_EMPORIUM_REWORK.md
 README_OFFLINE_PROGRESSION_HOTFIX.md
 README_SEASONAL_EVENT_LIVE_HOTFIX.md
+REGIONAL_PROGRESSION_1977.md
 RELEASE_NOTES.md
 RELEASE_NOTES_1972.md
 RELEASE_NOTES_1973.md
@@ -244,6 +245,7 @@ tests/test_records_moments_step4.py
 tests/test_records_moments_step5.py
 tests/test_records_moments_step6.py
 tests/test_regional_emporium.py
+tests/test_regional_progression_1977.py
 tests/test_release_archive_gate_phase5.py
 tests/test_release_contract.py
 tests/test_relic_arsenal_151.py
