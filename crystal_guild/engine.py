@@ -9965,16 +9965,26 @@ class CrystalGuildEngine:
         if include_first_clear_bonus:
             bonus_blocks.append(dungeon.get("first_clear_bonus") if isinstance(dungeon.get("first_clear_bonus"), dict) else {})
         player = self._player(twitch_id)
-        # Repeat completion cash/XP scales down when a high-level character
-        # clears a much easier dungeon. First-clear bonuses remain untouched.
-        repeat_factor = dungeon_repeat_bonus_factor(
-            int(player["level"]), int(dungeon.get("recommended_level") or dungeon.get("min_level") or 1),
-        ) if player and include_completion_bonus and not include_first_clear_bonus else 1.0
+        # Repeat completion XP/Gil follow character difficulty, but Job Points
+        # follow the equipped Job's level. A Lv.99 character leveling a new Job
+        # should not lose the JP from re-clearing a Lv.55 Dungeon. Keep first-
+        # clear awards unscaled as before.
+        repeat_xp_gil_factor = 1.0
+        repeat_jp_factor = 1.0
+        if player and include_completion_bonus and not include_first_clear_bonus:
+            recommended = int(dungeon.get("recommended_level") or dungeon.get("min_level") or 1)
+            repeat_xp_gil_factor = dungeon_repeat_bonus_factor(int(player["level"]), recommended)
+            active_job = str(player["current_job"])
+            repeat_jp_factor = jp_reward_factor(
+                int(player["level"]), self._job_level(twitch_id, active_job), recommended
+            )
         for bonus in bonus_blocks:
-            factor = repeat_factor if bonus is dungeon.get("completion_bonus") else 1.0
-            cache["xp"] = int(cache.get("xp", 0)) + int(int(bonus.get("xp", 0) or 0) * factor)
-            cache["jp"] = int(cache.get("jp", 0)) + int(int(bonus.get("jp", 0) or 0) * factor)
-            cache["gil"] = int(cache.get("gil", 0)) + int(int(bonus.get("gil", 0) or 0) * factor)
+            is_repeat = bonus is dungeon.get("completion_bonus")
+            xp_gil_factor = repeat_xp_gil_factor if is_repeat else 1.0
+            job_factor = repeat_jp_factor if is_repeat else 1.0
+            cache["xp"] = int(cache.get("xp", 0)) + int(int(bonus.get("xp", 0) or 0) * xp_gil_factor)
+            cache["jp"] = int(cache.get("jp", 0)) + int(int(bonus.get("jp", 0) or 0) * job_factor)
+            cache["gil"] = int(cache.get("gil", 0)) + int(int(bonus.get("gil", 0) or 0) * xp_gil_factor)
             for loot in list(bonus.get("items") or []):
                 item_id = str(loot.get("item_id") or "")
                 qty = max(0, int(loot.get("quantity", 1) or 1))

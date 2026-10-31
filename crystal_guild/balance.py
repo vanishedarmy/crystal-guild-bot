@@ -26,11 +26,11 @@ ENCOUNTER_REWARD_MAX = 1.50
 RALLY_VENTURE_REWARD_PER_LEVEL = 0.05
 RALLY_VENTURE_REWARD_MAX_BONUS = 0.50
 
-# Progression/economy guardrails. Character XP uses the established level factor.
-# JP uses a catch-up floor based on Character
-# Level so switching to a fresh Job at high level is viable without turning a
-# Lv.1 Job into an unrestricted endgame power-level exploit.
-JP_CATCHUP_CHARACTER_FLOOR = 0.35
+# Character XP and Gil track the character's level against enemy difficulty.
+# Job Points instead track the active Job's *own* level. A veteran switching to
+# a new class should not inherit a character-level penalty on Job progression.
+# Low-level enemies still have low base JP, and the encounter multiplier stays
+# bounded between ENCOUNTER_REWARD_MIN and ENCOUNTER_REWARD_MAX.
 
 # Passive income should help a viewer return to play, not replace adventuring.
 # Daily provisions scale gently with level and remain below a typical
@@ -236,12 +236,13 @@ def rally_venture_reward_multiplier(player_level: int, monster_level: int) -> fl
 
 
 def jp_reward_factor(character_level: int, job_level: int, monster_level: int) -> float:
-    """Return the JP factor with bounded catch-up for newly changed Jobs."""
-    char_level = max(1, int(character_level))
-    current_job_level = max(1, int(job_level))
-    catchup_floor = max(1, int(math.ceil(char_level * JP_CATCHUP_CHARACTER_FLOOR)))
-    effective_level = max(current_job_level, catchup_floor)
-    return encounter_reward_factor(effective_level, monster_level)
+    """Scale JP by active Job level, independent of the character's level.
+
+    Keep the character_level argument for existing combat callers. This uses
+    the bounded encounter curve, preventing a level-1 enemy from yielding high
+    raw JP simply because a veteran has just changed Jobs.
+    """
+    return encounter_reward_factor(max(1, int(job_level)), monster_level)
 
 
 def daily_gil_range(level: int) -> tuple[int, int]:

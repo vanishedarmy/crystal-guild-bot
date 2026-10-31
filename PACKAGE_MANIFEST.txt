@@ -1,4 +1,4 @@
-Crystal Guild v1.9.97.4 — Relic Portal Awakening
+Crystal Guild v1.9.97.6 — Job-Level Reward Balance
 Sanitized Bot source inventory (excludes secrets, runtime data, caches and bytecode).
 
 .env.example
@@ -28,6 +28,7 @@ README_SEASONAL_EVENT_LIVE_HOTFIX.md
 RELEASE_NOTES.md
 RELEASE_NOTES_1972.md
 RELEASE_NOTES_1973.md
+RELEASE_NOTES_1976.md
 RELIC_PORTAL_1974.md
 RENDER_CLOUD_SETUP.md
 SIMPLE_RENDER_SETUP.md
@@ -213,6 +214,7 @@ tests/test_item_expansion.py
 tests/test_item_progression.py
 tests/test_item_usage_copy_hotfix2.py
 tests/test_job_ascension_1992.py
+tests/test_job_level_jp_rebalance_1976.py
 tests/test_job_resource_switching.py
 tests/test_language_hotfix1.py
 tests/test_limit_ascension_1993.py

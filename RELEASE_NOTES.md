@@ -1,3 +1,10 @@
+## v1.9.97.6 — Job-Level Reward Balance
+
+- Job Points scale from the current Job Level rather than Character Level; switching to a new Job no longer inherits a 35%-of-character-level penalty.
+- Standard battles, World Events, Solo Ventures, Expeditions and Dungeon enemy payouts use the adjusted shared Job Point multiplier. Repeat Dungeon bonus JP scales by Job Level independently from Character XP and Gil.
+- Character XP and Gil keep their existing character-level anti-farming rules. No earned progress, equipment, class unlocks or save data is reset.
+- See `RELEASE_NOTES_1976.md` for the exact scope and limitations.
+
 ## v1.9.97.4 — Relic Portal Awakening
 
 - Added authenticated Relic stage advancement in Portal Relic Arsenal, with confirmation and full server-side requirements validation.

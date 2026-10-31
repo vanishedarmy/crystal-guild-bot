@@ -31,12 +31,16 @@ class EconomyBalanceTests(unittest.TestCase):
         self.assertLess(low50, low99)
         self.assertLessEqual(high99, DAILY_GIL_CAP)
 
-    def test_new_job_jp_has_bounded_catchup(self):
-        # A high-level character on a new Job can meaningfully catch up in
-        # mid-game content, while trivial Lv.1 farming remains at the floor.
-        self.assertAlmostEqual(jp_reward_factor(50, 1, 1), 0.175)
-        self.assertEqual(jp_reward_factor(50, 1, 30), 1.5)
-        self.assertLessEqual(jp_reward_factor(50, 1, 99), 1.5)
+    def test_job_jp_uses_active_job_not_character_level(self):
+        # Swapping from an endgame character to a fresh Job must never inherit
+        # the former character-level penalty or the 35% catch-up floor.
+        self.assertEqual(jp_reward_factor(99, 1, 1), 1.0)
+        self.assertEqual(jp_reward_factor(1, 1, 1), 1.0)
+        self.assertEqual(jp_reward_factor(99, 1, 30), 1.5)
+        self.assertEqual(jp_reward_factor(1, 1, 30), 1.5)
+        self.assertEqual(jp_reward_factor(99, 50, 1), 0.05)
+        self.assertEqual(jp_reward_factor(1, 50, 1), 0.05)
+        self.assertLessEqual(jp_reward_factor(99, 1, 99), 1.5)
 
     def test_resale_ratios_preserve_material_value_without_full_refund(self):
         self.assertEqual(sell_value(1000, "material"), 700)

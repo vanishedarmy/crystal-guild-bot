@@ -8,6 +8,7 @@ from unittest.mock import patch
 from crystal_guild.balance import (
     critical_chance,
     encounter_reward_factor,
+    jp_reward_factor,
     party_enemy_attacks,
     rally_venture_reward_multiplier,
     party_monster_hp,
@@ -85,7 +86,8 @@ class BalanceTests(unittest.TestCase):
                 game.rng = FixedRng()
                 award = game._award_victory("1", p, monster)
                 self.assertEqual(award["xp"], max(5, int(monster["xp"] * 0.05)))
-                self.assertEqual(award["jp"], max(2, int(monster["jp"] * 0.05)))
+                # JP tracks the active Job (JLv.1), not this Lv.50 character.
+                self.assertEqual(award["jp"], max(2, int(monster["jp"] * jp_reward_factor(50, 1, monster["level"]))))
                 self.assertEqual(award["gil"], max(1, int(monster["gil"] * 0.05)))
             finally:
                 db.close()
