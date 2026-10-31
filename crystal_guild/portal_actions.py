@@ -404,6 +404,13 @@ class PortalActionWorker:
             if not re.fullmatch(r"[a-z0-9_]{1,100}", relic_id):
                 return False, "Invalid Relic quest ID.", {}
             return self._game_result(self.game.portal_begin_relic_quest(twitch_id, relic_id, str(action.get("id") or "")))
+        if action_type == "RELIC_AWAKEN":
+            if set(payload) != {"relic_id"}:
+                return False, "Relic awakening requires only its relic_id.", {}
+            relic_id = str(payload.get("relic_id") or "").strip().lower()
+            if not re.fullmatch(r"[a-z0-9_]{1,100}", relic_id):
+                return False, "Invalid Relic ID.", {}
+            return self._game_result(self.game.portal_awaken_relic(twitch_id, relic_id, str(action.get("id") or "")))
         if action_type == "SHOP_STATE":
             result = self.game.portal_shop_state(twitch_id)
             return self._game_result(result)
@@ -726,6 +733,13 @@ class PortalActionWorker:
             return self._game_result(result)
         if action_type == "ADVENTURE_STATE":
             result = self.game.portal_adventure_state(twitch_id, stream_live=self._stream_live())
+            return self._game_result(result)
+        if action_type == "SET_LURK_MODE":
+            if type(payload.get("enabled")) is not bool:
+                return False, "Lurk Mode expects enabled true or false.", {}
+            result = self.game.portal_lurk_mode(twitch_id, payload["enabled"], str(action.get("id") or ""))
+            if result.ok:
+                self._wake_encounter_scheduler()
             return self._game_result(result)
         if action_type == "LIVE_EVENT_JOIN":
             event = str(payload.get("event") or "").strip().lower()

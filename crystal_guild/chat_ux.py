@@ -19,6 +19,7 @@ COMMAND_USAGE: dict[str, str] = {
     "mastery": "!mastery [job slot]",
     "stance": "!stance [name]",
     "venture": "!venture",
+    "lurkmode": "!lurkmode on | off | status",
     "join": "!join",
     "encounter": "!encounter",
     "battlelog": "!battlelog",

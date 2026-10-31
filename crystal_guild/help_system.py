@@ -17,6 +17,7 @@ HELP_TOPICS = {
         "VENTURES — Twitch Rally Venture is live-stream gameplay: !venture is available only while the channel is LIVE. Portal Solo Venture remains available off-stream as a private, player-paced three-stage run.",
         "ACTIVE BATTLE — ENCOUNTER Ventures open a rally and !join enters it. When combat begins, each living hero queues one action per round: !attack, !ability <name> [target], !defend, or !use <item> [target].",
         "!encounter shows a compact battle dashboard with enemy HP, party HP/MP/AP, statuses, queued actions and the timer. Ordinary enemy attacks target one hero; explicit party skills can hit multiple heroes. !battlelog shows recent resolved rounds without adding automatic chat spam.",
+        "LURK MODE — !lurkmode on automatically joins an eligible open Venture, World Event, or Raid only after someone else joins. Conservative automatic attacks and healing; !lurkmode off disables, !lurkmode status checks. Never starts an event or joins after rally closes.",
         "MIST SUPPORT — During a live Venture, World Event, or Raid battle, !healparty (100 Gil), !healparty 2 (250 Gil), !healparty 3 (500 Gil), or !healparty 4 (1,000 Gil) immediately heals the living party’s HP/MP. Once per participating hero per Venture, World Event, or Raid (each run has separate uses). No Gil spent if it cannot be used.",
     ),
     "recovery": (
@@ -88,7 +89,7 @@ ALIASES = {
     "recruit": "start", "begin": "start", "new": "start",
     "hero": "character", "profile": "character", "status": "character", "me": "character", "daily": "character", "substatus": "character",
     "job": "jobs", "jobinfo": "jobs", "abilities": "jobs", "mastery": "jobs", "stance": "jobs",
-    "venture": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
+    "venture": "adventure", "lurkmode": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
     "rest": "recovery", "camp": "recovery", "use": "recovery", "healparty": "adventure",
     "inv": "inventory", "gear": "inventory", "equipment": "inventory", "equip": "inventory", "item": "inventory",
     "buy": "shop", "buyweapon": "shop", "buyarmor": "shop", "buyaccessory": "shop", "sell": "shop",

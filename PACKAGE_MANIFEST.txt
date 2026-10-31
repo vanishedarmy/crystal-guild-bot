@@ -1,4 +1,4 @@
-Crystal Guild v1.9.97 — Elite Hunts & World Events
+Crystal Guild v1.9.97.4 — Relic Portal Awakening
 Sanitized Bot source inventory (excludes secrets, runtime data, caches and bytecode).
 
 .env.example
@@ -26,6 +26,9 @@ README_MOOGLE_EMPORIUM_REWORK.md
 README_OFFLINE_PROGRESSION_HOTFIX.md
 README_SEASONAL_EVENT_LIVE_HOTFIX.md
 RELEASE_NOTES.md
+RELEASE_NOTES_1972.md
+RELEASE_NOTES_1973.md
+RELIC_PORTAL_1974.md
 RENDER_CLOUD_SETUP.md
 SIMPLE_RENDER_SETUP.md
 SKYBOUND_SINGULARITY_199.md
@@ -163,6 +166,7 @@ tests/test_command_ux.py
 tests/test_consumable_effects_198_hotfix.py
 tests/test_consumable_resource_audit.py
 tests/test_crafting_194.py
+tests/test_daily_shop_relic_hotfix_1997.py
 tests/test_dungeons_alpha1.py
 tests/test_dungeons_alpha2.py
 tests/test_dungeons_alpha3.py
@@ -212,6 +216,8 @@ tests/test_job_ascension_1992.py
 tests/test_job_resource_switching.py
 tests/test_language_hotfix1.py
 tests/test_limit_ascension_1993.py
+tests/test_lurk_command_ownership_19973.py
+tests/test_lurk_mode_19973.py
 tests/test_merc_recruitment_181.py
 tests/test_merc_service_alpha1.py
 tests/test_merc_service_alpha2.py
@@ -240,6 +246,7 @@ tests/test_release_archive_gate_phase5.py
 tests/test_release_contract.py
 tests/test_relic_arsenal_151.py
 tests/test_relic_overhaul_192.py
+tests/test_relic_portal_awaken_19974.py
 tests/test_resource_persistence.py
 tests/test_resynthesis_alpha1.py
 tests/test_resynthesis_alpha2_hotfix5.py
@@ -274,6 +281,7 @@ tests/test_triple_triad_hosted_ladder.py
 tests/test_triple_triad_rework.py
 tests/test_venture_mist_healing.py
 tests/test_wayfarer.py
+tests/test_world_event_exclusive_and_ff_balance_1972.py
 tests/test_world_events_alpha6.py
 tools/check_release_archive.py
 tools/simulate_expedition_balance.py

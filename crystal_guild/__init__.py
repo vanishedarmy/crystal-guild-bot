@@ -1,3 +1,3 @@
 from __future__ import annotations
 
-__version__ = "1.9.97.2-encounter-balance"
+__version__ = "1.9.97.4-relic-portal-awakening"

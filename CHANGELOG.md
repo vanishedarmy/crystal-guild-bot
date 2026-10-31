@@ -1,3 +1,7 @@
+# Crystal Guild v1.9.97.3 — Lurk Mode
+
+- Human-led auto-join for live rallies, guarded conservative autopilot, limited auto Mist, chat and Portal controls; persistent opt-in settings. See `RELEASE_NOTES_1973.md`.
+
 # Crystal Guild v1.9.97.1 — Daily Resets, Regional Shops & Relic Quests
 
 - Daily Guild Provisions now share Gold Saucer's 00:00 UTC calendar reset. Existing rolling 24-hour cooldowns are superseded by the daily settlement ledger, avoiding midnight lockouts and duplicate claims.

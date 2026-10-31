@@ -2897,6 +2897,223 @@ class CrystalGuildEngine:
             closes_at=closes_at,
         )
 
+    # ---------- optional stream Lurk Mode (no additional database schema) ----------
+    @staticmethod
+    def _lurk_key(twitch_id: str) -> str:
+        return "lurk_mode:" + str(twitch_id)
+
+    def _lurk_enabled(self, twitch_id: str) -> bool:
+        row = self.db.runtime_state(self._lurk_key(twitch_id))
+        if not row:
+            return False
+        try:
+            return bool(json.loads(row["value_json"]).get("enabled", False))
+        except (TypeError, ValueError, AttributeError):
+            return False
+
+    def _lurk_candidates(self) -> list[str]:
+        rows = self.db.all("SELECT state_key, value_json FROM runtime_state WHERE state_key LIKE 'lurk_mode:%' ORDER BY state_key")
+        found = []
+        for row in rows:
+            try:
+                if json.loads(row["value_json"]).get("enabled"):
+                    found.append(str(row["state_key"])[len("lurk_mode:"):])
+            except (TypeError, ValueError, AttributeError):
+                continue
+        return found[:250]  # conservative max per rally; never auto-starts an activity
+
+    @_state_guard
+    def lurk_mode(self, twitch_id: str, choice: str = "status") -> GameResult:
+        player = self._player(twitch_id)
+        if not player:
+            return self._need_recruit()
+        mode = str(choice or "status").strip().lower()
+        if mode in {"status", "check", ""}:
+            setting = "ON" if self._lurk_enabled(twitch_id) else "OFF"
+            return GameResult.success(f"LURK MODE {setting} — !lurkmode on to opt in, !lurkmode off to stop future joins and automatic actions. Manual actions always take priority.", enabled=setting == "ON")
+        if mode not in {"on", "off", "enable", "disable"}:
+            return GameResult.fail("Usage: !lurkmode on | off | status")
+        enabled = mode in {"on", "enable"}
+        self.db.set_runtime_state(self._lurk_key(twitch_id), json.dumps({"enabled": enabled}))
+        if enabled:
+            if player["current_job"] == "adventurer":
+                return GameResult.success("LURK MODE ON — choose a Job to join future rallies. You will never start an event by lurking.", enabled=True)
+            # Allow opt-in during an already-populated, still-open rally.
+            self._lurk_fill_rally()
+        return GameResult.success(
+            ("LURK MODE ON — joins only after another hero, acts conservatively, and protects healing resources. Use !lurkmode off anytime."
+             if enabled else
+             "LURK MODE OFF — no further auto-joins or automated moves. You remain in any battle already joined and may act normally."),
+            enabled=enabled,
+        )
+
+    def _lurk_fill_rally(self) -> None:
+        """Opt-in auto-joins after a *real* participant; no starts, late joins or solo hunts."""
+        if getattr(self, "_lurk_joining", False):
+            return
+        active_raid = self.active_boss and self.active_boss.get("state") == "rally" and time.time() < float(self.active_boss.get("closes_at", 0))
+        active_encounter = (self.active_encounter and self.active_encounter.get("state") == "rally"
+                            and self.active_encounter.get("kind") in {"venture", "world_event"}
+                            and time.time() < float(self.active_encounter.get("closes_at", 0)))
+        if not active_raid and not active_encounter:
+            return
+        roster = self.raid_roster if active_raid else self.encounter_roster
+        # A rally made exclusively of lurkers must never trigger more auto-joins.
+        if not any(not member.get("lurk_joined", False) for member in roster.values()):
+            return
+        self._lurk_joining = True
+        try:
+            for uid in self._lurk_candidates():
+                if uid in roster or len(roster) >= 24:
+                    continue
+                try:
+                    result = self.raid_join(uid) if active_raid else self.join_encounter(uid)
+                except Exception:
+                    continue  # One invalid character must not prevent other joins.
+                if result.ok and uid in roster:
+                    roster[uid]["lurk_joined"] = True
+        finally:
+            self._lurk_joining = False
+
+    def _lurk_plan_action(self, twitch_id: str, meta: dict[str, Any], roster: dict[str, dict[str, Any]], *, raid: bool, round_no: int) -> dict[str, Any]:
+        """Deterministic, low-cost turn choice. Never purchases goods or changes Jobs."""
+        action: dict[str, Any] = {"kind": "attack", "auto": True, "lurk_auto": True}
+        max_hp = max(1, int(meta.get("max_hp") or 1))
+        health = max(0, int(meta.get("hp") or 0)) / max_hp
+        target_enemy = "boss" if raid else "monster"
+        # Emergency single-use consumables only; keep a stock reserve, don't spam.
+        used = int(meta.get("lurk_items_used", 0) or 0)
+        last_item = int(meta.get("lurk_last_item_round", -20) or -20)
+        if health < 0.29 and used < 2 and round_no - last_item >= 4:
+            needed = max_hp - int(meta.get("hp", 0))
+            for item_id in ("potion", "hi_potion", "mega_potion"):
+                # Only heal if the item makes a meaningful difference; avoid
+                # spending a small Potion on a 50,000-HP endgame character.
+                use = (self.data.items.get(item_id) or {}).get("use") or {}
+                heal_amount = max((int(e.get("amount", 0)) for e in use.get("effects", [])
+                                   if e.get("type") == "heal_hp"), default=0)
+                if (self._inventory_qty(twitch_id, item_id) > 2 and
+                        heal_amount >= int(max_hp * 0.10) and
+                        needed >= heal_amount * 0.75 and
+                        (health < 0.18 or item_id != "mega_potion")):
+                    return {"kind": "item", "item_id": item_id, "target_id": str(twitch_id), "auto": True, "lurk_auto": True}
+        if health < 0.13:
+            return {"kind": "defend", "auto": True, "lurk_auto": True}
+        unlocked = unlocked_abilities(self.data.active_abilities.get(meta.get("job_id"), []), int(meta.get("job_level", 0)))
+        job = self.data.jobs.get(meta.get("job_id"), {})
+        if not unlocked:
+            return action
+        last_support = int(meta.get("lurk_last_support_round", -20) or -20)
+        best = None
+        for ability in unlocked:
+            cost = ability_cost(ability)
+            res = ability_resource(ability, job)
+            available = int(meta.get(res, 0) or 0)
+            maximum = int(meta.get("max_" + res, 0) or 0)
+            if maximum <= 0 or available - cost < max(int(maximum * 0.35), cost):
+                continue
+            if cost > maximum * 0.35 or (res == "mp" and has_status(meta.get("statuses", {}), "silence")):
+                continue
+            effects = ability.get("effects") or []
+            target_type = str(ability.get("target") or "enemy")
+            has_revive = any(e.get("type") == "revive" for e in effects)
+            # Avoid risky, expensive utility buffs/debuffs and redundant revivals.
+            if has_revive:
+                continue
+            if target_type in {"ally", "party", "self"}:
+                if round_no - last_support < 3:
+                    continue
+                heal = any(e.get("type") in {"heal", "heal_hp"} for e in effects)
+                if not heal:
+                    continue
+                living = [(pid, m) for pid, m in roster.items() if int(m.get("hp", 0)) > 0 and int(m.get("max_hp", 0)) > 0]
+                vulnerable = [(pid, m) for pid, m in living if int(m.get("hp", 0)) / max(1, int(m.get("max_hp", 1))) < .42]
+                if not vulnerable:
+                    continue
+                if target_type == "party":
+                    if len(vulnerable) < 2:
+                        continue
+                    target = "party"
+                    priority = 12.5
+                elif target_type == "self":
+                    if health >= .42:
+                        continue
+                    target = str(twitch_id)
+                    priority = 12.4
+                else:
+                    target = min(vulnerable, key=lambda x: int(x[1]["hp"]) / max(1, int(x[1]["max_hp"])))[0]
+                    priority = 12.6
+            elif target_type == "enemy":
+                power = max((float(e.get("power", 0)) for e in effects if e.get("type") == "damage"), default=0)
+                if power <= 0:
+                    continue
+                # Keep expensive moves for active players; one efficient attack every third round.
+                if round_no % 3 != 0:
+                    continue
+                priority = min(power, 2.2) / max(1, cost) * 12
+                element = str(ability.get("element") or "").lower()
+                enemy = (self.active_boss or {}) if raid else self._encounter_monster(self.active_encounter)
+                if element and element == str(enemy.get("weakness") or "").lower():
+                    priority *= 1.6
+                target = target_enemy
+            else:
+                continue
+            candidate = (priority, -cost, ability, target, res, cost)
+            if best is None or candidate[:2] > best[:2]:
+                best = candidate
+        if best is not None:
+            _, _, ability, target, resource, cost = best
+            return {"kind": "ability", "ability_id": ability["id"], "target_id": target,
+                    "resource": resource, "cost": cost, "auto": True, "lurk_auto": True}
+        return action
+
+    def _lurk_automate_round(self, *, raid: bool, round_no: int) -> None:
+        roster = self.raid_roster if raid else self.encounter_roster
+        enabled_ids = [pid for pid, meta in roster.items() if int(meta.get("hp", 0)) > 0 and self._lurk_enabled(pid)]
+        if not enabled_ids:
+            return
+        activity = self.active_boss if raid else self.active_encounter
+        # One affordable Mist heal maximum per group run; require multiple wounded allies.
+        living = [m for m in roster.values() if int(m.get("hp", 0)) > 0 and int(m.get("max_hp", 0)) > 0]
+        badly_wounded = [m for m in living if int(m["hp"]) / max(1, int(m["max_hp"])) < .35]
+        if (activity and not activity.get("lurk_mist_used") and len(living) >= 3
+                and len(badly_wounded) >= 2 and len(badly_wounded) >= len(living) // 2):
+            for pid in enabled_ids:
+                meta = roster[pid]
+                p = self._player(pid)
+                if not p or meta.get("mist_heal_used"):
+                    continue
+                if raid and not self._raid_action_is_current(meta.get("action"), self.active_boss, round_no):
+                    pass
+                elif meta.get("action") and not meta["action"].get("lurk_auto"):
+                    continue
+                # Limit Lurk spend to a small fraction of current wealth; never tier 4.
+                gil = int(p["gil"])
+                for tier, cost in ((3, 500), (2, 250), (1, 100)):
+                    if gil >= cost * 20:
+                        result = self.heal_party(pid, str(tier))
+                        if result.ok:
+                            activity["lurk_mist_used"] = True
+                        break
+                if activity.get("lurk_mist_used"):
+                    break
+        for pid in enabled_ids:
+            meta = roster[pid]
+            if raid:
+                if self._raid_action_is_current(meta.get("action"), self.active_boss, round_no):
+                    continue
+            elif meta.get("action"):
+                continue
+            choice = self._lurk_plan_action(pid, meta, roster, raid=raid, round_no=round_no)
+            if raid:
+                choice.update({"raid_round": round_no, "raid_run": self._raid_instance_id(self.active_boss)})
+            if choice["kind"] == "item":
+                meta["lurk_items_used"] = int(meta.get("lurk_items_used", 0)) + 1
+                meta["lurk_last_item_round"] = round_no
+            elif choice["kind"] == "ability" and choice.get("target_id") != ("boss" if raid else "monster"):
+                meta["lurk_last_support_round"] = round_no
+            meta["action"] = choice
+
     @_state_guard
     def venture(self, twitch_id: str, bypass_cooldown: bool = False) -> GameResult:
         p = self._player(twitch_id)
@@ -3000,6 +3217,7 @@ class CrystalGuildEngine:
             (twitch_id,),
         )
         self._remember_random_monster(twitch_id, str(region.get("id") or "region"), str(monster["id"]))
+        self._lurk_fill_rally()
         return GameResult.success(
             f"ENCOUNTER — {p['display_name']} finds {monster['name']} (Lv.{monster['level']}) in {region['name']}!",
             f"RALLY OPEN {self._format_seconds(self.encounter_join_seconds)} — !join to enter. "
@@ -3191,6 +3409,8 @@ class CrystalGuildEngine:
                 "updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?",
                 (twitch_id,),
             )
+        if not getattr(self, "_lurk_joining", False):
+            self._lurk_fill_rally()
         monster = self._encounter_monster(self.active_encounter)
         return GameResult.success(
             f"{p['display_name']} joins the fight against {monster['name']}! "
@@ -4892,6 +5112,7 @@ class CrystalGuildEngine:
         if int(self.active_encounter.get("monster_hp", 0)) <= 0:
             return self._finish_active_encounter(True, round_log=merc_log, round_no=round_no)
 
+        self._lurk_automate_round(raid=False, round_no=round_no)
         for _, row in living:
             if not row.get("action"):
                 row["action"] = {"kind": "attack", "auto": True}
@@ -10610,6 +10831,7 @@ class CrystalGuildEngine:
             "recent_result": recent_result,
             "pending_results": pending_results,
             "raid_active": bool(self.active_boss),
+            "lurk_mode": {"enabled": self._lurk_enabled(twitch_id), "command": "!lurkmode on | off | status"},
             "raid": raid_payload,
             "stream_live": bool(stream_live is True),
         }
@@ -11060,6 +11282,12 @@ class CrystalGuildEngine:
         if not self._player(twitch_id):
             return self._need_recruit()
         return GameResult.success("Adventure Board refreshed.", adventure_state=self._portal_adventure_state_data(twitch_id, stream_live=stream_live))
+
+    @_state_guard
+    def portal_lurk_mode(self, twitch_id: str, enabled: bool, action_id: str) -> GameResult:
+        return self._portal_adventure_mutation(
+            twitch_id, action_id, lambda: self.lurk_mode(twitch_id, "on" if enabled else "off")
+        )
 
     def _portal_adventure_mutation(self, twitch_id: str, action_id: str, operation) -> GameResult:
         """Commit an Adventure mutation and its replay receipt atomically.
@@ -16005,6 +16233,20 @@ class CrystalGuildEngine:
             self._portal_action_store_sql(conn, action_id, result)
         return result
 
+    def portal_awaken_relic(self, twitch_id: str, relic_id: str, action_id: str) -> GameResult:
+        """Advance via the Portal using the authoritative Twitch Relic rules.
+
+        Keep the stage transition and replay receipt in one transaction so a
+        timed-out Portal acknowledgement cannot advance a second stage.
+        """
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        with self.db.tx() as conn:
+            result = self.awaken_relic(twitch_id, relic_id)
+            self._portal_action_store_sql(conn, action_id, result)
+            return result
+
     def relics(self, twitch_id: str, tier: str = "classic") -> GameResult:
         p = self._player(twitch_id)
         if not p:
@@ -16451,6 +16693,8 @@ class CrystalGuildEngine:
             "actions": 0, "abilities_used": 0, "items_used": 0, "defends": 0,
             "merc_contract": merc_contract,
         }
+        if not getattr(self, "_lurk_joining", False):
+            self._lurk_fill_rally()
         self._update_raid_overlay()
         warning = ""
         rec = self.active_boss.get("recommended_level")
@@ -17811,6 +18055,7 @@ class CrystalGuildEngine:
             dealt, healed = self._merc_apply_raid_assist(str(pid), self.raid_roster[pid], boss, action_log)
             round_damage += dealt
             round_healing += healed
+        self._lurk_automate_round(raid=True, round_no=round_no)
         for pid in alive_ids:
             meta = self.raid_roster[pid]
             meta["defending"] = False

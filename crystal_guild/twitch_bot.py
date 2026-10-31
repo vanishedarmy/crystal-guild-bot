@@ -229,6 +229,11 @@ class RPGCommands(commands.Component):
             self.bot.encounter_daemon.wake()
 
     @commands.command()
+    async def lurkmode(self, ctx: commands.Context, mode: str = "status") -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.lurk_mode(uid, mode))
+
+    @commands.command()
     async def healparty(self, ctx: commands.Context, tier: str = "1") -> None:
         if not await self._require_stream_live(ctx, "Venture/World Event/Raid party healing"):
             return

@@ -1,3 +1,9 @@
+## v1.9.97.4 — Relic Portal Awakening
+
+- Added authenticated Relic stage advancement in Portal Relic Arsenal, with confirmation and full server-side requirements validation.
+- Retry-safe atomic stage/receipt transaction; Twitch !awaken remains compatible.
+- No player progression or inventory reset.
+
 # Crystal Guild v1.9.97 — Elite Hunts & World Events
 
 - Six high-level Hunt assignments: three S+ (Character Lv.80, 86, 92) and three SS (Lv.95, 99, 99).
