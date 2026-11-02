@@ -1,3 +1,19 @@
+# Crystal Guild v2.0.0 — Item Reclassification
+
+**Release scope:** Unified Bot V2.12 gameplay and synchronized Web V2.13 item/Relic/companion presentation, promoted to public version `2.0.0`. The existing Python Bot and Web source are the release baseline; no database reset is required.
+
+- **618-item catalog:** Restructured progression and item attributes; `Relic` is exclusive to the 108 actual Relic Weapon rewards. `Unique` and `Exotic` are supported in rarity displays and the Player Portal catalog.
+- **Level and stat balance:** Ribbon Fragment (Lv35) precedes the stronger Ribbon (Lv55, Exotic). Targeted accessory, weapon, and armor adjustments from the integrated catalog are preserved.
+- **Equipment properties:** Elemental alignment, status immunity/resistance, on-hit effects, specialized equipment mechanics, and the gear-effect balance pass remain in the source with eligibility and combat restrictions.
+- **Relic Weapon rework:** 54 Classic and 54 Ultimate Relic forms retain their job-specific abilities; Ultimate forms have empowered primary perks and signature abilities. Quest progress and item IDs are preserved.
+- **Beastmaster companions:** Persistent tame/roster, active companion, 20 Bond ranks, XP rewards across supported victories, and Portal companion overview. The current Bot database schema remains **30**.
+- **Web synchronization:** Item Encyclopedia and Guide reflect the authoritative 618 Bot item records; new classifications and Relic/companion properties are displayed, with approved artwork Batches 01–15 preserved.
+- **Version identity:** Bot runtime `2.0.0-item-reclassification`; Web `v2.0.0 — Item Reclassification`; both application package manifests `2.0.0`.
+
+**Upgrade:** Back up persistent player databases, live secrets, and Bot/Web environment configuration. Replace only application source, not the live database. The supplied Web archives are full **source** packages, not a newly compiled production frontend; run `npm ci && npm run build` on the deployment host before publishing new static assets. Browser smoke tests and production deployment are still required.
+
+---
+
 # Crystal Guild v1.9.97.3 — Lurk Mode
 
 - Human-led auto-join for live rallies, guarded conservative autopilot, limited auto Mist, chat and Portal controls; persistent opt-in settings. See `RELEASE_NOTES_1973.md`.

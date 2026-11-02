@@ -1,3 +1,9 @@
+CRYSTAL GUILD v2.0.0 — ITEM RECLASSIFICATION
+CURRENT SOURCE RELEASE: Read RELEASE_V2.0.0_README.md and RELEASE_NOTES.md.
+Back up existing databases/config, and rebuild the Web frontend before deploying.
+Older setup and historical release notes follow below for reference only.
+=============================================
+
 # CURRENT RELEASE: v1.9.8 — Airship Expedition
 
 See `RELEASE_NOTES.md` and the `AIRSHIP_EXPEDITION_198.md` release guide. Existing setup and Queen’s Blood instructions remain relevant to previously released features.

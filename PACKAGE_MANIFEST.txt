@@ -1,4 +1,4 @@
-Crystal Guild v1.9.97.7 — Regional Progression
+Crystal Guild v2.0.0 — Item Reclassification
 Sanitized Bot source inventory (excludes runtime, secrets, caches and bytecode).
 
 .env.example

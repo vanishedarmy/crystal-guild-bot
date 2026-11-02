@@ -1,3 +1,19 @@
+# Crystal Guild v2.0.0 — Item Reclassification
+
+**Release scope:** Unified Bot V2.12 gameplay and synchronized Web V2.13 item/Relic/companion presentation, promoted to public version `2.0.0`. The existing Python Bot and Web source are the release baseline; no database reset is required.
+
+- **618-item catalog:** Restructured progression and item attributes; `Relic` is exclusive to the 108 actual Relic Weapon rewards. `Unique` and `Exotic` are supported in rarity displays and the Player Portal catalog.
+- **Level and stat balance:** Ribbon Fragment (Lv35) precedes the stronger Ribbon (Lv55, Exotic). Targeted accessory, weapon, and armor adjustments from the integrated catalog are preserved.
+- **Equipment properties:** Elemental alignment, status immunity/resistance, on-hit effects, specialized equipment mechanics, and the gear-effect balance pass remain in the source with eligibility and combat restrictions.
+- **Relic Weapon rework:** 54 Classic and 54 Ultimate Relic forms retain their job-specific abilities; Ultimate forms have empowered primary perks and signature abilities. Quest progress and item IDs are preserved.
+- **Beastmaster companions:** Persistent tame/roster, active companion, 20 Bond ranks, XP rewards across supported victories, and Portal companion overview. The current Bot database schema remains **30**.
+- **Web synchronization:** Item Encyclopedia and Guide reflect the authoritative 618 Bot item records; new classifications and Relic/companion properties are displayed, with approved artwork Batches 01–15 preserved.
+- **Version identity:** Bot runtime `2.0.0-item-reclassification`; Web `v2.0.0 — Item Reclassification`; both application package manifests `2.0.0`.
+
+**Upgrade:** Back up persistent player databases, live secrets, and Bot/Web environment configuration. Replace only application source, not the live database. The supplied Web archives are full **source** packages, not a newly compiled production frontend; run `npm ci && npm run build` on the deployment host before publishing new static assets. Browser smoke tests and production deployment are still required.
+
+---
+
 # v1.9.97.7 — Regional Progression
 
 World-map regions unlock at Levels 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, with an optional Level 99 capstone. Existing region IDs are preserved. Newly added Shattered Frontier (Level 60) and Astral Threshold (Level 90) use regional monsters of appropriate strength. Classic Relic Crystal Cores can now be obtained from Crystal Expanse foes around Levels 45–49; Eidolon Shards from Shattered Frontier foes around Levels 62–68. Hunt Seal exchanges remain valid. Existing player states and expedition routes are unchanged.
