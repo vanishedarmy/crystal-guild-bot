@@ -1,0 +1,14 @@
+Crystal Guild v1.9.97.7 — Bot integration V2.12 (candidate)
+
+New V2.12 tests: 13/13 passed
+Selected combat/companion/raid/Relic regression tests: 148/148 passed
+Broader focused run: 180 passed, 2 failed (182 tests total)
+Two failures also reproduced on original V2.11 Bot with identical results:
+- test_expeditions_v12: expects old schema version 27; current version 30
+- test_expeditions_v12: compact Portal Expedition board exceeded outdated 22 KiB expectation (27,571 bytes in both V2.11 and V2.12)
+Python compilation: passed
+Database schema: remains 30; no migration
+Full production integration tests, Twitch live, Portal live: not performed
+No modifications to Web or item/Relic data
+
+Changes: personal timed Hunt, solo Expedition and Dungeon Bond XP when an owned, selected Beastmaster pet genuinely participates in a victorious encounter. Each credit has an event-specific persistent receipt in the existing victory transaction. Newly started Expeditions have UUID run IDs.

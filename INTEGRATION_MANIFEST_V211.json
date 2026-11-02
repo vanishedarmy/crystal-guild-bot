@@ -1,0 +1,17 @@
+{
+  "source_version": "1.9.97.7-regional-progression",
+  "integration": "V2.11 Beastmaster Bond Growth",
+  "database_schema_version": 30,
+  "web": "companion overview and previous item/Relic UI compatibility patch",
+  "status": "candidate; not deployed",
+  "changed_bot_paths": [
+    "crystal_guild/beastmaster.py",
+    "crystal_guild/database.py",
+    "crystal_guild/engine.py",
+    "crystal_guild/player_snapshot.py",
+    "tests/test_beastmaster_v210.py",
+    "tests/test_beastmaster_v211.py"
+  ],
+  "tested_bot": 116,
+  "tested_web": 7
+}

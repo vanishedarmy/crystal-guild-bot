@@ -1,0 +1,35 @@
+{
+  "project": "Crystal Guild",
+  "version": "1.9.97.7",
+  "candidate": "V2.10 Beastmaster Companion Ownership",
+  "based_on": "V2.9 integrated Bot candidate",
+  "schema_before": 28,
+  "schema_after": 29,
+  "roster_cap": 5,
+  "min_defeats": 3,
+  "allowed_monster_count": 23,
+  "new_tests": 15,
+  "targeted_passed": 107,
+  "bot_files_changed": [
+    "crystal_guild/database.py",
+    "crystal_guild/engine.py",
+    "crystal_guild/relic_live.py",
+    "crystal_guild/twitch_bot.py",
+    "crystal_guild/beastmaster.py",
+    "tests/test_beastmaster_v210.py",
+    "INTEGRATION_STATUS_V210.md",
+    "README_FIRST_V210.txt",
+    "V210_QA_RESULTS.txt"
+  ],
+  "source_sha256": {
+    "crystal_guild/database.py": "8a379301e4addc807f8a64d85b57f84f9eead594a82f560e98bf52f33ffea5c6",
+    "crystal_guild/engine.py": "29ffeaa6a72021398acf16cf78189319fe2b58ecd867d6a97a18ee786f0427c7",
+    "crystal_guild/relic_live.py": "a53e50b2d21c47a7673dcdc21bc825b83db8ec59c7302f241b7b1a1cd61f91ed",
+    "crystal_guild/twitch_bot.py": "57a6720d93504940ee244cfba395c1971d667594255ba88a4199a4110e0cb7d0",
+    "crystal_guild/beastmaster.py": "5818655d5aa8cd0d16072b71e9079b3304af4301821ed22def053228b527eab3",
+    "tests/test_beastmaster_v210.py": "725841225bb7f1570c37fb30cad2a35cc980cebbed60a44f94e55092fbab5221",
+    "INTEGRATION_STATUS_V210.md": "70080b28b5a072dd60e21bb0187cea6aa57aaeb6d5fea83b756b7a147d7bb488",
+    "README_FIRST_V210.txt": "575c18e2373affe741759c55bac9a6983f598b55649184116af314d4ab0db86c",
+    "V210_QA_RESULTS.txt": "da8893849878391cd52919ceb993dfd2e4d583ebf9becea443d62cf285dafa5a"
+  }
+}

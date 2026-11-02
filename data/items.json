@@ -1122,11 +1122,12 @@
     "shop": false,
     "min_level": 15,
     "bonuses": {
-      "attack": 42,
+      "attack": 45,
       "str": 4,
-      "dex": 3
+      "dex": 4
     },
-    "gear_family": "spear"
+    "gear_family": "spear",
+    "element": "Lightning"
   },
   {
     "id": "mythril_greataxe",
@@ -1153,22 +1154,28 @@
     "id": "chef_knife",
     "name": "Chef's Knife",
     "type": "weapon",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 12000,
     "shop": false,
-    "min_level": 16,
+    "min_level": 30,
     "bonuses": {
       "attack": 62,
       "dex": 8,
       "lck": 8
     },
-    "gear_family": "dagger"
+    "gear_family": "dagger",
+    "on_hit_status": {
+      "status": "vulnerable",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0.1
+    }
   },
   {
     "id": "mage_masher",
     "name": "Mage Masher",
     "type": "weapon",
-    "rarity": "uncommon",
+    "rarity": "unique",
     "price": 1980,
     "shop": true,
     "shop_level": 16,
@@ -1330,7 +1337,10 @@
       "summoner",
       "timemage",
       "sage"
-    ]
+    ],
+    "status_resist": {
+      "silence": 0.1
+    }
   },
   {
     "id": "knights_broadsword",
@@ -1456,11 +1466,14 @@
     "bonuses": {
       "attack": 43,
       "magic_power": 43,
-      "spr": 6,
+      "spr": 8,
       "dex": 3
     },
     "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
-    "gear_family": "instrument"
+    "gear_family": "instrument",
+    "status_resist": {
+      "silence": 0.2
+    }
   },
   {
     "id": "kotetsu",
@@ -1501,7 +1514,13 @@
       "dex": 3
     },
     "description": "Hand-to-hand weapon favored by Monks.",
-    "gear_family": "knuckles"
+    "gear_family": "knuckles",
+    "on_hit_status": {
+      "status": "blind",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.2
+    }
   },
   {
     "id": "coral_rapier",
@@ -1556,7 +1575,8 @@
     "min_level": 20,
     "bonuses": {
       "magic_power": 50,
-      "spr": 4
+      "spr": 6,
+      "mag": 2
     },
     "allowed_jobs": [
       "blackmage",
@@ -1632,7 +1652,7 @@
     "id": "flame_tongue",
     "name": "Flametongue",
     "type": "weapon",
-    "rarity": "rare",
+    "rarity": "unique",
     "price": 4200,
     "shop": false,
     "min_level": 24,
@@ -1649,7 +1669,7 @@
     "id": "icebrand",
     "name": "Icebrand",
     "type": "weapon",
-    "rarity": "rare",
+    "rarity": "unique",
     "price": 4200,
     "shop": false,
     "min_level": 24,
@@ -1681,7 +1701,13 @@
       "beastmaster",
       "warrior",
       "darkknight"
-    ]
+    ],
+    "on_hit_status": {
+      "status": "vulnerable",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.15
+    }
   },
   {
     "id": "rune_knife",
@@ -1701,7 +1727,13 @@
     "allowed_jobs": [
       "thief",
       "ninja"
-    ]
+    ],
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.0
+    }
   },
   {
     "id": "magitek_pistol",
@@ -1726,7 +1758,7 @@
     "id": "siren_harp",
     "name": "Siren Harp",
     "type": "weapon",
-    "rarity": "rare",
+    "rarity": "unique",
     "price": 3870,
     "shop": true,
     "shop_level": 25,
@@ -1740,7 +1772,13 @@
     },
     "allowed_jobs": [
       "bard"
-    ]
+    ],
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0
+    }
   },
   {
     "id": "kiyomori",
@@ -1821,7 +1859,8 @@
     },
     "allowed_jobs": [
       "dragoon"
-    ]
+    ],
+    "element": "Lightning"
   },
   {
     "id": "elemental_staff",
@@ -1859,7 +1898,8 @@
     "bonuses": {
       "attack": 54,
       "str": 6,
-      "vit": 2
+      "vit": 2,
+      "spr": 4
     },
     "allowed_jobs": [
       "warrior",
@@ -1867,7 +1907,8 @@
       "paladin",
       "darkknight",
       "bluemage"
-    ]
+    ],
+    "element": "Lightning"
   },
   {
     "id": "sages_wand",
@@ -1896,17 +1937,23 @@
     "id": "ronin_katana",
     "name": "Riven Katana",
     "type": "weapon",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 6800,
     "shop": false,
-    "min_level": 26,
+    "min_level": 35,
     "bonuses": {
-      "attack": 66,
-      "str": 7,
-      "dex": 6,
+      "attack": 70,
+      "str": 8,
+      "dex": 8,
       "lck": 4
     },
-    "gear_family": "katana"
+    "gear_family": "katana",
+    "on_hit_status": {
+      "status": "vulnerable",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0.12
+    }
   },
   {
     "id": "thunder_spear",
@@ -1921,7 +1968,8 @@
       "str": 6,
       "dex": 7
     },
-    "gear_family": "spear"
+    "gear_family": "spear",
+    "element": "Lightning"
   },
   {
     "id": "adamant_axe",
@@ -2001,7 +2049,13 @@
     },
     "allowed_jobs": [
       "bard"
-    ]
+    ],
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0
+    }
   },
   {
     "id": "genji_katana",
@@ -2061,7 +2115,13 @@
     "allowed_jobs": [
       "redmage",
       "bluemage"
-    ]
+    ],
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0
+    }
   },
   {
     "id": "dragonbone_spear",
@@ -2239,7 +2299,13 @@
       "dex": 4
     },
     "description": "Battle harp that turns questionable musical choices into measurable combat statistics.",
-    "gear_family": "instrument"
+    "gear_family": "instrument",
+    "on_hit_status": {
+      "status": "weaken",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.12
+    }
   },
   {
     "id": "kiku_ichimonji",
@@ -2302,7 +2368,13 @@
       "mag": 4
     },
     "description": "Spell-friendly dueling blade for hybrid casters.",
-    "gear_family": "rapier"
+    "gear_family": "rapier",
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0
+    }
   },
   {
     "id": "partisan",
@@ -2376,25 +2448,31 @@
     "id": "morbol_lash",
     "name": "Morbol Lash",
     "type": "weapon",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 9000,
     "shop": false,
-    "min_level": 38,
+    "min_level": 40,
     "bonuses": {
       "attack": 70,
       "mag": 8,
       "lck": 8
     },
-    "gear_family": "unrestricted"
+    "gear_family": "unrestricted",
+    "on_hit_status": {
+      "status": "poison",
+      "chance": 0.12,
+      "turns": 3,
+      "magnitude": 0.04
+    }
   },
   {
     "id": "magitek_edge",
     "name": "Magitek Edge",
     "type": "weapon",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 9800,
     "shop": false,
-    "min_level": 42,
+    "min_level": 45,
     "bonuses": {
       "attack": 78,
       "dex": 10,
@@ -2422,13 +2500,21 @@
     "relic_id": "last_knife",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "dagger"
+    "gear_family": "dagger",
+    "relic_trait": {
+      "key": "master_pickpocket",
+      "name": "Master Pickpocket",
+      "stage": 1,
+      "value": 0.02,
+      "metric": "steal_chance_pp",
+      "description": "Increase eligible Steal success chance"
+    }
   },
   {
     "id": "magitek_cannon",
     "name": "Magitek Hand Cannon",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 11000,
     "shop": false,
     "min_level": 45,
@@ -2437,7 +2523,13 @@
       "dex": 10,
       "lck": 5
     },
-    "gear_family": "firearm"
+    "gear_family": "firearm",
+    "on_hit_status": {
+      "status": "vulnerable",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0.1
+    }
   },
   {
     "id": "masamune_dormant",
@@ -2459,7 +2551,15 @@
     "relic_id": "masamune",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "katana"
+    "gear_family": "katana",
+    "relic_trait": {
+      "key": "perfect_form",
+      "name": "Perfect Form",
+      "stage": 1,
+      "value": 0.02,
+      "metric": "iaijutsu_crit_pp",
+      "description": "Increase Iaijutsu critical chance"
+    }
   },
   {
     "id": "godhand_dormant",
@@ -2480,7 +2580,15 @@
     "relic_id": "godhand",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "knuckles"
+    "gear_family": "knuckles",
+    "relic_trait": {
+      "key": "combo_momentum",
+      "name": "Combo Momentum",
+      "stage": 1,
+      "value": 1,
+      "metric": "ap_gain",
+      "description": "Recover AP after a verified three-hit combo"
+    }
   },
   {
     "id": "gae_bolg_dormant",
@@ -2501,7 +2609,15 @@
     "relic_id": "gae_bolg",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "spear"
+    "gear_family": "spear",
+    "relic_trait": {
+      "key": "skyward_mastery",
+      "name": "Skyward Mastery",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "jump_damage_multiplier",
+      "description": "Increase Jump damage"
+    }
   },
   {
     "id": "nirvana_dormant",
@@ -2523,7 +2639,15 @@
     "relic_id": "nirvana",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "staff"
+    "gear_family": "staff",
+    "relic_trait": {
+      "key": "gentle_benediction",
+      "name": "Gentle Benediction",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "healing_multiplier",
+      "description": "Increase single-target restorative spell healing"
+    }
   },
   {
     "id": "stardust_rod_dormant",
@@ -2546,7 +2670,15 @@
     "relic_id": "stardust_rod",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "staff"
+    "gear_family": "staff",
+    "relic_trait": {
+      "key": "overcharge",
+      "name": "Overcharge",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "damage_multiplier",
+      "description": "Increase critical elemental spell damage"
+    }
   },
   {
     "id": "apocalypse_dormant",
@@ -2567,7 +2699,15 @@
     "relic_id": "apocalypse",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "sword"
+    "gear_family": "sword",
+    "relic_trait": {
+      "key": "blood_resolve",
+      "name": "Blood Resolve",
+      "stage": 1,
+      "value": 0.01,
+      "metric": "max_hp_heal_fraction",
+      "description": "Heal on first qualifying dark skill hit per action"
+    }
   },
   {
     "id": "excalibur_dormant",
@@ -2588,7 +2728,15 @@
     "relic_id": "excalibur",
     "relic_stage": 1,
     "unsellable": true,
-    "gear_family": "sword"
+    "gear_family": "sword",
+    "relic_trait": {
+      "key": "sacred_guard",
+      "name": "Sacred Guard",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce next direct hit after protecting an ally"
+    }
   },
   {
     "id": "demon_axe",
@@ -2809,7 +2957,7 @@
     "id": "last_knife_awakened",
     "name": "Last Knife — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2826,13 +2974,21 @@
     "relic_id": "last_knife",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "dagger"
+    "gear_family": "dagger",
+    "relic_trait": {
+      "key": "master_pickpocket",
+      "name": "Master Pickpocket",
+      "stage": 2,
+      "value": 0.04,
+      "metric": "steal_chance_pp",
+      "description": "Increase eligible Steal success chance"
+    }
   },
   {
     "id": "masamune_awakened",
     "name": "Masamune — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2849,13 +3005,21 @@
     "relic_id": "masamune",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "katana"
+    "gear_family": "katana",
+    "relic_trait": {
+      "key": "perfect_form",
+      "name": "Perfect Form",
+      "stage": 2,
+      "value": 0.04,
+      "metric": "iaijutsu_crit_pp",
+      "description": "Increase Iaijutsu critical chance"
+    }
   },
   {
     "id": "godhand_awakened",
     "name": "Godhand — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2871,13 +3035,21 @@
     "relic_id": "godhand",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "knuckles"
+    "gear_family": "knuckles",
+    "relic_trait": {
+      "key": "combo_momentum",
+      "name": "Combo Momentum",
+      "stage": 2,
+      "value": 1,
+      "metric": "ap_gain",
+      "description": "Recover AP after a verified three-hit combo"
+    }
   },
   {
     "id": "gae_bolg_awakened",
     "name": "Gae Bolg — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2893,13 +3065,21 @@
     "relic_id": "gae_bolg",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "spear"
+    "gear_family": "spear",
+    "relic_trait": {
+      "key": "skyward_mastery",
+      "name": "Skyward Mastery",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "jump_damage_multiplier",
+      "description": "Increase Jump damage"
+    }
   },
   {
     "id": "nirvana_awakened",
     "name": "Nirvana — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2916,13 +3096,21 @@
     "relic_id": "nirvana",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "staff"
+    "gear_family": "staff",
+    "relic_trait": {
+      "key": "gentle_benediction",
+      "name": "Gentle Benediction",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "healing_multiplier",
+      "description": "Increase single-target restorative spell healing"
+    }
   },
   {
     "id": "stardust_rod_awakened",
     "name": "Stardust Rod — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2940,13 +3128,21 @@
     "relic_id": "stardust_rod",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "staff"
+    "gear_family": "staff",
+    "relic_trait": {
+      "key": "overcharge",
+      "name": "Overcharge",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "damage_multiplier",
+      "description": "Increase critical elemental spell damage"
+    }
   },
   {
     "id": "apocalypse_awakened",
     "name": "Apocalypse — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2962,13 +3158,21 @@
     "relic_id": "apocalypse",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "sword"
+    "gear_family": "sword",
+    "relic_trait": {
+      "key": "blood_resolve",
+      "name": "Blood Resolve",
+      "stage": 2,
+      "value": 0.02,
+      "metric": "max_hp_heal_fraction",
+      "description": "Heal on first qualifying dark skill hit per action"
+    }
   },
   {
     "id": "excalibur_awakened",
     "name": "Excalibur — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -2984,18 +3188,26 @@
     "relic_id": "excalibur",
     "relic_stage": 2,
     "unsellable": true,
-    "gear_family": "sword"
+    "gear_family": "sword",
+    "relic_trait": {
+      "key": "sacred_guard",
+      "name": "Sacred Guard",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce next direct hit after protecting an ally"
+    }
   },
   {
     "id": "rift_lance",
     "name": "Rift Lance",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 24000,
     "shop": false,
-    "min_level": 62,
+    "min_level": 65,
     "bonuses": {
-      "attack": 120,
+      "attack": 110,
       "str": 15,
       "dex": 12,
       "lck": 8
@@ -3028,7 +3240,7 @@
     "id": "last_knife_zenith",
     "name": "Last Knife — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3045,7 +3257,15 @@
     "relic_id": "last_knife",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "dagger"
+    "gear_family": "dagger",
+    "relic_trait": {
+      "key": "master_pickpocket",
+      "name": "Master Pickpocket",
+      "stage": 3,
+      "value": 0.06,
+      "metric": "steal_chance_pp",
+      "description": "Increase eligible Steal success chance"
+    }
   },
   {
     "id": "platinum_dirk",
@@ -3134,7 +3354,7 @@
     "id": "masamune_zenith",
     "name": "Masamune — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3151,7 +3371,15 @@
     "relic_id": "masamune",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "katana"
+    "gear_family": "katana",
+    "relic_trait": {
+      "key": "perfect_form",
+      "name": "Perfect Form",
+      "stage": 3,
+      "value": 0.06,
+      "metric": "iaijutsu_crit_pp",
+      "description": "Increase Iaijutsu critical chance"
+    }
   },
   {
     "id": "dragon_claws",
@@ -3177,7 +3405,7 @@
     "id": "godhand_zenith",
     "name": "Godhand — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3193,7 +3421,15 @@
     "relic_id": "godhand",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "knuckles"
+    "gear_family": "knuckles",
+    "relic_trait": {
+      "key": "combo_momentum",
+      "name": "Combo Momentum",
+      "stage": 3,
+      "value": 2,
+      "metric": "ap_gain",
+      "description": "Recover AP after a verified three-hit combo"
+    }
   },
   {
     "id": "crystal_rapier",
@@ -3241,7 +3477,7 @@
     "id": "gae_bolg_zenith",
     "name": "Gae Bolg — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3257,7 +3493,15 @@
     "relic_id": "gae_bolg",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "spear"
+    "gear_family": "spear",
+    "relic_trait": {
+      "key": "skyward_mastery",
+      "name": "Skyward Mastery",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "jump_damage_multiplier",
+      "description": "Increase Jump damage"
+    }
   },
   {
     "id": "astral_staff",
@@ -3287,7 +3531,7 @@
     "id": "nirvana_zenith",
     "name": "Nirvana — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3304,13 +3548,21 @@
     "relic_id": "nirvana",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "staff"
+    "gear_family": "staff",
+    "relic_trait": {
+      "key": "gentle_benediction",
+      "name": "Gentle Benediction",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "healing_multiplier",
+      "description": "Increase single-target restorative spell healing"
+    }
   },
   {
     "id": "stardust_rod_zenith",
     "name": "Stardust Rod — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3328,13 +3580,21 @@
     "relic_id": "stardust_rod",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "staff"
+    "gear_family": "staff",
+    "relic_trait": {
+      "key": "overcharge",
+      "name": "Overcharge",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase critical elemental spell damage"
+    }
   },
   {
     "id": "apocalypse_zenith",
     "name": "Apocalypse — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3350,7 +3610,15 @@
     "relic_id": "apocalypse",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "sword"
+    "gear_family": "sword",
+    "relic_trait": {
+      "key": "blood_resolve",
+      "name": "Blood Resolve",
+      "stage": 3,
+      "value": 0.03,
+      "metric": "max_hp_heal_fraction",
+      "description": "Heal on first qualifying dark skill hit per action"
+    }
   },
   {
     "id": "crystal_sword",
@@ -3380,7 +3648,7 @@
     "id": "excalibur_zenith",
     "name": "Excalibur — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -3396,7 +3664,15 @@
     "relic_id": "excalibur",
     "relic_stage": 3,
     "unsellable": true,
-    "gear_family": "sword"
+    "gear_family": "sword",
+    "relic_trait": {
+      "key": "sacred_guard",
+      "name": "Sacred Guard",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce next direct hit after protecting an ally"
+    }
   },
   {
     "id": "scale_vest",
@@ -4186,9 +4462,9 @@
     "shop": false,
     "min_level": 25,
     "bonuses": {
-      "mag": 10,
-      "spr": 8,
-      "hp": 80
+      "mag": 13,
+      "spr": 10,
+      "hp": 105
     },
     "gear_family": "robe"
   },
@@ -4227,11 +4503,14 @@
     "shop": false,
     "min_level": 25,
     "bonuses": {
-      "spr": 12,
-      "mag": 5,
-      "hp": 100
+      "spr": 22,
+      "mag": 7,
+      "hp": 125
     },
-    "gear_family": "robe"
+    "gear_family": "robe",
+    "status_resist": {
+      "silence": 0.25
+    }
   },
   {
     "id": "runic_coat",
@@ -4340,14 +4619,14 @@
     "id": "giants_aegis",
     "name": "Giant's Aegis",
     "type": "armor",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 7600,
     "shop": false,
-    "min_level": 32,
+    "min_level": 35,
     "bonuses": {
-      "vit": 18,
-      "hp": 150,
-      "spr": 6
+      "vit": 24,
+      "hp": 205,
+      "spr": 8
     },
     "gear_family": "heavy"
   },
@@ -4451,8 +4730,8 @@
     ],
     "bonuses": {
       "vit": 16,
-      "spr": 21,
-      "mag": 8,
+      "spr": 22,
+      "mag": 10,
       "hp": 155
     },
     "description": "Caster robes woven for magical power and spiritual defense.",
@@ -4462,14 +4741,14 @@
     "id": "crystal_cuirass",
     "name": "Crystal Cuirass",
     "type": "armor",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 9000,
     "shop": false,
-    "min_level": 40,
+    "min_level": 45,
     "bonuses": {
-      "vit": 22,
-      "spr": 10,
-      "hp": 220
+      "vit": 25,
+      "spr": 12,
+      "hp": 235
     },
     "gear_family": "heavy"
   },
@@ -4498,7 +4777,10 @@
       "hp": 225
     },
     "description": "Balanced field armor for hybrid and mobile Jobs.",
-    "gear_family": "coat"
+    "gear_family": "coat",
+    "status_resist": {
+      "weaken": 0.12
+    }
   },
   {
     "id": "crystal_plate",
@@ -4523,7 +4805,10 @@
       "hp": 235
     },
     "description": "Heavy protection for front-line Jobs.",
-    "gear_family": "heavy"
+    "gear_family": "heavy",
+    "status_resist": {
+      "weaken": 0.14
+    }
   },
   {
     "id": "shadow_weave",
@@ -4551,7 +4836,10 @@
       "hp": 215
     },
     "description": "Light armor that favors mobility and precision.",
-    "gear_family": "light"
+    "gear_family": "light",
+    "status_resist": {
+      "blind": 0.16
+    }
   },
   {
     "id": "sorcerers_robe",
@@ -4578,13 +4866,16 @@
       "hp": 205
     },
     "description": "Caster robes woven for magical power and spiritual defense.",
-    "gear_family": "robe"
+    "gear_family": "robe",
+    "status_resist": {
+      "silence": 0.16
+    }
   },
   {
     "id": "dragon_mail",
     "name": "Dragon Mail",
     "type": "armor",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 16000,
     "shop": false,
     "min_level": 55,
@@ -4593,13 +4884,16 @@
       "spr": 18,
       "hp": 280
     },
-    "gear_family": "heavy"
+    "gear_family": "heavy",
+    "status_resist": {
+      "vulnerable": 0.15
+    }
   },
   {
     "id": "adamant_plates",
     "name": "Adamant Plates",
     "type": "armor",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 19000,
     "shop": false,
     "min_level": 58,
@@ -4614,7 +4908,7 @@
     "id": "adamant_guard",
     "name": "Adamant Guard",
     "type": "armor",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 18000,
     "shop": false,
     "min_level": 58,
@@ -4623,7 +4917,10 @@
       "spr": 14,
       "hp": 340
     },
-    "gear_family": "unrestricted"
+    "gear_family": "unrestricted",
+    "status_resist": {
+      "stun": 0.15
+    }
   },
   {
     "id": "crystal_coat",
@@ -4736,14 +5033,14 @@
     "id": "ribbon",
     "name": "Ribbon",
     "type": "accessory",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 20000,
     "shop": false,
-    "min_level": 25,
+    "min_level": 55,
     "bonuses": {
-      "vit": 8,
-      "spr": 12,
-      "lck": 8
+      "vit": 10,
+      "spr": 15,
+      "lck": 10
     },
     "description": "A legendary charm that prevents all currently supported harmful Active Battle statuses.",
     "status_immune": [
@@ -4760,17 +5057,17 @@
     "id": "hermes_sandals",
     "name": "Hermes Sandals",
     "type": "accessory",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 10000,
     "shop": false,
-    "min_level": 10,
+    "min_level": 30,
     "bonuses": {
-      "dex": 15,
+      "dex": 12,
       "lck": 4
     },
-    "description": "Lightweight relic sandals built for speed and resistance to temporal interference.",
+    "description": "Lightweight enchanted sandals built for speed and resistance to temporal interference.",
     "status_resist": {
-      "slow": 0.75
+      "slow": 0.5
     }
   },
   {
@@ -4927,7 +5224,7 @@
     "id": "magitek_core",
     "name": "Magitek Core",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1200,
     "shop": false
   },
@@ -4956,20 +5253,23 @@
     "id": "coeurl_crown",
     "name": "Coeurl Crown",
     "type": "accessory",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 5200,
     "shop": false,
-    "min_level": 24,
+    "min_level": 30,
     "bonuses": {
-      "dex": 10,
-      "lck": 10
+      "dex": 14,
+      "lck": 12
+    },
+    "status_resist": {
+      "slow": 0.25
     }
   },
   {
     "id": "masamune_fragment",
     "name": "Masamune Fragment",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1500,
     "shop": false
   },
@@ -4985,7 +5285,7 @@
     "id": "triple_chimera_fang",
     "name": "Triple Chimera Fang",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1200,
     "shop": false
   },
@@ -4993,10 +5293,10 @@
     "id": "grudge_lantern",
     "name": "Grudge Lantern",
     "type": "accessory",
-    "rarity": "artifact",
+    "rarity": "unique",
     "price": 9000,
     "shop": false,
-    "min_level": 42,
+    "min_level": 45,
     "bonuses": {
       "attack": 18,
       "magic_power": 18,
@@ -5007,14 +5307,17 @@
     "id": "behemoth_crown",
     "name": "Behemoth Crown",
     "type": "accessory",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 16000,
     "shop": false,
-    "min_level": 52,
+    "min_level": 55,
     "bonuses": {
-      "str": 12,
-      "vit": 12,
-      "hp": 180
+      "str": 13,
+      "vit": 14,
+      "hp": 220
+    },
+    "status_resist": {
+      "stun": 0.25
     }
   },
   {
@@ -5029,7 +5332,7 @@
     "id": "crystal_core",
     "name": "Crystal Core",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1250,
     "shop": false
   },
@@ -5037,7 +5340,7 @@
     "id": "rift_crystal",
     "name": "Rift Crystal",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5045,7 +5348,7 @@
     "id": "dark_matter",
     "name": "Dark Matter",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 5000,
     "shop": false
   },
@@ -5053,7 +5356,7 @@
     "id": "dragon_scale",
     "name": "Dragon Scale",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1300,
     "shop": false
   },
@@ -5061,7 +5364,7 @@
     "id": "eidolon_shard",
     "name": "Eidolon Shard",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 4200,
     "shop": false
   },
@@ -5069,7 +5372,7 @@
     "id": "adamantite",
     "name": "Adamantite",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 3800,
     "shop": false
   },
@@ -5077,7 +5380,7 @@
     "id": "void_essence",
     "name": "Void Essence",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 4800,
     "shop": false
   },
@@ -5093,7 +5396,7 @@
     "id": "celestial_thread",
     "name": "Celestial Thread",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 1500,
     "shop": false
   },
@@ -5108,49 +5411,60 @@
     "bonuses": {
       "dex": 11,
       "lck": 10
+    },
+    "status_resist": {
+      "blind": 0.12
     }
   },
   {
     "id": "crystal_focus",
     "name": "Crystal Focus",
     "type": "accessory",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 8600,
     "shop": false,
     "min_level": 40,
     "bonuses": {
-      "mag": 12,
+      "mag": 13,
       "spr": 12,
-      "lck": 6
+      "lck": 6,
+      "magic_power": 10
+    },
+    "status_resist": {
+      "silence": 0.2
     }
   },
   {
     "id": "void_charm",
     "name": "Void Charm",
     "type": "accessory",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 17500,
     "shop": false,
     "min_level": 60,
     "bonuses": {
-      "str": 8,
-      "mag": 8,
-      "dex": 8,
-      "lck": 12
+      "str": 10,
+      "mag": 10,
+      "dex": 10,
+      "lck": 13
+    },
+    "status_resist": {
+      "weaken": 0.25,
+      "vulnerable": 0.25
     }
   },
   {
     "id": "artisan_hammer",
     "name": "Artisan's Hammer",
     "type": "accessory",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 8000,
     "shop": false,
     "min_level": 35,
     "bonuses": {
-      "str": 6,
-      "vit": 6,
-      "lck": 8
+      "str": 8,
+      "vit": 7,
+      "lck": 10
     }
   },
   {
@@ -5253,7 +5567,7 @@
     "id": "magic_pot_shard",
     "name": "Magic Pot Shard",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1200,
     "shop": false
   },
@@ -5261,7 +5575,7 @@
     "id": "mover_core",
     "name": "Mover Core",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1450,
     "shop": false
   },
@@ -5269,7 +5583,7 @@
     "id": "demonolith_shard",
     "name": "Demonolith Shard",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5277,7 +5591,7 @@
     "id": "summoners_ember",
     "name": "Summoner's Ember",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5285,7 +5599,7 @@
     "id": "glacial_crystal",
     "name": "Glacial Crystal",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5293,7 +5607,7 @@
     "id": "judgment_spark",
     "name": "Judgment Spark",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5301,7 +5615,7 @@
     "id": "gale_feather",
     "name": "Gale Feather",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5309,7 +5623,7 @@
     "id": "tidal_scale",
     "name": "Tidal Scale",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5317,7 +5631,7 @@
     "id": "earth_heart",
     "name": "Earth Heart",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 1800,
     "shop": false
   },
@@ -5341,7 +5655,7 @@
     "id": "genji_token",
     "name": "Genji Token",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "unique",
     "price": 2000,
     "shop": false
   },
@@ -5349,7 +5663,7 @@
     "id": "deathgaze_plume",
     "name": "Deathgaze Plume",
     "type": "material",
-    "rarity": "relic",
+    "rarity": "exotic",
     "price": 2100,
     "shop": false
   },
@@ -5357,7 +5671,7 @@
     "id": "ultima_core",
     "name": "Ultima Core",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 5000,
     "shop": false
   },
@@ -5365,7 +5679,7 @@
     "id": "omega_core",
     "name": "Omega Core",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 8000,
     "shop": false
   },
@@ -5373,7 +5687,7 @@
     "id": "shinryu_scale",
     "name": "Shinryu Scale",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 8500,
     "shop": false
   },
@@ -5381,7 +5695,7 @@
     "id": "earth_harp",
     "name": "Earth Harp",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "unique",
     "price": 12000,
     "shop": false
   },
@@ -5389,7 +5703,7 @@
     "id": "desert_rose",
     "name": "Desert Rose",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "unique",
     "price": 12000,
     "shop": false
   },
@@ -5397,7 +5711,7 @@
     "id": "ozma_shard",
     "name": "Ozma Shard",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 12500,
     "shop": false
   },
@@ -5405,7 +5719,7 @@
     "id": "nemesis_mark",
     "name": "Nemesis Mark",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 13000,
     "shop": false
   },
@@ -5413,7 +5727,7 @@
     "id": "penance_core",
     "name": "Penance Core",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 16000,
     "shop": false
   },
@@ -5421,7 +5735,7 @@
     "id": "yiazmat_scale",
     "name": "Yiazmat Scale",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 17000,
     "shop": false
   },
@@ -5429,7 +5743,7 @@
     "id": "kaiser_scale",
     "name": "Kaiser Dragon Scale",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 15000,
     "shop": false
   },
@@ -5437,7 +5751,7 @@
     "id": "proto_babil_core",
     "name": "Proto-Babil Core",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 15500,
     "shop": false
   },
@@ -5445,7 +5759,7 @@
     "id": "warmech_component",
     "name": "Warmech Component",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 10000,
     "shop": false
   },
@@ -5453,7 +5767,7 @@
     "id": "long_gui_plate",
     "name": "Long Gui Plate",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 14500,
     "shop": false
   },
@@ -5461,7 +5775,7 @@
     "id": "absolute_crystal",
     "name": "Absolute Crystal",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 17500,
     "shop": false
   },
@@ -5486,7 +5800,10 @@
       "str": 5,
       "vit": 5
     },
-    "description": "Front-line accessory balancing strength and defense."
+    "description": "Front-line accessory balancing strength and defense.",
+    "status_resist": {
+      "stun": 0.08
+    }
   },
   {
     "id": "thiefs_gloves",
@@ -5544,8 +5861,9 @@
       "dragoon"
     ],
     "bonuses": {
-      "str": 6,
-      "dex": 8
+      "str": 7,
+      "dex": 9,
+      "attack": 6
     },
     "description": "Reinforced boots that definitely make Jump safer. Probably."
   },
@@ -5564,9 +5882,13 @@
     "bonuses": {
       "dex": 5,
       "spr": 8,
-      "lck": 4
+      "lck": 4,
+      "magic_power": 8
     },
-    "description": "A polished charm for performers who insist combat is an audience-participation event."
+    "description": "A polished charm for performers who insist combat is an audience-participation event.",
+    "status_resist": {
+      "silence": 0.12
+    }
   },
   {
     "id": "machinists_goggles",
@@ -5581,8 +5903,9 @@
       "machinist"
     ],
     "bonuses": {
-      "dex": 9,
-      "lck": 5
+      "dex": 10,
+      "lck": 5,
+      "attack": 6
     },
     "description": "Precision optics for identifying which part of a monster is most expensive to replace."
   },
@@ -5632,7 +5955,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 2600,
-    "shop": true,
+    "shop": false,
     "shop_level": 40,
     "description": "An exceptionally potent aether concentrate saved for emergencies when a caster is completely spent. Fully restores MP and can be used in or out of Active Battle.",
     "use": {
@@ -5692,7 +6015,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 2700,
-    "shop": true,
+    "shop": false,
     "shop_level": 40,
     "description": "A rare restorative brew that floods an exhausted fighter with enough vigor to rejoin the fray at full strength. Fully restores AP and can be used in or out of Active Battle.",
     "use": {
@@ -5778,7 +6101,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 3500,
-    "shop": true,
+    "shop": false,
     "shop_level": 45,
     "description": "Removes all harmful Active Battle statuses from one hero.",
     "use": {
@@ -5928,7 +6251,7 @@
     "id": "elixir",
     "name": "Elixir",
     "type": "consumable",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 8000,
     "shop": false,
     "shop_level": 40,
@@ -6070,7 +6393,7 @@
     "type": "consumable",
     "rarity": "epic",
     "price": 1800,
-    "shop": true,
+    "shop": false,
     "shop_level": 38,
     "description": "Deals 700 Dark damage to the enemy in Active Battle.",
     "use": {
@@ -6203,7 +6526,7 @@
     "min_level": 35,
     "bonuses": {
       "vit": 5,
-      "spr": 7,
+      "spr": 8,
       "lck": 5
     },
     "status_resist": {
@@ -6211,7 +6534,7 @@
       "silence": 0.5,
       "blind": 0.5,
       "slow": 0.5,
-      "stun": 0.35
+      "stun": 0.5
     },
     "description": "A torn piece of a true Ribbon; broadly resists common ailments."
   },
@@ -6255,6 +6578,9 @@
     "bonuses": {
       "dex": 7,
       "lck": 2
+    },
+    "status_resist": {
+      "slow": 0.12
     }
   },
   {
@@ -6268,7 +6594,8 @@
     "min_level": 20,
     "bonuses": {
       "dex": 9,
-      "lck": 4
+      "lck": 4,
+      "attack": 5
     }
   },
   {
@@ -6281,8 +6608,8 @@
     "shop_level": 22,
     "min_level": 22,
     "bonuses": {
-      "lck": 10,
-      "dex": 3
+      "lck": 11,
+      "dex": 4
     }
   },
   {
@@ -6304,7 +6631,10 @@
       "paladin",
       "darkknight",
       "dragoon"
-    ]
+    ],
+    "status_resist": {
+      "vulnerable": 0.12
+    }
   },
   {
     "id": "mages_crest",
@@ -6328,7 +6658,10 @@
       "sage",
       "redmage",
       "bluemage"
-    ]
+    ],
+    "status_resist": {
+      "silence": 0.12
+    }
   },
   {
     "id": "warriors_crest",
@@ -6351,7 +6684,10 @@
       "samurai",
       "darkknight",
       "beastmaster"
-    ]
+    ],
+    "status_resist": {
+      "weaken": 0.12
+    }
   },
   {
     "id": "mana_charm",
@@ -6376,7 +6712,10 @@
       "redmage",
       "bluemage",
       "bard"
-    ]
+    ],
+    "status_resist": {
+      "silence": 0.12
+    }
   },
   {
     "id": "adrenaline_charm",
@@ -6404,7 +6743,10 @@
       "beastmaster",
       "bard",
       "paladin"
-    ]
+    ],
+    "status_resist": {
+      "slow": 0.12
+    }
   },
   {
     "id": "crystal_guard",
@@ -6419,6 +6761,9 @@
       "vit": 12,
       "spr": 12,
       "hp": 110
+    },
+    "status_resist": {
+      "vulnerable": 0.18
     }
   },
   {
@@ -6467,7 +6812,10 @@
       "darkknight",
       "beastmaster",
       "paladin"
-    ]
+    ],
+    "status_resist": {
+      "weaken": 0.16
+    }
   },
   {
     "id": "darksteel_axe",
@@ -6510,7 +6858,13 @@
       "lck": 4
     },
     "gear_family": "dagger",
-    "description": "Lv.40 dagger progression gear for compatible Jobs."
+    "description": "Lv.40 dagger progression gear for compatible Jobs.",
+    "on_hit_status": {
+      "status": "blind",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.2
+    }
   },
   {
     "id": "magitek_rifle",
@@ -6592,7 +6946,13 @@
       "dex": 5
     },
     "gear_family": "knuckles",
-    "description": "Lv.40 knuckles progression gear for compatible Jobs."
+    "description": "Lv.40 knuckles progression gear for compatible Jobs.",
+    "on_hit_status": {
+      "status": "poison",
+      "chance": 0.08,
+      "turns": 3,
+      "magnitude": 0.03
+    }
   },
   {
     "id": "diamond_rapier",
@@ -6682,7 +7042,13 @@
       "vit": 3
     },
     "gear_family": "sword",
-    "description": "Lv.40 sword progression gear for compatible Jobs."
+    "description": "Lv.40 sword progression gear for compatible Jobs.",
+    "on_hit_status": {
+      "status": "silence",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0
+    }
   },
   {
     "id": "magus_wand",
@@ -6749,7 +7115,13 @@
       "lck": 5
     },
     "gear_family": "dagger",
-    "description": "Lv.45 dagger progression gear for compatible Jobs."
+    "description": "Lv.45 dagger progression gear for compatible Jobs.",
+    "on_hit_status": {
+      "status": "blind",
+      "chance": 0.08,
+      "turns": 2,
+      "magnitude": 0.2
+    }
   },
   {
     "id": "mythril_repeater",
@@ -6831,7 +7203,13 @@
       "dex": 5
     },
     "gear_family": "knuckles",
-    "description": "Lv.45 knuckles progression gear for compatible Jobs."
+    "description": "Lv.45 knuckles progression gear for compatible Jobs.",
+    "on_hit_status": {
+      "status": "weaken",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.12
+    }
   },
   {
     "id": "crystal_foil",
@@ -6921,7 +7299,13 @@
       "vit": 3
     },
     "gear_family": "sword",
-    "description": "Lv.45 sword progression gear for compatible Jobs."
+    "description": "Lv.45 sword progression gear for compatible Jobs.",
+    "on_hit_status": {
+      "status": "vulnerable",
+      "chance": 0.1,
+      "turns": 2,
+      "magnitude": 0.12
+    }
   },
   {
     "id": "starfall_wand",
@@ -7023,7 +7407,7 @@
     "id": "poison_fang",
     "name": "Poison Fang",
     "type": "weapon",
-    "rarity": "rare",
+    "rarity": "unique",
     "price": 3900,
     "shop": false,
     "min_level": 25,
@@ -7139,7 +7523,7 @@
     "id": "dragon_slayer",
     "name": "Dragon Slayer",
     "type": "weapon",
-    "rarity": "epic",
+    "rarity": "unique",
     "price": 7400,
     "shop": false,
     "min_level": 35,
@@ -7172,13 +7556,14 @@
       "dex": 7
     },
     "gear_family": "spear",
-    "description": "A broken but still formidable fragment of a legendary Dragoon spear."
+    "description": "A broken but still formidable fragment of a legendary Dragoon spear.",
+    "element": "Lightning"
   },
   {
     "id": "blood_sword",
     "name": "Blood Sword",
     "type": "weapon",
-    "rarity": "epic",
+    "rarity": "unique",
     "price": 9000,
     "shop": false,
     "min_level": 40,
@@ -7245,7 +7630,10 @@
       "hp": 205
     },
     "gear_family": "heavy",
-    "description": "Lv.40 heavy progression armor."
+    "description": "Lv.40 heavy progression armor.",
+    "status_resist": {
+      "stun": 0.1
+    }
   },
   {
     "id": "shadow_garb",
@@ -7295,12 +7683,15 @@
     ],
     "bonuses": {
       "vit": 18,
-      "spr": 23,
-      "mag": 9,
+      "spr": 25,
+      "mag": 10,
       "hp": 175
     },
     "gear_family": "robe",
-    "description": "Lv.40 robe progression armor."
+    "description": "Lv.40 robe progression armor.",
+    "status_resist": {
+      "weaken": 0.2
+    }
   },
   {
     "id": "dragon_coat",
@@ -7380,7 +7771,10 @@
       "hp": 200
     },
     "gear_family": "light",
-    "description": "Lv.45 light progression armor."
+    "description": "Lv.45 light progression armor.",
+    "status_resist": {
+      "blind": 0.14
+    }
   },
   {
     "id": "astral_robe",
@@ -7407,7 +7801,10 @@
       "hp": 190
     },
     "gear_family": "robe",
-    "description": "Lv.45 robe progression armor."
+    "description": "Lv.45 robe progression armor.",
+    "status_resist": {
+      "silence": 0.15
+    }
   },
   {
     "id": "wyrm_mail",
@@ -7432,7 +7829,10 @@
       "hp": 230
     },
     "gear_family": "heavy",
-    "description": "Rare Lv.45 armor fashioned from wyvern scale and tempered plate."
+    "description": "Rare Lv.45 armor fashioned from wyvern scale and tempered plate.",
+    "status_resist": {
+      "poison": 0.12
+    }
   },
   {
     "id": "genji_armor",
@@ -7454,16 +7854,19 @@
       "hp": 205
     },
     "gear_family": "coat",
-    "description": "Rare eastern armor balancing strength, speed and defense."
+    "description": "Rare eastern armor balancing strength, speed and defense.",
+    "status_resist": {
+      "stun": 0.16
+    }
   },
   {
     "id": "aegis_plate",
     "name": "Aegis Plate",
     "type": "armor",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 12500,
     "shop": false,
-    "min_level": 50,
+    "min_level": 55,
     "allowed_jobs": [
       "paladin"
     ],
@@ -7473,7 +7876,10 @@
       "hp": 270
     },
     "gear_family": "heavy",
-    "description": "Treasure-only Paladin plate built to anchor the front line."
+    "description": "Treasure-only Paladin plate built to anchor the front line.",
+    "status_resist": {
+      "vulnerable": 0.16
+    }
   },
   {
     "id": "ancient_coin",
@@ -7640,13 +8046,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "axe",
-    "description": "Dormant form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "guard_to_strike",
+      "name": "Guard-to-Strike",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "damage_multiplier",
+      "description": "Next basic attack after a verified Guard"
+    }
   },
   {
     "id": "bravura_awakened",
     "name": "Bravura — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -7663,13 +8077,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "axe",
-    "description": "Awakened form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "guard_to_strike",
+      "name": "Guard-to-Strike",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "damage_multiplier",
+      "description": "Next basic attack after a verified Guard"
+    }
   },
   {
     "id": "bravura_zenith",
     "name": "Bravura — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -7686,7 +8108,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "axe",
-    "description": "Zenith form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Bravura, the dedicated Warrior Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "guard_to_strike",
+      "name": "Guard-to-Strike",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Next basic attack after a verified Guard"
+    }
   },
   {
     "id": "murgleis_dormant",
@@ -7709,13 +8139,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "rapier",
-    "description": "Dormant form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "dual_harmony",
+      "name": "Dual Harmony",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "hybrid_multiplier",
+      "description": "Boost damage or healing from verified hybrid ability"
+    }
   },
   {
     "id": "murgleis_awakened",
     "name": "Murgleis — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -7733,13 +8171,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "rapier",
-    "description": "Awakened form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "dual_harmony",
+      "name": "Dual Harmony",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "hybrid_multiplier",
+      "description": "Boost damage or healing from verified hybrid ability"
+    }
   },
   {
     "id": "murgleis_zenith",
     "name": "Murgleis — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -7757,7 +8203,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "rapier",
-    "description": "Zenith form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Murgleis, the dedicated Red Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "dual_harmony",
+      "name": "Dual Harmony",
+      "stage": 3,
+      "value": 0.07,
+      "metric": "hybrid_multiplier",
+      "description": "Boost damage or healing from verified hybrid ability"
+    }
   },
   {
     "id": "yoshimitsu_dormant",
@@ -7779,13 +8233,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "dagger",
-    "description": "Dormant form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "shadow_step",
+      "name": "Shadow Step",
+      "stage": 1,
+      "value": 0.02,
+      "metric": "evasion_pp",
+      "description": "Increase next-round evasion after Ninja skill"
+    }
   },
   {
     "id": "yoshimitsu_awakened",
     "name": "Yoshimitsu — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -7802,13 +8264,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "dagger",
-    "description": "Awakened form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "shadow_step",
+      "name": "Shadow Step",
+      "stage": 2,
+      "value": 0.03,
+      "metric": "evasion_pp",
+      "description": "Increase next-round evasion after Ninja skill"
+    }
   },
   {
     "id": "yoshimitsu_zenith",
     "name": "Yoshimitsu — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -7825,7 +8295,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "dagger",
-    "description": "Zenith form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Yoshimitsu, the dedicated Ninja Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "shadow_step",
+      "name": "Shadow Step",
+      "stage": 3,
+      "value": 0.05,
+      "metric": "evasion_pp",
+      "description": "Increase next-round evasion after Ninja skill"
+    }
   },
   {
     "id": "veil_of_wiyu_dormant",
@@ -7847,13 +8325,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "tome",
-    "description": "Dormant form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "resonance",
+      "name": "Resonance",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "summon_cost_reduction",
+      "description": "Reduce summon MP/AP costs"
+    }
   },
   {
     "id": "veil_of_wiyu_awakened",
     "name": "Veil of Wiyu — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -7870,13 +8356,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "tome",
-    "description": "Awakened form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "resonance",
+      "name": "Resonance",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "summon_cost_reduction",
+      "description": "Reduce summon MP/AP costs"
+    }
   },
   {
     "id": "veil_of_wiyu_zenith",
     "name": "Veil of Wiyu — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -7893,7 +8387,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "tome",
-    "description": "Zenith form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Veil of Wiyu, the dedicated Summoner Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "resonance",
+      "name": "Resonance",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "summon_cost_reduction",
+      "description": "Reduce summon MP/AP costs"
+    }
   },
   {
     "id": "almace_dormant",
@@ -7916,13 +8418,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "sword",
-    "description": "Dormant form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "mimic_insight",
+      "name": "Mimic Insight",
+      "stage": 1,
+      "value": 0.02,
+      "metric": "blue_magic_success_pp",
+      "description": "Increase eligible Blue Magic success chance"
+    }
   },
   {
     "id": "almace_awakened",
     "name": "Almace — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -7940,13 +8450,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "sword",
-    "description": "Awakened form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "mimic_insight",
+      "name": "Mimic Insight",
+      "stage": 2,
+      "value": 0.04,
+      "metric": "blue_magic_success_pp",
+      "description": "Increase eligible Blue Magic success chance"
+    }
   },
   {
     "id": "almace_zenith",
     "name": "Almace — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -7964,7 +8482,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "sword",
-    "description": "Zenith form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Almace, the dedicated Blue Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "mimic_insight",
+      "name": "Mimic Insight",
+      "stage": 3,
+      "value": 0.06,
+      "metric": "blue_magic_success_pp",
+      "description": "Increase eligible Blue Magic success chance"
+    }
   },
   {
     "id": "chronos_dormant",
@@ -7986,13 +8512,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "staff",
-    "description": "Dormant form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "chronal_guard",
+      "name": "Chronal Guard",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "slow_resistance",
+      "description": "Increase Slow resistance when wielded"
+    }
   },
   {
     "id": "chronos_awakened",
     "name": "Chronos — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -8009,13 +8543,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "staff",
-    "description": "Awakened form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "chronal_guard",
+      "name": "Chronal Guard",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "slow_resistance",
+      "description": "Increase Slow resistance when wielded"
+    }
   },
   {
     "id": "chronos_zenith",
     "name": "Chronos — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -8032,7 +8574,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "staff",
-    "description": "Zenith form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Chronos, the dedicated Time Mage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "chronal_guard",
+      "name": "Chronal Guard",
+      "stage": 3,
+      "value": 0.15,
+      "metric": "slow_resistance",
+      "description": "Increase Slow resistance when wielded"
+    }
   },
   {
     "id": "artemis_bow_dormant",
@@ -8055,13 +8605,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "bow",
-    "description": "Dormant form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "sustained_melody",
+      "name": "Sustained Melody",
+      "stage": 1,
+      "value": 1,
+      "metric": "song_extra_rounds",
+      "description": "Extend valid beneficial songs without stacking"
+    }
   },
   {
     "id": "artemis_bow_awakened",
     "name": "Artemis Bow — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -8079,13 +8637,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "bow",
-    "description": "Awakened form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "sustained_melody",
+      "name": "Sustained Melody",
+      "stage": 2,
+      "value": 1,
+      "metric": "song_extra_rounds",
+      "description": "Extend valid beneficial songs without stacking"
+    }
   },
   {
     "id": "artemis_bow_zenith",
     "name": "Artemis Bow — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -8103,7 +8669,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "bow",
-    "description": "Zenith form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Artemis Bow, the dedicated Bard Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "sustained_melody",
+      "name": "Sustained Melody",
+      "stage": 3,
+      "value": 2,
+      "metric": "song_extra_rounds",
+      "description": "Extend valid beneficial songs without stacking"
+    }
   },
   {
     "id": "armageddon_dormant",
@@ -8125,13 +8699,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "firearm",
-    "description": "Dormant form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "calibrated_shot",
+      "name": "Calibrated Shot",
+      "stage": 1,
+      "value": 0.02,
+      "metric": "ranged_accuracy_pp",
+      "description": "Increase ranged accuracy"
+    }
   },
   {
     "id": "armageddon_awakened",
     "name": "Armageddon — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -8148,13 +8730,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "firearm",
-    "description": "Awakened form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "calibrated_shot",
+      "name": "Calibrated Shot",
+      "stage": 2,
+      "value": 0.04,
+      "metric": "ranged_accuracy_pp",
+      "description": "Increase ranged accuracy"
+    }
   },
   {
     "id": "armageddon_zenith",
     "name": "Armageddon — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -8171,7 +8761,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "firearm",
-    "description": "Zenith form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Armageddon, the dedicated Machinist Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "calibrated_shot",
+      "name": "Calibrated Shot",
+      "stage": 3,
+      "value": 0.06,
+      "metric": "ranged_accuracy_pp",
+      "description": "Increase ranged accuracy"
+    }
   },
   {
     "id": "guttler_dormant",
@@ -8193,13 +8791,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "axe",
-    "description": "Dormant form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "pack_coordination",
+      "name": "Pack Coordination",
+      "stage": 1,
+      "value": 0.03,
+      "metric": "tamed_pet_damage_multiplier",
+      "description": "Increase damage from owned tamed pets"
+    }
   },
   {
     "id": "guttler_awakened",
     "name": "Guttler — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -8216,13 +8822,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "axe",
-    "description": "Awakened form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "pack_coordination",
+      "name": "Pack Coordination",
+      "stage": 2,
+      "value": 0.05,
+      "metric": "tamed_pet_damage_multiplier",
+      "description": "Increase damage from owned tamed pets"
+    }
   },
   {
     "id": "guttler_zenith",
     "name": "Guttler — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -8239,7 +8853,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "axe",
-    "description": "Zenith form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Guttler, the dedicated Beastmaster Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "pack_coordination",
+      "name": "Pack Coordination",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "tamed_pet_damage_multiplier",
+      "description": "Increase damage from owned tamed pets"
+    }
   },
   {
     "id": "astral_codex_dormant",
@@ -8261,13 +8883,21 @@
     "relic_stage": 1,
     "unsellable": true,
     "gear_family": "tome",
-    "description": "Dormant form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Dormant form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "measured_wisdom",
+      "name": "Measured Wisdom",
+      "stage": 1,
+      "value": 0.02,
+      "metric": "sage_support_cost_reduction",
+      "description": "Reduce Sage support MP/AP costs"
+    }
   },
   {
     "id": "astral_codex_awakened",
     "name": "Astral Codex — Awakened",
     "type": "weapon",
-    "rarity": "artifact",
+    "rarity": "relic",
     "price": 12000,
     "shop": false,
     "min_level": 55,
@@ -8284,13 +8914,21 @@
     "relic_stage": 2,
     "unsellable": true,
     "gear_family": "tome",
-    "description": "Awakened form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Awakened form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "measured_wisdom",
+      "name": "Measured Wisdom",
+      "stage": 2,
+      "value": 0.04,
+      "metric": "sage_support_cost_reduction",
+      "description": "Reduce Sage support MP/AP costs"
+    }
   },
   {
     "id": "astral_codex_zenith",
     "name": "Astral Codex — Zenith",
     "type": "weapon",
-    "rarity": "legendary",
+    "rarity": "relic",
     "price": 25000,
     "shop": false,
     "min_level": 65,
@@ -8307,7 +8945,15 @@
     "relic_stage": 3,
     "unsellable": true,
     "gear_family": "tome",
-    "description": "Zenith form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules."
+    "description": "Zenith form of Astral Codex, the dedicated Sage Relic weapon. This stage carries the Job's intended endgame stat identity and advances through the established three-step Relic questline without changing the v1.5.0 economy or combat rules.",
+    "relic_trait": {
+      "key": "measured_wisdom",
+      "name": "Measured Wisdom",
+      "stage": 3,
+      "value": 0.06,
+      "metric": "sage_support_cost_reduction",
+      "description": "Reduce Sage support MP/AP costs"
+    }
   },
   {
     "id": "trail_rations",
@@ -8397,7 +9043,7 @@
     "id": "singularity_shard",
     "name": "Singularity Shard",
     "type": "material",
-    "rarity": "artifact",
+    "rarity": "exotic",
     "price": 0,
     "shop": false,
     "description": "A fragment recovered from the impossible Eclipsed Singularity Citadel."
@@ -8662,7 +9308,10 @@
     },
     "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.1
+    }
   },
   {
     "id": "zephyr_adamant_plate_shop",
@@ -8688,7 +9337,10 @@
     },
     "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.1
+    }
   },
   {
     "id": "zephyr_black_garb",
@@ -8717,7 +9369,10 @@
     },
     "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.1
+    }
   },
   {
     "id": "zephyr_oracle_robe",
@@ -8745,7 +9400,10 @@
     },
     "description": "Lv.70 armor progression for late-game Guild adventures. Zephyr grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.1
+    }
   },
   {
     "id": "zephyr_vanguard_signet",
@@ -8771,7 +9429,10 @@
       "beastmaster",
       "paladin"
     ],
-    "shop_level": 70
+    "shop_level": 70,
+    "status_resist": {
+      "vulnerable": 0.08
+    }
   },
   {
     "id": "zephyr_oracle_signet",
@@ -8797,7 +9458,10 @@
       "redmage",
       "bluemage"
     ],
-    "shop_level": 70
+    "shop_level": 70,
+    "status_resist": {
+      "silence": 0.08
+    }
   },
   {
     "id": "zephyr_wayfinder_signet",
@@ -8815,7 +9479,10 @@
     },
     "description": "Lv.70 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
     "introduced_in": "1.9.10",
-    "shop_level": 70
+    "shop_level": 70,
+    "status_resist": {
+      "slow": 0.08
+    }
   },
   {
     "id": "mirage_titan_axe",
@@ -9068,7 +9735,10 @@
     },
     "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.11
+    }
   },
   {
     "id": "mirage_adamant_plate_shop",
@@ -9094,7 +9764,10 @@
     },
     "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.11
+    }
   },
   {
     "id": "mirage_black_garb",
@@ -9123,7 +9796,10 @@
     },
     "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.11
+    }
   },
   {
     "id": "mirage_oracle_robe",
@@ -9151,7 +9827,10 @@
     },
     "description": "Lv.75 armor progression for late-game Guild adventures. Mirage grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.11
+    }
   },
   {
     "id": "mirage_vanguard_signet",
@@ -9177,7 +9856,10 @@
       "beastmaster",
       "paladin"
     ],
-    "shop_level": 75
+    "shop_level": 75,
+    "status_resist": {
+      "vulnerable": 0.1
+    }
   },
   {
     "id": "mirage_oracle_signet",
@@ -9203,7 +9885,10 @@
       "redmage",
       "bluemage"
     ],
-    "shop_level": 75
+    "shop_level": 75,
+    "status_resist": {
+      "silence": 0.1
+    }
   },
   {
     "id": "mirage_wayfinder_signet",
@@ -9221,7 +9906,10 @@
     },
     "description": "Lv.75 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
     "introduced_in": "1.9.10",
-    "shop_level": 75
+    "shop_level": 75,
+    "status_resist": {
+      "slow": 0.1
+    }
   },
   {
     "id": "astral_titan_axe",
@@ -9474,7 +10162,10 @@
     },
     "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.13
+    }
   },
   {
     "id": "astral_adamant_plate_shop",
@@ -9500,7 +10191,10 @@
     },
     "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.13
+    }
   },
   {
     "id": "astral_black_garb",
@@ -9529,7 +10223,10 @@
     },
     "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.13
+    }
   },
   {
     "id": "astral_oracle_robe",
@@ -9557,7 +10254,10 @@
     },
     "description": "Lv.80 armor progression for late-game Guild adventures. Astral grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.13
+    }
   },
   {
     "id": "astral_vanguard_signet",
@@ -9583,7 +10283,10 @@
       "beastmaster",
       "paladin"
     ],
-    "shop_level": 80
+    "shop_level": 80,
+    "status_resist": {
+      "vulnerable": 0.12
+    }
   },
   {
     "id": "astral_oracle_signet",
@@ -9609,7 +10312,10 @@
       "redmage",
       "bluemage"
     ],
-    "shop_level": 80
+    "shop_level": 80,
+    "status_resist": {
+      "silence": 0.12
+    }
   },
   {
     "id": "astral_wayfinder_signet",
@@ -9627,7 +10333,10 @@
     },
     "description": "Lv.80 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
     "introduced_in": "1.9.10",
-    "shop_level": 80
+    "shop_level": 80,
+    "status_resist": {
+      "slow": 0.12
+    }
   },
   {
     "id": "eclipseforged_titan_axe",
@@ -9880,7 +10589,10 @@
     },
     "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.15
+    }
   },
   {
     "id": "eclipseforged_adamant_plate_shop",
@@ -9906,7 +10618,10 @@
     },
     "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.15
+    }
   },
   {
     "id": "eclipseforged_black_garb",
@@ -9935,7 +10650,10 @@
     },
     "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.15
+    }
   },
   {
     "id": "eclipseforged_oracle_robe",
@@ -9963,7 +10681,10 @@
     },
     "description": "Lv.85 armor progression for late-game Guild adventures. Eclipseforged grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.15
+    }
   },
   {
     "id": "eclipseforged_vanguard_signet",
@@ -9989,7 +10710,10 @@
       "beastmaster",
       "paladin"
     ],
-    "shop_level": 85
+    "shop_level": 85,
+    "status_resist": {
+      "vulnerable": 0.14
+    }
   },
   {
     "id": "eclipseforged_oracle_signet",
@@ -10015,7 +10739,10 @@
       "redmage",
       "bluemage"
     ],
-    "shop_level": 85
+    "shop_level": 85,
+    "status_resist": {
+      "silence": 0.14
+    }
   },
   {
     "id": "eclipseforged_wayfinder_signet",
@@ -10033,7 +10760,10 @@
     },
     "description": "Lv.85 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
     "introduced_in": "1.9.10",
-    "shop_level": 85
+    "shop_level": 85,
+    "status_resist": {
+      "slow": 0.14
+    }
   },
   {
     "id": "ascendant_titan_axe",
@@ -10286,7 +11016,10 @@
     },
     "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.17
+    }
   },
   {
     "id": "ascendant_adamant_plate_shop",
@@ -10312,7 +11045,10 @@
     },
     "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.17
+    }
   },
   {
     "id": "ascendant_black_garb",
@@ -10341,7 +11077,10 @@
     },
     "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.17
+    }
   },
   {
     "id": "ascendant_oracle_robe",
@@ -10369,7 +11108,10 @@
     },
     "description": "Lv.90 armor progression for late-game Guild adventures. Ascendant grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.17
+    }
   },
   {
     "id": "ascendant_vanguard_signet",
@@ -10395,7 +11137,10 @@
       "beastmaster",
       "paladin"
     ],
-    "shop_level": 90
+    "shop_level": 90,
+    "status_resist": {
+      "vulnerable": 0.16
+    }
   },
   {
     "id": "ascendant_oracle_signet",
@@ -10421,7 +11166,10 @@
       "redmage",
       "bluemage"
     ],
-    "shop_level": 90
+    "shop_level": 90,
+    "status_resist": {
+      "silence": 0.16
+    }
   },
   {
     "id": "ascendant_wayfinder_signet",
@@ -10439,7 +11187,10 @@
     },
     "description": "Lv.90 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
     "introduced_in": "1.9.10",
-    "shop_level": 90
+    "shop_level": 90,
+    "status_resist": {
+      "slow": 0.16
+    }
   },
   {
     "id": "singularity_titan_axe",
@@ -10692,7 +11443,10 @@
     },
     "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.19
+    }
   },
   {
     "id": "singularity_adamant_plate_shop",
@@ -10718,7 +11472,10 @@
     },
     "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.19
+    }
   },
   {
     "id": "singularity_black_garb",
@@ -10747,7 +11504,10 @@
     },
     "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.19
+    }
   },
   {
     "id": "singularity_oracle_robe",
@@ -10775,7 +11535,10 @@
     },
     "description": "Lv.95 armor progression for late-game Guild adventures. Singularity grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.19
+    }
   },
   {
     "id": "singularity_vanguard_signet",
@@ -10801,7 +11564,10 @@
       "beastmaster",
       "paladin"
     ],
-    "shop_level": 95
+    "shop_level": 95,
+    "status_resist": {
+      "vulnerable": 0.18
+    }
   },
   {
     "id": "singularity_oracle_signet",
@@ -10827,7 +11593,10 @@
       "redmage",
       "bluemage"
     ],
-    "shop_level": 95
+    "shop_level": 95,
+    "status_resist": {
+      "silence": 0.18
+    }
   },
   {
     "id": "singularity_wayfinder_signet",
@@ -10845,7 +11614,10 @@
     },
     "description": "Lv.95 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
     "introduced_in": "1.9.10",
-    "shop_level": 95
+    "shop_level": 95,
+    "status_resist": {
+      "slow": 0.18
+    }
   },
   {
     "id": "paragon_titan_axe",
@@ -11087,7 +11859,10 @@
     },
     "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
     "gear_family": "coat",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "weaken": 0.2
+    }
   },
   {
     "id": "paragon_adamant_plate_shop",
@@ -11112,7 +11887,10 @@
     },
     "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
     "gear_family": "heavy",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "stun": 0.2
+    }
   },
   {
     "id": "paragon_black_garb",
@@ -11140,7 +11918,10 @@
     },
     "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
     "gear_family": "light",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "blind": 0.2
+    }
   },
   {
     "id": "paragon_oracle_robe",
@@ -11167,7 +11948,10 @@
     },
     "description": "Lv.99 armor progression for late-game Guild adventures. Paragon grade; retains its original Job restrictions.",
     "gear_family": "robe",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "silence": 0.2
+    }
   },
   {
     "id": "paragon_vanguard_signet",
@@ -11192,7 +11976,10 @@
       "darkknight",
       "beastmaster",
       "paladin"
-    ]
+    ],
+    "status_resist": {
+      "vulnerable": 0.2
+    }
   },
   {
     "id": "paragon_oracle_signet",
@@ -11217,7 +12004,10 @@
       "sage",
       "redmage",
       "bluemage"
-    ]
+    ],
+    "status_resist": {
+      "silence": 0.2
+    }
   },
   {
     "id": "paragon_wayfinder_signet",
@@ -11234,7 +12024,10 @@
       "hp": 240
     },
     "description": "Lv.99 late-game accessory for Crystal Guild expeditions and beyond Omega Ruins.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "status_resist": {
+      "slow": 0.2
+    }
   },
   {
     "type": "weapon",
@@ -11244,7 +12037,7 @@
     "gear_family": "spear",
     "id": "ultimate_dragoon_awakened",
     "name": "Gae Bolg Infinity — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11258,7 +12051,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for dragoon. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "skyward_mastery",
+      "name": "Skyward Mastery",
+      "stage": 1,
+      "value": 0.12,
+      "metric": "jump_damage_multiplier",
+      "description": "Increase Jump damage"
+    },
+    "relic_signature": {
+      "key": "dragonfall",
+      "name": "Dragonfall",
+      "stage": 1,
+      "value": 0.1,
+      "metric": "damage_multiplier",
+      "description": "Deal additional Jump damage to verified dragon enemies"
+    }
   },
   {
     "type": "weapon",
@@ -11268,7 +12077,7 @@
     "gear_family": "spear",
     "id": "ultimate_dragoon_transcendent",
     "name": "Gae Bolg Infinity — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11282,7 +12091,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for dragoon. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "skyward_mastery",
+      "name": "Skyward Mastery",
+      "stage": 2,
+      "value": 0.18,
+      "metric": "jump_damage_multiplier",
+      "description": "Increase Jump damage"
+    },
+    "relic_signature": {
+      "key": "dragonfall",
+      "name": "Dragonfall",
+      "stage": 2,
+      "value": 0.15,
+      "metric": "damage_multiplier",
+      "description": "Deal additional Jump damage to verified dragon enemies"
+    }
   },
   {
     "type": "weapon",
@@ -11292,7 +12117,7 @@
     "gear_family": "spear",
     "id": "ultimate_dragoon_eternal",
     "name": "Gae Bolg Infinity — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11306,7 +12131,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for dragoon. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "skyward_mastery",
+      "name": "Skyward Mastery",
+      "stage": 3,
+      "value": 0.25,
+      "metric": "jump_damage_multiplier",
+      "description": "Increase Jump damage"
+    },
+    "relic_signature": {
+      "key": "dragonfall",
+      "name": "Dragonfall",
+      "stage": 3,
+      "value": 0.22,
+      "metric": "damage_multiplier",
+      "description": "Deal additional Jump damage to verified dragon enemies"
+    }
   },
   {
     "type": "weapon",
@@ -11316,7 +12157,7 @@
     "gear_family": "sword",
     "id": "ultimate_paladin_awakened",
     "name": "Excalibur Prime — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11330,7 +12171,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for paladin. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "sacred_guard",
+      "name": "Sacred Guard",
+      "stage": 1,
+      "value": 0.12,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce next direct hit after protecting an ally"
+    },
+    "relic_signature": {
+      "key": "aegis_reprisal",
+      "name": "Aegis Reprisal",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase a verified reprisal basic attack after ally protection"
+    }
   },
   {
     "type": "weapon",
@@ -11340,7 +12197,7 @@
     "gear_family": "sword",
     "id": "ultimate_paladin_transcendent",
     "name": "Excalibur Prime — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11354,7 +12211,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for paladin. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "sacred_guard",
+      "name": "Sacred Guard",
+      "stage": 2,
+      "value": 0.2,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce next direct hit after protecting an ally"
+    },
+    "relic_signature": {
+      "key": "aegis_reprisal",
+      "name": "Aegis Reprisal",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase a verified reprisal basic attack after ally protection"
+    }
   },
   {
     "type": "weapon",
@@ -11364,7 +12237,7 @@
     "gear_family": "sword",
     "id": "ultimate_paladin_eternal",
     "name": "Excalibur Prime — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11378,7 +12251,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for paladin. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "sacred_guard",
+      "name": "Sacred Guard",
+      "stage": 3,
+      "value": 0.3,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce next direct hit after protecting an ally"
+    },
+    "relic_signature": {
+      "key": "aegis_reprisal",
+      "name": "Aegis Reprisal",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Increase a verified reprisal basic attack after ally protection"
+    }
   },
   {
     "type": "weapon",
@@ -11388,7 +12277,7 @@
     "gear_family": "sword",
     "id": "ultimate_darkknight_awakened",
     "name": "Apocalypse Reborn — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11402,7 +12291,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for darkknight. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "blood_resolve",
+      "name": "Blood Resolve",
+      "stage": 1,
+      "value": 0.04,
+      "metric": "max_hp_heal_fraction",
+      "description": "Heal on first qualifying dark skill hit per action"
+    },
+    "relic_signature": {
+      "key": "doom_harvest",
+      "name": "Doom Harvest",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase dark skill damage against a Vulnerable enemy"
+    }
   },
   {
     "type": "weapon",
@@ -11412,7 +12317,7 @@
     "gear_family": "sword",
     "id": "ultimate_darkknight_transcendent",
     "name": "Apocalypse Reborn — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11426,7 +12331,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for darkknight. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "blood_resolve",
+      "name": "Blood Resolve",
+      "stage": 2,
+      "value": 0.06,
+      "metric": "max_hp_heal_fraction",
+      "description": "Heal on first qualifying dark skill hit per action"
+    },
+    "relic_signature": {
+      "key": "doom_harvest",
+      "name": "Doom Harvest",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase dark skill damage against a Vulnerable enemy"
+    }
   },
   {
     "type": "weapon",
@@ -11436,7 +12357,7 @@
     "gear_family": "sword",
     "id": "ultimate_darkknight_eternal",
     "name": "Apocalypse Reborn — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11450,7 +12371,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for darkknight. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "blood_resolve",
+      "name": "Blood Resolve",
+      "stage": 3,
+      "value": 0.08,
+      "metric": "max_hp_heal_fraction",
+      "description": "Heal on first qualifying dark skill hit per action"
+    },
+    "relic_signature": {
+      "key": "doom_harvest",
+      "name": "Doom Harvest",
+      "stage": 3,
+      "value": 0.2,
+      "metric": "damage_multiplier",
+      "description": "Increase dark skill damage against a Vulnerable enemy"
+    }
   },
   {
     "type": "weapon",
@@ -11460,7 +12397,7 @@
     "gear_family": "knuckles",
     "id": "ultimate_monk_awakened",
     "name": "Celestial Godhand — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11474,7 +12411,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for monk. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "combo_momentum",
+      "name": "Combo Momentum",
+      "stage": 1,
+      "value": 3,
+      "metric": "ap_gain",
+      "description": "Recover AP after a verified three-hit combo"
+    },
+    "relic_signature": {
+      "key": "fiststorm",
+      "name": "Fiststorm",
+      "stage": 1,
+      "value": 0.1,
+      "metric": "damage_multiplier",
+      "description": "Increase verified combo-finisher damage"
+    }
   },
   {
     "type": "weapon",
@@ -11484,7 +12437,7 @@
     "gear_family": "knuckles",
     "id": "ultimate_monk_transcendent",
     "name": "Celestial Godhand — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11498,7 +12451,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for monk. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "combo_momentum",
+      "name": "Combo Momentum",
+      "stage": 2,
+      "value": 4,
+      "metric": "ap_gain",
+      "description": "Recover AP after a verified three-hit combo"
+    },
+    "relic_signature": {
+      "key": "fiststorm",
+      "name": "Fiststorm",
+      "stage": 2,
+      "value": 0.15,
+      "metric": "damage_multiplier",
+      "description": "Increase verified combo-finisher damage"
+    }
   },
   {
     "type": "weapon",
@@ -11508,7 +12477,7 @@
     "gear_family": "knuckles",
     "id": "ultimate_monk_eternal",
     "name": "Celestial Godhand — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11522,7 +12491,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for monk. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "combo_momentum",
+      "name": "Combo Momentum",
+      "stage": 3,
+      "value": 6,
+      "metric": "ap_gain",
+      "description": "Recover AP after a verified three-hit combo"
+    },
+    "relic_signature": {
+      "key": "fiststorm",
+      "name": "Fiststorm",
+      "stage": 3,
+      "value": 0.22,
+      "metric": "damage_multiplier",
+      "description": "Increase verified combo-finisher damage"
+    }
   },
   {
     "type": "weapon",
@@ -11532,7 +12517,7 @@
     "gear_family": "katana",
     "id": "ultimate_samurai_awakened",
     "name": "Masamune Eternal — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11546,7 +12531,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for samurai. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "perfect_form",
+      "name": "Perfect Form",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "iaijutsu_crit_pp",
+      "description": "Increase Iaijutsu critical chance"
+    },
+    "relic_signature": {
+      "key": "zanshin",
+      "name": "Zanshin",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase next basic strike using verified Iaijutsu follow-up token"
+    }
   },
   {
     "type": "weapon",
@@ -11556,7 +12557,7 @@
     "gear_family": "katana",
     "id": "ultimate_samurai_transcendent",
     "name": "Masamune Eternal — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11570,7 +12571,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for samurai. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "perfect_form",
+      "name": "Perfect Form",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "iaijutsu_crit_pp",
+      "description": "Increase Iaijutsu critical chance"
+    },
+    "relic_signature": {
+      "key": "zanshin",
+      "name": "Zanshin",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase next basic strike using verified Iaijutsu follow-up token"
+    }
   },
   {
     "type": "weapon",
@@ -11580,7 +12597,7 @@
     "gear_family": "katana",
     "id": "ultimate_samurai_eternal",
     "name": "Masamune Eternal — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11594,7 +12611,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for samurai. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "perfect_form",
+      "name": "Perfect Form",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "iaijutsu_crit_pp",
+      "description": "Increase Iaijutsu critical chance"
+    },
+    "relic_signature": {
+      "key": "zanshin",
+      "name": "Zanshin",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Increase next basic strike using verified Iaijutsu follow-up token"
+    }
   },
   {
     "type": "weapon",
@@ -11604,7 +12637,7 @@
     "gear_family": "staff",
     "id": "ultimate_blackmage_awakened",
     "name": "Stardust Cataclysm — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11618,7 +12651,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for blackmage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "overcharge",
+      "name": "Overcharge",
+      "stage": 1,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase critical elemental spell damage"
+    },
+    "relic_signature": {
+      "key": "astral_surge",
+      "name": "Astral Surge",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase elemental spell damage against verified weakness"
+    }
   },
   {
     "type": "weapon",
@@ -11628,7 +12677,7 @@
     "gear_family": "staff",
     "id": "ultimate_blackmage_transcendent",
     "name": "Stardust Cataclysm — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11642,7 +12691,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for blackmage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "overcharge",
+      "name": "Overcharge",
+      "stage": 2,
+      "value": 0.2,
+      "metric": "damage_multiplier",
+      "description": "Increase critical elemental spell damage"
+    },
+    "relic_signature": {
+      "key": "astral_surge",
+      "name": "Astral Surge",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase elemental spell damage against verified weakness"
+    }
   },
   {
     "type": "weapon",
@@ -11652,7 +12717,7 @@
     "gear_family": "staff",
     "id": "ultimate_blackmage_eternal",
     "name": "Stardust Cataclysm — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11666,7 +12731,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for blackmage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "overcharge",
+      "name": "Overcharge",
+      "stage": 3,
+      "value": 0.3,
+      "metric": "damage_multiplier",
+      "description": "Increase critical elemental spell damage"
+    },
+    "relic_signature": {
+      "key": "astral_surge",
+      "name": "Astral Surge",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Increase elemental spell damage against verified weakness"
+    }
   },
   {
     "type": "weapon",
@@ -11676,7 +12757,7 @@
     "gear_family": "staff",
     "id": "ultimate_whitemage_awakened",
     "name": "Nirvana Eternal — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11690,7 +12771,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for whitemage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "gentle_benediction",
+      "name": "Gentle Benediction",
+      "stage": 1,
+      "value": 0.12,
+      "metric": "healing_multiplier",
+      "description": "Increase single-target restorative spell healing"
+    },
+    "relic_signature": {
+      "key": "lifewave",
+      "name": "Lifewave",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "healing_multiplier",
+      "description": "Increase healing on critically injured ally (at or below 30% HP)"
+    }
   },
   {
     "type": "weapon",
@@ -11700,7 +12797,7 @@
     "gear_family": "staff",
     "id": "ultimate_whitemage_transcendent",
     "name": "Nirvana Eternal — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11714,7 +12811,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for whitemage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "gentle_benediction",
+      "name": "Gentle Benediction",
+      "stage": 2,
+      "value": 0.2,
+      "metric": "healing_multiplier",
+      "description": "Increase single-target restorative spell healing"
+    },
+    "relic_signature": {
+      "key": "lifewave",
+      "name": "Lifewave",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "healing_multiplier",
+      "description": "Increase healing on critically injured ally (at or below 30% HP)"
+    }
   },
   {
     "type": "weapon",
@@ -11724,7 +12837,7 @@
     "gear_family": "staff",
     "id": "ultimate_whitemage_eternal",
     "name": "Nirvana Eternal — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11738,7 +12851,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for whitemage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "gentle_benediction",
+      "name": "Gentle Benediction",
+      "stage": 3,
+      "value": 0.3,
+      "metric": "healing_multiplier",
+      "description": "Increase single-target restorative spell healing"
+    },
+    "relic_signature": {
+      "key": "lifewave",
+      "name": "Lifewave",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "healing_multiplier",
+      "description": "Increase healing on critically injured ally (at or below 30% HP)"
+    }
   },
   {
     "type": "weapon",
@@ -11748,7 +12877,7 @@
     "gear_family": "dagger",
     "id": "ultimate_thief_awakened",
     "name": "Last Shadow — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11762,7 +12891,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for thief. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "master_pickpocket",
+      "name": "Master Pickpocket",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "steal_chance_pp",
+      "description": "Increase eligible Steal success chance"
+    },
+    "relic_signature": {
+      "key": "fortune_favor",
+      "name": "Fortune’s Favor",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Enhance the next basic strike after a verified successful steal"
+    }
   },
   {
     "type": "weapon",
@@ -11772,7 +12917,7 @@
     "gear_family": "dagger",
     "id": "ultimate_thief_transcendent",
     "name": "Last Shadow — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11786,7 +12931,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for thief. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "master_pickpocket",
+      "name": "Master Pickpocket",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "steal_chance_pp",
+      "description": "Increase eligible Steal success chance"
+    },
+    "relic_signature": {
+      "key": "fortune_favor",
+      "name": "Fortune’s Favor",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Enhance the next basic strike after a verified successful steal"
+    }
   },
   {
     "type": "weapon",
@@ -11796,7 +12957,7 @@
     "gear_family": "dagger",
     "id": "ultimate_thief_eternal",
     "name": "Last Shadow — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11810,7 +12971,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for thief. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "master_pickpocket",
+      "name": "Master Pickpocket",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "steal_chance_pp",
+      "description": "Increase eligible Steal success chance"
+    },
+    "relic_signature": {
+      "key": "fortune_favor",
+      "name": "Fortune’s Favor",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Enhance the next basic strike after a verified successful steal"
+    }
   },
   {
     "type": "weapon",
@@ -11820,7 +12997,7 @@
     "gear_family": "axe",
     "id": "ultimate_warrior_awakened",
     "name": "Worldbreaker Bravura — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11834,7 +13011,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for warrior. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "guard_to_strike",
+      "name": "Guard-to-Strike",
+      "stage": 1,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Next basic attack after a verified Guard"
+    },
+    "relic_signature": {
+      "key": "unyielding_heart",
+      "name": "Unyielding Heart",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce direct damage while at or below 35% HP, once per encounter"
+    }
   },
   {
     "type": "weapon",
@@ -11844,7 +13037,7 @@
     "gear_family": "axe",
     "id": "ultimate_warrior_transcendent",
     "name": "Worldbreaker Bravura — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11858,7 +13051,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for warrior. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "guard_to_strike",
+      "name": "Guard-to-Strike",
+      "stage": 2,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Next basic attack after a verified Guard"
+    },
+    "relic_signature": {
+      "key": "unyielding_heart",
+      "name": "Unyielding Heart",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce direct damage while at or below 35% HP, once per encounter"
+    }
   },
   {
     "type": "weapon",
@@ -11868,7 +13077,7 @@
     "gear_family": "axe",
     "id": "ultimate_warrior_eternal",
     "name": "Worldbreaker Bravura — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11882,7 +13091,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for warrior. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "guard_to_strike",
+      "name": "Guard-to-Strike",
+      "stage": 3,
+      "value": 0.25,
+      "metric": "damage_multiplier",
+      "description": "Next basic attack after a verified Guard"
+    },
+    "relic_signature": {
+      "key": "unyielding_heart",
+      "name": "Unyielding Heart",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce direct damage while at or below 35% HP, once per encounter"
+    }
   },
   {
     "type": "weapon",
@@ -11892,7 +13117,7 @@
     "gear_family": "rapier",
     "id": "ultimate_redmage_awakened",
     "name": "Murgleis Ascendant — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11907,7 +13132,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for redmage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "dual_harmony",
+      "name": "Dual Harmony",
+      "stage": 1,
+      "value": 0.1,
+      "metric": "hybrid_multiplier",
+      "description": "Boost damage or healing from verified hybrid ability"
+    },
+    "relic_signature": {
+      "key": "spell_echo",
+      "name": "Spell Echo",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "hybrid_multiplier",
+      "description": "Increase the next verified hybrid ability using a single-use echo token"
+    }
   },
   {
     "type": "weapon",
@@ -11917,7 +13158,7 @@
     "gear_family": "rapier",
     "id": "ultimate_redmage_transcendent",
     "name": "Murgleis Ascendant — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -11932,7 +13173,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for redmage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "dual_harmony",
+      "name": "Dual Harmony",
+      "stage": 2,
+      "value": 0.16,
+      "metric": "hybrid_multiplier",
+      "description": "Boost damage or healing from verified hybrid ability"
+    },
+    "relic_signature": {
+      "key": "spell_echo",
+      "name": "Spell Echo",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "hybrid_multiplier",
+      "description": "Increase the next verified hybrid ability using a single-use echo token"
+    }
   },
   {
     "type": "weapon",
@@ -11942,7 +13199,7 @@
     "gear_family": "rapier",
     "id": "ultimate_redmage_eternal",
     "name": "Murgleis Ascendant — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -11957,7 +13214,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for redmage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "dual_harmony",
+      "name": "Dual Harmony",
+      "stage": 3,
+      "value": 0.24,
+      "metric": "hybrid_multiplier",
+      "description": "Boost damage or healing from verified hybrid ability"
+    },
+    "relic_signature": {
+      "key": "spell_echo",
+      "name": "Spell Echo",
+      "stage": 3,
+      "value": 0.15,
+      "metric": "hybrid_multiplier",
+      "description": "Increase the next verified hybrid ability using a single-use echo token"
+    }
   },
   {
     "type": "weapon",
@@ -11967,7 +13240,7 @@
     "gear_family": "dagger",
     "id": "ultimate_ninja_awakened",
     "name": "Yoshimitsu Phantom — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -11981,7 +13254,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for ninja. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "shadow_step",
+      "name": "Shadow Step",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "evasion_pp",
+      "description": "Increase next-round evasion after Ninja skill"
+    },
+    "relic_signature": {
+      "key": "mirage_guard",
+      "name": "Mirage Guard",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce one direct hit after an eligible Ninja skill"
+    }
   },
   {
     "type": "weapon",
@@ -11991,7 +13280,7 @@
     "gear_family": "dagger",
     "id": "ultimate_ninja_transcendent",
     "name": "Yoshimitsu Phantom — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12005,7 +13294,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for ninja. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "shadow_step",
+      "name": "Shadow Step",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "evasion_pp",
+      "description": "Increase next-round evasion after Ninja skill"
+    },
+    "relic_signature": {
+      "key": "mirage_guard",
+      "name": "Mirage Guard",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce one direct hit after an eligible Ninja skill"
+    }
   },
   {
     "type": "weapon",
@@ -12015,7 +13320,7 @@
     "gear_family": "dagger",
     "id": "ultimate_ninja_eternal",
     "name": "Yoshimitsu Phantom — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12029,7 +13334,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for ninja. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "shadow_step",
+      "name": "Shadow Step",
+      "stage": 3,
+      "value": 0.15,
+      "metric": "evasion_pp",
+      "description": "Increase next-round evasion after Ninja skill"
+    },
+    "relic_signature": {
+      "key": "mirage_guard",
+      "name": "Mirage Guard",
+      "stage": 3,
+      "value": 0.15,
+      "metric": "incoming_damage_reduction",
+      "description": "Reduce one direct hit after an eligible Ninja skill"
+    }
   },
   {
     "type": "weapon",
@@ -12039,7 +13360,7 @@
     "gear_family": "tome",
     "id": "ultimate_summoner_awakened",
     "name": "Veil of Creation — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12053,7 +13374,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for summoner. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "resonance",
+      "name": "Resonance",
+      "stage": 1,
+      "value": 0.1,
+      "metric": "summon_cost_reduction",
+      "description": "Reduce summon MP/AP costs"
+    },
+    "relic_signature": {
+      "key": "grand_convergence",
+      "name": "Grand Convergence",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase verified summon damage against bosses"
+    }
   },
   {
     "type": "weapon",
@@ -12063,7 +13400,7 @@
     "gear_family": "tome",
     "id": "ultimate_summoner_transcendent",
     "name": "Veil of Creation — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12077,7 +13414,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for summoner. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "resonance",
+      "name": "Resonance",
+      "stage": 2,
+      "value": 0.15,
+      "metric": "summon_cost_reduction",
+      "description": "Reduce summon MP/AP costs"
+    },
+    "relic_signature": {
+      "key": "grand_convergence",
+      "name": "Grand Convergence",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase verified summon damage against bosses"
+    }
   },
   {
     "type": "weapon",
@@ -12087,7 +13440,7 @@
     "gear_family": "tome",
     "id": "ultimate_summoner_eternal",
     "name": "Veil of Creation — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12101,7 +13454,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for summoner. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "resonance",
+      "name": "Resonance",
+      "stage": 3,
+      "value": 0.22,
+      "metric": "summon_cost_reduction",
+      "description": "Reduce summon MP/AP costs"
+    },
+    "relic_signature": {
+      "key": "grand_convergence",
+      "name": "Grand Convergence",
+      "stage": 3,
+      "value": 0.2,
+      "metric": "damage_multiplier",
+      "description": "Increase verified summon damage against bosses"
+    }
   },
   {
     "type": "weapon",
@@ -12111,7 +13480,7 @@
     "gear_family": "sword",
     "id": "ultimate_bluemage_awakened",
     "name": "Almace Unbound — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12126,7 +13495,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for bluemage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "mimic_insight",
+      "name": "Mimic Insight",
+      "stage": 1,
+      "value": 0.07,
+      "metric": "blue_magic_success_pp",
+      "description": "Increase eligible Blue Magic success chance"
+    },
+    "relic_signature": {
+      "key": "adaptive_memory",
+      "name": "Adaptive Memory",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "damage_multiplier",
+      "description": "Increase Blue Magic damage from an already learned ability"
+    }
   },
   {
     "type": "weapon",
@@ -12136,7 +13521,7 @@
     "gear_family": "sword",
     "id": "ultimate_bluemage_transcendent",
     "name": "Almace Unbound — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12151,7 +13536,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for bluemage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "mimic_insight",
+      "name": "Mimic Insight",
+      "stage": 2,
+      "value": 0.11,
+      "metric": "blue_magic_success_pp",
+      "description": "Increase eligible Blue Magic success chance"
+    },
+    "relic_signature": {
+      "key": "adaptive_memory",
+      "name": "Adaptive Memory",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "damage_multiplier",
+      "description": "Increase Blue Magic damage from an already learned ability"
+    }
   },
   {
     "type": "weapon",
@@ -12161,7 +13562,7 @@
     "gear_family": "sword",
     "id": "ultimate_bluemage_eternal",
     "name": "Almace Unbound — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12176,7 +13577,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for bluemage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "mimic_insight",
+      "name": "Mimic Insight",
+      "stage": 3,
+      "value": 0.16,
+      "metric": "blue_magic_success_pp",
+      "description": "Increase eligible Blue Magic success chance"
+    },
+    "relic_signature": {
+      "key": "adaptive_memory",
+      "name": "Adaptive Memory",
+      "stage": 3,
+      "value": 0.16,
+      "metric": "damage_multiplier",
+      "description": "Increase Blue Magic damage from an already learned ability"
+    }
   },
   {
     "type": "weapon",
@@ -12186,7 +13603,7 @@
     "gear_family": "staff",
     "id": "ultimate_timemage_awakened",
     "name": "Chronos Paradox — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12200,7 +13617,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for timemage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "chronal_guard",
+      "name": "Chronal Guard",
+      "stage": 1,
+      "value": 0.2,
+      "metric": "slow_resistance",
+      "description": "Increase Slow resistance when wielded"
+    },
+    "relic_signature": {
+      "key": "fate_unbound",
+      "name": "Fate Unbound",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "damage_multiplier",
+      "description": "Increase verified Time Magic damage against a Slowed target"
+    }
   },
   {
     "type": "weapon",
@@ -12210,7 +13643,7 @@
     "gear_family": "staff",
     "id": "ultimate_timemage_transcendent",
     "name": "Chronos Paradox — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12224,7 +13657,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for timemage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "chronal_guard",
+      "name": "Chronal Guard",
+      "stage": 2,
+      "value": 0.3,
+      "metric": "slow_resistance",
+      "description": "Increase Slow resistance when wielded"
+    },
+    "relic_signature": {
+      "key": "fate_unbound",
+      "name": "Fate Unbound",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "damage_multiplier",
+      "description": "Increase verified Time Magic damage against a Slowed target"
+    }
   },
   {
     "type": "weapon",
@@ -12234,7 +13683,7 @@
     "gear_family": "staff",
     "id": "ultimate_timemage_eternal",
     "name": "Chronos Paradox — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12248,7 +13697,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for timemage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "chronal_guard",
+      "name": "Chronal Guard",
+      "stage": 3,
+      "value": 0.4,
+      "metric": "slow_resistance",
+      "description": "Increase Slow resistance when wielded"
+    },
+    "relic_signature": {
+      "key": "fate_unbound",
+      "name": "Fate Unbound",
+      "stage": 3,
+      "value": 0.16,
+      "metric": "damage_multiplier",
+      "description": "Increase verified Time Magic damage against a Slowed target"
+    }
   },
   {
     "type": "weapon",
@@ -12258,7 +13723,7 @@
     "gear_family": "bow",
     "id": "ultimate_bard_awakened",
     "name": "Artemis Requiem — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12273,7 +13738,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for bard. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "sustained_melody",
+      "name": "Sustained Melody",
+      "stage": 1,
+      "value": 3,
+      "metric": "song_extra_rounds",
+      "description": "Extend valid beneficial songs without stacking"
+    },
+    "relic_signature": {
+      "key": "encore",
+      "name": "Encore",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "song_potency_multiplier",
+      "description": "Increase verified beneficial song potency"
+    }
   },
   {
     "type": "weapon",
@@ -12283,7 +13764,7 @@
     "gear_family": "bow",
     "id": "ultimate_bard_transcendent",
     "name": "Artemis Requiem — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12298,7 +13779,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for bard. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "sustained_melody",
+      "name": "Sustained Melody",
+      "stage": 2,
+      "value": 4,
+      "metric": "song_extra_rounds",
+      "description": "Extend valid beneficial songs without stacking"
+    },
+    "relic_signature": {
+      "key": "encore",
+      "name": "Encore",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "song_potency_multiplier",
+      "description": "Increase verified beneficial song potency"
+    }
   },
   {
     "type": "weapon",
@@ -12308,7 +13805,7 @@
     "gear_family": "bow",
     "id": "ultimate_bard_eternal",
     "name": "Artemis Requiem — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12323,7 +13820,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for bard. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "sustained_melody",
+      "name": "Sustained Melody",
+      "stage": 3,
+      "value": 5,
+      "metric": "song_extra_rounds",
+      "description": "Extend valid beneficial songs without stacking"
+    },
+    "relic_signature": {
+      "key": "encore",
+      "name": "Encore",
+      "stage": 3,
+      "value": 0.15,
+      "metric": "song_potency_multiplier",
+      "description": "Increase verified beneficial song potency"
+    }
   },
   {
     "type": "weapon",
@@ -12333,7 +13846,7 @@
     "gear_family": "firearm",
     "id": "ultimate_machinist_awakened",
     "name": "Armageddon Nova — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12347,7 +13860,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for machinist. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "calibrated_shot",
+      "name": "Calibrated Shot",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "ranged_accuracy_pp",
+      "description": "Increase ranged accuracy"
+    },
+    "relic_signature": {
+      "key": "overclock",
+      "name": "Overclock",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase ranged critical hit damage"
+    }
   },
   {
     "type": "weapon",
@@ -12357,7 +13886,7 @@
     "gear_family": "firearm",
     "id": "ultimate_machinist_transcendent",
     "name": "Armageddon Nova — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12371,7 +13900,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for machinist. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "calibrated_shot",
+      "name": "Calibrated Shot",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "ranged_accuracy_pp",
+      "description": "Increase ranged accuracy"
+    },
+    "relic_signature": {
+      "key": "overclock",
+      "name": "Overclock",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase ranged critical hit damage"
+    }
   },
   {
     "type": "weapon",
@@ -12381,7 +13926,7 @@
     "gear_family": "firearm",
     "id": "ultimate_machinist_eternal",
     "name": "Armageddon Nova — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12395,7 +13940,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for machinist. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "calibrated_shot",
+      "name": "Calibrated Shot",
+      "stage": 3,
+      "value": 0.16,
+      "metric": "ranged_accuracy_pp",
+      "description": "Increase ranged accuracy"
+    },
+    "relic_signature": {
+      "key": "overclock",
+      "name": "Overclock",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Increase ranged critical hit damage"
+    }
   },
   {
     "type": "weapon",
@@ -12405,7 +13966,7 @@
     "gear_family": "axe",
     "id": "ultimate_beastmaster_awakened",
     "name": "Guttler Primal — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12419,7 +13980,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for beastmaster. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "pack_coordination",
+      "name": "Pack Coordination",
+      "stage": 1,
+      "value": 0.12,
+      "metric": "tamed_pet_damage_multiplier",
+      "description": "Increase damage from owned tamed pets"
+    },
+    "relic_signature": {
+      "key": "alpha_pact",
+      "name": "Alpha Pact",
+      "stage": 1,
+      "value": 0.08,
+      "metric": "damage_multiplier",
+      "description": "Increase verified owned-pet damage against bosses"
+    }
   },
   {
     "type": "weapon",
@@ -12429,7 +14006,7 @@
     "gear_family": "axe",
     "id": "ultimate_beastmaster_transcendent",
     "name": "Guttler Primal — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12443,7 +14020,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for beastmaster. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "pack_coordination",
+      "name": "Pack Coordination",
+      "stage": 2,
+      "value": 0.2,
+      "metric": "tamed_pet_damage_multiplier",
+      "description": "Increase damage from owned tamed pets"
+    },
+    "relic_signature": {
+      "key": "alpha_pact",
+      "name": "Alpha Pact",
+      "stage": 2,
+      "value": 0.12,
+      "metric": "damage_multiplier",
+      "description": "Increase verified owned-pet damage against bosses"
+    }
   },
   {
     "type": "weapon",
@@ -12453,7 +14046,7 @@
     "gear_family": "axe",
     "id": "ultimate_beastmaster_eternal",
     "name": "Guttler Primal — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12467,7 +14060,23 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for beastmaster. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "pack_coordination",
+      "name": "Pack Coordination",
+      "stage": 3,
+      "value": 0.3,
+      "metric": "tamed_pet_damage_multiplier",
+      "description": "Increase damage from owned tamed pets"
+    },
+    "relic_signature": {
+      "key": "alpha_pact",
+      "name": "Alpha Pact",
+      "stage": 3,
+      "value": 0.18,
+      "metric": "damage_multiplier",
+      "description": "Increase verified owned-pet damage against bosses"
+    }
   },
   {
     "type": "weapon",
@@ -12477,7 +14086,7 @@
     "gear_family": "tome",
     "id": "ultimate_sage_awakened",
     "name": "Astral Codex Absolute — Awakening",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 80000,
     "min_level": 90,
@@ -12491,7 +14100,23 @@
     "relic_stage": 1,
     "unsellable": true,
     "description": "Ultimate Relic for sage. Awakening form (character Lv.90); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "measured_wisdom",
+      "name": "Measured Wisdom",
+      "stage": 1,
+      "value": 0.09,
+      "metric": "sage_support_cost_reduction",
+      "description": "Reduce Sage support MP/AP costs"
+    },
+    "relic_signature": {
+      "key": "arcane_mercy",
+      "name": "Arcane Mercy",
+      "stage": 1,
+      "value": 0.06,
+      "metric": "healing_multiplier",
+      "description": "Increase Sage support healing on critically injured ally"
+    }
   },
   {
     "type": "weapon",
@@ -12501,7 +14126,7 @@
     "gear_family": "tome",
     "id": "ultimate_sage_transcendent",
     "name": "Astral Codex Absolute — Transcendence",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 120000,
     "min_level": 95,
@@ -12515,7 +14140,23 @@
     "relic_stage": 2,
     "unsellable": true,
     "description": "Ultimate Relic for sage. Transcendence form (character Lv.95); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "measured_wisdom",
+      "name": "Measured Wisdom",
+      "stage": 2,
+      "value": 0.14,
+      "metric": "sage_support_cost_reduction",
+      "description": "Reduce Sage support MP/AP costs"
+    },
+    "relic_signature": {
+      "key": "arcane_mercy",
+      "name": "Arcane Mercy",
+      "stage": 2,
+      "value": 0.1,
+      "metric": "healing_multiplier",
+      "description": "Increase Sage support healing on critically injured ally"
+    }
   },
   {
     "type": "weapon",
@@ -12525,7 +14166,7 @@
     "gear_family": "tome",
     "id": "ultimate_sage_eternal",
     "name": "Astral Codex Absolute — Eternal",
-    "rarity": "legendary",
+    "rarity": "relic",
     "shop": false,
     "price": 200000,
     "min_level": 99,
@@ -12539,6 +14180,22 @@
     "relic_stage": 3,
     "unsellable": true,
     "description": "Ultimate Relic for sage. Eternal form (character Lv.99); obtained only through its dedicated relic progression.",
-    "introduced_in": "1.9.10"
+    "introduced_in": "1.9.10",
+    "relic_trait": {
+      "key": "measured_wisdom",
+      "name": "Measured Wisdom",
+      "stage": 3,
+      "value": 0.2,
+      "metric": "sage_support_cost_reduction",
+      "description": "Reduce Sage support MP/AP costs"
+    },
+    "relic_signature": {
+      "key": "arcane_mercy",
+      "name": "Arcane Mercy",
+      "stage": 3,
+      "value": 0.16,
+      "metric": "healing_multiplier",
+      "description": "Increase Sage support healing on critically injured ally"
+    }
   }
 ]

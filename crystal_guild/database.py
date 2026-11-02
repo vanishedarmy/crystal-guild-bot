@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 """
 
-DATABASE_SCHEMA_VERSION = 27
+DATABASE_SCHEMA_VERSION = 30
 
 
 class Database:
@@ -1498,6 +1498,92 @@ class Database:
                         FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
                     );
                     INSERT INTO schema_migrations(version,name) VALUES (27,'regional_moogle_emporium');
+                    COMMIT;
+                """)
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # V2.9: a durable, once-per-encounter Steal attempt/award receipt.
+        # No changes to existing player inventory or save rows are required.
+        if not self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=28").fetchone():
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(28)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS relic_steal_attempts (
+                        encounter_key TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        monster_id TEXT NOT NULL,
+                        item_id TEXT,
+                        succeeded INTEGER NOT NULL DEFAULT 0,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (encounter_key,player_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE TABLE IF NOT EXISTS blue_magic_memories (
+                        player_id TEXT NOT NULL,
+                        ability_id TEXT NOT NULL,
+                        monster_id TEXT NOT NULL,
+                        learned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (player_id,ability_id),
+                        FOREIGN KEY (player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (28,'job_ability_steal_and_blue_memories');
+                    COMMIT;
+                """)
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # V2.10: Beastmaster ownership roster and one selected companion.
+        # Partial unique index prevents selecting multiple companions at once.
+        if not self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=29").fetchone():
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(29)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS beastmaster_companions (
+                        player_id TEXT NOT NULL,
+                        monster_id TEXT NOT NULL,
+                        active INTEGER NOT NULL DEFAULT 0 CHECK(active IN (0,1)),
+                        tamed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(player_id, monster_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE
+                    );
+                    CREATE UNIQUE INDEX IF NOT EXISTS idx_beastmaster_one_active
+                        ON beastmaster_companions(player_id) WHERE active=1;
+                    INSERT INTO schema_migrations(version,name)
+                        VALUES (29,'beastmaster_owned_companions');
+                    COMMIT;
+                """)
+            except Exception:
+                self.conn.rollback()
+                raise
+
+        # V2.11: Companion growth and per-encounter credit receipts. This
+        # additive migration retains all ownership, selections, and Bestiary.
+        if not self.conn.execute("SELECT 1 FROM schema_migrations WHERE version=30").fetchone():
+            if self._preexisting_players_table:
+                self.pre_migration_backup_path = self._verified_pre_migration_backup(30)
+            try:
+                self.conn.executescript("""
+                    BEGIN IMMEDIATE;
+                    ALTER TABLE beastmaster_companions ADD COLUMN bond_xp INTEGER NOT NULL DEFAULT 0 CHECK(bond_xp>=0);
+                    ALTER TABLE beastmaster_companions ADD COLUMN bond_assists INTEGER NOT NULL DEFAULT 0 CHECK(bond_assists>=0);
+                    CREATE TABLE IF NOT EXISTS beastmaster_bond_receipts (
+                        event_key TEXT NOT NULL,
+                        player_id TEXT NOT NULL,
+                        monster_id TEXT NOT NULL,
+                        xp_awarded INTEGER NOT NULL CHECK(xp_awarded>0),
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY(event_key,player_id),
+                        FOREIGN KEY(player_id) REFERENCES players(twitch_id) ON DELETE CASCADE,
+                        FOREIGN KEY(player_id,monster_id) REFERENCES beastmaster_companions(player_id,monster_id) ON DELETE CASCADE
+                    );
+                    INSERT INTO schema_migrations(version,name) VALUES (30,'beastmaster_bond_growth');
                     COMMIT;
                 """)
             except Exception:

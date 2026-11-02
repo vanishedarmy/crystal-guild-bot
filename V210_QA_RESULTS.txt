@@ -1,0 +1,10 @@
+V2.10 Integration QA
+15/15 Beastmaster unit tests passed
+55/55 Relic regression tests passed
+24/24 Active Battle tests passed
+10/10 Raid tests passed
+3/3 Job resource tests passed
+TOTAL 107/107 targeted tests passed
+Legacy V2.9 schema28 to schema29 migration smoke: PASS; player, job, bestiary preserved, backup verified
+Python compileall: PASS
+Not a full suite or deployed game runtime test

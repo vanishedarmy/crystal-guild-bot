@@ -150,7 +150,7 @@ class GameData:
                 errors.append(f"{where}: chance out of range")
 
         valid_item_types = {"weapon", "armor", "accessory", "consumable", "material"}
-        valid_rarities = {"common", "uncommon", "rare", "epic", "relic", "artifact", "legendary"}
+        valid_rarities = {"common", "uncommon", "rare", "epic", "relic", "artifact", "legendary", "unique", "exotic"}
 
         for job in self.jobs.values():
             if float(job.get("damage_mod", 0)) <= 0:
@@ -473,6 +473,8 @@ class GameData:
                 errors.append(f"item {item['id']}: invalid type")
             if item.get("rarity", "common") not in valid_rarities:
                 errors.append(f"item {item['id']}: invalid rarity")
+            if item.get("rarity") == "relic" and (item.get("type") != "weapon" or not item.get("relic_id")):
+                errors.append(f"item {item['id']}: Relic rarity requires a real Relic Weapon")
             if int(item.get("price", 0)) < 0:
                 errors.append(f"item {item['id']}: price must be >= 0")
             for job_id in item.get("allowed_jobs", []):

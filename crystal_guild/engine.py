@@ -3474,6 +3474,12 @@ class CrystalGuildEngine:
                 "weapon_element": traits["weapon_element"],
                 "on_hit_status": traits["on_hit_status"],
                 "lifesteal": traits["lifesteal"],
+                "relic_trait": traits["relic_trait"],
+                "relic_signature": traits["relic_signature"],
+                "weapon_id": traits["weapon_id"],
+                "accessory_id": traits["accessory_id"],
+                "_blue_memories": self._blue_memory_ids(pid) if job_id == 'bluemage' else [],
+                "_tamed_companion": self._selected_tamed_companion(pid) if job_id == 'beastmaster' else None,
                 "hp": min(int(p["current_hp"]), int(stats["hp"])),
                 "max_hp": int(stats["hp"]),
                 "mp": int(resources["mp"]),
@@ -4271,6 +4277,7 @@ class CrystalGuildEngine:
         crit_bonus: float = 0.0,
         pierce: float = 0.0,
         element: str | None = None,
+        relic_action: str = "",
     ) -> tuple[int, bool]:
         stats = meta["stats"]
         effects = meta["effects"]
@@ -4283,6 +4290,11 @@ class CrystalGuildEngine:
             chosen = "magic" if magic_base > physical_base else "physical"
         if chosen == "physical" and has_status(meta.get("statuses", {}), "blind"):
             miss_chance = max(0.18, status_magnitude(meta.get("statuses", {}), "blind"))
+            from .relic_live import trait
+            if meta.get("job_id") == "machinist":
+                miss_chance = max(0, miss_chance - trait(meta, "calibrated_shot"))
+            if meta.get("accessory_id") == "sniper_eye":
+                miss_chance = max(0, miss_chance - 0.06)
             if self.rng.random() < min(0.55, miss_chance):
                 return 0, False
         if chosen == "magic":
@@ -4319,6 +4331,9 @@ class CrystalGuildEngine:
             monster_evade = status_magnitude(
                 self.active_encounter.get("monster_statuses", {}), "evade"
             )
+            if meta.get("job_id") == "machinist":
+                from .relic_live import trait
+                monster_evade = max(0, monster_evade - trait(meta, "calibrated_shot"))
             if monster_evade and self.rng.random() < min(0.45, monster_evade):
                 return 0, False
 
@@ -4341,17 +4356,31 @@ class CrystalGuildEngine:
         elif element and monster.get("weakness") and str(monster["weakness"]).lower() == str(element).lower():
             dmg = int(dmg * (1.30 + effects.get("weakness_bonus", 0)))
         critical = False
+        from .relic_live import bonus_crit
         if chosen == "physical":
             chance = critical_chance(
                 stats["lck"],
                 job.get("crit_bonus", 0),
                 effects.get("crit_bonus", 0)
                 + crit_bonus
+                + bonus_crit(meta, relic_action)
+                + (0.03 if meta.get("job_id") == "machinist" and meta.get("accessory_id") == "machinists_goggles" else 0)
                 + status_magnitude(meta.get("statuses", {}), "focus"),
             )
             if self.rng.random() < chance:
                 dmg = int(dmg * (1.65 + effects.get("crit_damage", 0)))
+                from .relic_live import signature
+                if meta.get("job_id") == "machinist" and relic_action:
+                    dmg = int(dmg * (1 + signature(meta, "overclock")))
                 critical = True
+        elif chosen == "magic" and element and (meta.get("relic_trait") or {}).get("key") == "overcharge":
+            # A verified Black Mage Relic permits elemental magic to crit.
+            if self.rng.random() < critical_chance(stats["lck"], job.get("crit_bonus", 0), effects.get("crit_bonus", 0)):
+                dmg = max(1, int(dmg * 1.65))
+                critical = True
+        from .relic_live import damage_multiplier
+        dmg = int(dmg * damage_multiplier(meta, action=relic_action, critical=critical,
+                    element=element, monster=monster, statuses=self.active_encounter.get("monster_statuses", {})))
         return max(1, dmg), critical
 
     def _apply_battle_heal(self, actor: dict[str, Any], target: dict[str, Any], power: float) -> int:
@@ -4359,11 +4388,105 @@ class CrystalGuildEngine:
             return 0
         stats = actor["stats"]
         amount = max(30, int((stats["mag"] * 1.8 + 30) * float(power) * (1 + actor["effects"].get("heal_bonus", 0))))
+        from .relic_live import heal_multiplier
+        amount = int(amount * heal_multiplier(actor, target))
         before = int(target["hp"])
         target["hp"] = min(int(target["max_hp"]), before + amount)
         healed = int(target["hp"]) - before
         actor["healing"] += healed
         return healed
+
+    def _blue_memory_ids(self, player_id: str) -> list[str]:
+        return [str(row['ability_id']) for row in self.db.all(
+            'SELECT ability_id FROM blue_magic_memories WHERE player_id=?', (str(player_id),))]
+
+    def _observe_blue_enemy_ability(self, monster: dict[str, Any], ability: dict[str, Any],
+                                    log: list[str]) -> None:
+        """Give living Blue Mages one mastery-learning roll per observed skill/run.
+
+        Server-authoritative: uses the actual enemy action, authenticated roster,
+        learned-ability catalog and persisted player record; no client-supplied
+        spell names or immediate-unlock shortcut.
+        """
+        from .relic_live import ENEMY_BLUE_MEMORIES, trait
+        ability_id = ENEMY_BLUE_MEMORIES.get(str(ability.get('id') or ''))
+        if not ability_id:
+            return
+        spell = next((a for a in self.data.active_abilities.get('bluemage', ())
+                      if a.get('id') == ability_id), None)
+        if not spell:
+            return
+        for pid, meta in self.encounter_roster.items():
+            if meta.get('job_id') != 'bluemage' or int(meta.get('hp', 0)) <= 0:
+                continue
+            if int(meta.get('job_level', 0)) < int(spell.get('level', 1)):
+                continue
+            attempts = meta.setdefault('_blue_observed_attempts', [])
+            if ability_id in attempts or ability_id in meta.get('_blue_memories', []):
+                continue
+            attempts.append(ability_id)
+            chance = min(0.50, 0.25 + max(0.0, trait(meta, 'mimic_insight')))
+            if self.rng.random() >= chance:
+                continue
+            with self.db.tx(immediate=True) as conn:
+                cursor = conn.execute('INSERT OR IGNORE INTO blue_magic_memories'
+                    '(player_id,ability_id,monster_id) VALUES (?,?,?)',
+                    (str(pid), ability_id, str(monster['id'])))
+            if cursor.rowcount:
+                meta.setdefault('_blue_memories', []).append(ability_id)
+                log.append(f"{meta['name']} masters enemy technique {spell['name']}! (+5% damage when applicable)")
+
+    def _try_relic_mug_steal(self, pid: str, meta: dict[str, Any], monster: dict[str, Any],
+                             *, raid: bool = False) -> str:
+        """Server-authoritative, at most one Mug Steal roll per player/run.
+
+        Only a successful, resource-paid Mug strike calls this method. Eligible
+        loot comes from the actual encounter monster drop table and is limited
+        to ordinary materials/consumables; premium quest gear is never stolen.
+        The attempt receipt and the inventory change commit in one SQLite tx,
+        protecting loot from worker replays and Twitch retransmissions.
+        """
+        if meta.get('job_id') != 'thief' or int(meta.get('hp', 0)) <= 0:
+            return ''
+        roster = self.raid_roster if raid else self.encounter_roster
+        if roster.get(str(pid)) is not meta:
+            return ''
+        combat = self.active_boss if raid else self.active_encounter
+        if not combat or combat.get('state') != 'combat':
+            return ''
+        if raid:
+            run_key = 'raid:' + self._raid_instance_id(combat)
+        else:
+            run_key = 'field:' + str(combat.get('moment_run_key') or f"{combat.get('id')}:{combat.get('created_at')}")
+        from .relic_live import trait
+        chance = min(0.35, 0.10 + max(0.0, trait(meta, 'master_pickpocket')))
+        eligible = []
+        for row in monster.get('drops', []):
+            item_id = str(row.get('item_id') or '')
+            item = self.data.items.get(item_id) or {}
+            if (item.get('type') in {'material', 'consumable'} and
+                    item.get('rarity') in {'common', 'uncommon', 'rare'} and
+                    0 < float(row.get('chance', 0)) <= 1):
+                eligible.append(item_id)
+        # The unique key is authoritative even when another worker already
+        # awarded the item; no re-roll or double credit on replay.
+        with self.db.tx(immediate=True) as conn:
+            old = conn.execute('SELECT 1 FROM relic_steal_attempts WHERE encounter_key=? AND player_id=?',
+                               (run_key, str(pid))).fetchone()
+            if old:
+                return ''
+            won = bool(eligible and self.rng.random() < chance)
+            item_id = self.rng.choice(eligible) if won else None
+            conn.execute('INSERT INTO relic_steal_attempts(encounter_key,player_id,monster_id,item_id,succeeded) '
+                         'VALUES(?,?,?,?,?)', (run_key, str(pid), str(monster['id']), item_id, int(won)))
+            if item_id:
+                conn.execute('INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,1) '
+                             'ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+1', (str(pid), item_id))
+                conn.execute('INSERT INTO transactions(player_id,kind,asset_id,amount,source) '
+                             "VALUES(?,'item',?,1,?)", (str(pid), item_id, 'mug:' + run_key))
+        if item_id:
+            return 'Steal: ' + str(self.data.items[item_id].get('name') or item_id) + ' x1'
+        return 'Steal attempted (no item)'
 
     def _resolve_active_ability(
         self,
@@ -4388,6 +4511,8 @@ class CrystalGuildEngine:
         job = self.data.jobs.get(meta["job_id"])
         resource = ability_resource(ability, job) if ability else "mp"
         cost = ability_cost(ability) if ability else 0
+        from .relic_live import adjusted_cost
+        cost = adjusted_cost(meta, cost, ability["id"] if ability else "")
         if not ability or int(meta.get(resource, 0)) < cost:
             log.append(f"{meta['name']}'s ability fizzles; they fall back to Attack.")
             self._resolve_active_attack(meta, monster, log)
@@ -4405,6 +4530,13 @@ class CrystalGuildEngine:
         )
         meta[resource] = int(meta.get(resource, 0)) - cost
         meta["abilities_used"] += 1
+        if meta.get("job_id") == "ninja":
+            from .relic_live import trait, signature
+            step = trait(meta,"shadow_step")
+            if step:
+                apply_status(meta.setdefault("statuses", {}), "evade", 2, min(0.20,step))
+            if signature(meta,"mirage_guard"):
+                meta["_relic_ninja_guard_ready"] = True
 
         last_damage = 0
         parts: list[str] = []
@@ -4421,13 +4553,29 @@ class CrystalGuildEngine:
                     crit_bonus=float(effect.get("crit_bonus", 0)),
                     pierce=float(effect.get("pierce", 0)),
                     element=ability.get("element"),
+                    relic_action=ability["id"],
                 )
                 before_hp = int(self.active_encounter["monster_hp"])
                 self.active_encounter["monster_hp"] = max(0, before_hp - damage)
                 self._moment_field_direct_hit(meta, damage, before_hp)
+                if before_hp > 0 and before_hp <= damage and meta.get("accessory_id") == "grudge_lantern" and int(meta.get("hp",0)) > 0:
+                    before = int(meta["hp"])
+                    meta["hp"] = min(int(meta["max_hp"]), before + max(1,int(meta["max_hp"]*0.03)))
+                    meta["healing"] = int(meta.get("healing",0)) + int(meta["hp"]) - before
                 meta["damage"] += damage
                 meta["best_hit"] = max(int(meta["best_hit"]), damage)
+                from .relic_live import trait, DARK_ABILITIES
+                if damage > 0 and meta.get("job_id") == "darkknight" and ability["id"] in DARK_ABILITIES:
+                    fraction = trait(meta, "blood_resolve")
+                    if fraction and int(meta.get("hp", 0)) > 0:
+                        old_hp = int(meta["hp"])
+                        meta["hp"] = min(int(meta["max_hp"]), old_hp + max(1, int(meta["max_hp"] * fraction)))
+                        meta["healing"] += int(meta["hp"]) - old_hp
                 last_damage = damage
+                from .relic_live import monk_combo_hit
+                restored_combo = monk_combo_hit(meta, min(max(0, before_hp), max(0, damage)))
+                if restored_combo:
+                    parts.append(f"Combo Momentum +{restored_combo} AP")
                 parts.append(
                     "MISS" if damage <= 0 else f"{damage}{' CRIT' if critical else ''} dmg"
                 )
@@ -4521,6 +4669,10 @@ class CrystalGuildEngine:
 
                 turns = int(effect.get("turns", 1))
                 magnitude = float(effect.get("magnitude", 0.0))
+                if meta.get("job_id") == "bard" and status_id in {"haste","regen","protect","focus","power_up","evade"}:
+                    from .relic_live import trait, signature
+                    turns = min(8, turns + int(trait(meta,"sustained_melody")))
+                    magnitude = min(0.50, magnitude * (1 + signature(meta,"encore")))
 
                 if recipient == "party":
                     for row in self.encounter_roster.values():
@@ -4554,6 +4706,28 @@ class CrystalGuildEngine:
                     )
                 parts.append(status_id.replace("_", " ").title())
 
+        if (meta.get('job_id') == 'beastmaster' and meta.get('_tamed_companion')
+                and ability['id'] in {'call_beast', 'king_of_beasts'} and last_damage > 0):
+            meta['_pet_assists'] = int(meta.get('_pet_assists', 0)) + 1
+        if meta.get('job_id') == 'thief' and ability['id'] == 'mug' and last_damage > 0:
+            acting_pid = next((k for k, row in self.encounter_roster.items() if row is meta), None)
+            if acting_pid is not None:
+                note = self._try_relic_mug_steal(acting_pid, meta, monster)
+                if note:
+                    parts.append(note)
+
+        # Cover must actually protect a living *other* hero. The defensive
+        # Relic charge is granted only after resources have been spent and
+        # ability effects have resolved; it is consumed by the next hit.
+        if (meta.get("job_id") == "paladin" and ability["id"] == "cover"
+                and target is not None and target is not meta
+                and int(target.get("hp", 0)) > 0
+                and has_status(target.get("statuses", {}), "protect")):
+            from .relic_live import trait
+            guard = trait(meta, "sacred_guard")
+            if guard > 0:
+                meta["_relic_cover_guard_ready"] = min(0.40, max(0.0, guard))
+                parts.append("Sacred Guard armed")
         detail = ", ".join(parts[:4]) or "no effect"
         log.append(f"{meta['name']} uses {ability['name']} — {detail}.")
 
@@ -4574,11 +4748,20 @@ class CrystalGuildEngine:
         # layered on top rather than creating a separate combat path.
         dmg, critical = self._basic_active_damage(meta, monster, element=meta.get("weapon_element"))
         if dmg <= 0:
+            from .relic_live import monk_combo_hit
+            monk_combo_hit(meta, 0)
             log.append(f"{meta['name']} attacks but misses while Blinded.")
             return
         job = self.data.jobs[meta["job_id"]]
         effects = meta["effects"]
         flourishes: list[str] = ["CRITICAL"] if critical else []
+        if meta.get("job_id") == "paladin" and meta.get("_relic_reprisal_ready"):
+            from .relic_live import signature
+            boost = signature(meta, "aegis_reprisal")
+            if boost > 0:
+                dmg = max(1, int(dmg * (1 + boost)))
+                flourishes.append("AEGIS REPRISAL")
+                meta["_relic_reprisal_ready"] = False
         if self.rng.random() < float(job.get("signature_chance", 0)) + float(effects.get("signature_chance", 0)):
             dmg = int(dmg * float(job.get("signature_multiplier", 1.0)) * (1 + float(effects.get("signature_mult", 0))))
             flourishes.append(str(job.get("signature", "Signature")))
@@ -4588,6 +4771,10 @@ class CrystalGuildEngine:
         before_hp = int(self.active_encounter["monster_hp"])
         self.active_encounter["monster_hp"] = max(0, before_hp - dmg)
         self._moment_field_direct_hit(meta, dmg, before_hp)
+        if before_hp > 0 and before_hp <= dmg and meta.get("accessory_id") == "grudge_lantern" and int(meta.get("hp",0)) > 0:
+            before = int(meta["hp"])
+            meta["hp"] = min(int(meta["max_hp"]), before + max(1,int(meta["max_hp"]*0.03)))
+            meta["healing"] = int(meta.get("healing",0)) + int(meta["hp"]) - before
         meta["damage"] += dmg
         meta["best_hit"] = max(int(meta["best_hit"]), dmg)
 
@@ -4616,6 +4803,10 @@ class CrystalGuildEngine:
                 meta["healing"] += healed
                 flourishes.append(f"DRAIN {healed}")
 
+        from .relic_live import monk_combo_hit
+        restored_combo = monk_combo_hit(meta, min(dmg, before_hp))
+        if restored_combo:
+            flourishes.append(f"COMBO +{restored_combo} AP")
         suffix = f" [{' / '.join(flourishes)}]" if flourishes else ""
         log.append(f"{meta['name']} attacks for {dmg}{suffix}.")
 
@@ -4844,12 +5035,29 @@ class CrystalGuildEngine:
         if target.get("defending"):
             reduction = max(reduction, 0.45)
         damage = max(1, int(damage * max(0.15, 1 - reduction)))
+        if target.get("accessory_id") == "behemoth_crown":
+            damage = max(1, int(damage * 0.98))
+        from .relic_live import signature
+        if (target.get("job_id") == "warrior" and not target.get("_relic_unyielding_used")
+                and int(target.get("hp", 0)) * 4 <= int(target.get("max_hp", 1))):
+            saved = signature(target, "unyielding_heart")
+            if saved:
+                damage = max(1, int(damage * (1-saved)))
+                target["_relic_unyielding_used"] = True
+        if target.get("job_id") == "ninja" and target.pop("_relic_ninja_guard_ready", False):
+            damage = max(1, int(damage * (1-signature(target, "mirage_guard"))))
 
         evade = target["effects"].get("evade_chance", 0) + status_magnitude(
             target.get("statuses", {}), "evade"
         )
         if self.rng.random() < min(0.70, evade):
             return 0
+        # Only a real hit consumes this Cover charge; evades leave it armed.
+        # The marker exists solely in server-owned encounter state.
+        guarded = float(target.pop("_relic_cover_guard_ready", 0.0) or 0.0)
+        if target.get("job_id") == "paladin" and guarded > 0:
+            damage = max(1, int(damage * (1 - min(0.40, guarded))))
+            target["_relic_cover_just_hit"] = True
         return damage
 
     def _apply_enemy_hit(
@@ -4866,6 +5074,9 @@ class CrystalGuildEngine:
         )
         before_hp = int(target["hp"])
         target["hp"] = max(0, before_hp - damage)
+        if target.pop("_relic_cover_just_hit", False) and damage > 0 and int(target["hp"]) > 0:
+            from .relic_live import signature
+            target["_relic_reprisal_ready"] = bool(signature(target, "aegis_reprisal"))
         target["damage_taken"] += damage
         self._gain_limit(target, max(5, int(damage * 35 / max(1, int(target.get("max_hp", 1))))))
         if before_hp > 0 and int(target["hp"]) == 0 and damage > 0:
@@ -4999,6 +5210,7 @@ class CrystalGuildEngine:
         if damage_parts:
             detail.append(", ".join(damage_parts[:6]))
         detail.extend(status_parts[:4])
+        self._observe_blue_enemy_ability(monster, ability, log)
         log.append(
             f"{monster['name']} uses {ability['name']} — "
             + ("; ".join(detail) if detail else "no effect")
@@ -5149,6 +5361,8 @@ class CrystalGuildEngine:
                 continue
 
             if action["kind"] == "defend":
+                if (meta.get("relic_trait") or {}).get("key") == "guard_to_strike":
+                    meta["_relic_guard_ready"] = True
                 meta["defending"] = True
                 meta["defends"] += 1
                 recovered: list[str] = []
@@ -5346,7 +5560,10 @@ class CrystalGuildEngine:
                             "boss_effective_level_gap": int(monster["level"]) - int(p["level"]),
                         })
                 if won and hunt:
-                    rewards = self._award_hunt_victory(pid, p, hunt, monster)
+                    rewards = self._award_hunt_victory(
+                        pid, p, hunt, monster, companion_meta=meta,
+                        encounter_key=f"hunt:{moment_run}",
+                    )
                     merc_bonus = self._merc_bonus_loot(pid, meta, list(monster.get("drops", [])), source=f"merc:hunt:{hunt['id']}")
                     if merc_bonus:
                         rewards.setdefault("loot", []).append(merc_bonus["label"])
@@ -5402,6 +5619,7 @@ class CrystalGuildEngine:
                     rewards = self._award_victory(
                         pid, p, monster, rally_venture=kind == "venture",
                         world_event_id=str(encounter.get("world_event_id") or "") if kind == "world_event" else "",
+                        companion_meta=meta, encounter_key=f"field:{moment_run}",
                     )
                     if kind == "world_event":
                         venture_rewards = rewards
@@ -5904,6 +6122,8 @@ class CrystalGuildEngine:
         *,
         rally_venture: bool = False,
         world_event_id: str = "",
+        companion_meta: dict[str, Any] | None = None,
+        encounter_key: str = "",
     ) -> dict[str, Any]:
         level_factor = encounter_reward_factor(p["level"], monster["level"])
         job_level = self._job_level(player_id, p["current_job"])
@@ -5932,6 +6152,9 @@ class CrystalGuildEngine:
             conn.execute("UPDATE player_jobs SET jp=jp+? WHERE player_id=? AND job_id=?", (jp, player_id, p["current_job"]))
             conn.execute("INSERT INTO bestiary(player_id, monster_id, defeats) VALUES (?, ?, 1) ON CONFLICT(player_id, monster_id) DO UPDATE SET defeats=defeats+1", (player_id, monster["id"]))
             conn.execute("INSERT INTO transactions(player_id, kind, asset_id, amount, source) VALUES (?, 'gil', 'gil', ?, ?)", (player_id, gil, f"monster:{monster['id']}"))
+            from .beastmaster import award_companion_bond
+            if companion_meta is not None and encounter_key:
+                award_companion_bond(conn, player_id, companion_meta, encounter_key, int(monster['level']))
         reconcile_mastery(self.db, self.data, player_id)
         for drop in monster.get("drops", []):
             chance = min(0.95, drop["chance"] * (1 + loot_bonus))
@@ -6480,7 +6703,10 @@ class CrystalGuildEngine:
                 self._last_battle_history = old_history
             self.active_encounter, self.encounter_roster = old_encounter, old_roster
 
-    def _award_hunt_victory(self, player_id: str, p: Any, hunt: dict[str, Any], monster: dict[str, Any]) -> dict[str, Any]:
+    def _award_hunt_victory(
+        self, player_id: str, p: Any, hunt: dict[str, Any], monster: dict[str, Any],
+        *, companion_meta: dict[str, Any] | None = None, encounter_key: str = "",
+    ) -> dict[str, Any]:
         reward = hunt["rewards"]
         prior = self.db.one("SELECT clears FROM player_hunts WHERE player_id=? AND hunt_id=?", (player_id, hunt["id"]))
         first_clear = not prior or prior["clears"] == 0
@@ -6500,6 +6726,11 @@ class CrystalGuildEngine:
             conn.execute("INSERT INTO player_hunts(player_id,hunt_id,clears,first_cleared_at,last_cleared_at) VALUES (?,?,1,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) ON CONFLICT(player_id,hunt_id) DO UPDATE SET clears=clears+1,last_cleared_at=CURRENT_TIMESTAMP", (player_id, hunt["id"]))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)", (player_id, gil, f"hunt:{hunt['id']}"))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_seals','hunt_seals',?,?)", (player_id, seals, f"hunt:{hunt['id']}"))
+            # The active Hunt's server-owned combat snapshot, not the player's
+            # inventory, is the only source of a verified companion assist.
+            from .beastmaster import award_companion_bond
+            if companion_meta is not None and encounter_key:
+                award_companion_bond(conn, player_id, companion_meta, encounter_key, int(monster['level']))
         reconcile_mastery(self.db, self.data, player_id)
         loot: list[str] = []
         for drop in monster.get("drops", []):
@@ -7175,7 +7406,7 @@ class CrystalGuildEngine:
                 )
             equipped = self.data.items.get(current_id) if current_id else None
             if equipped and (not equipped.get("allowed_jobs") or job_id in equipped["allowed_jobs"]):
-                protected = str(equipped.get("rarity", "")).lower() in {"relic", "artifact", "legendary"}
+                protected = str(equipped.get("rarity", "")).lower() in {"relic", "artifact", "legendary", "unique", "exotic"}
                 if protected or suitability(equipped) >= suitability(item):
                     return GameResult.success(
                         f"Kept {equipped['name']} equipped: it is at least as suitable as "
@@ -7445,11 +7676,11 @@ class CrystalGuildEngine:
                 "preview": " · ".join(preview_parts),
                 "waste": max(0, potential_total - effective_total),
                 "effective": effective_total,
-                "confirm": item_id == "tent" or str(item.get("rarity", "common")) in {"epic", "legendary"},
+                "confirm": item_id == "tent" or str(item.get("rarity", "common")) in {"epic", "legendary", "unique", "exotic", "relic"},
                 "combat_only": not field_usable,
             })
 
-        rarity_order = {"common": 0, "uncommon": 1, "rare": 2, "epic": 3, "legendary": 4}
+        rarity_order = {"common": 0, "uncommon": 1, "rare": 2, "epic": 3, "unique": 4, "legendary": 5, "exotic": 6, "artifact": 6, "relic": 7}
         usable_items = [item for item in items if item["usable_now"]]
         recommendation = None
         if usable_items:
@@ -8259,6 +8490,7 @@ class CrystalGuildEngine:
             "transport": transport,
             "airship_upgrades": {u["id"]: int(u["tier"]) for u in airship["upgrades"]} if airship else {},
             "started_at": now,
+            "run_id": uuid.uuid4().hex,
             "updated_at": now,
             "region_id": str(region["id"]),
             "depth": str(depth["id"]),
@@ -8572,6 +8804,12 @@ class CrystalGuildEngine:
                 "ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1",
                 (str(twitch_id), str(monster["id"])),
             )
+            from .beastmaster import award_companion_bond
+            # One receipt per defeated monster stage; a new run has its own
+            # UUID, and legacy in-progress saves retain their old identifier.
+            expedition_run = str(state.get("run_id") or f"legacy:{state.get('started_at', 0)}:{state.get('region_id', '')}")
+            pet_event = f"expedition:{expedition_run}:{int(state.get('stage', 1))}:{monster['id']}"
+            award_companion_bond(conn, str(twitch_id), meta, pet_event, int(monster["level"]))
         reconcile_mastery(self.db, self.data, str(twitch_id))
         self.fellowship_system.record_activity(
             str(twitch_id),
@@ -9944,6 +10182,10 @@ class CrystalGuildEngine:
         with self.db.tx() as conn:
             conn.execute("UPDATE players SET monsters_defeated=monsters_defeated+1,updated_at=CURRENT_TIMESTAMP WHERE twitch_id=?", (str(twitch_id),))
             conn.execute("INSERT INTO bestiary(player_id,monster_id,defeats) VALUES (?,?,1) ON CONFLICT(player_id,monster_id) DO UPDATE SET defeats=defeats+1", (str(twitch_id), str(monster["id"])))
+            from .beastmaster import award_companion_bond
+            dungeon_run = str(state.get("run_id") or f"legacy:{state.get('started_at', 0)}:{state.get('dungeon_id', '')}")
+            pet_event = f"dungeon:{dungeon_run}:{room_index}:{monster['id']}"
+            award_companion_bond(conn, str(twitch_id), meta, pet_event, int(monster["level"]))
         reconcile_mastery(self.db, self.data, str(twitch_id))
         self.fellowship_system.record_activity(
             str(twitch_id),
@@ -12129,6 +12371,11 @@ class CrystalGuildEngine:
         output_id = str(output.get("item_id") or "")
         output_qty = max(1, int(output.get("quantity", 1) or 1)) * quantity
         with self.db.tx() as conn:
+            # Recheck under the write transaction: two workers may have passed
+            # the earlier read-only replay check before either commits.
+            committed = self._portal_action_replay_sql(conn, action_id)
+            if committed is not None:
+                return committed
             fresh = conn.execute("SELECT gil,hunt_seals,level FROM players WHERE twitch_id=?", (twitch_id,)).fetchone()
             if not fresh:
                 result = self._need_recruit()
@@ -12174,8 +12421,28 @@ class CrystalGuildEngine:
                 conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'hunt_seals','hunt_seals',?,?)", (twitch_id, -total_seals, f"craft:{recipe_id}"))
             conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,?) ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+excluded.quantity", (twitch_id, output_id, output_qty))
             conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'item', ?, ?, ?)", (twitch_id, output_id, output_qty, f"craft:{recipe_id}"))
+            # Artisan's Hammer salvages one eligible consumed *material* at
+            # most once per successful Portal craft action (not per output unit).
+            # This is independent of the output rarity and never duplicates gear.
+            craft_bonus = None
+            if (equipment and equipment["accessory_id"] == "artisan_hammer"
+                    and int(fresh["level"] or 1) >= int(self.data.items["artisan_hammer"].get("min_level", 1))):
+                from .relic_live import artisan_salvage_candidates
+                candidates = artisan_salvage_candidates(recipe, self.data.items)
+                if candidates and self.rng.random() < 0.05:
+                    bonus_id = self.rng.choice(candidates)
+                    conn.execute("INSERT INTO inventory(player_id,item_id,quantity) VALUES (?,?,1) "
+                                 "ON CONFLICT(player_id,item_id) DO UPDATE SET quantity=quantity+1",
+                                 (twitch_id, bonus_id))
+                    conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) "
+                                 "VALUES (?, 'item', ?, 1, ?)",
+                                 (twitch_id, bonus_id, f"craft_bonus:artisan_hammer:{recipe_id}"))
+                    craft_bonus = {"item_id": bonus_id,
+                                   "name": str(self.data.items[bonus_id]["name"]), "quantity": 1}
             output_name = str(self.data.items.get(output_id, {}).get("name") or output_id)
-            result = GameResult.success(f"CRAFTED — {output_name} x{output_qty}. The blacksmith nods, which is apparently a five-star review.")
+            result = GameResult.success(f"CRAFTED — {output_name} x{output_qty}. The blacksmith nods, which is apparently a five-star review."
+                + (f" Artisan's Hammer salvages {craft_bonus['name']} x1!" if craft_bonus else ""),
+                craft_bonus=craft_bonus)
             self._portal_action_store_sql(conn, action_id, result)
 
         fellowship_notes = self.fellowship_system.record_activity(
@@ -16376,6 +16643,103 @@ class CrystalGuildEngine:
             return GameResult.success(msg, "Achievement unlocked: " + " | ".join(unlocked))
         return GameResult.success(msg)
 
+    def _selected_tamed_companion(self, twitch_id: str) -> dict[str, Any] | None:
+        """Read the selected pet from server-owned persistent records."""
+        from .beastmaster import is_tameable, bond_level_from_xp
+        row = self.db.one(
+            "SELECT monster_id,bond_xp,bond_assists FROM beastmaster_companions WHERE player_id=? AND active=1",
+            (str(twitch_id),),
+        )
+        if not row or not is_tameable(str(row["monster_id"]), self.data.monsters):
+            return None
+        monster = self.data.monsters[str(row["monster_id"])]
+        return {"monster_id": monster["id"], "name": monster["name"], "level": int(monster["level"]),
+                "bond_rank": bond_level_from_xp(int(row["bond_xp"])), "bond_assists": int(row["bond_assists"])}
+
+    def beasts(self, twitch_id: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        rows = self.db.all(
+            "SELECT monster_id,active,bond_xp,bond_assists FROM beastmaster_companions WHERE player_id=? ORDER BY tamed_at,monster_id",
+            (str(twitch_id),),
+        )
+        if not rows:
+            return GameResult.success("Beastmaster companions: none. Defeat a tameable species 3 times, then use !tame <species> as a Beastmaster.")
+        from .beastmaster import bond_level_from_xp
+        entries = [
+            self.data.monsters[r["monster_id"]]["name"] + f" Bond {bond_level_from_xp(r['bond_xp'])}" +
+            (" [ACTIVE]" if r["active"] else "")
+            for r in rows if r["monster_id"] in self.data.monsters
+        ]
+        return GameResult.success("Beastmaster companions: " + " | ".join(entries) + " | !petselect <species>")
+
+    def tame_beast(self, twitch_id: str, monster_query: str) -> GameResult:
+        """Bond only with an actually defeated, curated creature; no client loot."""
+        from .beastmaster import is_tameable, MAX_COMPANIONS, MIN_DEFEATS
+        player_id = str(twitch_id)
+        p = self._player(player_id)
+        if not p:
+            return self._need_recruit()
+        if str(p["current_job"]) != "beastmaster":
+            return GameResult.fail("You must be playing Beastmaster to tame a companion.")
+        monster = self._find_by_name_or_id(self.data.monsters, monster_query)
+        if not monster or not is_tameable(str(monster["id"]), self.data.monsters):
+            return GameResult.fail("That creature cannot be tamed. Choose an eligible Bestiary species.")
+        pid = str(monster["id"])
+        if self._job_level(player_id, "beastmaster") < max(30, int(monster["level"])):
+            return GameResult.fail(f"Beastmaster job level {max(30,int(monster['level']))} is required to tame {monster['name']}.")
+        with self.db.tx(immediate=True) as conn:
+            defeated = conn.execute("SELECT defeats FROM bestiary WHERE player_id=? AND monster_id=?", (player_id,pid)).fetchone()
+            if not defeated or int(defeated["defeats"]) < MIN_DEFEATS:
+                return GameResult.fail(f"Defeat {monster['name']} at least {MIN_DEFEATS} times before taming.")
+            if conn.execute("SELECT 1 FROM beastmaster_companions WHERE player_id=? AND monster_id=?", (player_id,pid)).fetchone():
+                return GameResult.fail(f"You have already tamed {monster['name']}.")
+            count = conn.execute("SELECT COUNT(*) FROM beastmaster_companions WHERE player_id=?", (player_id,)).fetchone()[0]
+            if count >= MAX_COMPANIONS:
+                return GameResult.fail(f"Your companion roster is full ({MAX_COMPANIONS}). Use !petrelease <species> before taming another.")
+            conn.execute("INSERT INTO beastmaster_companions(player_id,monster_id,active) VALUES(?,?,?)",
+                         (player_id,pid,1 if count == 0 else 0))
+        return GameResult.success(f"Bond formed with {monster['name']}! " + ("Now active. " if count==0 else "Use !petselect to call it. ") + "!pets to view your companions.")
+
+    def select_beast(self, twitch_id: str, monster_query: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        if p["current_job"] != "beastmaster":
+            return GameResult.fail("Switch to Beastmaster to select a companion.")
+        rows = self.db.all("SELECT monster_id FROM beastmaster_companions WHERE player_id=?", (str(twitch_id),))
+        owned = {str(row["monster_id"]): self.data.monsters[str(row["monster_id"])] for row in rows if str(row["monster_id"]) in self.data.monsters}
+        monster = self._find_by_name_or_id(owned, monster_query) if owned else None
+        if not monster:
+            return GameResult.fail("You do not own that companion. Use !pets to see your roster.")
+        with self.db.tx(immediate=True) as conn:
+            if not conn.execute("SELECT 1 FROM beastmaster_companions WHERE player_id=? AND monster_id=?", (str(twitch_id),monster["id"])).fetchone():
+                return GameResult.fail("You do not own that companion.")
+            conn.execute("UPDATE beastmaster_companions SET active=0 WHERE player_id=?", (str(twitch_id),))
+            conn.execute("UPDATE beastmaster_companions SET active=1 WHERE player_id=? AND monster_id=?", (str(twitch_id),monster["id"]))
+        return GameResult.success(f"{monster['name']} is your active companion. It will assist in your next encounter's Call Beast and King of Beasts.")
+
+    def release_beast(self, twitch_id: str, monster_query: str) -> GameResult:
+        p = self._player(twitch_id)
+        if not p:
+            return self._need_recruit()
+        if p["current_job"] != "beastmaster":
+            return GameResult.fail("Switch to Beastmaster to release a companion.")
+        rows = self.db.all("SELECT monster_id FROM beastmaster_companions WHERE player_id=?", (str(twitch_id),))
+        owned = {str(row["monster_id"]): self.data.monsters[str(row["monster_id"])] for row in rows if str(row["monster_id"]) in self.data.monsters}
+        monster = self._find_by_name_or_id(owned, monster_query) if owned else None
+        if not monster:
+            return GameResult.fail("You do not own that companion.")
+        with self.db.tx(immediate=True) as conn:
+            conn.execute("DELETE FROM beastmaster_companions WHERE player_id=? AND monster_id=?", (str(twitch_id),monster["id"]))
+            selected = conn.execute("SELECT 1 FROM beastmaster_companions WHERE player_id=? AND active=1", (str(twitch_id),)).fetchone()
+            if not selected:
+                remaining = conn.execute("SELECT monster_id FROM beastmaster_companions WHERE player_id=? ORDER BY tamed_at,monster_id LIMIT 1", (str(twitch_id),)).fetchone()
+                if remaining:
+                    conn.execute("UPDATE beastmaster_companions SET active=1 WHERE player_id=? AND monster_id=?", (str(twitch_id),remaining["monster_id"]))
+        return GameResult.success(f"Released {monster['name']} to the wild. You can tame it again after meeting its requirements.")
+
     def bestiary(self, twitch_id: str) -> GameResult:
         p = self._player(twitch_id)
         if not p:
@@ -16758,6 +17122,12 @@ class CrystalGuildEngine:
                 "status_immune": traits["status_immune"], "status_resist": traits["status_resist"],
                 "weapon_element": traits["weapon_element"], "on_hit_status": traits["on_hit_status"],
                 "lifesteal": traits["lifesteal"],
+                "relic_trait": traits["relic_trait"],
+                "relic_signature": traits["relic_signature"],
+                "weapon_id": traits["weapon_id"],
+                "accessory_id": traits["accessory_id"],
+                "_blue_memories": self._blue_memory_ids(pid) if job_id == 'bluemage' else [],
+                "_tamed_companion": self._selected_tamed_companion(pid) if job_id == 'beastmaster' else None,
                 "hp": min(int(p["current_hp"]), int(stats["hp"])), "max_hp": int(stats["hp"]),
                 "mp": int(resources["mp"]), "max_mp": int(resources["max_mp"]),
                 "ap": int(resources["ap"]), "max_ap": int(resources["max_ap"]),
@@ -16771,7 +17141,7 @@ class CrystalGuildEngine:
             self.active_boss["statuses"] = {}
         return combatants
 
-    def _raid_base_damage(self, meta: dict[str, Any], *, power: float = 1.0, scaling: str | None = None, support_bonus: float = 0.0) -> int:
+    def _raid_base_damage(self, meta: dict[str, Any], *, power: float = 1.0, scaling: str | None = None, support_bonus: float = 0.0, relic_action: str = "") -> int:
         """Raid damage keeps the established aggregate formula; abilities only scale its power."""
         stats = meta["stats"]
         effects = meta["effects"]
@@ -16781,7 +17151,10 @@ class CrystalGuildEngine:
         multiplier *= player_outgoing_status_multiplier(meta.get("statuses", {}))
         if self.active_boss:
             multiplier *= incoming_vulnerability_multiplier(self.active_boss.get("statuses", {}))
-        return max(1, int(base * float(job.get("damage_mod", 1.0)) * float(power) * self.rng.uniform(1.05, 1.45) * multiplier))
+        from .relic_live import damage_multiplier
+        raw = max(1, int(base * float(job.get("damage_mod", 1.0)) * float(power) * self.rng.uniform(1.05, 1.45) * multiplier))
+        return max(1, int(raw * damage_multiplier(meta, action=relic_action, critical=False, element=None,
+            monster=self.active_boss or {}, statuses=(self.active_boss or {}).get("statuses", {}), boss=True)))
 
     def _apply_raid_limit(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str]) -> int:
         """Attacks build LB meter; only an explicit queued Limit Break spends it."""
@@ -16834,7 +17207,7 @@ class CrystalGuildEngine:
         target_boss["current_hp"] = max(0, before - damage)
         return before - int(target_boss["current_hp"]), str(target_boss.get("name") or "boss")
 
-    def _raid_damage_boss(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str], *, use_limit: bool = True) -> int:
+    def _raid_damage_boss(self, pid: str, meta: dict[str, Any], damage: int, limit_users: list[str], *, use_limit: bool = True, weapon_hit: bool = False) -> int:
         if not self.active_boss:
             return 0
         damage = max(0, int(damage))
@@ -16843,7 +17216,26 @@ class CrystalGuildEngine:
         boss_hp_before = int(self.active_boss.get("current_hp", 0))
         adds_before = bool(self._raid_live_adds(self.active_boss))
         dealt, _ = self._raid_apply_enemy_damage(damage)
+        if weapon_hit and dealt > 0 and not adds_before:
+            # Bosses cannot be stunned by weapon affixes; other debuffs retain
+            # their advertised low proc rates, reduced for raid boss resilience.
+            on_hit = meta.get("on_hit_status") or {}
+            status_id = str(on_hit.get("status", ""))
+            if (status_id in {"poison", "silence", "blind", "slow", "weaken", "vulnerable"}
+                    and int(self.active_boss.get("current_hp", 0)) > 0
+                    and self.rng.random() < min(0.25, float(on_hit.get("chance", 0)) * 0.5)):
+                apply_status(self.active_boss.setdefault("statuses", {}), status_id,
+                             min(2, int(on_hit.get("turns", 1))), float(on_hit.get("magnitude", 0.0)))
+            lifesteal = float(meta.get("lifesteal", 0.0))
+            if lifesteal > 0 and int(meta.get("hp", 0)) > 0:
+                before = int(meta["hp"])
+                meta["hp"] = min(int(meta["max_hp"]), before + int(dealt * min(0.25, lifesteal)))
+                meta["healing"] = int(meta.get("healing", 0)) + int(meta["hp"]) - before
         if not adds_before and boss_hp_before > 0 and int(self.active_boss.get("current_hp", 0)) == 0 and damage > 0:
+            if meta.get("accessory_id") == "grudge_lantern" and int(meta.get("hp",0)) > 0:
+                before = int(meta["hp"])
+                meta["hp"] = min(int(meta["max_hp"]), before + max(1,int(meta["max_hp"]*0.03)))
+                meta["healing"] = int(meta.get("healing",0)) + int(meta["hp"]) - before
             meta["_moment_raid_final_blow"] = True
             meta["_moment_finishing_hit"] = {
                 "event": "combat_finishing_blow", "settled": True,
@@ -16856,17 +17248,42 @@ class CrystalGuildEngine:
         meta["best_hit"] = max(int(meta.get("best_hit", 0)), dealt)
         return dealt
 
+    def _raid_basic_attack(self, pid: str, meta: dict[str, Any], support_bonus: float, limit_users: list[str]) -> tuple[int,str]:
+        """Settle a normal raid strike, including earned one-time Relic perks."""
+        from .relic_live import signature, monk_combo_hit
+        basic_damage = self._raid_base_damage(meta, support_bonus=support_bonus)
+        reprisal = signature(meta,'aegis_reprisal') if meta.get('_relic_reprisal_ready') else 0.0
+        if reprisal:
+            basic_damage = max(1,int(basic_damage*(1+reprisal)))
+        dealt = self._raid_damage_boss(pid, meta, basic_damage, limit_users, weapon_hit=True)
+        if dealt > 0 and reprisal:
+            meta['_relic_reprisal_ready'] = False
+        combo_ap = monk_combo_hit(meta, dealt)
+        suffix = (' [AEGIS REPRISAL]' if dealt > 0 and reprisal else '')
+        if combo_ap:
+            suffix += f' [COMBO +{combo_ap} AP]'
+        return dealt, suffix
+
     def _resolve_raid_ability(self, pid: str, meta: dict[str, Any], action: dict[str, Any], support_bonus: float, limit_users: list[str], log: list[str]) -> tuple[int, int]:
         ability = next((row for row in self.data.active_abilities.get(meta["job_id"], []) if row["id"] == action.get("ability_id")), None)
         job = self.data.jobs.get(meta["job_id"])
         resource = ability_resource(ability, job) if ability else "mp"
         cost = ability_cost(ability) if ability else 0
+        from .relic_live import adjusted_cost
+        cost = adjusted_cost(meta, cost, ability["id"] if ability else "")
         if not ability or int(meta.get(resource, 0)) < cost or (resource == "mp" and has_status(meta.get("statuses", {}), "silence")):
             damage = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, support_bonus=support_bonus), limit_users)
             log.append(f"{meta['name']}'s ability cannot resolve; Attack deals {damage:,}.")
             return damage, 0
         meta[resource] = int(meta.get(resource, 0)) - cost
         meta["abilities_used"] = int(meta.get("abilities_used", 0)) + 1
+        if meta.get("job_id") == "ninja":
+            from .relic_live import trait, signature
+            step = trait(meta,"shadow_step")
+            if step:
+                apply_status(meta.setdefault("statuses", {}), "evade", 2, min(0.20,step))
+            if signature(meta,"mirage_guard"):
+                meta["_relic_ninja_guard_ready"] = True
         target_id = action.get("target_id")
         target = self.raid_roster.get(target_id) if target_id not in {"boss", "party"} else None
         damage_total = 0
@@ -16877,8 +17294,12 @@ class CrystalGuildEngine:
             et = effect.get("type")
             recipient = effect.get("recipient") or "target"
             if et == "damage":
-                dealt = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, power=float(effect.get("power", 1.0)), scaling=effect.get("scaling"), support_bonus=support_bonus), limit_users)
+                dealt = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, power=float(effect.get("power", 1.0)), scaling=effect.get("scaling"), support_bonus=support_bonus, relic_action=ability["id"]), limit_users)
                 damage_total += dealt; last_damage = dealt; parts.append(f"{dealt:,} dmg")
+                from .relic_live import monk_combo_hit
+                combo_ap = monk_combo_hit(meta, dealt)
+                if combo_ap:
+                    parts.append(f"Combo Momentum +{combo_ap} AP")
             elif et == "heal":
                 targets = list(self.raid_roster.values()) if recipient == "party" else [meta] if recipient == "self" else ([target] if target else [])
                 healed = sum(self._apply_battle_heal(meta, row, float(effect.get("power", 1.0))) for row in targets if row)
@@ -16909,6 +17330,10 @@ class CrystalGuildEngine:
             elif et == "status":
                 if self.rng.random() >= float(effect.get("chance", 1.0)): continue
                 status_id = str(effect.get("status")); turns = int(effect.get("turns", 1)); magnitude = float(effect.get("magnitude", 0.0))
+                if meta.get("job_id") == "bard" and status_id in {"haste","regen","protect","focus","power_up","evade"}:
+                    from .relic_live import trait, signature
+                    turns = min(8, turns + int(trait(meta,"sustained_melody")))
+                    magnitude = min(0.50, magnitude * (1 + signature(meta,"encore")))
                 if recipient == "party":
                     for row in self.raid_roster.values():
                         if int(row.get("hp", 0)) > 0: apply_status(row.setdefault("statuses", {}), status_id, turns, magnitude)
@@ -16916,6 +17341,22 @@ class CrystalGuildEngine:
                 elif target_id == "boss": apply_status(self.active_boss.setdefault("statuses", {}), status_id, turns, magnitude)
                 elif target: apply_status(target.setdefault("statuses", {}), status_id, turns, magnitude)
                 parts.append(status_id.replace("_", " ").title())
+        if (meta.get('job_id') == 'beastmaster' and meta.get('_tamed_companion')
+                and ability['id'] in {'call_beast', 'king_of_beasts'} and last_damage > 0):
+            meta['_pet_assists'] = int(meta.get('_pet_assists', 0)) + 1
+        if meta.get('job_id') == 'thief' and ability['id'] == 'mug' and last_damage > 0:
+            note = self._try_relic_mug_steal(pid, meta, self.active_boss, raid=True)
+            if note:
+                parts.append(note)
+        if (meta.get('job_id') == 'paladin' and ability['id'] == 'cover'
+                and target is not None and target is not meta
+                and int(target.get('hp',0)) > 0
+                and has_status(target.get('statuses',{}),'protect')):
+            from .relic_live import trait
+            guard = trait(meta,'sacred_guard')
+            if guard > 0:
+                meta['_relic_cover_guard_ready'] = min(0.40,max(0.0,guard))
+                parts.append('Sacred Guard armed')
         log.append(f"{meta['name']} uses {ability['name']} — {', '.join(parts[:4]) or 'no effect'}.")
         return damage_total, healing_total
 
@@ -17051,6 +17492,8 @@ class CrystalGuildEngine:
         pressured = max(1, int(pressured * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
         reduction = 1 + stats["vit"] * 0.006 + effects.get("defense_mult", 0)
         dmg = max(1, int(pressured / reduction))
+        from .relic_live import relic_guard_hit
+        dmg = relic_guard_hit(meta, dmg)
         before = int(meta.get("hp", 0))
         meta["hp"] = max(0, before - dmg)
         actual = before - int(meta["hp"])
@@ -18102,6 +18545,8 @@ class CrystalGuildEngine:
                 continue
             kind = str(action.get("kind", "attack"))
             if kind == "defend":
+                if (meta.get("relic_trait") or {}).get("key") == "guard_to_strike":
+                    meta["_relic_guard_ready"] = True
                 meta["defending"] = True
                 meta["defends"] = int(meta.get("defends", 0)) + 1
                 restored: list[str] = []
@@ -18122,9 +18567,9 @@ class CrystalGuildEngine:
                 dealt, healed = self._resolve_raid_limit(pid, meta, action, action_log, limit_users)
                 round_damage += dealt; round_healing += healed
             else:
-                dealt = self._raid_damage_boss(pid, meta, self._raid_base_damage(meta, support_bonus=support_bonus), limit_users)
+                dealt, suffix = self._raid_basic_attack(pid, meta, support_bonus, limit_users)
                 round_damage += dealt
-                action_log.append(f"{meta['name']} attacks for {dealt:,}")
+                action_log.append(f"{meta['name']} attacks for {dealt:,}{suffix}")
             if kind in {"defend", "item", "ability"}:
                 self._gain_limit(meta, 8)
             if boss["current_hp"] <= 0:
@@ -18203,6 +18648,8 @@ class CrystalGuildEngine:
                 raw = max(1, int(raw * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
                 reduction = 1 + stats["vit"]*0.006 + effects.get("defense_mult",0)
                 dmg=max(1,int(raw/reduction))
+                from .relic_live import relic_guard_hit
+                dmg = relic_guard_hit(meta,dmg)
                 before=meta["hp"]; meta["hp"]=max(0,meta["hp"]-dmg); actual=before-meta["hp"]; total_boss_damage += actual
                 meta["damage_taken"] = int(meta.get("damage_taken", 0)) + actual
                 if job["id"] in TANK_JOBS: meta["mitigation"] += max(0,int(raw-actual))
@@ -18226,7 +18673,10 @@ class CrystalGuildEngine:
                     raw = max(1, int(raw * 0.55))
                 raw = max(1, int(raw * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
                 reduction=1+stats["vit"]*0.006+effects.get("defense_mult",0)
-                dmg=max(1,int(raw/reduction)); before=meta["hp"]; meta["hp"]=max(0,meta["hp"]-dmg); actual=before-meta["hp"]; total_boss_damage+=actual
+                dmg=max(1,int(raw/reduction))
+                from .relic_live import relic_guard_hit
+                dmg = relic_guard_hit(meta,dmg)
+                before=meta["hp"]; meta["hp"]=max(0,meta["hp"]-dmg); actual=before-meta["hp"]; total_boss_damage+=actual
                 meta["damage_taken"] = int(meta.get("damage_taken", 0)) + actual
                 if job["id"] in TANK_JOBS: meta["mitigation"] += max(0,int(raw-actual))
                 meta["limit"] = min(100, meta.get("limit",0)+max(5,int(actual/max(1,meta["max_hp"])*40)))
@@ -18583,6 +19033,9 @@ class CrystalGuildEngine:
                     conn.execute("UPDATE players SET gil=gil+?, xp=xp+? WHERE twitch_id=?",(share,xp,pid))
                     conn.execute("INSERT INTO transactions(player_id,kind,asset_id,amount,source) VALUES (?, 'gil','gil',?,?)",(pid,share,f"boss:{boss['id']}"))
                     conn.execute("INSERT INTO player_boss_clears(player_id,boss_id,clears,best_damage,last_cleared_at) VALUES (?,?,1,?,CURRENT_TIMESTAMP) ON CONFLICT(player_id,boss_id) DO UPDATE SET clears=clears+1,best_damage=MAX(best_damage,excluded.best_damage),last_cleared_at=CURRENT_TIMESTAMP",(pid,boss["id"],meta.get("damage",0)))
+                    from .beastmaster import award_companion_bond
+                    award_companion_bond(conn, str(pid), meta, f"raid:{self._raid_instance_id(boss)}",
+                                         int(boss.get('effective_level') or boss.get('level') or 1))
                     raid_trophies = reconcile_player_trophies(conn, str(pid), source=f"raid:{boss['id']}")
                     raid_key = self._raid_instance_id(boss)
                     living_count = sum(1 for row in self.raid_roster.values() if int(row.get("hp", 0)) > 0)
@@ -19068,6 +19521,10 @@ class CrystalGuildEngine:
             "weapon_element": None,
             "on_hit_status": None,
             "lifesteal": 0.0,
+            "relic_trait": None,
+            "relic_signature": None,
+            "weapon_id": None,
+            "accessory_id": None,
         }
         eq = self.db.one("SELECT * FROM equipment WHERE player_id=?", (p["twitch_id"],))
         if not eq:
@@ -19080,23 +19537,36 @@ class CrystalGuildEngine:
                 continue
             if item.get("allowed_jobs") and job["id"] not in item["allowed_jobs"]:
                 continue
+            if int(p["level"]) < int(item.get("min_level", 1)):
+                continue
             immunities.update(str(x) for x in item.get("status_immune", []))
             for status_id, amount in (item.get("status_resist") or {}).items():
-                resistance[str(status_id)] = max(resistance.get(str(status_id), 0.0), float(amount))
+                key = str(status_id)
+                resistance[key] = 1 - (1 - resistance.get(key, 0.0)) * (1 - float(amount))
+            if slot == "accessory":
+                traits["accessory_id"] = item_id
             if slot == "weapon":
+                traits["weapon_id"] = item_id
+                if item.get("relic_trait") and item.get("relic_id"):
+                    from .relic_live import eligible_relic
+                    if eligible_relic(item, job["id"]):
+                        traits["relic_trait"] = dict(item["relic_trait"])
+                        traits["relic_signature"] = dict(item.get("relic_signature") or {})
                 if item.get("element"):
                     traits["weapon_element"] = str(item["element"])
                 if item.get("on_hit_status"):
                     traits["on_hit_status"] = dict(item["on_hit_status"])
                 traits["lifesteal"] = max(float(traits["lifesteal"]), float(item.get("lifesteal", 0.0)))
+        from .relic_live import relic_resistance
+        resistance = relic_resistance(traits, resistance)
         traits["status_immune"] = sorted(immunities)
-        traits["status_resist"] = resistance
+        traits["status_resist"] = {k: min(0.80, v) for k,v in resistance.items()}
         return traits
 
     def _player_status_chance(self, target: dict[str, Any], status_id: str, chance: float) -> float:
         if status_id in set(target.get("status_immune", [])):
             return 0.0
-        resist = max(0.0, min(0.95, float((target.get("status_resist") or {}).get(status_id, 0.0))))
+        resist = max(0.0, min(0.80, float((target.get("status_resist") or {}).get(status_id, 0.0))))
         return max(0.0, min(1.0, float(chance) * (1.0 - resist)))
 
     def _stats(self, p: Any, job: dict[str, Any], effects: dict[str, float] | None = None) -> dict[str, int]:

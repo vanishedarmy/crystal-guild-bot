@@ -1,0 +1,41 @@
+{
+  "base": "v1.9.97.7 Bot integrated V2.8",
+  "candidate": "V2.9",
+  "sources": {
+    "crystal_guild/database.py": {
+      "sha256": "bf05954f43e988a59c0984e4a81d4172e7ee89b6112d9e835f3d7eb791c9c589",
+      "bytes": 98935
+    },
+    "crystal_guild/engine.py": {
+      "sha256": "617bb47b9c19c5cf0c601a24b8698b7c9e061824bac699134c32b65645355d5b",
+      "bytes": 1184250
+    },
+    "crystal_guild/relic_live.py": {
+      "sha256": "e3f6e0f953363ccc488a5a34a1c33394c68788c042aa48a899968ce3f592f0d8",
+      "bytes": 9107
+    },
+    "tests/test_relic_integration_v29.py": {
+      "sha256": "936b75ffdced77b5d4feb1e6a11d124513154cbaee5eb7421a6491e5c631626a",
+      "bytes": 13213
+    },
+    "INTEGRATION_STATUS_V29.md": {
+      "sha256": "3aaddfae49c884ac5679049f744a6638d77f39d0331d6f35799b71521302a5a5",
+      "bytes": 3622
+    },
+    "README_FIRST_V29.txt": {
+      "sha256": "7d1543d2b017100f7c72f8e08aa57a20fcf241e79c9b8e02a5c41e3a0df4cf06",
+      "bytes": 281
+    }
+  },
+  "modified": [
+    "crystal_guild/database.py",
+    "crystal_guild/engine.py",
+    "crystal_guild/relic_live.py",
+    "tests/test_relic_integration_v29.py",
+    "INTEGRATION_STATUS_V29.md",
+    "README_FIRST_V29.txt"
+  ],
+  "test_count": 104,
+  "database_schema": 28,
+  "not_deployed": true
+}

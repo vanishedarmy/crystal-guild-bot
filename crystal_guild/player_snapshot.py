@@ -12,6 +12,7 @@ from urllib.parse import unquote
 
 from .active_battle import FULL_RESOURCE_SENTINEL, battle_resource_pools, job_resource_mode
 from .balance import jp_to_next, sell_value, xp_to_next
+from .beastmaster import bond_progress, pet_damage_bonus, TAMEABLE_MONSTERS
 from .chocobo import DEFAULT_PORTRAIT_ID as CHOCOBO_DEFAULT_PORTRAIT_ID, PORTRAITS as CHOCOBO_PORTRAITS, TRAITS as CHOCOBO_TRAITS, level_from_total_xp as chocobo_level_from_total_xp, expedition_specialization as chocobo_expedition_specialization
 from .emporium import guild_commerce
 from .data import GameData
@@ -246,6 +247,32 @@ class PortalRepository:
             "portrait_name": CHOCOBO_PORTRAITS[portrait_id]["name"],
             "registered_at": str(row["registered_at"]),
         }
+
+    def _companions_public(self, conn: sqlite3.Connection, player_id: str) -> dict[str, Any]:
+        """Sanitized roster for Portal; tolerate a legacy pre-migration DB."""
+        try:
+            rows = conn.execute(
+                "SELECT monster_id,active,bond_xp,bond_assists FROM beastmaster_companions "
+                "WHERE player_id=? ORDER BY active DESC,tamed_at,monster_id", (str(player_id),)
+            ).fetchall()
+        except sqlite3.Error:
+            rows = []
+        companions = []
+        for row in rows:
+            monster = self.data.monsters.get(str(row['monster_id']))
+            if not monster or str(row['monster_id']) not in TAMEABLE_MONSTERS:
+                continue
+            progress = bond_progress(int(row['bond_xp']))
+            companions.append({
+                'id': str(monster['id']), 'name': str(monster['name']),
+                'species_level': int(monster['level']), 'active': bool(row['active']),
+                'assists': int(row['bond_assists']),
+                'bonus_pct': round(100 * pet_damage_bonus({
+                    'monster_id':str(monster['id']), 'level': int(monster['level']),
+                    'bond_rank': progress['rank']}), 2),
+                **progress,
+            })
+        return {'owned':len(companions), 'max_owned':5, 'roster':companions}
 
     def _fellowship_member(self, conn: sqlite3.Connection, player_id: str) -> dict[str, Any]:
         try:
@@ -540,6 +567,7 @@ class PortalRepository:
                 "counts": counts,
                 "fellowship": self._fellowship_member(conn, player_id),
                 "chocobo": self._chocobo_public(conn, player_id),
+                "companions": self._companions_public(conn, player_id),
                 "recent_activity": recent,
             }
 

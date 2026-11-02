@@ -335,6 +335,26 @@ class RPGCommands(commands.Component):
             self.game.use_item(uid, raw, target_query=target_query, stream_live=True if target_query else None),
         )
 
+    @commands.command(aliases=["companions"])
+    async def pets(self, ctx: commands.Context) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.beasts(uid))
+
+    @commands.command()
+    async def tame(self, ctx: commands.Context, *, species: str) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.tame_beast(uid, species))
+
+    @commands.command()
+    async def petselect(self, ctx: commands.Context, *, species: str) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.select_beast(uid, species))
+
+    @commands.command()
+    async def petrelease(self, ctx: commands.Context, *, species: str) -> None:
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.release_beast(uid, species))
+
     @commands.command(aliases=["region"])
     async def regions(self, ctx: commands.Context) -> None:
         uid, _, _ = self._identity(ctx)

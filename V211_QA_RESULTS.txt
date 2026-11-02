@@ -1,0 +1,10 @@
+test_beastmaster_v211.py: PASS 10 tests
+test_beastmaster_v210.py: PASS 15 tests
+test_relic_integration_v27.py: PASS 8 tests
+test_relic_integration_v28.py: PASS 11 tests
+test_relic_integration_v29.py: PASS 19 tests
+test_active_battle.py: PASS 24 tests
+test_enemy_combat.py: PASS 15 tests
+test_player_snapshot.py: PASS 4 tests
+test_raid_mist_healing.py: PASS 10 tests
+Bot selected regression total: 116, failures: 0
