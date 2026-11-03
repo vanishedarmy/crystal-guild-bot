@@ -7245,6 +7245,15 @@ class CrystalGuildEngine:
         # Every shop-eligible consumable must be available regardless of the
         # size of the optional gear rotation or how many item types are added.
         required_ids = {item_id for item_id in eligible_ids if self.data.items[item_id]["type"] == "consumable"}
+        # Legacy rotations could be supply-only after the old legendary filter,
+        # or were rolled before a region had any appropriate weapons. Repair
+        # on the next read, not only at the 30-minute expiration boundary.
+        for kind in ("weapon", "armor", "accessory"):
+            pool = [self.data.items[item_id] for item_id in eligible_ids
+                    if self.data.items[item_id]["type"] == kind]
+            if pool:
+                best = max(pool, key=lambda item: (int(item.get("shop_level", 1)), item["id"]))
+                required_ids.add(best["id"])
         valid = False
         ids: list[str] = []
         if row and not force_refresh:
@@ -10480,6 +10489,7 @@ class CrystalGuildEngine:
             "can_act": bool(can_act),
             "reason": reason,
             "queued_action": self._queued_action_label(meta),
+            "queued_action_kind": str((meta.get("action") or {}).get("kind") or ""),
             "limit": self._limit_status(meta),
             "actor": {
                 "username": str(meta.get("username") or "").strip().lower(),

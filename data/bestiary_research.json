@@ -355,7 +355,7 @@
       "category": "regional",
       "family": "wild_beasts",
       "habitats": [
-        "greenwind_plains"
+        "whispering_caverns"
       ],
       "habitat_provenance": "region_encounters",
       "lore": "Cave bats roost in the highest cracks, emerging when torchlight disturbs their rest."
@@ -382,7 +382,7 @@
       "category": "regional",
       "family": "undead",
       "habitats": [
-        "greenwind_plains"
+        "whispering_caverns"
       ],
       "habitat_provenance": "region_encounters",
       "lore": "Old bones remain animated in the caverns long after their original owners are forgotten."
@@ -472,7 +472,7 @@
       "category": "regional",
       "family": "aquatic",
       "habitats": [
-        "whispering_caverns"
+        "sable_coast"
       ],
       "habitat_provenance": "region_encounters",
       "lore": "Coastal raiders favor tidal caves and strike while surf masks their movements."
@@ -499,7 +499,7 @@
       "category": "regional",
       "family": "aquatic",
       "habitats": [
-        "whispering_caverns"
+        "sable_coast"
       ],
       "habitat_provenance": "region_encounters",
       "lore": "Schools of these aggressive fish stalk shallows where adventurers gather supplies."
@@ -535,7 +535,7 @@
       "category": "regional",
       "family": "birds",
       "habitats": [
-        "whispering_caverns"
+        "sable_coast"
       ],
       "habitat_provenance": "region_encounters",
       "lore": "The giant coastal bird surveys the cliffs before diving on anything that disturbs its nest."
@@ -661,7 +661,7 @@
       "category": "regional",
       "family": "magitek",
       "habitats": [
-        "sable_coast"
+        "magitek_wastes"
       ],
       "habitat_provenance": "region_encounters",
       "lore": "A discarded reconnaissance machine still patrols the wastes under obsolete orders."

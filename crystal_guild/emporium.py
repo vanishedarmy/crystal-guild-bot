@@ -3,17 +3,30 @@
 STAPLES = ("potion", "antidote", "echo_herbs", "trail_rations")
 REGIONAL_SHOPS = {
     'greenwind_plains': (18, 1, 9, 'Trailside Counter', 'Starter supplies and first equipment', ('eye_drops',)),
-    'whispering_caverns': (18, 10, 19, 'Lantern Counter', 'Cavern recovery and status cures', ('ether', 'tent', 'phoenix_down')),
+    'whispering_caverns': (18, 8, 19, 'Lantern Counter', 'Cavern recovery and transitional Job equipment', ('ether', 'tent', 'phoenix_down')),
     'sable_coast': (18, 20, 29, 'Harbor Counter', 'Coastal elemental supplies', ('arctic_wind', 'lightning_marble', 'water_gem')),
     'magitek_wastes': (18, 30, 39, "Salvager's Counter", 'Salvaged battle gear and field support', ('warriors_tonic', 'war_horn', 'earth_drum')),
     'crystal_expanse': (18, 40, 49, 'Crystal Counter', 'Crystal weapons and Relic foundation supplies', ('x_potion', 'hi_ether', 'mages_incense')),
     'riftlands': (18, 50, 59, "Wayfarer's Counter", 'Rift survival supplies and intermediate gear', ('remedy', 'regen_tonic', 'smoke_bomb')),
-    'shattered_frontier': (18, 60, 69, 'Frontier Outpost', 'Relic-awakening field supplies and balanced gear', ('remedy', 'hi_ether', 'regen_tonic')),
+    'shattered_frontier': (18, 50, 69, 'Frontier Outpost', 'Veteran carry-over gear until Lv.65 Frontier upgrades', ('remedy', 'hi_ether', 'regen_tonic')),
     'interdimensional_rift': (18, 70, 79, 'Astral Counter', 'Dimensional exploration gear and support', ('x_potion', 'hi_ether', 'mages_incense')),
     'omega_ruins': (18, 80, 89, 'Last Light Counter', 'High-level combat supplies', ('x_potion', 'remedy', 'phoenix_down')),
     'astral_threshold': (18, 90, 98, 'Starwatch Outpost', 'Elite supplies and veteran gear', ('x_potion', 'hi_ether', 'remedy')),
-    'eclipsed_singularity_citadel': (18, 99, 99, 'Eclipse Refuge', 'Capstone provisions; specialized equipment remains exclusive', ('x_potion', 'remedy', 'phoenix_down')),
+    'eclipsed_singularity_citadel': (18, 95, 99, 'Eclipse Refuge', 'Capstone provisions; specialized equipment remains exclusive', ('x_potion', 'remedy', 'phoenix_down')),
 }
+
+
+def shop_authorized_legendary(item):
+    """The Lv.90/95 catalog explicitly marks these two vendor grades as shop stock.
+
+    Do not interpret the legendary rarity broadly: Paragon, craft-only and
+    Relic equipment remain exclusive regardless of future catalog edits.
+    """
+    item_id = str(item.get("id", ""))
+    level = max(int(item.get("shop_level", 1)), int(item.get("min_level", 1)))
+    return (bool(item.get("shop")) and item.get("type") in {"weapon", "armor"}
+            and ((item_id.startswith("ascendant_") and level == 90)
+                 or (item_id.startswith("singularity_") and level == 95)))
 
 
 def shop_context(player, regions):
@@ -40,7 +53,9 @@ def eligible_stock(player, items, context):
         # regardless of malformed source flags or a previous cached rotation.
         if item.get("relic_id") or item.get("unsellable") or (
             item["type"] in {"weapon", "armor"}
-            and str(item.get("rarity", "common")).lower() in {"relic", "artifact", "legendary"}
+            and (str(item.get("rarity", "common")).lower() in {"relic", "artifact"}
+                 or (str(item.get("rarity", "common")).lower() == "legendary"
+                     and not shop_authorized_legendary(item)))
         ):
             continue
         if item.get("allowed_jobs") and job not in item["allowed_jobs"]:

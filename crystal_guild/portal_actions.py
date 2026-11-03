@@ -763,7 +763,7 @@ class PortalActionWorker:
                 round_no = int(payload.get("round") or 0)
             except (TypeError, ValueError):
                 return False, "Live event round is invalid.", {}
-            if event not in {"venture", "world_event", "raid"} or not event_id or round_no < 1 or command not in {"attack", "defend", "ability", "item"}:
+            if event not in {"venture", "world_event", "raid"} or not event_id or round_no < 1 or command not in {"attack", "defend", "ability", "item", "limit"}:
                 return False, "Live event action request is invalid.", {}
             result = self.game.portal_live_event_action(
                 twitch_id, event, event_id, round_no, command, choice, target_username,

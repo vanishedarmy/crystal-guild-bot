@@ -29,7 +29,7 @@ class EncounterVarietyHotfixTests(unittest.TestCase):
         self.db.close()
         self.temp.cleanup()
 
-    def test_magic_pot_is_not_the_only_solo_candidate_in_whispering_caverns(self):
+    def test_rare_tonberry_is_not_the_only_solo_candidate_in_whispering_caverns(self):
         region = self.game.data.regions["whispering_caverns"]
         player = {"twitch_id": "100", "level": 25}
         captured = {}
@@ -42,11 +42,11 @@ class EncounterVarietyHotfixTests(unittest.TestCase):
         with patch.object(self.game.rng, "choices", side_effect=choose):
             self.game._solo_select_monster(player, region, stage=1)
 
-        self.assertIn("magic_pot", captured["ids"])
+        self.assertIn("tonberry", captured["ids"])
         self.assertGreaterEqual(len(captured["ids"]), RANDOM_ENCOUNTER_MIN_VARIETY)
-        magic_index = captured["ids"].index("magic_pot")
+        rare_index = captured["ids"].index("tonberry")
         total = sum(float(value) for value in captured["weights"])
-        self.assertLess(float(captured["weights"][magic_index]) / total, 0.30)
+        self.assertLess(float(captured["weights"][rare_index]) / total, 0.30)
 
     def test_solo_pool_keeps_minimum_variety_across_every_region_when_available(self):
         for region in self.game.data.regions.values():

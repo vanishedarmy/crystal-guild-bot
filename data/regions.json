@@ -7,11 +7,11 @@
     "encounters": [
       {
         "monster_id": "goblin",
-        "weight": 24
+        "weight": 22
       },
       {
         "monster_id": "wolf",
-        "weight": 22
+        "weight": 20
       },
       {
         "monster_id": "mandragora",
@@ -19,39 +19,31 @@
       },
       {
         "monster_id": "hornet",
-        "weight": 14
-      },
-      {
-        "monster_id": "flan",
-        "weight": 16
-      },
-      {
-        "monster_id": "bomb",
-        "weight": 16
+        "weight": 15
       },
       {
         "monster_id": "goblin_guard",
-        "weight": 12
+        "weight": 13
+      },
+      {
+        "monster_id": "flan",
+        "weight": 15
       },
       {
         "monster_id": "imp",
         "weight": 11
       },
       {
+        "monster_id": "bomb",
+        "weight": 12
+      },
+      {
         "monster_id": "cockatrice",
-        "weight": 9
+        "weight": 11
       },
       {
         "monster_id": "ochu",
-        "weight": 7
-      },
-      {
-        "monster_id": "bat",
-        "weight": 22
-      },
-      {
-        "monster_id": "skeleton",
-        "weight": 18
+        "weight": 10
       }
     ],
     "recommended_max_level": 9
@@ -63,56 +55,52 @@
     "description": "Lv.10–19. Echoing grottoes inhabited by undead and lesser magical threats.",
     "encounters": [
       {
+        "monster_id": "bat",
+        "weight": 19
+      },
+      {
         "monster_id": "cactuar",
-        "weight": 2
+        "weight": 3
+      },
+      {
+        "monster_id": "skeleton",
+        "weight": 17
       },
       {
         "monster_id": "spriggan",
-        "weight": 5
-      },
-      {
-        "monster_id": "gigas",
-        "weight": 9
-      },
-      {
-        "monster_id": "mimic",
-        "weight": 7
-      },
-      {
-        "monster_id": "tonberry",
-        "weight": 2
+        "weight": 12
       },
       {
         "monster_id": "basilisk",
+        "weight": 15
+      },
+      {
+        "monster_id": "gigas",
         "weight": 11
       },
       {
         "monster_id": "lamia",
-        "weight": 10
+        "weight": 12
+      },
+      {
+        "monster_id": "mimic",
+        "weight": 11
       },
       {
         "monster_id": "gargoyle",
-        "weight": 9
+        "weight": 13
       },
       {
-        "monster_id": "mindflayer",
-        "weight": 7
-      },
-      {
-        "monster_id": "sahagin",
-        "weight": 25
-      },
-      {
-        "monster_id": "killer_fish",
-        "weight": 20
-      },
-      {
-        "monster_id": "zu",
-        "weight": 15
+        "monster_id": "tonberry",
+        "weight": 3
       },
       {
         "monster_id": "gigantoad",
-        "weight": 11
+        "weight": 10
+      },
+      {
+        "monster_id": "mindflayer",
+        "weight": 9
       }
     ],
     "recommended_max_level": 19
@@ -124,52 +112,60 @@
     "description": "Lv.20–29. Reefs, storm-worn harbors and seasoned coastal predators.",
     "encounters": [
       {
+        "monster_id": "sahagin",
+        "weight": 20
+      },
+      {
         "monster_id": "piscodemon",
-        "weight": 6
-      },
-      {
-        "monster_id": "black_flan",
-        "weight": 5
-      },
-      {
-        "monster_id": "magic_pot",
-        "weight": 2
-      },
-      {
-        "monster_id": "coeurl",
-        "weight": 13
-      },
-      {
-        "monster_id": "chimera",
-        "weight": 8
-      },
-      {
-        "monster_id": "malboro",
-        "weight": 5
+        "weight": 11
       },
       {
         "monster_id": "antlion",
         "weight": 8
       },
       {
+        "monster_id": "killer_fish",
+        "weight": 18
+      },
+      {
+        "monster_id": "black_flan",
+        "weight": 12
+      },
+      {
+        "monster_id": "coeurl",
+        "weight": 11
+      },
+      {
+        "monster_id": "zu",
+        "weight": 11
+      },
+      {
         "monster_id": "sand_worm",
-        "weight": 7
+        "weight": 9
       },
       {
         "monster_id": "remora",
+        "weight": 14
+      },
+      {
+        "monster_id": "chimera",
         "weight": 8
       },
       {
         "monster_id": "sea_serpent",
+        "weight": 11
+      },
+      {
+        "monster_id": "malboro",
         "weight": 6
       },
       {
-        "monster_id": "adamantoise",
-        "weight": 4
+        "monster_id": "magic_pot",
+        "weight": 3
       },
       {
-        "monster_id": "magitek_drone",
-        "weight": 24
+        "monster_id": "adamantoise",
+        "weight": 6
       }
     ],
     "recommended_max_level": 29
@@ -181,40 +177,44 @@
     "description": "Lv.30–39. Salvage fields where machines and wandering beasts collide.",
     "encounters": [
       {
-        "monster_id": "garuda",
-        "weight": 3
-      },
-      {
-        "monster_id": "iron_giant",
-        "weight": 18
-      },
-      {
         "monster_id": "ahriman",
-        "weight": 15
+        "weight": 12
       },
       {
-        "monster_id": "behemoth",
-        "weight": 9
+        "monster_id": "garuda",
+        "weight": 5
       },
       {
-        "monster_id": "malboro_great",
-        "weight": 6
+        "monster_id": "magitek_drone",
+        "weight": 18
       },
       {
         "monster_id": "death_claw",
         "weight": 10
       },
       {
+        "monster_id": "iron_giant",
+        "weight": 15
+      },
+      {
         "monster_id": "ironclad",
-        "weight": 8
+        "weight": 12
+      },
+      {
+        "monster_id": "behemoth",
+        "weight": 7
       },
       {
         "monster_id": "chimera_brain",
-        "weight": 7
+        "weight": 8
       },
       {
         "monster_id": "evil_eye",
-        "weight": 7
+        "weight": 10
+      },
+      {
+        "monster_id": "malboro_great",
+        "weight": 8
       }
     ],
     "recommended_max_level": 39
@@ -230,44 +230,44 @@
         "weight": 8
       },
       {
-        "monster_id": "tonberry_king",
-        "weight": 2
-      },
-      {
         "monster_id": "magitek_armor",
         "weight": 8
       },
       {
+        "monster_id": "crystal_wolf",
+        "weight": 18
+      },
+      {
         "monster_id": "mover",
+        "weight": 5
+      },
+      {
+        "monster_id": "tonberry_king",
         "weight": 3
       },
       {
-        "monster_id": "crystal_wolf",
-        "weight": 24
+        "monster_id": "crystal_golem",
+        "weight": 18
       },
       {
-        "monster_id": "crystal_golem",
-        "weight": 20
+        "monster_id": "red_dragon",
+        "weight": 10
+      },
+      {
+        "monster_id": "blue_dragon",
+        "weight": 10
       },
       {
         "monster_id": "elemental_archon",
-        "weight": 18
+        "weight": 16
+      },
+      {
+        "monster_id": "gold_dragon",
+        "weight": 7
       },
       {
         "monster_id": "ancient_mimic",
         "weight": 10
-      },
-      {
-        "monster_id": "red_dragon",
-        "weight": 8
-      },
-      {
-        "monster_id": "blue_dragon",
-        "weight": 8
-      },
-      {
-        "monster_id": "gold_dragon",
-        "weight": 6
       }
     ],
     "recommended_max_level": 49
@@ -279,40 +279,40 @@
     "description": "Lv.50–59. The warped outer frontier where Classic Relics begin to awaken.",
     "encounters": [
       {
+        "monster_id": "holy_dragon",
+        "weight": 6
+      },
+      {
         "monster_id": "wyrm",
         "weight": 9
       },
       {
-        "monster_id": "holy_dragon",
-        "weight": 5
-      },
-      {
         "monster_id": "skull_dragon",
-        "weight": 5
+        "weight": 6
       },
       {
         "monster_id": "storm_dragon",
-        "weight": 4
-      },
-      {
-        "monster_id": "brachosaur",
-        "weight": 2
+        "weight": 6
       },
       {
         "monster_id": "rift_hound",
-        "weight": 24
+        "weight": 18
       },
       {
-        "monster_id": "void_mage",
-        "weight": 19
+        "monster_id": "brachosaur",
+        "weight": 3
       },
       {
         "monster_id": "catoblepas",
-        "weight": 8
+        "weight": 10
+      },
+      {
+        "monster_id": "void_mage",
+        "weight": 17
       },
       {
         "monster_id": "death_rider",
-        "weight": 7
+        "weight": 9
       }
     ],
     "recommended_max_level": 59
@@ -326,35 +326,35 @@
     "encounters": [
       {
         "monster_id": "rift_behemoth",
-        "weight": 4
-      },
-      {
-        "monster_id": "adamant_golem",
-        "weight": 12
-      },
-      {
-        "monster_id": "rift_drake",
         "weight": 14
       },
       {
-        "monster_id": "void_tonberry",
-        "weight": 8
+        "monster_id": "adamant_golem",
+        "weight": 14
       },
       {
         "monster_id": "master_tonberry",
-        "weight": 4
-      },
-      {
-        "monster_id": "abaddon",
-        "weight": 6
-      },
-      {
-        "monster_id": "land_worm",
         "weight": 5
       },
       {
+        "monster_id": "abaddon",
+        "weight": 8
+      },
+      {
+        "monster_id": "rift_drake",
+        "weight": 15
+      },
+      {
+        "monster_id": "land_worm",
+        "weight": 9
+      },
+      {
+        "monster_id": "void_tonberry",
+        "weight": 10
+      },
+      {
         "monster_id": "great_wyrm",
-        "weight": 4
+        "weight": 7
       }
     ]
   },
@@ -366,23 +366,23 @@
     "encounters": [
       {
         "monster_id": "astral_construct",
-        "weight": 23
+        "weight": 18
+      },
+      {
+        "monster_id": "crystal_dragon",
+        "weight": 12
       },
       {
         "monster_id": "omega_fragment",
         "weight": 16
       },
       {
-        "monster_id": "crystal_dragon",
-        "weight": 7
-      },
-      {
         "monster_id": "archeodemon",
-        "weight": 5
+        "weight": 9
       },
       {
         "monster_id": "varuna",
-        "weight": 4
+        "weight": 7
       }
     ],
     "recommended_max_level": 79
@@ -395,11 +395,11 @@
     "encounters": [
       {
         "monster_id": "void_avatar",
-        "weight": 7
+        "weight": 10
       },
       {
         "monster_id": "demonolith",
-        "weight": 7
+        "weight": 10
       },
       {
         "monster_id": "floating_death",
@@ -407,19 +407,19 @@
       },
       {
         "monster_id": "machea",
-        "weight": 10
-      },
-      {
-        "monster_id": "master_coeurl",
-        "weight": 12
-      },
-      {
-        "monster_id": "dark_element",
         "weight": 11
       },
       {
+        "monster_id": "master_coeurl",
+        "weight": 11
+      },
+      {
+        "monster_id": "dark_element",
+        "weight": 10
+      },
+      {
         "monster_id": "malboro_menace",
-        "weight": 9
+        "weight": 10
       }
     ],
     "recommended_max_level": 89
@@ -433,15 +433,15 @@
     "encounters": [
       {
         "monster_id": "spirit",
-        "weight": 9
+        "weight": 17
       },
       {
         "monster_id": "great_malboro_omega",
-        "weight": 8
+        "weight": 11
       },
       {
         "monster_id": "mimic_king",
-        "weight": 8
+        "weight": 11
       },
       {
         "monster_id": "omega_sentinel",
@@ -456,12 +456,12 @@
     "description": "Lv.99. An optional capstone beyond the ordinary ten-level progression, home to endgame guardians.",
     "encounters": [
       {
-        "monster_id": "eclipse_harbinger",
-        "weight": 10
+        "monster_id": "omega_sentinel",
+        "weight": 16
       },
       {
-        "monster_id": "omega_sentinel",
-        "weight": 10
+        "monster_id": "eclipse_harbinger",
+        "weight": 12
       }
     ],
     "recommended_max_level": 99
