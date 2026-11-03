@@ -1,3 +1,9 @@
+CRYSTAL GUILD v2.0.1 — ENCOUNTER REBALANCE
+CURRENT SOURCE RELEASE: Read RELEASE_NOTES.md for update and installation details.
+Preserve the live database and configuration. Complete active battles before upgrading.
+Previous release instructions follow for historical reference.
+=============================================
+
 CRYSTAL GUILD v2.0.0 — ITEM RECLASSIFICATION
 CURRENT SOURCE RELEASE: Read RELEASE_V2.0.0_README.md and RELEASE_NOTES.md.
 Back up existing databases/config, and rebuild the Web frontend before deploying.

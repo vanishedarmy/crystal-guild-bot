@@ -1,3 +1,7 @@
+# CURRENT RELEASE: v2.0.1 — Encounter Rebalance
+
+See `RELEASE_NOTES.md` for scope and safe upgrade instructions.
+
 # CURRENT RELEASE: v2.0.0 — Item Reclassification
 
 See `RELEASE_NOTES.md` for the current features. Historical version notes below are retained for reference.

@@ -36,9 +36,14 @@
         "damage_mult": 1.28
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 10,
     "attacks_per_round": 1,
-    "aoe_every": 4
+    "aoe_every": 4,
+    "balance_attack_weight": 0.92,
+    "balance_aoe_weight": 0.86,
+    "balance_guard": 0.02,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "hornet_empress",
@@ -77,9 +82,14 @@
         "damage_mult": 1.3
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 10,
     "attacks_per_round": 1,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "balance_attack_weight": 0.94,
+    "balance_aoe_weight": 0.91,
+    "balance_guard": 0.02,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "skeleton_warlord",
@@ -120,7 +130,12 @@
     ],
     "enrage_round": 11,
     "attacks_per_round": 2,
-    "aoe_every": 4
+    "aoe_every": 4,
+    "balance_attack_weight": 1.03,
+    "balance_aoe_weight": 0.88,
+    "balance_guard": 0.07,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "gigas_chief",
@@ -161,7 +176,12 @@
     ],
     "enrage_round": 11,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 4,
+    "balance_attack_weight": 1.11,
+    "balance_aoe_weight": 0.78,
+    "balance_guard": 0.09,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "bomb_king",
@@ -202,7 +222,13 @@
     ],
     "enrage_round": 11,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 3,
+    "balance_hp_weight": 0.85,
+    "balance_attack_weight": 0.99,
+    "balance_aoe_weight": 1.14,
+    "balance_guard": 0.02,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "ifrit",
@@ -241,7 +267,7 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 14,
     "attacks_per_round": 2,
     "aoe_every": 3,
     "encounter_type": "Trial",
@@ -268,7 +294,10 @@
         "kind": "resolution",
         "description": "Meeting the Nails check weakens Hellfire; failing it empowers the raidwide blast."
       }
-    ]
+    ],
+    "balance_attack_weight": 1.06,
+    "balance_aoe_weight": 1.1,
+    "balance_guard": 0.04
   },
   {
     "id": "shiva",
@@ -307,7 +336,7 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 14,
     "attacks_per_round": 2,
     "aoe_every": 3,
     "encounter_type": "Trial",
@@ -339,7 +368,10 @@
         "kind": "resolution",
         "description": "Failing the Break gauge triggers a heavy raidwide blast."
       }
-    ]
+    ],
+    "balance_attack_weight": 0.97,
+    "balance_aoe_weight": 0.98,
+    "balance_guard": 0.1
   },
   {
     "id": "ramuh",
@@ -378,7 +410,7 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 14,
     "attacks_per_round": 2,
     "aoe_every": 3,
     "encounter_type": "Trial",
@@ -405,7 +437,10 @@
         "kind": "resolution",
         "description": "Meeting the Guard target weakens Judgment Bolt; failing it empowers the raidwide discharge."
       }
-    ]
+    ],
+    "balance_attack_weight": 1.02,
+    "balance_aoe_weight": 1.11,
+    "balance_guard": 0.06
   },
   {
     "id": "ultros",
@@ -444,9 +479,14 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 11,
+    "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 4,
+    "balance_attack_weight": 0.91,
+    "balance_aoe_weight": 0.94,
+    "balance_guard": 0.05,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "garuda_prime",
@@ -485,7 +525,7 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 14,
     "attacks_per_round": 2,
     "aoe_every": 3,
     "encounter_type": "Trial",
@@ -512,7 +552,10 @@
         "kind": "resolution",
         "description": "Destroy both Plumes to weaken Aerial Blast; surviving Plumes increase the storm pressure."
       }
-    ]
+    ],
+    "balance_attack_weight": 0.99,
+    "balance_aoe_weight": 0.94,
+    "balance_guard": 0.04
   },
   {
     "id": "titan",
@@ -551,9 +594,9 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 14,
     "attacks_per_round": 2,
-    "aoe_every": 3,
+    "aoe_every": 4,
     "encounter_type": "Trial",
     "encounter_name": "Heart of the Crag",
     "raid_script": "titan_heart_of_crag",
@@ -578,7 +621,10 @@
         "kind": "resolution",
         "description": "Destroying the Heart weakens Earthen Fury; failing the check empowers the raidwide blast."
       }
-    ]
+    ],
+    "balance_attack_weight": 1.08,
+    "balance_aoe_weight": 0.88,
+    "balance_guard": 0.13
   },
   {
     "id": "demon_wall",
@@ -614,12 +660,17 @@
       {
         "threshold": 0.3,
         "name": "Crush",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 11,
+    "enrage_round": 12,
     "attacks_per_round": 2,
-    "aoe_every": 3
+    "aoe_every": 4,
+    "balance_attack_weight": 1.0,
+    "balance_aoe_weight": 0.92,
+    "balance_guard": 0.14,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "leviathan",
@@ -658,7 +709,7 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 12,
+    "enrage_round": 14,
     "attacks_per_round": 2,
     "aoe_every": 3,
     "encounter_type": "Trial",
@@ -685,7 +736,10 @@
         "kind": "resolution",
         "description": "Stabilizing the Maelstrom weakens Tidal Wave; failing the survival check empowers the final raidwide."
       }
-    ]
+    ],
+    "balance_attack_weight": 1.02,
+    "balance_aoe_weight": 1.02,
+    "balance_guard": 0.08
   },
   {
     "id": "gilgamesh",
@@ -724,9 +778,14 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_attack_weight": 1.1,
+    "balance_aoe_weight": 0.89,
+    "balance_guard": 0.08,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "cerberus",
@@ -765,9 +824,14 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_attack_weight": 1.09,
+    "balance_aoe_weight": 0.89,
+    "balance_guard": 0.09,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "tonberry_king",
@@ -806,9 +870,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 4,
+    "balance_hp_weight": 0.85,
+    "balance_attack_weight": 1.22,
+    "balance_aoe_weight": 0.7,
+    "balance_guard": 0.05,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "deathgaze",
@@ -847,9 +917,14 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_attack_weight": 1.05,
+    "balance_aoe_weight": 0.96,
+    "balance_guard": 0.07,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "atomos",
@@ -888,9 +963,14 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_attack_weight": 0.95,
+    "balance_aoe_weight": 1.1,
+    "balance_guard": 0.12,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "king_behemoth",
@@ -929,9 +1009,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.05,
+    "balance_attack_weight": 1.14,
+    "balance_aoe_weight": 0.91,
+    "balance_guard": 0.09,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "bahamut",
@@ -970,9 +1056,9 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 16,
     "attacks_per_round": 3,
-    "aoe_every": 2,
+    "aoe_every": 3,
     "encounter_type": "Trial",
     "encounter_name": "The Final Coil",
     "raid_script": "bahamut_final_coil",
@@ -997,7 +1083,11 @@
         "kind": "final_damage_check",
         "summary": "At critical HP, meet a three-round damage target to weaken Teraflare."
       }
-    ]
+    ],
+    "balance_hp_weight": 1.1,
+    "balance_attack_weight": 1.11,
+    "balance_aoe_weight": 1.12,
+    "balance_guard": 0.1
   },
   {
     "id": "death_machine_prime",
@@ -1033,12 +1123,18 @@
       {
         "threshold": 0.3,
         "name": "Nuke",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.03,
+    "balance_attack_weight": 1.08,
+    "balance_aoe_weight": 1.02,
+    "balance_guard": 0.14,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "ultima_weapon",
@@ -1077,9 +1173,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 16,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.1,
+    "balance_attack_weight": 1.1,
+    "balance_aoe_weight": 1.08,
+    "balance_guard": 0.12,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "rift_dragon",
@@ -1118,9 +1220,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 10,
+    "enrage_round": 15,
     "attacks_per_round": 3,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.08,
+    "balance_attack_weight": 1.09,
+    "balance_aoe_weight": 1.02,
+    "balance_guard": 0.08,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.11
   },
   {
     "id": "warmech",
@@ -1156,12 +1264,18 @@
       {
         "threshold": 0.3,
         "name": "Extermination",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.05,
+    "balance_attack_weight": 1.09,
+    "balance_aoe_weight": 1.05,
+    "balance_guard": 0.15,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "omega",
@@ -1197,12 +1311,18 @@
       {
         "threshold": 0.3,
         "name": "Wave Cannon Protocol",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.08,
+    "balance_attack_weight": 1.11,
+    "balance_aoe_weight": 1.12,
+    "balance_guard": 0.14,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "shinryu",
@@ -1241,9 +1361,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.12,
+    "balance_attack_weight": 1.16,
+    "balance_aoe_weight": 1.11,
+    "balance_guard": 0.08,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "omega_weapon",
@@ -1279,12 +1405,18 @@
       {
         "threshold": 0.3,
         "name": "Terra Break",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.16,
+    "balance_attack_weight": 1.12,
+    "balance_aoe_weight": 1.15,
+    "balance_guard": 0.16,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "emerald_weapon",
@@ -1320,12 +1452,18 @@
       {
         "threshold": 0.3,
         "name": "Aire Tam Storm",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.08,
+    "balance_attack_weight": 1.02,
+    "balance_aoe_weight": 1.1,
+    "balance_guard": 0.17,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "ruby_weapon",
@@ -1364,9 +1502,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 4,
+    "balance_hp_weight": 1.12,
+    "balance_attack_weight": 1.15,
+    "balance_aoe_weight": 1.0,
+    "balance_guard": 0.12,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "ozma",
@@ -1405,9 +1549,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.16,
+    "balance_attack_weight": 1.02,
+    "balance_aoe_weight": 1.16,
+    "balance_guard": 0.11,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "nemesis",
@@ -1446,9 +1596,15 @@
         "damage_mult": 1.38
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.2,
+    "balance_attack_weight": 1.11,
+    "balance_aoe_weight": 1.06,
+    "balance_guard": 0.13,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "kaiser_dragon",
@@ -1484,12 +1640,18 @@
       {
         "threshold": 0.3,
         "name": "Heartless Angel",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.22,
+    "balance_attack_weight": 1.17,
+    "balance_aoe_weight": 1.08,
+    "balance_guard": 0.14,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "long_gui",
@@ -1525,12 +1687,18 @@
       {
         "threshold": 0.3,
         "name": "Ultima",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 18,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 4,
+    "balance_hp_weight": 1.28,
+    "balance_attack_weight": 1.09,
+    "balance_aoe_weight": 0.96,
+    "balance_guard": 0.2,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "proto_babil",
@@ -1566,12 +1734,18 @@
       {
         "threshold": 0.3,
         "name": "Divine Judgment",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 9,
+    "enrage_round": 17,
     "attacks_per_round": 4,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.2,
+    "balance_attack_weight": 1.1,
+    "balance_aoe_weight": 1.1,
+    "balance_guard": 0.16,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "penance",
@@ -1607,12 +1781,18 @@
       {
         "threshold": 0.3,
         "name": "Obliteration",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 8,
+    "enrage_round": 19,
     "attacks_per_round": 5,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.16,
+    "balance_attack_weight": 1.12,
+    "balance_aoe_weight": 1.11,
+    "balance_guard": 0.18,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "absolute_virtue",
@@ -1652,12 +1832,18 @@
       {
         "threshold": 0.3,
         "name": "Absolute Judgment",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 8,
+    "enrage_round": 19,
     "attacks_per_round": 5,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.34,
+    "balance_attack_weight": 1.1,
+    "balance_aoe_weight": 1.12,
+    "balance_guard": 0.2,
+    "balance_signature_status": "weaken",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "yiazmat",
@@ -1693,12 +1879,18 @@
       {
         "threshold": 0.3,
         "name": "Growing Threat",
-        "damage_mult": 1.38
+        "damage_mult": 1.435
       }
     ],
-    "enrage_round": 8,
+    "enrage_round": 19,
     "attacks_per_round": 5,
-    "aoe_every": 2
+    "aoe_every": 4,
+    "balance_hp_weight": 1.23,
+    "balance_attack_weight": 1.13,
+    "balance_aoe_weight": 1.05,
+    "balance_guard": 0.18,
+    "balance_signature_status": "slow",
+    "balance_signature_chance": 0.15
   },
   {
     "id": "eclipse_sovereign",
@@ -1746,8 +1938,14 @@
         "damage_mult": 1.7
       }
     ],
-    "enrage_round": 7,
+    "enrage_round": 20,
     "attacks_per_round": 6,
-    "aoe_every": 2
+    "aoe_every": 3,
+    "balance_hp_weight": 1.5,
+    "balance_attack_weight": 1.18,
+    "balance_aoe_weight": 1.15,
+    "balance_guard": 0.21,
+    "balance_signature_status": "vulnerable",
+    "balance_signature_chance": 0.15
   }
 ]

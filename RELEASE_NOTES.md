@@ -1,3 +1,20 @@
+# Crystal Guild v2.0.1 — Encounter Rebalance
+
+**Scope:** Combat-tuning release built on the v2.0.0 Item Reclassification + initial V2.0.0 Enemy Balance Bot. No data migration, reward reset, artwork replacement or new command syntax.
+
+- **38 Raid bosses:** Distinct outgoing pressure, defense/armor, AoE cadence, delayed enrages, and party-aware HP. Armor loses some effectiveness below 30% HP, allowing a final push. Max HP is discounted for armor so armored bosses do not become HP sponges.
+- **Soft raid mechanics:** 31 unscripted raid bosses may inflict brief Weaken, Slow or Vulnerable on surviving raiders during signature rounds. Hard stun/silence and damaging poison are intentionally excluded. Immunity and resistance from equipment still work. Seven scripted Trial bosses retain their authored mechanics; their scripted base damage is never increased by V2.0.1.
+- **Target fairness:** Generic raid boss strikes preferentially spread between living players instead of repeatedly piling all strikes onto one random player; tanks and Taunt still attract attacks.
+- **13 live-only World Events:** Individual attack pressure, skill frequency/power, status control intensity, and physical/magic defenses. Party-wide ability bursts are reduced per target in very large groups, and hard-control status infliction is capped. Gentle soft enrage begins after round 12 for normal events and after round 16 for elite events, up to 30% extra pressure.
+- **126 regular monster records:** Targeted normalization for 10 unusual stat outliers, including Tempest Roc and Dominion Sentinel, without deleting special skills, drops, reward values, monster identities or Hunt eligibility.
+- **Progression:** Item/Relic/Job systems, World Event rewards and live-only eligibility, raid loot, schema 30, and the full existing database remain unchanged.
+
+**Upgrade:** Finish any currently active Raid or World Event, back up Bot source, secrets/config and database, then apply either the full Bot source or the merge patch. Web version/What's New changes are distributed separately as a source-only version/UI merge patch; apply it to the existing Web and rebuild the frontend with your normal deployment workflow. Do not overwrite a persistent database, `.env`, or live configuration.
+
+**Validation:** Automated tests check encounter profile coverage, armor, scripted raid compatibility, behavior copy isolation, controlled status effects, crowd AoE, event frenzy limits and live-only restrictions. No live Twitch roster was simulated; observed clear times, wipes, and player levels will be needed for further tuning.
+
+---
+
 # Crystal Guild v2.0.0 — Item Reclassification
 
 **Release scope:** Unified Bot V2.12 gameplay and synchronized Web V2.13 item/Relic/companion presentation, promoted to public version `2.0.0`. The existing Python Bot and Web source are the release baseline; no database reset is required.

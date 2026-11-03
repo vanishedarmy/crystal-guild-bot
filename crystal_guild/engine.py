@@ -151,6 +151,10 @@ from .mercenary import (
     MERC_SERVICE_NAME, MERC_PROPRIETOR, MERC_MISSION_TYPES, HEROES, HEROES_BY_ID,
     public_hero,
 )
+from .encounter_balance import (
+    raid_combat_hp, raid_combat_attacks, world_event_combat_hp,
+    raid_incoming_damage, raid_outgoing_pressure, world_event_behavior, world_event_pressure,
+)
 from .world_events import (
     WORLD_EVENTS, WORLD_EVENTS_BY_ID, WORLD_EVENT_LEVEL_CAP_ABOVE_HIGHEST,
     WORLD_EVENT_INITIAL_GRACE_SECONDS, WORLD_EVENT_CHECK_MIN_SECONDS, WORLD_EVENT_CHECK_MAX_SECONDS,
@@ -2798,6 +2802,8 @@ class CrystalGuildEngine:
             "jp": max(4, int(round(int(base.get("jp", 1)) * reward_ratio * float(event["reward_mult"])))),
             "gil": max(5, int(round(int(base.get("gil", 1)) * reward_ratio * float(event["reward_mult"])))),
         })
+        base["defense"] = max(5, int(base["defense"] * float(event.get("physical_armor", 1.0))))
+        base["spirit"] = max(5, int(base["spirit"] * float(event.get("magic_armor", 1.0))))
         return base
 
     def world_event_catalog(self) -> list[dict[str, Any]]:
@@ -3507,6 +3513,14 @@ class CrystalGuildEngine:
             monster_max = active_hunt_hp(int(monster["hp"]), hunt["rank"])
         else:
             monster_max = party_monster_hp(int(monster["hp"]), combatants)
+            if kind == "world_event":
+                event_info = WORLD_EVENTS_BY_ID.get(str(encounter.get("world_event_id") or ""), {})
+                monster_max = world_event_combat_hp(
+                    monster, combatants=combatants,
+                    tier=str(encounter.get("world_event_tier") or "notorious"),
+                    threat=str(event_info.get("threat") or "Severe"),
+                    ordinary_party_hp=monster_max,
+                )
         # ``max_rounds`` remains in the payload for protocol compatibility, but
         # zero now explicitly means unlimited.  Round count is telemetry only;
         # it is never a defeat condition.
@@ -4995,6 +5009,9 @@ class CrystalGuildEngine:
         )
         pressure = enemy_damage_multiplier(profile, hp_ratio, scaling)
         pressure *= max(0.10, float(self.active_encounter.get("enemy_pressure_mult", 1.0) or 1.0))
+        if self.active_encounter.get("kind") == "world_event":
+            event = WORLD_EVENTS_BY_ID.get(str(self.active_encounter.get("world_event_id") or ""), {})
+            pressure *= world_event_pressure(event, round_no=int(self.active_encounter.get("round", 1)))
         if self.active_encounter.get("kind", "venture") == "hunt":
             hunt = self.data.hunts.get(self.active_encounter.get("hunt_id"), {})
             pressure *= active_hunt_pressure(hunt.get("rank", "C"))
@@ -5235,6 +5252,13 @@ class CrystalGuildEngine:
         profile = self.data.enemy_profiles.get(
             behavior.get("profile"), self.data.enemy_profiles.get("balanced", {})
         )
+        if self.active_encounter.get("kind") == "world_event":
+            event = WORLD_EVENTS_BY_ID.get(str(self.active_encounter.get("world_event_id") or ""), {})
+            behavior = world_event_behavior(behavior, event, len(living_ids))
+            round_no = int(self.active_encounter.get("round", 1))
+            frenzy_round = 16 if event.get("tier") == "elite" else 12
+            if round_no == frenzy_round + 1:
+                log.append(f"{monster['name']} enters a frenzy! Its attacks grow stronger with each round.")
         # Soft targeting: one enemy action is resolved per round regardless of
         # rally size. Basic attacks and single-target skills choose one living
         # hero; only abilities explicitly marked ``party`` may hit more than one.
@@ -16996,7 +17020,7 @@ class CrystalGuildEngine:
             if not target:
                 return GameResult.fail("Boss tier not found. Use primal, world, high, super, or ultimate.")
             pool = sorted((b for b in self.data.bosses.values() if b.get("tier", "World Boss") == target), key=lambda b: b.get("recommended_level", 1))
-            entries = [f"{b['name']} L{b.get('recommended_level','?')} ({b['hp']:,} HP)" for b in pool]
+            entries = [f"{b['name']} L{b.get('recommended_level','?')} (base {b['hp']:,} HP)" for b in pool]
             chunks = [entries[i:i+5] for i in range(0, len(entries), 5)]
             return GameResult.success(*[f"{target} — " + " | ".join(c) for c in chunks])
         counts = {tier: sum(1 for b in self.data.bosses.values() if b.get("tier", "World Boss") == tier) for tier in tiers}
@@ -17011,7 +17035,7 @@ class CrystalGuildEngine:
             return GameResult.fail("Boss not found. Use !bosses to browse the raid board.")
         drops = [f"{self.data.items[d['item_id']]['name']} ({int(d.get('chance',0)*100)}%)" for d in boss.get("drops", []) if d["item_id"] in self.data.items]
         return GameResult.success(
-            f"{boss['name']} [{boss.get('tier','World Boss')}] | Recommended Lv.{boss.get('recommended_level','?')} | HP {boss['hp']:,} | Signature: {boss.get('signature','—')}",
+            f"{boss['name']} [{boss.get('tier','World Boss')}] | Recommended Lv.{boss.get('recommended_level','?')} | Base HP {boss['hp']:,} (party-scaled at combat) | Signature: {boss.get('signature','—')}",
             boss.get("description", "A dangerous raid encounter."),
             "Raid loot: " + (", ".join(drops) if drops else "standard XP and gil only"),
         )
@@ -17037,7 +17061,7 @@ class CrystalGuildEngine:
         self._update_raid_overlay()
         tier = boss.get("tier", "World Boss")
         return GameResult.success(
-            f"{tier.upper()} — {boss['name']} has emerged from the Rift! HP {boss['hp']:,} | Recommended Lv.{boss.get('recommended_level','?')} | Signature: {boss.get('signature','Cataclysm')}.",
+            f"{tier.upper()} — {boss['name']} has emerged from the Rift! Base HP {boss['hp']:,} (scales to combat roster) | Recommended Lv.{boss.get('recommended_level','?')} | Signature: {boss.get('signature','Cataclysm')}.",
             f"RAID RALLY OPEN for {self._format_seconds(self.raid_join_seconds)} — type !raid to join. Combat then advances every {self._format_seconds(self.raid_round_seconds)}.",
             raid_spawned=True, boss_id=boss["id"], closes_at=self.active_boss["closes_at"],
         )
@@ -17203,6 +17227,7 @@ class CrystalGuildEngine:
                     target["restrained"] = None
                 add["release_target_id"] = None
             return dealt, str(add.get("name") or "Raid add")
+        damage = raid_incoming_damage(target_boss, damage)
         before = int(target_boss.get("current_hp", 0))
         target_boss["current_hp"] = max(0, before - damage)
         return before - int(target_boss["current_hp"]), str(target_boss.get("name") or "boss")
@@ -17328,8 +17353,17 @@ class CrystalGuildEngine:
                 before = int(meta["hp"]); meta["hp"] = min(int(meta["max_hp"]), before + max(0, int(last_damage * float(effect.get("fraction", 0.0)))))
                 healed = int(meta["hp"]) - before; meta["healing"] = int(meta.get("healing", 0)) + healed; healing_total += healed; parts.append(f"drains {healed} HP")
             elif et == "status":
-                if self.rng.random() >= float(effect.get("chance", 1.0)): continue
-                status_id = str(effect.get("status")); turns = int(effect.get("turns", 1)); magnitude = float(effect.get("magnitude", 0.0))
+                status_id = str(effect.get("status"))
+                boss_stun = target_id == "boss" and status_id == "stun"
+                status_chance = float(effect.get("chance", 1.0)) * (0.35 if boss_stun else 1.0)
+                if boss_stun and int(self.active_boss.get("stun_resist_until", 0)) > int(self.active_boss.get("round", 0)):
+                    parts.append("Stun resisted")
+                    continue
+                if self.rng.random() >= status_chance: continue
+                turns = int(effect.get("turns", 1)); magnitude = float(effect.get("magnitude", 0.0))
+                if boss_stun:
+                    turns = 1
+                    self.active_boss["stun_resist_until"] = int(self.active_boss.get("round", 0)) + 2
                 if meta.get("job_id") == "bard" and status_id in {"haste","regen","protect","focus","power_up","evade"}:
                     from .relic_live import trait, signature
                     turns = min(8, turns + int(trait(meta,"sustained_melody")))
@@ -17485,7 +17519,9 @@ class CrystalGuildEngine:
         job = self.data.jobs[meta["job_id"]]
         effects = self._effects(pid, job["id"])
         stats = self._stats(p, job, effects)
-        unmitigated = max(1, int(raw))
+        # Authored trial mechanics are already punishing; never amplify their
+        # raw damage above the legacy script's calibrated value.
+        unmitigated = max(1, int(raw * min(1.0, raid_outgoing_pressure(self.active_boss or {}, raidwide=False))))
         pressured = unmitigated
         if meta.get("defending"):
             pressured = max(1, int(pressured * 0.55))
@@ -18420,6 +18456,21 @@ class CrystalGuildEngine:
         combatants = self._initialize_raid_combat()
         if combatants <= 0:
             return self._finish_raid(False, reason="No raid participants are able to fight.")
+        # Freeze balance to the actual combat roster, never the rally estimates.
+        # The boss never rescales after this point when people are KO'd/revived.
+        # Honor explicit combat-HP overrides (developer/admin and legacy test
+        # fixtures), but never reinterpret an untouched catalog template as a
+        # roster-scaled value.
+        untouched_template = (
+            int(self.active_boss.get("max_hp", 0)) == int(self.active_boss["hp"])
+            and int(self.active_boss.get("current_hp", 0)) == int(self.active_boss["hp"])
+        )
+        raid_hp = raid_combat_hp(self.active_boss, combatants) if untouched_template else int(self.active_boss["max_hp"])
+        self.active_boss.update({
+            "max_hp": raid_hp, "current_hp": raid_hp if untouched_template else int(self.active_boss["current_hp"]),
+            "balanced_party_size": combatants,
+            "attacks_per_round": raid_combat_attacks(self.active_boss, combatants),
+        })
         script_id = self._raid_script_id(self.active_boss)
         if script_id == "ifrit_inferno_crucible":
             self.active_boss["_ifrit_step"] = 0
@@ -18454,7 +18505,7 @@ class CrystalGuildEngine:
         self.active_boss["next_round_at"] = time.time() + self.raid_round_seconds
         self._update_raid_overlay()
         phase = self._boss_phase(self.active_boss)
-        messages = [f"RAID BEGIN — {self.active_boss['name']} | {len(self.raid_roster)} heroes | Phase: {phase['name']}. Job Limit Gauges start at 0%; at JLv.50+ use !limit when charged."]
+        messages = [f"RAID BEGIN — {self.active_boss['name']} | {combatants} heroes | {raid_hp:,} HP (party-balanced) | Phase: {phase['name']}. Job Limit Gauges start at 0%; at JLv.50+ use !limit when charged."]
         telegraph = self._raid_telegraph_text(self.active_boss)
         if telegraph:
             messages.append(telegraph)
@@ -18640,9 +18691,10 @@ class CrystalGuildEngine:
             )
         elif signature_round:
             targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
+            signature_effects: list[str] = []
             for pid in targets:
                 meta=self.raid_roster[pid]; p=self._player(pid); job=self.data.jobs[meta["job_id"]]; effects=self._effects(pid,job["id"]); stats=self._stats(p,job,effects)
-                raw=max(1,int((boss.get("recommended_level",50)*7 + 90) * 0.62 * phase_mult * enrage_mult * boss_pressure * self.rng.uniform(0.82,1.12)))
+                raw=max(1,int((boss.get("recommended_level",50)*7 + 90) * 0.62 * phase_mult * enrage_mult * boss_pressure * raid_outgoing_pressure(boss, raidwide=True) * self.rng.uniform(0.82,1.12)))
                 if meta.get("defending"):
                     raw = max(1, int(raw * 0.55))
                 raw = max(1, int(raw * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
@@ -18656,7 +18708,17 @@ class CrystalGuildEngine:
                 meta["limit"] = min(100, meta.get("limit",0)+max(5,int(actual/max(1,meta["max_hp"])*35)))
                 if meta["hp"]<=0 and not meta.get("ko_counted"):
                     meta["ko_counted"]=True; ko_names.append(meta["name"]); self.db.execute("UPDATE players SET deaths=deaths+1 WHERE twitch_id=?",(pid,))
+                # A light two-tick debuff remains through the next player round.
+                status_id = str(boss.get("balance_signature_status") or "")
+                chance = float(boss.get("balance_signature_chance", 0))
+                if meta["hp"] > 0 and status_id in {"weaken", "slow", "vulnerable"} and self.rng.random() < chance:
+                    magnitude = {"weaken": 0.10, "slow": 0.12, "vulnerable": 0.10}[status_id]
+                    adjusted = self._player_status_chance(meta, status_id, 1.0)
+                    if self.rng.random() < adjusted:
+                        apply_status(meta.setdefault("statuses", {}), status_id, 2, magnitude)
+                        signature_effects.append(meta["name"])
         elif not boss_stunned:
+            round_strikes: dict[str, int] = {}
             for _ in range(boss.get("attacks_per_round",2)):
                 targets=[pid for pid,m in self.raid_roster.items() if m.get("hp",0)>0]
                 if not targets: break
@@ -18666,9 +18728,12 @@ class CrystalGuildEngine:
                     weight = 3.0 if candidate.get("job_id") in TANK_JOBS else 1.0
                     if has_status(candidate.get("statuses", {}), "taunt"):
                         weight *= 1 + status_magnitude(candidate.get("statuses", {}), "taunt")
+                    weight *= 0.25 ** round_strikes.get(candidate_id, 0)
                     weights.append(weight)
-                pid=self.rng.choices(targets,weights=weights,k=1)[0]; meta=self.raid_roster[pid]; p=self._player(pid); job=self.data.jobs[meta["job_id"]]; effects=self._effects(pid,job["id"]); stats=self._stats(p,job,effects)
-                raw=max(1,int((boss.get("recommended_level",50)*8+100)*phase_mult*enrage_mult*boss_pressure*self.rng.uniform(0.86,1.16)))
+                pid=self.rng.choices(targets,weights=weights,k=1)[0]
+                round_strikes[pid] = round_strikes.get(pid, 0) + 1
+                meta=self.raid_roster[pid]; p=self._player(pid); job=self.data.jobs[meta["job_id"]]; effects=self._effects(pid,job["id"]); stats=self._stats(p,job,effects)
+                raw=max(1,int((boss.get("recommended_level",50)*8+100)*phase_mult*enrage_mult*boss_pressure*raid_outgoing_pressure(boss)*self.rng.uniform(0.86,1.16)))
                 if meta.get("defending"):
                     raw = max(1, int(raw * 0.55))
                 raw = max(1, int(raw * max(0.45, 1.0 - status_magnitude(meta.get("statuses", {}), "protect"))))
@@ -18694,6 +18759,8 @@ class CrystalGuildEngine:
         ready_limits=[m["name"] for m in self.raid_roster.values() if m.get("hp",0)>0 and m.get("limit",0)>=100 and not m.get("limit_armed")]
         self._update_raid_overlay()
         messages=[f"R{round_no} [{phase['name']}] — Party deals {round_damage:,}; {boss['name']} has {boss['current_hp']:,}/{boss['max_hp']:,} HP. Boss damage {total_boss_damage:,}. Heroes {alive}/{len(self.raid_roster)}."]
+        if signature_round and not boss_stunned and not self._raid_script_id(boss) and signature_effects:
+            messages.append(f"{boss['name']} signature afflicts {', '.join(signature_effects[:5])} with {boss['balance_signature_status'].title()}.")
         if action_log:
             shown = action_log[:4]
             suffix = f" | +{len(action_log) - 4} more" if len(action_log) > 4 else ""
