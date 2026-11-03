@@ -1,3 +1,21 @@
+# v2.0.1 — Expedition Reliability & Targeted Streamer Recovery (additional update)
+
+- Fix independent Expedition launch being blocked by a global active Guild Raid/encounter belonging to other players; personal conflicting activities and combat rosters remain protected.
+- Owner-only targeted recovery through `!removeactivity <username>` and Portal `STREAMER_COMMAND(removeactivity)`, restricted to the verified streamer account. Clears only the selected player's active Expedition, Solo Venture, Dungeon, Hunt, World Event, field combat or Raid membership. Boss battles with no remaining players are retired safely; current progress and inventory remain unchanged, and unbanked rewards are forfeited.
+- Persist removal and Portal action idempotency receipt in the guarded transaction; no schema migration.
+- Requires matching Web hosted-backend+frontend patch for the Streamer Control Center and Expedition countdown behavior.
+
+---
+
+# V2.0.1 — Dungeon Adventure Variety (additional update)
+
+- Four standard Dungeons (9–10 chambers) and six advanced Ascension Dungeons (8–9 chambers) now snapshot randomized routes on entry, with unique chamber order, dungeon-themed normal opponents, rotating elites, and randomly selected minor events. Dungeon bosses remain the original final enemy.
+- Each run's route is persisted in existing Dungeon state JSON and validated against exact room IDs and saved revisions. No migration. Older in-progress runs, rewards and Job-specific Ascension Trials remain unchanged; advanced Ascension Dungeon boss scripts are preserved.
+- New random pools exclude monsters reserved for World Events. Room HP variation is mild and rewards continue through the existing systems.
+- Accompanying Web patch refreshes the Dungeon Board, Guide and What's New without artwork replacement.
+
+---
+
 # Crystal Guild v2.0.1 — Encounter Rebalance
 
 **Scope:** Combat-tuning release built on the v2.0.0 Item Reclassification + initial V2.0.0 Enemy Balance Bot. No data migration, reward reset, artwork replacement or new command syntax.

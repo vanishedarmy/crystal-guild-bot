@@ -986,6 +986,14 @@ class PortalActionWorker:
             return self._game_result(self.game.ready_all_players())
         if command == "resettimers":
             return self._game_result(self.game.reset_all_player_timers())
+        if command == "removeactivity":
+            target = str(argument or "").strip()
+            if not target:
+                return False, "Select an adventurer to remove from active activities.", {}
+            result = self.game.streamer_remove_player_activity(target, action_id=action_id)
+            if result.ok and result.data.get("removed_activities"):
+                self._wake_encounter_scheduler()
+            return self._game_result(result)
         if command == "clearadventures":
             result = self.game.clear_all_adventures()
             if result.ok:

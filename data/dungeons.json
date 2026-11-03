@@ -154,6 +154,112 @@
           "quantity": 1
         }
       ]
+    },
+    "run_variants": {
+      "encounter_pool": [
+        "skeleton",
+        "bat",
+        "spriggan",
+        "basilisk",
+        "lamia",
+        "mimic"
+      ],
+      "elite_pool": [
+        "ossuary_knight",
+        "gigas",
+        "lamia",
+        "mimic"
+      ],
+      "ambience": [
+        "Shadowed Reliquary",
+        "Whispering Catacombs",
+        "Crumbling Bone Passage",
+        "Forgotten Burial Hall"
+      ],
+      "events": [
+        {
+          "id": "ossuary_echoes",
+          "name": "Echoes of the Forgotten",
+          "description": "Old memorial sigils stir beneath the dust.",
+          "outcomes": [
+            {
+              "id": "offering",
+              "label": "An Unclaimed Offering",
+              "weight": 3,
+              "description": "A handful of antique coins lies among the candles.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 75
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "A Quiet Blessing",
+              "weight": 3,
+              "description": "A fading protection spell settles over your equipment.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "curse",
+              "label": "A Restless Spirit",
+              "weight": 2,
+              "description": "A whispering shade shakes your resolve.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ossuary_seal",
+          "name": "Ancient Funerary Seal",
+          "description": "A cracked ward covers the passage.",
+          "outcomes": [
+            {
+              "id": "repair",
+              "label": "The Wards Hold",
+              "weight": 3,
+              "description": "You rejoin the broken symbols and steady your breathing.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "break",
+              "label": "The Seal Shatters",
+              "weight": 2,
+              "description": "The blast stings, exposing a hidden cache.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 6
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 105
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   {
@@ -317,6 +423,118 @@
         {
           "item_id": "mythril_ore",
           "quantity": 2
+        }
+      ]
+    },
+    "run_variants": {
+      "encounter_pool": [
+        "black_flan",
+        "antlion",
+        "sand_worm",
+        "chimera"
+      ],
+      "elite_pool": [
+        "antlion",
+        "sand_worm",
+        "chimera",
+        "black_flan"
+      ],
+      "ambience": [
+        "Cinder Conveyor",
+        "Molten Furnace Walk",
+        "Broken Forge Platform",
+        "Emberglass Crucible"
+      ],
+      "events": [
+        {
+          "id": "foundry_sparks",
+          "name": "Unstable Furnace",
+          "description": "A forge chamber still pulses with wild heat.",
+          "outcomes": [
+            {
+              "id": "shards",
+              "label": "Useful Slag",
+              "weight": 3,
+              "description": "Scattered ingots can be salvaged.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 125
+                }
+              ]
+            },
+            {
+              "id": "flame",
+              "label": "Flash of Heat",
+              "weight": 2,
+              "description": "A hot blast scalds your gear.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 8
+                }
+              ]
+            },
+            {
+              "id": "vent",
+              "label": "Cooling Vent",
+              "weight": 3,
+              "description": "A pressure valve releases restorative mist.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foundry_workers",
+          "name": "Abandoned Workshop",
+          "description": "An old machinist station hums to life.",
+          "outcomes": [
+            {
+              "id": "tools",
+              "label": "Recovered Tools",
+              "weight": 3,
+              "description": "A partly sealed supply compartment is still intact.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 90
+                }
+              ]
+            },
+            {
+              "id": "salve",
+              "label": "Emergency Salve",
+              "weight": 3,
+              "description": "You discover a cooling compound.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 15
+                }
+              ]
+            },
+            {
+              "id": "sparks",
+              "label": "Arc Flash",
+              "weight": 2,
+              "description": "Charged debris leaps from the forge.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 6
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -539,7 +757,121 @@
         "reward_multiplier": 1.6,
         "description": "A Behemoth has claimed the command sanctum as its den. Frost coats its mane and every broken standard bends toward it in the gale."
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "magitek_drone",
+        "iron_giant_exile",
+        "malboro_overlord",
+        "riven_ronin",
+        "tempest_roc",
+        "king_coeurl"
+      ],
+      "elite_pool": [
+        "ironclad",
+        "iron_giant_exile",
+        "malboro_overlord",
+        "magitek_armor"
+      ],
+      "ambience": [
+        "Whiteglass Rampart",
+        "Frozen Guard Post",
+        "Shattered Sentinel Hall",
+        "Echoing Watchtower"
+      ],
+      "events": [
+        {
+          "id": "bastion_watch",
+          "name": "Sentinel Alarm",
+          "description": "A dormant warning bell starts to chime.",
+          "outcomes": [
+            {
+              "id": "silence",
+              "label": "Disabled Alarm",
+              "weight": 3,
+              "description": "You cut the mechanism before reinforcements arrive.",
+              "effects": [
+                {
+                  "type": "next_combat_enemy_hp_percent",
+                  "value": -10
+                }
+              ]
+            },
+            {
+              "id": "alert",
+              "label": "Alarm Triggered",
+              "weight": 2,
+              "description": "The next defender will arrive well prepared.",
+              "effects": [
+                {
+                  "type": "next_combat_enemy_hp_percent",
+                  "value": 15
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "id": "cache",
+              "label": "Sentinel Stores",
+              "weight": 3,
+              "description": "An intact quartermaster locker is found.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 175
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bastion_chapel",
+          "name": "Frozen Chapel",
+          "description": "Frost-covered crystals line a deserted chapel.",
+          "outcomes": [
+            {
+              "id": "prayer",
+              "label": "Echo of Protection",
+              "weight": 3,
+              "description": "The light restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 14
+                }
+              ]
+            },
+            {
+              "id": "shards",
+              "label": "Shattered Crystal Cache",
+              "weight": 2,
+              "description": "You recover a few forgotten treasures.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 145
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Warming Rune",
+              "weight": 3,
+              "description": "An old glyph restores your magic.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 16
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "riftglass_observatory",
@@ -864,6 +1196,122 @@
         ],
         "description": "A Crystal Wolf steps from the broken lens crown, its body splitting into prismatic afterimages as the observatory begins to collapse."
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "evil_eye",
+        "malboro_great",
+        "mover",
+        "tonberry_executioner",
+        "magitek_armor"
+      ],
+      "elite_pool": [
+        "death_machine",
+        "mover",
+        "tonberry_executioner"
+      ],
+      "ambience": [
+        "Broken Star Chart",
+        "Distorted Aether Bridge",
+        "Astral Observation Ring",
+        "Fractured Telescope Hall"
+      ],
+      "events": [
+        {
+          "id": "riftglass_lens",
+          "name": "Aether Lens",
+          "description": "A warped instrument bends the surrounding light.",
+          "outcomes": [
+            {
+              "id": "focus",
+              "label": "Focused Aether",
+              "weight": 3,
+              "description": "The lens restores spent energy.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 17
+                }
+              ]
+            },
+            {
+              "id": "feedback",
+              "label": "Aether Feedback",
+              "weight": 2,
+              "description": "The glass projects a painful shockwave.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 9
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 18
+                }
+              ]
+            },
+            {
+              "id": "cache",
+              "label": "Astral Findings",
+              "weight": 3,
+              "description": "You recover research notes worth a small fortune.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 215
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "riftglass_alignment",
+          "name": "Faltering Star Alignment",
+          "description": "The observatory briefly aligns with a distant constellation.",
+          "outcomes": [
+            {
+              "id": "calm",
+              "label": "Restored Harmony",
+              "weight": 3,
+              "description": "A calm resonance restores your health.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 17
+                }
+              ]
+            },
+            {
+              "id": "storm",
+              "label": "Rift Turbulence",
+              "weight": 2,
+              "description": "Aetheric winds rip through the chamber.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                }
+              ]
+            },
+            {
+              "id": "chart",
+              "label": "Hidden Star Map",
+              "weight": 3,
+              "description": "A secret route promises a stronger foe and better spoils.",
+              "effects": [
+                {
+                  "type": "next_combat_enemy_hp_percent",
+                  "value": 12
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 16
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

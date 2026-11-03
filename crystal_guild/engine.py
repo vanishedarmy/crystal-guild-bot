@@ -95,7 +95,7 @@ from .data import GameData
 from .bestiary_progress import reconcile_mastery
 from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
                                reconcile_all_owned_moment_rewards)
-from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, room_kind_label as dungeon_room_kind_label
+from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, room_kind_label as dungeon_room_kind_label, generate_dungeon_run_rooms
 from .expeditions import (
     BONUS_STAGES as EXPEDITION_BONUS_STAGES,
     DEPTHS as EXPEDITION_DEPTHS,
@@ -8489,8 +8489,10 @@ class CrystalGuildEngine:
             return GameResult.fail(blocked)
         if twitch_id in self.encounter_roster or twitch_id in self.raid_roster:
             return GameResult.fail("Finish your active encounter or raid before launching an Expedition.")
-        if self.active_boss or self.active_encounter:
-            return GameResult.fail("A Guild battle is already active. Launch the Expedition after it clears.")
+        # Personal Expeditions run in their own persisted encounter state. A
+        # different player's raid or field battle must not block their launch;
+        # _activity_block and the roster checks above still prevent overlap for
+        # the same hero.
         if int(p["level"] or 1) < int(region.get("min_level", 1)):
             return GameResult.fail(f"{region['name']} is recommended from Lv.{int(region.get('min_level', 1))}.")
         contract_kind = str(depth_id).lower()
@@ -9349,6 +9351,14 @@ class CrystalGuildEngine:
                        "mechanics": trial["mechanics"], "advanced_combat": trial.get("advanced_combat", {}), "description": trial["description"]}],
         }
 
+    def _dungeon_for_run(self, state: dict[str, Any]) -> dict[str, Any]:
+        """Use the run's saved route (if present); legacy delves retain old rooms."""
+        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        run_rooms = state.get("run_rooms")
+        if isinstance(run_rooms, list) and run_rooms and not dungeon.get("ascension_trial"):
+            return {**dungeon, "rooms": run_rooms}
+        return dungeon
+
     def _ascension_trial_state(self, twitch_id: str) -> dict[str, Any]:
         p = self._player(twitch_id)
         if not p:
@@ -9771,7 +9781,7 @@ class CrystalGuildEngine:
         return GameResult.success(f"DUNGEON — {monster['name']} bars the way in {room.get('name', 'the next chamber')}.", dungeon_battle=True)
 
     def _dungeon_begin_room(self, twitch_id: str, state: dict[str, Any]) -> GameResult:
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0))
         if room_index < 0 or room_index >= len(rooms):
@@ -9872,7 +9882,7 @@ class CrystalGuildEngine:
         state = self._dungeon_load(twitch_id)
         if not state:
             return None
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         rooms = list(dungeon.get("rooms") or [])
         room_index = max(0, int(state.get("room_index", 0)))
         room = dict(rooms[room_index]) if room_index < len(rooms) else {}
@@ -9891,6 +9901,7 @@ class CrystalGuildEngine:
             "room_index": room_index,
             "room_number": min(len(rooms), room_index + 1),
             "room_count": len(rooms),
+            "variable_route": isinstance(state.get("run_rooms"), list),
             "room": {"id": str(room.get("id") or ""), "name": str(room.get("name") or "Final Chamber"), "type": str(room.get("type") or "complete"), "type_label": dungeon_room_kind_label(room), "description": str(room.get("description") or "")},
             "cache": copy.deepcopy(self._dungeon_cache(state)),
             "event": copy.deepcopy(state.get("event")),
@@ -9947,6 +9958,8 @@ class CrystalGuildEngine:
                 "min_level": int(dungeon.get("min_level", 1)),
                 "recommended_level": int(dungeon.get("recommended_level", dungeon.get("min_level", 1)) or dungeon.get("min_level", 1)),
                 "rooms": len(list(dungeon.get("rooms") or [])),
+                "variable_route": bool(dungeon.get("run_variants")),
+                "room_range": ([8, 9] if str(dungeon.get("identity") or "").lower() == "ascension dungeon" else [9, 10]) if dungeon.get("run_variants") else None,
                 "choice_rooms": sum(1 for room in list(dungeon.get("rooms") or []) if str(room.get("type") or "").lower() == "choice"),
                 "identity": str(dungeon.get("identity") or "Delve"),
                 "unlocked": bool(unlocked),
@@ -10012,6 +10025,10 @@ class CrystalGuildEngine:
             "version": 1, "revision": 0, "run_id": uuid.uuid4().hex, "dungeon_id": str(dungeon["id"]), "started_at": now, "updated_at": now,
             "room_index": 0, "status": "choice", "cache": {"xp": 0, "jp": 0, "gil": 0, "items": []}, "history": [], "discoveries": [], "modifiers": {}, "event": None, "combat": None, "last_round": None,
         }
+        # Snapshot the randomized route exactly once. Refreshes, reconnects,
+        # save/load and multi-tab revision validation must see the same plan.
+        if not dungeon.get("ascension_trial"):
+            state["run_rooms"] = generate_dungeon_run_rooms(dungeon, self.data.monsters, self.rng)
         self._dungeon_save(twitch_id, state)
         return self._dungeon_begin_room(twitch_id, state)
 
@@ -10019,7 +10036,7 @@ class CrystalGuildEngine:
         state = self._dungeon_load(twitch_id)
         if not state or str(state.get("status")) != "choice":
             return GameResult.fail("Clear the current Dungeon room before moving deeper.")
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         rooms = list(dungeon.get("rooms") or [])
         if int(state.get("room_index", 0)) >= len(rooms) - 1:
             return self._dungeon_finish(twitch_id, state, outcome="complete")
@@ -10032,7 +10049,7 @@ class CrystalGuildEngine:
         state = self._dungeon_load(twitch_id)
         if not state or str(state.get("status")) != "decision":
             return GameResult.fail("No Dungeon crossroads is waiting for a choice.")
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0) or 0)
         room = dict(rooms[room_index]) if 0 <= room_index < len(rooms) else {}
@@ -10201,7 +10218,7 @@ class CrystalGuildEngine:
 
     def _dungeon_finish_room_victory(self, twitch_id: str, state: dict[str, Any], monster: dict[str, Any], meta: dict[str, Any], round_no: int, log: list[str]) -> GameResult:
         self._save_hp(twitch_id, int(meta.get("hp", 0))); self._save_resources_from_meta(twitch_id, meta)
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0))
         room = dict(rooms[room_index]) if room_index < len(rooms) else {}
@@ -10240,7 +10257,7 @@ class CrystalGuildEngine:
 
     def _dungeon_bank(self, twitch_id: str, state: dict[str, Any], ratio: float, *, include_completion_bonus: bool, include_first_clear_bonus: bool = False) -> dict[str, Any]:
         ratio = max(0.0, min(1.0, float(ratio)))
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         cache = copy.deepcopy(self._dungeon_cache(state))
         bonus_blocks: list[dict[str, Any]] = []
         if include_completion_bonus:
@@ -10294,7 +10311,7 @@ class CrystalGuildEngine:
         return kept
 
     def _dungeon_finish(self, twitch_id: str, state: dict[str, Any], *, outcome: str) -> GameResult:
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         room_count = len(list(dungeon.get("rooms") or []))
         reached = min(room_count, int(state.get("room_index", 0)) + 1)
         if outcome == "complete":
@@ -11689,7 +11706,7 @@ class CrystalGuildEngine:
             return False
         if max(0, int(state.get("revision", 0) or 0)) != max(0, int(revision or 0)):
             return False
-        dungeon = self._dungeon_definition(str(state.get("dungeon_id") or "")) or {}
+        dungeon = self._dungeon_for_run(state)
         rooms = list(dungeon.get("rooms") or [])
         room_index = int(state.get("room_index", 0) or 0)
         current_room_id = str((rooms[room_index] if 0 <= room_index < len(rooms) else {}).get("id") or "")
@@ -19960,6 +19977,72 @@ class CrystalGuildEngine:
         ]
         unique = {str(row["twitch_id"]): row for row in fuzzy}
         return next(iter(unique.values())) if len(unique) == 1 else None
+
+    @_state_guard
+    def streamer_remove_player_activity(self, requested_player: str, *, action_id: str = "") -> GameResult:
+        """Owner-only recovery: release one adventurer, without awarding unfinished spoils.
+
+        Caller authority is verified by the Twitch owner-only command or the
+        Portal STREAMER_COMMAND dispatcher. The targeted mutation and Portal
+        replay receipt share the guarded SQLite transaction; raid/field rosters
+        are also persisted with the authoritative combat checkpoint.
+        """
+        if action_id:
+            replay = self._portal_action_replay(action_id)
+            if replay is not None:
+                return replay
+
+        def finish(result: GameResult) -> GameResult:
+            if action_id:
+                self._portal_action_store_sql(self.db.conn, action_id, result)
+            return result
+
+        target = self._streamer_player_match(requested_player)
+        if not target:
+            return finish(GameResult.fail(
+                "Player not found or ambiguous. Select an exact Twitch username."
+            ))
+        player_id = str(target["twitch_id"])
+        username = str(target["username"] or "")
+        display_name = str(target["display_name"] or username)
+        released = []
+        for table, label in (
+            ("player_expeditions", "Expedition"),
+            ("solo_expeditions", "Solo Venture"),
+            ("player_dungeons", "Dungeon"),
+        ):
+            present = self.db.one(f"SELECT 1 FROM {table} WHERE player_id=?", (player_id,))
+            if present:
+                self.db.execute(f"DELETE FROM {table} WHERE player_id=?", (player_id,))
+                released.append(label)
+        if self.active_hunts.pop(player_id, None) is not None:
+            released.append("Hunt")
+        if self.encounter_roster.pop(player_id, None) is not None:
+            event_kind = str((self.active_encounter or {}).get("kind") or "")
+            released.append("World Event" if event_kind == "world_event" else "field encounter")
+            if self.active_encounter and not self.encounter_roster:
+                if event_kind == "world_event":
+                    self._finish_world_event_schedule(str(self.active_encounter.get("world_event_id") or ""))
+                self.active_encounter = None
+                self._last_battle_history = None
+        if self.raid_roster.pop(player_id, None) is not None:
+            released.append("Raid")
+            # Do not strand a combat-phase boss with zero participants. A
+            # rally, however, should remain open for other players to join.
+            if self.active_boss and not self.raid_roster and self.active_boss.get("state") != "rally":
+                self.active_boss = None
+                self._last_battle_history = None
+        if not released:
+            return finish(GameResult.success(
+                f"{display_name} has no active Expedition, Solo Venture, Hunt, Dungeon, field encounter, World Event, or Raid to remove.",
+                player_id=player_id, username=username, removed_activities=[], already_clear=True,
+            ))
+        return finish(GameResult.success(
+            f"STREAMER RECOVERY — Removed {display_name} from {', '.join(released)}. "
+            "Unbanked adventure rewards were abandoned; earned progression, inventory, and persisted vitals were preserved.",
+            player_id=player_id, username=username, removed_activities=released,
+            cooldowns_unchanged=True,
+        ))
 
     def streamer_saucer_grant(self, request: str, *, action_id: str = "") -> GameResult:
         """Owner-only MGP grant for testing/events. Syntax: player | amount."""

@@ -49,6 +49,21 @@ class GameData:
             for room in dungeon.get("rooms", []):
                 if room.get("monster_id") in event_templates:
                     raise ValueError(f"World Event boss cannot be a Dungeon enemy: {dungeon['id']}")
+        # Validate the separate per-run encounter and event catalogs too.
+        for dungeon in (*self.dungeons.values(), *self.ascension_dungeons.values()):
+            variants = dungeon.get("run_variants") or {}
+            for field in ("encounter_pool", "elite_pool"):
+                for monster_id in variants.get(field) or []:
+                    if monster_id not in self.monsters:
+                        raise ValueError(f"Unknown {field} monster {monster_id} in {dungeon['id']}")
+                    if monster_id in event_templates:
+                        raise ValueError(f"World Event boss excluded from {field} in {dungeon['id']}: {monster_id}")
+            for event in variants.get("events") or []:
+                if not event.get("id") or not (event.get("outcomes") or []):
+                    raise ValueError(f"Invalid random event in {dungeon['id']}")
+                for outcome in event.get("outcomes") or []:
+                    if not outcome.get("id") or float(outcome.get("weight", 0)) <= 0:
+                        raise ValueError(f"Invalid event outcome in {dungeon['id']}")
         for trial in self.ascension_trials.values():
             if trial.get("guardian") in event_templates:
                 raise ValueError(f"World Event boss cannot be a Job Trial guardian: {trial['id']}")

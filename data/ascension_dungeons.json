@@ -207,7 +207,120 @@
           }
         }
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "holy_dragon",
+        "skull_dragon",
+        "storm_dragon",
+        "rift_hound",
+        "brachosaur",
+        "catoblepas",
+        "void_mage"
+      ],
+      "ambience": [
+        "Refracted Sanctum — Broken Gallery",
+        "Refracted Sanctum — Aether Passage",
+        "Refracted Sanctum — Hidden Hall",
+        "Refracted Sanctum — Warded Crossing"
+      ],
+      "events": [
+        {
+          "id": "crystal_sanctum_resonance",
+          "name": "Aether Resonance",
+          "description": "A forgotten refracted sanctum relic begins to hum.",
+          "outcomes": [
+            {
+              "id": "convergence",
+              "label": "Restored Resonance",
+              "weight": 3,
+              "description": "A calm pulse restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "surge",
+              "label": "Unstable Surge",
+              "weight": 2,
+              "description": "The aether strikes unexpectedly.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "conduit",
+              "label": "Hidden Conduit",
+              "weight": 3,
+              "description": "Forgotten energy restores your resources.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "crystal_sanctum_cache",
+          "name": "Sealed Keeper Cache",
+          "description": "A concealed ward reveals an ancient cache.",
+          "outcomes": [
+            {
+              "id": "gil",
+              "label": "Ancient Treasure",
+              "weight": 3,
+              "description": "You claim a handful of surviving coins.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 195
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Protective Sigil",
+              "weight": 3,
+              "description": "A faint ward shields the path ahead.",
+              "effects": [
+                {
+                  "type": "next_hazard_reduction_percent",
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "id": "fracture",
+              "label": "Cracked Ward",
+              "weight": 2,
+              "description": "The seal breaks and leaves you shaken.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 5
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 225
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "abyssal_foundry",
@@ -415,7 +528,120 @@
           }
         }
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "rift_dragon",
+        "rift_drake",
+        "land_worm",
+        "abaddon",
+        "ancient_adamantoise",
+        "adamant_golem",
+        "master_tonberry"
+      ],
+      "ambience": [
+        "Abyssal Forge — Broken Gallery",
+        "Abyssal Forge — Aether Passage",
+        "Abyssal Forge — Hidden Hall",
+        "Abyssal Forge — Warded Crossing"
+      ],
+      "events": [
+        {
+          "id": "abyssal_foundry_resonance",
+          "name": "Aether Resonance",
+          "description": "A forgotten abyssal forge relic begins to hum.",
+          "outcomes": [
+            {
+              "id": "convergence",
+              "label": "Restored Resonance",
+              "weight": 3,
+              "description": "A calm pulse restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "surge",
+              "label": "Unstable Surge",
+              "weight": 2,
+              "description": "The aether strikes unexpectedly.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "conduit",
+              "label": "Hidden Conduit",
+              "weight": 3,
+              "description": "Forgotten energy restores your resources.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "abyssal_foundry_cache",
+          "name": "Sealed Keeper Cache",
+          "description": "A concealed ward reveals an ancient cache.",
+          "outcomes": [
+            {
+              "id": "gil",
+              "label": "Ancient Treasure",
+              "weight": 3,
+              "description": "You claim a handful of surviving coins.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 195
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Protective Sigil",
+              "weight": 3,
+              "description": "A faint ward shields the path ahead.",
+              "effects": [
+                {
+                  "type": "next_hazard_reduction_percent",
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "id": "fracture",
+              "label": "Cracked Ward",
+              "weight": 2,
+              "description": "The seal breaks and leaves you shaken.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 5
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 225
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "celestial_spire",
@@ -625,7 +851,119 @@
           }
         }
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "archeodemon",
+        "omega_fragment",
+        "varuna",
+        "void_avatar",
+        "demonolith",
+        "astral_construct"
+      ],
+      "ambience": [
+        "Celestial Spire — Broken Gallery",
+        "Celestial Spire — Aether Passage",
+        "Celestial Spire — Hidden Hall",
+        "Celestial Spire — Warded Crossing"
+      ],
+      "events": [
+        {
+          "id": "celestial_spire_resonance",
+          "name": "Aether Resonance",
+          "description": "A forgotten celestial spire relic begins to hum.",
+          "outcomes": [
+            {
+              "id": "convergence",
+              "label": "Restored Resonance",
+              "weight": 3,
+              "description": "A calm pulse restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "surge",
+              "label": "Unstable Surge",
+              "weight": 2,
+              "description": "The aether strikes unexpectedly.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "conduit",
+              "label": "Hidden Conduit",
+              "weight": 3,
+              "description": "Forgotten energy restores your resources.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "celestial_spire_cache",
+          "name": "Sealed Keeper Cache",
+          "description": "A concealed ward reveals an ancient cache.",
+          "outcomes": [
+            {
+              "id": "gil",
+              "label": "Ancient Treasure",
+              "weight": 3,
+              "description": "You claim a handful of surviving coins.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 195
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Protective Sigil",
+              "weight": 3,
+              "description": "A faint ward shields the path ahead.",
+              "effects": [
+                {
+                  "type": "next_hazard_reduction_percent",
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "id": "fracture",
+              "label": "Cracked Ward",
+              "weight": 2,
+              "description": "The seal breaks and leaves you shaken.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 5
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 225
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "void_cathedral",
@@ -833,7 +1171,119 @@
           }
         }
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "dark_element",
+        "master_coeurl",
+        "floating_death",
+        "spirit",
+        "malboro_menace",
+        "great_malboro_omega"
+      ],
+      "ambience": [
+        "Void Cathedral — Broken Gallery",
+        "Void Cathedral — Aether Passage",
+        "Void Cathedral — Hidden Hall",
+        "Void Cathedral — Warded Crossing"
+      ],
+      "events": [
+        {
+          "id": "void_cathedral_resonance",
+          "name": "Aether Resonance",
+          "description": "A forgotten void cathedral relic begins to hum.",
+          "outcomes": [
+            {
+              "id": "convergence",
+              "label": "Restored Resonance",
+              "weight": 3,
+              "description": "A calm pulse restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "surge",
+              "label": "Unstable Surge",
+              "weight": 2,
+              "description": "The aether strikes unexpectedly.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "conduit",
+              "label": "Hidden Conduit",
+              "weight": 3,
+              "description": "Forgotten energy restores your resources.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "void_cathedral_cache",
+          "name": "Sealed Keeper Cache",
+          "description": "A concealed ward reveals an ancient cache.",
+          "outcomes": [
+            {
+              "id": "gil",
+              "label": "Ancient Treasure",
+              "weight": 3,
+              "description": "You claim a handful of surviving coins.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 195
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Protective Sigil",
+              "weight": 3,
+              "description": "A faint ward shields the path ahead.",
+              "effects": [
+                {
+                  "type": "next_hazard_reduction_percent",
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "id": "fracture",
+              "label": "Cracked Ward",
+              "weight": 2,
+              "description": "The seal breaks and leaves you shaken.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 5
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 225
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "astral_crucible",
@@ -1043,7 +1493,117 @@
           }
         }
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "mimic_king",
+        "great_malboro_omega",
+        "spirit",
+        "malboro_menace"
+      ],
+      "ambience": [
+        "Astral Crucible — Broken Gallery",
+        "Astral Crucible — Aether Passage",
+        "Astral Crucible — Hidden Hall",
+        "Astral Crucible — Warded Crossing"
+      ],
+      "events": [
+        {
+          "id": "astral_crucible_resonance",
+          "name": "Aether Resonance",
+          "description": "A forgotten astral crucible relic begins to hum.",
+          "outcomes": [
+            {
+              "id": "convergence",
+              "label": "Restored Resonance",
+              "weight": 3,
+              "description": "A calm pulse restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "surge",
+              "label": "Unstable Surge",
+              "weight": 2,
+              "description": "The aether strikes unexpectedly.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "conduit",
+              "label": "Hidden Conduit",
+              "weight": 3,
+              "description": "Forgotten energy restores your resources.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "astral_crucible_cache",
+          "name": "Sealed Keeper Cache",
+          "description": "A concealed ward reveals an ancient cache.",
+          "outcomes": [
+            {
+              "id": "gil",
+              "label": "Ancient Treasure",
+              "weight": 3,
+              "description": "You claim a handful of surviving coins.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 195
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Protective Sigil",
+              "weight": 3,
+              "description": "A faint ward shields the path ahead.",
+              "effects": [
+                {
+                  "type": "next_hazard_reduction_percent",
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "id": "fracture",
+              "label": "Cracked Ward",
+              "weight": 2,
+              "description": "The seal breaks and leaves you shaken.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 5
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 225
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "throne_eternity",
@@ -1251,6 +1811,116 @@
           }
         }
       }
-    ]
+    ],
+    "run_variants": {
+      "encounter_pool": [
+        "omega_sentinel",
+        "mimic_king",
+        "great_malboro_omega",
+        "spirit"
+      ],
+      "ambience": [
+        "Throne of Eternity — Broken Gallery",
+        "Throne of Eternity — Aether Passage",
+        "Throne of Eternity — Hidden Hall",
+        "Throne of Eternity — Warded Crossing"
+      ],
+      "events": [
+        {
+          "id": "throne_eternity_resonance",
+          "name": "Aether Resonance",
+          "description": "A forgotten throne of eternity relic begins to hum.",
+          "outcomes": [
+            {
+              "id": "convergence",
+              "label": "Restored Resonance",
+              "weight": 3,
+              "description": "A calm pulse restores some strength.",
+              "effects": [
+                {
+                  "type": "heal_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "surge",
+              "label": "Unstable Surge",
+              "weight": 2,
+              "description": "The aether strikes unexpectedly.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 7
+                },
+                {
+                  "type": "next_combat_reward_percent",
+                  "value": 12
+                }
+              ]
+            },
+            {
+              "id": "conduit",
+              "label": "Hidden Conduit",
+              "weight": 3,
+              "description": "Forgotten energy restores your resources.",
+              "effects": [
+                {
+                  "type": "restore_resource_percent",
+                  "value": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "throne_eternity_cache",
+          "name": "Sealed Keeper Cache",
+          "description": "A concealed ward reveals an ancient cache.",
+          "outcomes": [
+            {
+              "id": "gil",
+              "label": "Ancient Treasure",
+              "weight": 3,
+              "description": "You claim a handful of surviving coins.",
+              "effects": [
+                {
+                  "type": "cache_gil",
+                  "value": 195
+                }
+              ]
+            },
+            {
+              "id": "ward",
+              "label": "Protective Sigil",
+              "weight": 3,
+              "description": "A faint ward shields the path ahead.",
+              "effects": [
+                {
+                  "type": "next_hazard_reduction_percent",
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "id": "fracture",
+              "label": "Cracked Ward",
+              "weight": 2,
+              "description": "The seal breaks and leaves you shaken.",
+              "effects": [
+                {
+                  "type": "damage_percent",
+                  "value": 5
+                },
+                {
+                  "type": "cache_gil",
+                  "value": 225
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

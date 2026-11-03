@@ -938,6 +938,17 @@ class RPGCommands(commands.Component):
             return
         await send_result(ctx, self.game.reset_all_player_timers(), limit=2)
 
+    @commands.command()
+    async def removeactivity(self, ctx: commands.Context, *, username: str) -> None:
+        if not await self._owner_only(ctx):
+            return
+        result = self.game.streamer_remove_player_activity(username)
+        await send_result(ctx, result, limit=2)
+        if result.ok and result.data.get("removed_activities"):
+            if self.bot.portal_sync:
+                self.bot.portal_sync.wake()
+            self.bot.encounter_daemon.wake()
+
     @commands.command(aliases=["clearventures"])
     async def clearadventures(self, ctx: commands.Context) -> None:
         if not await self._owner_only(ctx):
