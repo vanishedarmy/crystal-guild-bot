@@ -1,4 +1,4 @@
-# CURRENT RELEASE: v2.0.1 — Encounter Rebalance
+# CURRENT RELEASE: v2.1.0 — Adventure Tales
 
 See `RELEASE_NOTES.md` for scope and safe upgrade instructions.
 

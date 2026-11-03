@@ -1,4 +1,4 @@
-CRYSTAL GUILD v2.0.1 — ENCOUNTER REBALANCE
+CRYSTAL GUILD v2.1.0 — ADVENTURE TALES
 CURRENT SOURCE RELEASE: Read RELEASE_NOTES.md for update and installation details.
 Preserve the live database and configuration. Complete active battles before upgrading.
 Previous release instructions follow for historical reference.

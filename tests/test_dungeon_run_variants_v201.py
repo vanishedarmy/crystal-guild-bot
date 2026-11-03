@@ -107,6 +107,10 @@ class DungeonRunVariantTests(unittest.TestCase):
                     result = game.dungeon_retreat('201')
                     self.assertTrue(result.ok, result.messages)
                     self.assertIsNone(game._dungeon_load('201'))
+                    # Each completed/retreated run now requires 10 minutes of rest.
+                    self.assertGreater(game._cooldown_remaining('201', 'dungeon'), 0)
+                    # Advance only this test's rest timer to examine the next dungeon.
+                    db.execute("UPDATE cooldowns SET available_at=0 WHERE player_id='201' AND action='dungeon'")
             finally:
                 db.close()
 

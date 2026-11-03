@@ -1,3 +1,23 @@
+# Crystal Guild v2.1.0 — Adventure Tales
+
+The consolidated v2.1.0 release integrates the latest V2.0.1 fixes and expands Expedition/Dungeon storytelling.
+
+- Expedition Tales: all 11 regions have stored, contextual journey narration; combat, rewards and travel odds are unchanged.
+- Dungeon Tales & Rest: randomized saved room routes and personal narration across ten dungeons, with a shared 600-second dungeon cooldown after completion, retreat or defeat. Job Ascension Trials remain exempt.
+- Guild Board and Fellowship are combined into Guild Town → Guild Board. The redundant top header Guild Board link is removed (desktop and mobile).
+- Bestiary uses Item Catalog-style search, filters, result cards and a separate dossier, including undiscovered portrait artwork.
+- Includes regional enemy placement, Moogle Emporium stock fixes, Limit Break/Expedition reliability repairs, targeted streamer activity controls, and portal visual/accessibility passes from V2.0.1.
+- Version bump only: database schema and Portal Action protocol are unchanged. Player databases and configuration must be preserved.
+- Bot and Web need to be deployed together for compatible action validation, content and presentation.
+
+# v2.0.1 — Expedition Tales (additional Bot-only update)
+
+- Add distinct arrival, travel, encounter, camp, event, and return narration across 11 Chocobo/Airship Expedition regions.
+- Scenes are stored through existing event labels and Expedition history; reloads retain the same story, and existing in-progress runs remain compatible.
+- Narrative selection is isolated from gameplay RNG. No adjustments to timing, cooldown, combat, drops, probabilities, unlocks, databases, or Web interface.
+
+---
+
 # v2.0.1 — Expedition Reliability & Targeted Streamer Recovery (additional update)
 
 - Fix independent Expedition launch being blocked by a global active Guild Raid/encounter belonging to other players; personal conflicting activities and combat rosters remain protected.
@@ -198,3 +218,8 @@ There is no ranked ladder, public matchmaking queue, spectator mode, wagering, o
 Use `START_HERE.md`. Both service folders and the production frontend are included. No npm rebuild is required when using the prebuilt output. Keep your existing Bot and hosted Web databases and private configuration.
 
 The validation report distinguishes the Queen’s Blood release checks from inherited failures in the historical test suites. Automated game simulations are termination checks, not evidence of human win rates or exhaustive competitive balance. No live deployment or real-player transactions were performed.
+
+### Dungeon Tales & Rest (V2.0.1)
+- Ten standard and advanced Dungeon routes now include unique chapter narration and atmospheric room descriptions, snapshotted per run. Existing run saves are unchanged.
+- Shared 10-minute per-player Dungeon rest starts after clear, defeat, or retreat. Job Ascension Trials remain exempt.
+- The cooldown uses the existing persistent cooldowns table; no schema migration required.

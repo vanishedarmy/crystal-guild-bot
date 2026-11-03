@@ -95,7 +95,7 @@ from .data import GameData
 from .bestiary_progress import reconcile_mastery
 from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
                                reconcile_all_owned_moment_rewards)
-from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, room_kind_label as dungeon_room_kind_label, generate_dungeon_run_rooms
+from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, DUNGEON_COOLDOWN_SECONDS, room_kind_label as dungeon_room_kind_label, generate_dungeon_run_rooms
 from .expeditions import (
     BONUS_STAGES as EXPEDITION_BONUS_STAGES,
     DEPTHS as EXPEDITION_DEPTHS,
@@ -108,6 +108,7 @@ from .expeditions import (
     hazard_damage_multiplier as expedition_hazard_damage_multiplier,
     chocobo_event_bond_xp as expedition_chocobo_event_bond_xp,
 )
+from .expedition_story import scene as expedition_story_scene
 from .enemy_combat import (
     choose_enemy_action,
     effective_status_chance,
@@ -8062,6 +8063,15 @@ class CrystalGuildEngine:
         state["event"] = None
         state["combat"] = None
         state["camp_used_stage"] = False
+        travel_story = expedition_story_scene(
+            str(state.get("region_id") or ""), "travel", str(state.get("run_id") or state.get("started_at") or ""),
+            int(state.get("stage", 1)), route_id,
+        )
+        if travel_story:
+            state["travel_story"] = travel_story
+            state.setdefault("history", []).append({
+                "stage": int(state.get("stage", 1)), "type": "travel", "label": travel_story,
+            })
         self._expedition_save(twitch_id, state)
         return seconds
 
@@ -8331,6 +8341,14 @@ class CrystalGuildEngine:
             self.db.update_record_stats(twitch_id, {"expedition_rescues": 1})
         chocobo_xp = max(0, int(state.get("chocobo_xp", 0))) + max(4, int(state.get("stage", 1)) * 3)
         chocobo_notes = [] if self._is_airship_expedition(state) else self._award_chocobo_xp(twitch_id, chocobo_xp)
+        return_story = expedition_story_scene(
+            str(state.get("region_id") or ""), "return", str(state.get("run_id") or state.get("started_at") or ""),
+            int(state.get("stage", 1)), str(state.get("route") or "unknown"),
+        )
+        if return_story:
+            state.setdefault("history", []).append({
+                "stage": int(state.get("stage", 1)), "type": "return", "label": return_story,
+            })
         summary = self._expedition_result_summary(twitch_id, state, outcome=outcome, kept=kept, lost=lost)
         summary["chocobo_notes"] = chocobo_notes[:2]
         summary["stipend_seals"] = stipend_seals
@@ -8349,7 +8367,7 @@ class CrystalGuildEngine:
             )
         if outcome == "defeat":
             return GameResult.success(
-                f"EXPEDITION RESCUE — {'Your Guild Airship' if self._is_airship_expedition(state) else 'Your Chocobo'} gets you home with {int(round(keep_ratio * 100))}% of the Expedition Cache.",
+                f"EXPEDITION RESCUE — {'Your Guild Airship' if self._is_airship_expedition(state) else 'Your Chocobo'} gets you home with {int(round(keep_ratio * 100))}% of the Expedition Cache." + (f" {return_story}" if return_story else ""),
                 expedition_finished=True,
                 expedition_result=summary,
                 expedition_milestones=milestones,
@@ -8358,7 +8376,7 @@ class CrystalGuildEngine:
             )
         stipend_text = f" / +{int(summary.get('stipend_seals', 0))} Hunt Seals" if int(summary.get("stipend_seals", 0)) else ""
         return GameResult.success(
-            f"EXPEDITION RETURN — {summary['region_name']} cache secured: +{kept['xp']} XP / +{kept['jp']} JP / {kept['gil']} Gil{stipend_text}.",
+            f"EXPEDITION RETURN — {summary['region_name']} cache secured: +{kept['xp']} XP / +{kept['jp']} JP / {kept['gil']} Gil{stipend_text}." + (f" {return_story}" if return_story else ""),
             *fellowship_notes[:2],
             expedition_finished=True,
             expedition_result=summary,
@@ -8412,22 +8430,34 @@ class CrystalGuildEngine:
             state["combat"] = {"encounter": copy.deepcopy(encounter), "roster": copy.deepcopy(self.encounter_roster)}
         finally:
             self.active_encounter, self.encounter_roster = old_encounter, old_roster
+        combat_story = expedition_story_scene(
+            str(state.get("region_id") or ""), "combat", str(state.get("run_id") or state.get("started_at") or ""),
+            int(state.get("stage", 1)), str(state.get("route") or "unknown"),
+        )
         state["event"] = {
             "type": "combat",
-            "label": f"{monster['name']} blocks the route.",
+            "label": f"{monster['name']} blocks the route." + (f" {combat_story}" if combat_story else ""),
             "monster": {"id": str(monster["id"]), "name": str(monster["name"]), "level": int(monster["level"])},
         }
         state["status"] = "combat"
         state.setdefault("history", []).append(
-            {"stage": int(state.get("stage", 1)), "type": "combat", "label": f"Encountered {monster['name']}"}
+            {"stage": int(state.get("stage", 1)), "type": "combat", "label": f"Encountered {monster['name']}" + (f" — {combat_story}" if combat_story else "")}
         )
         self._expedition_save(twitch_id, state)
         return GameResult.success(
-            f"EXPEDITION · STAGE {int(state.get('stage', 1))} — {monster['name']} (Lv.{monster['level']}) blocks the route.",
+            f"EXPEDITION · STAGE {int(state.get('stage', 1))} — {monster['name']} (Lv.{monster['level']}) blocks the route." + (f" {combat_story}" if combat_story else ""),
             expedition_combat=True,
         )
 
     def _expedition_stage_resolved(self, twitch_id: str, state: dict[str, Any], event: dict[str, Any], progress_gain: int = 1) -> GameResult:
+        story = expedition_story_scene(
+            str(state.get("region_id") or ""), str(event.get("type") or "event"),
+            str(state.get("run_id") or state.get("started_at") or ""), int(state.get("stage", 1)),
+            str(state.get("route") or "unknown"),
+        )
+        if story:
+            event["story"] = story
+            event["label"] = f"{str(event.get('label') or 'Stage resolved.')} {story}"
         state["event"] = event
         state["status"] = "choice"
         state.setdefault("history", []).append(
@@ -8549,9 +8579,10 @@ class CrystalGuildEngine:
             "rare_events_seen": [],
         }
         seconds = self._expedition_begin_travel(twitch_id, state, "unknown")
+        arrival_story = expedition_story_scene(str(region["id"]), "arrival", str(state.get("run_id") or ""), 1)
         self.db.update_record_stats(twitch_id, {"expeditions_started": 1})
         return GameResult.success(
-            f"{'AIRSHIP EXPEDITION' if transport == 'airship' else 'EXPEDITION'} LAUNCHED — {region['name']} · {depth['name']}. Stage 1 travel: {self._format_seconds(seconds)}.",
+            f"{'AIRSHIP EXPEDITION' if transport == 'airship' else 'EXPEDITION'} LAUNCHED — {region['name']} · {depth['name']}. Stage 1 travel: {self._format_seconds(seconds)}." + (f" {arrival_story}" if arrival_story else ""),
             expedition_started=True,
             expedition_boss_contract=bool(boss_contract),
             expedition_legendary_contract=bool(legendary_contract),
@@ -9101,7 +9132,7 @@ class CrystalGuildEngine:
         state["last_round"] = None
         seconds = self._expedition_begin_travel(twitch_id, state, route_id)
         return GameResult.success(
-            f"EXPEDITION — Stage {state['stage']} route selected: {EXPEDITION_ROUTES.get(str(state.get('route')), EXPEDITION_ROUTES['unknown'])['name']}. Travel {self._format_seconds(seconds)}.",
+            f"EXPEDITION — Stage {state['stage']} route selected: {EXPEDITION_ROUTES.get(str(state.get('route')), EXPEDITION_ROUTES['unknown'])['name']}. Travel {self._format_seconds(seconds)}." + (f" {state.get('travel_story')}" if state.get('travel_story') else ""),
             expedition_continued=True,
         )
 
@@ -9134,12 +9165,16 @@ class CrystalGuildEngine:
         state["camp_used_stage"] = True
         state["last_camp_penalty"] = 2 * 60
         state["travel_penalty_seconds"] = 2 * 60
+        camp_story = expedition_story_scene(
+            str(state.get("region_id") or ""), "camp", str(state.get("run_id") or state.get("started_at") or ""),
+            int(state.get("stage", 1)), str(state.get("route") or "unknown"),
+        )
         state.setdefault("history", []).append(
-            {"stage": int(state.get("stage", 1)), "type": "camp", "label": "Made Expedition Camp"}
+            {"stage": int(state.get("stage", 1)), "type": "camp", "label": "Made Expedition Camp" + (f" — {camp_story}" if camp_story else "")}
         )
         self._expedition_save(twitch_id, state)
         return GameResult.success(
-            f"EXPEDITION CAMP — Restored {heal} HP and part of your battle resources. The next travel leg takes 2 minutes longer.",
+            f"EXPEDITION CAMP — Restored {heal} HP and part of your battle resources. The next travel leg takes 2 minutes longer." + (f" {camp_story}" if camp_story else ""),
             expedition_camped=True,
         )
 
@@ -9441,6 +9476,18 @@ class CrystalGuildEngine:
 
     def _dungeon_delete(self, twitch_id: str) -> None:
         self.db.execute("DELETE FROM player_dungeons WHERE player_id=?", (str(twitch_id),))
+
+    def _dungeon_rest_status(self, twitch_id: str) -> tuple[int, int]:
+        """The next allowed Dungeon entry, rounded UP for display and enforcement.
+
+        The database timestamp is authoritative; Job Ascension Trials do not
+        consult it. Reading the actual expiry avoids a one-second early launch
+        caused by the generic integer-truncating cooldown helper.
+        """
+        row = self.db.one("SELECT available_at FROM cooldowns WHERE player_id=? AND action='dungeon'", (str(twitch_id),))
+        until = int(row["available_at"] or 0) if row else 0
+        remaining = max(0, math.ceil(until - time.time()))
+        return remaining, until if remaining else 0
 
     def _dungeon_progress(self, twitch_id: str, dungeon_id: str) -> dict[str, Any]:
         row = self.db.one(
@@ -9897,12 +9944,14 @@ class CrystalGuildEngine:
             "subtitle": str(dungeon.get("subtitle") or ""),
             "identity": str(dungeon.get("identity") or "Delve"),
             "art": str(dungeon.get("art") or ""),
+            "story_title": str(rooms[0].get("story_title") or "") if rooms else "",
+            "story_mood": str(rooms[0].get("story_mood") or "") if rooms else "",
             "status": str(state.get("status") or "choice"),
             "room_index": room_index,
             "room_number": min(len(rooms), room_index + 1),
             "room_count": len(rooms),
             "variable_route": isinstance(state.get("run_rooms"), list),
-            "room": {"id": str(room.get("id") or ""), "name": str(room.get("name") or "Final Chamber"), "type": str(room.get("type") or "complete"), "type_label": dungeon_room_kind_label(room), "description": str(room.get("description") or "")},
+            "room": {"id": str(room.get("id") or ""), "name": str(room.get("name") or "Final Chamber"), "type": str(room.get("type") or "complete"), "type_label": dungeon_room_kind_label(room), "description": str(room.get("description") or ""), "story": str(room.get("story") or ""), "story_chapter": str(room.get("story_chapter") or "")},
             "cache": copy.deepcopy(self._dungeon_cache(state)),
             "event": copy.deepcopy(state.get("event")),
             "history": copy.deepcopy(list(state.get("history") or [])[-8:]),
@@ -9947,6 +9996,7 @@ class CrystalGuildEngine:
         if not p:
             return {"dungeons": [], "active": None}
         active = self._dungeon_public(twitch_id)
+        cooldown, cooldown_until = self._dungeon_rest_status(twitch_id)
         entries: list[dict[str, Any]] = []
         for dungeon in sorted([*self.data.dungeons.values(), *self.data.ascension_dungeons.values()], key=lambda row: (int(row.get("min_level", 1)), str(row.get("name") or ""))):
             unlocked, missing = self._dungeon_unlock(twitch_id, dungeon)
@@ -9976,7 +10026,7 @@ class CrystalGuildEngine:
             if int(progress.get("clears", 0)) > 0:
                 entry["first_clear_claimed"] = True
             entries.append(entry)
-        return {"dungeons": entries, "active": active, "ascension": self._ascension_trial_state(twitch_id)}
+        return {"dungeons": entries, "active": active, "cooldown_remaining": cooldown, "cooldown_until": cooldown_until, "cooldown_duration": DUNGEON_COOLDOWN_SECONDS, "ascension": self._ascension_trial_state(twitch_id)}
 
     def dungeon_status(self, twitch_id: str) -> GameResult:
         if not self._player(twitch_id):
@@ -9998,7 +10048,9 @@ class CrystalGuildEngine:
             return GameResult.success(*lines)
         options = [d for d in board.get("dungeons", []) if d.get("identity") == "Ascension Dungeon"]
         names = ", ".join(f"{d['id']} (Lv.{d['min_level']})" for d in options)
-        return GameResult.success(f"ASCENSION DUNGEONS — {names}", "Use !dungeonstart <id> or visit the Portal Adventure Board.")
+        wait = max(0, int(board.get("cooldown_remaining") or 0))
+        note = f"Dungeon rest: {self._format_seconds(wait)} remaining before your next delve." if wait else "Your next Dungeon delve is ready."
+        return GameResult.success(f"ASCENSION DUNGEONS — {names}", note, "Use !dungeonstart <id> or visit the Portal Adventure Board.")
 
     def dungeon_start(self, twitch_id: str, dungeon_id: str) -> GameResult:
         p = self._player(twitch_id)
@@ -10012,6 +10064,12 @@ class CrystalGuildEngine:
         dungeon = self._dungeon_definition(str(dungeon_id))
         if not dungeon:
             return GameResult.fail("That Dungeon is not available.")
+        # The ten standard/advanced dungeons share one per-player rest timer.
+        # Job Ascension Trials are separate progression challenges.
+        if not dungeon.get("ascension_trial"):
+            remaining, _ = self._dungeon_rest_status(twitch_id)
+            if remaining > 0:
+                return GameResult.fail(f"Your hero needs {self._format_seconds(remaining)} before entering another Dungeon (10-minute rest after a run).")
         if p["current_job"] == "adventurer":
             return GameResult.fail("Choose a Job before entering a Dungeon.")
         blocked = self._activity_block(twitch_id)
@@ -10345,6 +10403,9 @@ class CrystalGuildEngine:
             "rewards": {"xp": int(rewards.get("xp", 0)), "jp": int(rewards.get("jp", 0)), "gil": int(rewards.get("gil", 0)), "loot": [f"{row.get('name', row.get('id'))} x{int(row.get('quantity', 1))}" for row in rewards.get("items", [])], "achievements": list(rewards.get("achievements") or [])[:4], "levelups": list(rewards.get("levelups") or [])[:4]},
             "history": copy.deepcopy(list(state.get("history") or [])[-10:]), "discoveries": copy.deepcopy(list(state.get("discoveries") or [])), "first_clear": bool(first_clear), "first_clear_bonus": self._dungeon_bonus_preview(dungeon.get("first_clear_bonus")) if first_clear else [], "player": self._solo_result_vitals(twitch_id), "interactive": True,
         }
+        if not trial:
+            self._set_cooldown(twitch_id, "dungeon", DUNGEON_COOLDOWN_SECONDS)
+            summary["cooldown_seconds"] = DUNGEON_COOLDOWN_SECONDS
         self._persist_portal_adventure_result(str(twitch_id), "dungeon", {"title": summary["title"], "won": outcome == "complete", "finished_at": now, "kind": "dungeon", "monster_name": "", "hunt_name": None, "messages": [], "summary": summary})
         self._dungeon_delete(twitch_id)
         return GameResult.success(f"DUNGEON — {summary['title']}. Banked {rewards.get('xp',0)} XP / {rewards.get('jp',0)} JP / {rewards.get('gil',0)} Gil.", dungeon_result=summary, dungeon_finished=True, won=outcome == "complete")
