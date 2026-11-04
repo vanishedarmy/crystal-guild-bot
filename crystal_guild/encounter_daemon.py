@@ -354,6 +354,10 @@ class EncounterDaemon:
         self._retry_backoff_ms = 0
         self._next_passive_recovery_scan = 0.0
         self._next_world_event_scan = 0.0
+        # One malformed overdue Hunt must not starve other Hunts, Ventures,
+        # World Events or Raids. Retry failed assignments with bounded backoff.
+        self._hunt_retry_at: dict[str, float] = {}
+        self._hunt_retry_count: dict[str, int] = {}
 
     @property
     def is_alive(self) -> bool:
@@ -433,6 +437,7 @@ class EncounterDaemon:
             "next_due_in_ms": self._next_due_in_ms,
             "consecutive_failures": self._consecutive_failures,
             "retry_backoff_ms": self._retry_backoff_ms,
+            "hunt_retries_pending": len(self._hunt_retry_at),
         }
 
     @staticmethod
@@ -475,8 +480,15 @@ class EncounterDaemon:
         if not deadlines:
             self._next_due_in_ms = -1
             return self.poll_interval
-        _, due = min(deadlines, key=lambda item: item[1])
-        remaining = due - self._clock()
+        now = self._clock()
+        # A failing overdue Hunt remains due in the authoritative checkpoint;
+        # use its retry deadline for sleeping instead of busy-spinning at 5ms.
+        next_deadlines = [
+            max(due, self._hunt_retry_at.get(label, 0.0)) if label.startswith("hunt:") else due
+            for label, due in deadlines
+        ]
+        due = min(next_deadlines)
+        remaining = due - now
         self._next_due_in_ms = max(0, int(remaining * 1000))
         if remaining <= 0:
             return 0.005
@@ -543,21 +555,47 @@ class EncounterDaemon:
         return True
 
     def _tick_hunts(self, snapshot: dict[str, Any], now: float) -> bool:
-        """Resolve all personal Hunt assignments whose rank timer has expired."""
+        """Resolve expired personal Hunts without one failed run stalling others."""
         acted = False
+        active_keys = {f"hunt:{row.get('player_id')}:{row.get('id')}" for row in snapshot.get("hunts") or []}
+        for old_key in set(self._hunt_retry_at) - active_keys:
+            self._hunt_retry_at.pop(old_key, None)
+            self._hunt_retry_count.pop(old_key, None)
         for hunt in list(snapshot.get("hunts") or []):
             due = float(hunt.get("resolves_at") or 0)
             if not due or due > now:
                 continue
             player_id = str(hunt.get("player_id") or "")
             run_id = int(hunt.get("id") or 0)
-            self._record_deadline(f"hunt:{player_id}:{run_id}", due, now)
-            LOGGER.info("Combat daemon resolving timed Hunt %s for player %s", run_id, player_id)
-            result = self.game.resolve_hunt(player_id, run_id)
-            self._last_action = f"hunt-resolve:{player_id}:{run_id}"
-            if result.ok:
-                self._last_resolved_id = run_id
-                self._publish(result)
+            key = f"hunt:{player_id}:{run_id}"
+            if self._hunt_retry_at.get(key, 0) > now:
+                continue
+            self._record_deadline(key, due, now)
+            try:
+                LOGGER.info("Combat daemon resolving timed Hunt %s for player %s", run_id, player_id)
+                result = self.game.resolve_hunt(player_id, run_id)
+                self._last_action = f"hunt-resolve:{player_id}:{run_id}"
+                if not result.ok:
+                    # Stale snapshots from another Bot may refer to a run that
+                    # was already settled. Do not report or reward it again.
+                    if player_id in self.game.active_hunts and int(self.game.active_hunts[player_id].get("id") or 0) == run_id:
+                        raise RuntimeError("Hunt settlement rejected: " + " ".join(result.messages[:1]))
+                elif result.data.get("hunt_finished"):
+                    self._last_resolved_id = run_id
+                    self._publish(result)
+                elif result.data.get("combat_continues"):
+                    # A hard combat watchdog intentionally preserves the run.
+                    self._hunt_retry_at[key] = max(now + 1, float(self.game.active_hunts.get(player_id, {}).get("resolves_at") or 0))
+                self._hunt_retry_count.pop(key, None)
+                if not result.data.get("combat_continues"):
+                    self._hunt_retry_at.pop(key, None)
+            except Exception as exc:
+                failures = self._hunt_retry_count.get(key, 0) + 1
+                self._hunt_retry_count[key] = failures
+                delay = min(120.0, 2.0 * (2 ** min(failures - 1, 6)))
+                self._hunt_retry_at[key] = now + delay
+                self._last_error = f"hunt {player_id}/{run_id}: {type(exc).__name__}: {exc}"
+                LOGGER.exception("Timed Hunt %s for %s failed; retrying in %.1fs without blocking other activities", run_id, player_id, delay)
             acted = True
         return acted
 
@@ -601,11 +639,17 @@ class EncounterDaemon:
             try:
                 now = self._clock()
                 if now >= self._next_passive_recovery_scan:
-                    recovery = self.game.refresh_due_long_rests(now=int(now))
                     self._next_passive_recovery_scan = now + 60.0
-                    if int(recovery.get("count") or 0) > 0:
-                        self._last_action = f"long-rest:{int(recovery['count'])}"
-                world_event_acted = self._tick_world_event_spawn(now)
+                    try:
+                        recovery = self.game.refresh_due_long_rests(now=int(now))
+                        if int(recovery.get("count") or 0) > 0:
+                            self._last_action = f"long-rest:{int(recovery['count'])}"
+                    except Exception:
+                        LOGGER.exception("Passive long-rest scan failed; continuing live activities")
+                try:
+                    self._tick_world_event_spawn(now)
+                except Exception:
+                    LOGGER.exception("World Event scheduling scan failed; continuing other activities")
                 snapshot = self.game.combat_snapshot()
                 hunt_acted = self._tick_hunts(snapshot, now)
                 if hunt_acted:
@@ -621,7 +665,7 @@ class EncounterDaemon:
                 # Preserve a notification-delivery diagnostic until a later
                 # notification succeeds. A successful game tick must not erase
                 # evidence that Twitch transport failed after resolution.
-                if not (self._last_error or "").startswith("notify "):
+                if not (self._last_error or "").startswith("notify ") and not self._hunt_retry_at:
                     self._last_error = None
                 self._consecutive_failures = 0
                 self._retry_backoff_ms = 0

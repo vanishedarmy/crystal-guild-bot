@@ -1,3 +1,5 @@
+> **v2.1.0 Activity Resolution Hotfix (November 4, 2026):** Deploy matching Bot and Web together. Portal Action protocol is now **40** (previously 39); timed Hunts have automatic overdue recovery plus a safe **Finish Hunt** action. No database migration or new artwork is required. See `INSTALL_ACTIVITY_RESOLUTION_V210.md` in the release root. Older version/protocol references below are historical.
+
 # Crystal Guild v2.0.1 — Encounter Rebalance
 
 **Scope:** Combat-tuning release built on the v2.0.0 Item Reclassification + initial V2.0.0 Enemy Balance Bot. No data migration, reward reset, artwork replacement or new command syntax.

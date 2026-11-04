@@ -11653,7 +11653,24 @@ class CrystalGuildEngine:
     def portal_adventure_state(self, twitch_id: str, *, stream_live: bool | None = None) -> GameResult:
         if not self._player(twitch_id):
             return self._need_recruit()
-        return GameResult.success("Adventure Board refreshed.", adventure_state=self._portal_adventure_state_data(twitch_id, stream_live=stream_live))
+        # A completed personal Hunt should not remain stranded when the background
+        # scheduler was delayed/restarted. The timed assignment, run identity,
+        # combat rewards and settlement remain authoritative on the Bot.
+        # This is a second, idempotent completion path for players opening the
+        # Portal; never grant anything until the original deadline is reached.
+        assignment = self.active_hunts.get(str(twitch_id))
+        recovered_hunt = False
+        if assignment and time.time() >= float(assignment.get("resolves_at") or 0):
+            try:
+                recovery = self.resolve_hunt(str(twitch_id), int(assignment.get("id") or 0))
+                recovered_hunt = bool(recovery.ok and recovery.data.get("hunt_finished"))
+            except Exception:
+                LOGGER.exception("Failed to recover overdue Hunt while refreshing Adventure Board for %s", twitch_id)
+        return GameResult.success(
+            "Adventure Board refreshed.",
+            adventure_state=self._portal_adventure_state_data(twitch_id, stream_live=stream_live),
+            recovered_hunt=recovered_hunt,
+        )
 
     @_state_guard
     def portal_lurk_mode(self, twitch_id: str, enabled: bool, action_id: str) -> GameResult:
@@ -11813,6 +11830,20 @@ class CrystalGuildEngine:
                 assignment["portal_action_id"] = str(action_id or "")
             result.data["portal_origin"] = True
         return self._portal_adventure_mutation_result(action_id, result, twitch_id)
+
+    @_state_guard
+    def portal_resolve_hunt(self, twitch_id: str, hunt_run_id: int, action_id: str) -> GameResult:
+        """Safe, owner-only-on-self recovery for an expired Hunt assignment.
+
+        The outer guarded transaction protects against a simultaneous daemon
+        settlement. The original run ID and timestamp are always checked by
+        resolve_hunt, so duplicate requests cannot grant rewards twice.
+        """
+        replay = self._portal_action_replay(action_id)
+        if replay is not None:
+            return replay
+        result = self.resolve_hunt(str(twitch_id), int(hunt_run_id))
+        return self._portal_adventure_mutation_result(action_id, result, str(twitch_id))
 
     @_state_guard
     def portal_ack_adventure_result(self, twitch_id: str, result_id: int, action_id: str) -> GameResult:

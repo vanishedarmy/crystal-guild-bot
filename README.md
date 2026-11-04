@@ -1,3 +1,5 @@
+> **v2.1.0 Activity Resolution Hotfix (November 4, 2026):** Deploy matching Bot and Web together. Portal Action protocol is now **40** (previously 39); timed Hunts have automatic overdue recovery plus a safe **Finish Hunt** action. No database migration or new artwork is required. See `INSTALL_ACTIVITY_RESOLUTION_V210.md` in the release root. Older version/protocol references below are historical.
+
 # CURRENT RELEASE: v2.1.0 — Adventure Tales
 
 See `RELEASE_NOTES.md` for scope and safe upgrade instructions.

@@ -16,7 +16,7 @@ from . import __version__ as APP_VERSION
 from .engine import CrystalGuildEngine, GameResult
 
 LOGGER = logging.getLogger("CrystalGuild.PortalActions")
-ACTION_PROTOCOL_VERSION = 39
+ACTION_PROTOCOL_VERSION = 40
 
 # These actions only read server state (or update a local, queue-neutral
 # preference). They must not reset inactivity timers, check for title unlocks,
@@ -187,7 +187,7 @@ class PortalActionWorker:
             streamer_read = action_type == "STREAMER_COMMAND" and str(
                 (action.get("payload") or {}).get("command") or ""
             ).strip().lower().lstrip("!") in {"health", "economy", "cgversion", "encounterdebug", "directtest"}
-            if ok and self.wake_sync is not None and action_type not in PASSIVE_PORTAL_ACTIONS and not streamer_read:
+            if ok and self.wake_sync is not None and (action_type not in PASSIVE_PORTAL_ACTIONS or bool(data.get("recovered_hunt"))) and not streamer_read:
                 try:
                     self.wake_sync()
                 except Exception:
@@ -875,6 +875,15 @@ class PortalActionWorker:
             result = self.game.portal_challenge_hunt(twitch_id, hunt_id, action_id)
             if result.ok and result.data.get("hunt_started"):
                 self._wake_encounter_scheduler()
+            return self._game_result(result)
+        if action_type == "RESOLVE_HUNT":
+            try:
+                run_id = int(payload.get("hunt_run_id") or 0)
+            except (TypeError, ValueError):
+                return False, "Hunt run ID is invalid.", {}
+            if run_id <= 0:
+                return False, "Hunt run ID is invalid.", {}
+            result = self.game.portal_resolve_hunt(twitch_id, run_id, str(action.get("id") or ""))
             return self._game_result(result)
         if action_type == "ACK_ADVENTURE_RESULT":
             try:
