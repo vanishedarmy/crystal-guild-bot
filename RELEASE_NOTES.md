@@ -1,3 +1,17 @@
+## v2.1.1 — Adventure Tales (version-only update)
+
+- Version label updated from v2.1.0 to **v2.1.1**; the release name **Adventure Tales** is unchanged.
+- All prior Dungeon Art, Expedition exploration XP, Adventure Board and Activity Resolution Hotfix changes remain in place.
+- No gameplay changes, art replacement, action-protocol changes (remains **40**), database migration, item changes, or progress reset.
+- Deploy the matching Bot and hosted Web files, rebuild the frontend to show the new version, and preserve database/configuration.
+
+## v2.1.0 — Dungeon Art, Expedition Exploration XP & Adventure Board
+
+- Every cleared Expedition stage, including non-combat stages, now adds modest level-scaled exploration XP to the existing Cache; later stages earn slightly less. It banks on return and follows normal rescue losses. No new schema or cooldown.
+- Ten distinct dungeon illustrations mapped through the Bot catalog and Web assets to regular and Ascension Dungeons.
+- Adventure Board now focuses the current activity and next action, with shortcuts to each activity.
+- Release identity stays v2.1.0 — Adventure Tales.
+
 # Crystal Guild v2.1.0 — Adventure Tales
 
 The consolidated v2.1.0 release integrates the latest V2.0.1 fixes and expands Expedition/Dungeon storytelling.

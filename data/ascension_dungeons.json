@@ -320,7 +320,8 @@
           ]
         }
       ]
-    }
+    },
+    "art": "/dungeon-backgrounds/crystal_sanctum.webp"
   },
   {
     "id": "abyssal_foundry",
@@ -641,7 +642,8 @@
           ]
         }
       ]
-    }
+    },
+    "art": "/dungeon-backgrounds/abyssal_foundry.webp"
   },
   {
     "id": "celestial_spire",
@@ -963,7 +965,8 @@
           ]
         }
       ]
-    }
+    },
+    "art": "/dungeon-backgrounds/celestial_spire.webp"
   },
   {
     "id": "void_cathedral",
@@ -1283,7 +1286,8 @@
           ]
         }
       ]
-    }
+    },
+    "art": "/dungeon-backgrounds/void_cathedral.webp"
   },
   {
     "id": "astral_crucible",
@@ -1603,7 +1607,8 @@
           ]
         }
       ]
-    }
+    },
+    "art": "/dungeon-backgrounds/astral_crucible.webp"
   },
   {
     "id": "throne_eternity",
@@ -1921,6 +1926,7 @@
           ]
         }
       ]
-    }
+    },
+    "art": "/dungeon-backgrounds/throne_eternity.webp"
   }
 ]

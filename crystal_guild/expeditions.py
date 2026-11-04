@@ -121,3 +121,16 @@ def hazard_damage_multiplier(traits: set[str], level: int = 1) -> float:
 
 def chocobo_event_bond_xp(base_xp: int, level: int = 1) -> int:
     return max(0, int(base_xp)) + max(0, bond_tier(level) - 1) * 2
+
+
+# v2.1.0 Adventure Tales — experience earned for clearing ordinary Expedition
+# stages, even when the stage does not contain a combat encounter. This is
+# intentionally a small fraction of one local enemy's combat XP; repeated
+# pushes earn gradually less exploration XP and never change loot roll RNG.
+def stage_exploration_xp(local_enemy_xp: int, level_factor: float, stage: int, reward_mult: float = 1.0) -> int:
+    baseline = max(1, int(local_enemy_xp))
+    factor = max(0.0, float(level_factor))
+    depth = max(1, int(stage))
+    multiplier = max(0.0, min(2.0, float(reward_mult)))
+    portion = 0.15 * (0.93 ** (depth - 1))
+    return max(1, round(baseline * factor * portion * multiplier))

@@ -138,7 +138,7 @@
         "description": "Stone wings unfold above the burial bell. The Ossuary's final sentinel has been waiting for a challenger."
       }
     ],
-    "art": "/retro-phase-ii/regions-hd/whispering_caverns.webp",
+    "art": "/dungeon-backgrounds/forgotten_ossuary.webp",
     "identity": "Relics & Recovery",
     "first_clear_bonus": {
       "xp": 120,
@@ -268,7 +268,7 @@
     "subtitle": "A ruined mountain forge where crystal furnaces still burn beneath the Ashen Highlands.",
     "min_level": 18,
     "recommended_level": 21,
-    "art": "/expeditions/ashen-highlands.webp",
+    "art": "/dungeon-backgrounds/emberglass_foundry.webp",
     "unlock": {
       "expedition_region": "ashen_highlands",
       "progress": 35
@@ -546,7 +546,7 @@
     "identity": "Endurance & Wards",
     "min_level": 26,
     "recommended_level": 30,
-    "art": "/expeditions/frostveil-reach.webp",
+    "art": "/dungeon-backgrounds/whiteglass_bastion.webp",
     "unlock": {
       "expedition_region": "frostveil_reach",
       "progress": 45
@@ -880,7 +880,7 @@
     "identity": "Anomalies & Pressure",
     "min_level": 34,
     "recommended_level": 38,
-    "art": "/expeditions/astral-scar.webp",
+    "art": "/dungeon-backgrounds/riftglass_observatory.webp",
     "unlock": {
       "expedition_region": "astral_scar",
       "progress": 55

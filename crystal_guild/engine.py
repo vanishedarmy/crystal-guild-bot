@@ -8449,6 +8449,32 @@ class CrystalGuildEngine:
             expedition_combat=True,
         )
 
+    def _expedition_stage_exploration_xp(self, twitch_id: str, state: dict[str, Any]) -> int:
+        """Modest XP for clearing a route stage, scaled to local foe level.
+
+        This adds to the *Expedition Cache*, not directly to player XP. The
+        existing return/rescue settlement determines how much is banked.
+        """
+        from .expeditions import stage_exploration_xp
+
+        player = self._player(twitch_id)
+        region = self.data.expedition_regions.get(str(state.get("region_id") or "")) or {}
+        if not player or not region:
+            return 0
+        enemy_ids = [str(row.get("monster_id") or "") for row in region.get("encounters", [])]
+        local_enemies = [self.data.monsters[mid] for mid in enemy_ids if mid in self.data.monsters]
+        if not local_enemies:
+            return 0
+        local_xp = sorted(int(m.get("xp") or 0) for m in local_enemies)[len(local_enemies) // 2]
+        region_level = round(sum(int(m.get("level", 1)) for m in local_enemies) / len(local_enemies))
+        factor = encounter_reward_factor(int(player["level"] or 1), region_level)
+        # Use a run-static multiplier: route switching and bonus-depth combat
+        # boosts should not make later exploration stages suddenly pay more XP.
+        depth = EXPEDITION_DEPTHS.get(str(state.get("depth") or "scout"), EXPEDITION_DEPTHS["scout"])
+        run_multiplier = (float(state.get("contract_reward_mult") or 1.35)
+                          if state.get("boss_contract") else float(depth["reward_mult"]))
+        return stage_exploration_xp(local_xp, factor, int(state.get("stage", 1)), run_multiplier)
+
     def _expedition_stage_resolved(self, twitch_id: str, state: dict[str, Any], event: dict[str, Any], progress_gain: int = 1) -> GameResult:
         story = expedition_story_scene(
             str(state.get("region_id") or ""), str(event.get("type") or "event"),
@@ -8458,6 +8484,21 @@ class CrystalGuildEngine:
         if story:
             event["story"] = story
             event["label"] = f"{str(event.get('label') or 'Stage resolved.')} {story}"
+        # Stage reward is idempotent even for retried internal paths and older
+        # saved runs. It is added only when the stage is truly resolved, not on
+        # departure, while traveling, or before a combat victory.
+        stage_number = int(state.get("stage", 1))
+        rewarded = {int(stage) for stage in state.get("exploration_xp_stages", [])}
+        stage_xp = 0
+        if stage_number not in rewarded:
+            stage_xp = self._expedition_stage_exploration_xp(twitch_id, state)
+            if stage_xp:
+                cache = self._expedition_cache(state)
+                cache["xp"] = int(cache.get("xp", 0)) + stage_xp
+                state.setdefault("exploration_xp_stages", []).append(stage_number)
+        event["stage_xp"] = stage_xp
+        if stage_xp:
+            event["label"] = f"{event.get('label', 'Stage resolved.')} +{stage_xp} exploration XP added to the Expedition Cache."
         state["event"] = event
         state["status"] = "choice"
         state.setdefault("history", []).append(
