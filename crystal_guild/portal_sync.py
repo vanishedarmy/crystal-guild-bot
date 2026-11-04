@@ -58,14 +58,17 @@ class PortalSyncClient:
         self.verify_tls = verify_tls
         self.heartbeat_seconds = max(5.0, float(heartbeat_seconds))
         self.overlay_state_path = Path(overlay_state_path).resolve() if overlay_state_path else None
+        self.stream_overlay_state_path = self.overlay_state_path.with_name("stream_state.json") if self.overlay_state_path else None
         self.owner_twitch_id = str(owner_twitch_id or os.getenv("TWITCH_OWNER_ID", "")).strip()
         self.fellowship_prepare = fellowship_prepare
         self.player_prepare = player_prepare
         self._hashes: dict[str, str] = {}
         self._fellowship_hash: str | None = None
         self._overlay_hash: str | None = None
+        self._stream_overlay_hash: str | None = None
         self._last_source_stamp: tuple[int, ...] | None = None
         self._last_overlay_stamp: tuple[int, int] | None = None
+        self._last_stream_overlay_stamp: tuple[int, int] | None = None
         self._last_manifest: tuple[str, ...] = ()
         self._last_heartbeat = 0.0
         self._force_full = True
@@ -149,6 +152,34 @@ class PortalSyncClient:
             return (int(stat.st_mtime_ns), int(stat.st_size))
         except FileNotFoundError:
             return (0, 0)
+
+    def stream_overlay_source_stamp(self) -> tuple[int, int]:
+        path = self.stream_overlay_state_path
+        if not path:
+            return (0, 0)
+        try:
+            stat = path.stat()
+            return (int(stat.st_mtime_ns), int(stat.st_size))
+        except FileNotFoundError:
+            return (0, 0)
+
+    def build_stream_overlay_snapshot(self) -> dict[str, Any] | None:
+        path = self.stream_overlay_state_path
+        if not path or not path.exists():
+            return None
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+        if not isinstance(raw, dict):
+            return None
+        from .stream_overlay import clean_stream_overlay
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "sync_version": SYNC_VERSION,
+            "generated_at": int(time.time()),
+            "stream_overlay": clean_stream_overlay(raw),
+        }
 
     def build_overlay_snapshot(self) -> dict[str, Any] | None:
         path = self.overlay_state_path
@@ -263,11 +294,13 @@ class PortalSyncClient:
     ) -> dict[str, int]:
         stamp = self.source_stamp()
         overlay_stamp = self.overlay_source_stamp()
+        stream_stamp = self.stream_overlay_source_stamp()
         now = time.monotonic()
         source_changed = force or self._force_full or stamp != self._last_source_stamp
         overlay_changed = force or self._force_full or overlay_stamp != self._last_overlay_stamp
+        stream_changed = force or self._force_full or stream_stamp != self._last_stream_overlay_stamp
         heartbeat_due = force or self._force_full or (now - self._last_heartbeat) >= self.heartbeat_seconds
-        if not source_changed and not overlay_changed and not heartbeat_due:
+        if not source_changed and not overlay_changed and not stream_changed and not heartbeat_due:
             return {"players": len(self._hashes), "changed": 0, "removed": 0, "overlay": 0}
 
         players = self.repository.list_players()
@@ -306,6 +339,14 @@ class PortalSyncClient:
                     self._post("/api/sync/overlay", overlay_payload)
                     self._overlay_hash = overlay_digest
                     overlay_uploaded = 1
+
+        if stream_changed or heartbeat_due:
+            stream_payload = self.build_stream_overlay_snapshot()
+            if stream_payload is not None:
+                stream_digest = self.snapshot_hash(stream_payload)
+                if force or heartbeat_due or self._stream_overlay_hash != stream_digest:
+                    self._post("/api/sync/stream-overlay", stream_payload)
+                    self._stream_overlay_hash = stream_digest
 
         if source_changed:
             for username in usernames:
@@ -347,6 +388,11 @@ class PortalSyncClient:
                 if fellowship_payload is not None:
                     self._post("/api/sync/fellowship", fellowship_payload)
                     self._fellowship_hash = self.snapshot_hash(fellowship_payload)
+            if response.get("needs_stream_overlay"):
+                stream_payload = self.build_stream_overlay_snapshot()
+                if stream_payload is not None:
+                    self._post("/api/sync/stream-overlay", stream_payload)
+                    self._stream_overlay_hash = self.snapshot_hash(stream_payload)
             if response.get("needs_overlay"):
                 if overlay_payload is None:
                     overlay_payload = self.build_overlay_snapshot()
@@ -371,6 +417,7 @@ class PortalSyncClient:
 
         self._last_source_stamp = stamp
         self._last_overlay_stamp = overlay_stamp
+        self._last_stream_overlay_stamp = stream_stamp
         self._force_full = False
         return {"players": len(usernames), "changed": changed, "removed": removed, "overlay": overlay_uploaded}
 

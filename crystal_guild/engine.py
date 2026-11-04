@@ -92,7 +92,7 @@ from .daily_provisions import (
 )
 from .balance import dungeon_repeat_bonus_factor
 from .data import GameData
-from .bestiary_progress import reconcile_mastery
+from .bestiary_progress import reconcile_mastery, progress_for
 from .moments_progress import (award_settlement, best_record, reconcile_all_verified_history,
                                reconcile_all_owned_moment_rewards)
 from .dungeons import DUNGEON_CACHE_DEFEAT_RATIO, DUNGEON_CACHE_RETREAT_RATIO, DUNGEON_COOLDOWN_SECONDS, room_kind_label as dungeon_room_kind_label, generate_dungeon_run_rooms
@@ -265,6 +265,10 @@ def _state_guard(method):
                                 (after.get("active_boss") != before.get("active_boss") or
                                  after.get("raid_roster") != before.get("raid_roster"))):
                             self._update_raid_overlay()
+                        if (before is not None and
+                                (after.get("active_encounter") != before.get("active_encounter") or
+                                 after.get("encounter_roster") != before.get("encounter_roster"))):
+                            self._update_stream_overlay()
                     return result
             except Exception:
                 if before is not None:
@@ -323,6 +327,7 @@ class CrystalGuildEngine:
         self.raid_join_seconds = max(10, raid_join_seconds)
         self.raid_round_seconds = max(5, raid_round_seconds)
         self.overlay_state_path = Path(overlay_state_path)
+        self.stream_overlay_state_path = self.overlay_state_path.with_name("stream_state.json")
         self.rng = rng or random.Random()
         self.venture_treasure_chance = max(0.0, min(1.0, float(venture_treasure_chance)))
         self._state_lock = threading.RLock()
@@ -389,6 +394,7 @@ class CrystalGuildEngine:
             self._update_raid_overlay()
         else:
             self._write_overlay({"active": False, "status": "IDLE"})
+        self._update_stream_overlay()
 
     def _capture_runtime_state(self) -> dict[str, Any]:
         return {
@@ -3555,6 +3561,8 @@ class CrystalGuildEngine:
 
         encounter = self.active_encounter
         combatants, monster, monster_max = self._initialize_active_combat(encounter)
+        if combatants > 0:
+            self._prepare_stream_enemy_intent(monster)
         if encounter.get("kind", "venture") == "venture":
             for pid, meta in self.encounter_roster.items():
                 if int(meta.get("max_hp", 0)) > 0 and not isinstance(meta.get("merc_contract"), dict):
@@ -5235,6 +5243,37 @@ class CrystalGuildEngine:
             + "."
         )
 
+    def _prepare_stream_enemy_intent(self, monster: dict[str, Any]) -> None:
+        """Commit the next shared Venture/World Event enemy action before the round.
+
+        The chosen action is used by the combat resolver and the stream HUD. This
+        is not a guessed enemy special; a reconnect reads the saved action.
+        """
+        encounter = self.active_encounter
+        if not encounter or encounter.get("kind") not in {"venture", "world_event"}:
+            return
+        statuses = encounter.setdefault("monster_statuses", {})
+        if has_status(statuses, "stun"):
+            encounter["stream_enemy_intent"] = {"kind": "stunned"}
+            return
+        behavior = self.data.enemy_actions.get(monster["id"], {"profile": "balanced"})
+        profile = self.data.enemy_profiles.get(
+            behavior.get("profile"), self.data.enemy_profiles.get("balanced", {})
+        )
+        if encounter.get("kind") == "world_event":
+            event = WORLD_EVENTS_BY_ID.get(str(encounter.get("world_event_id") or ""), {})
+            living = sum(1 for row in self.encounter_roster.values() if int(row.get("hp", 0)) > 0)
+            behavior = world_event_behavior(behavior, event, living)
+        action = choose_enemy_action(
+            behavior, profile,
+            hp_ratio=int(encounter.get("monster_hp", 0)) / max(1, int(encounter.get("monster_max_hp", 1))),
+            round_no=int(encounter.get("round", 1)),
+            special_ready_round=int(encounter.get("enemy_special_ready_round", 1)),
+            monster_statuses=statuses,
+            rng=self.rng,
+        )
+        encounter["stream_enemy_intent"] = action
+
     def _active_enemy_turn(self, monster: dict[str, Any], log: list[str]) -> None:
         """Resolve the monster response using the data-driven enemy AI layer."""
         statuses = self.active_encounter.setdefault("monster_statuses", {})
@@ -5275,7 +5314,8 @@ class CrystalGuildEngine:
                 1, int(self.active_encounter.get("monster_max_hp", 1))
             )
             self.active_encounter["_moment_hostile_serial"] = int(self.active_encounter.get("_moment_hostile_serial", 0)) + 1
-            action = choose_enemy_action(
+            committed = self.active_encounter.pop("stream_enemy_intent", None) if _ == 0 else None
+            action = committed if isinstance(committed, dict) and committed.get("kind") in {"attack", "special", "utility"} else choose_enemy_action(
                 behavior,
                 profile,
                 hp_ratio=hp_ratio,
@@ -5479,6 +5519,7 @@ class CrystalGuildEngine:
         self._remember_round(round_no, log)
         self.active_encounter["round"] = round_no + 1
         self.active_encounter["next_round_at"] = time.time() + self.encounter_round_seconds
+        self._prepare_stream_enemy_intent(monster)
         enemy_hp = int(self.active_encounter["monster_hp"])
         enemy_max = int(self.active_encounter["monster_max_hp"])
         enemy_status = status_text(self.active_encounter.get("monster_statuses", {}), limit=2)
@@ -19513,6 +19554,90 @@ class CrystalGuildEngine:
             "mechanic":self._raid_public_mechanic(boss.get("mechanic")), "last_mechanic":self._raid_public_mechanic(boss.get("last_mechanic")),
             "next_round_at":boss.get("next_round_at"), "updated_at":int(time.time()),
         }
+
+    def _stream_weaknesses_known(self, monster: dict[str, Any], encounter: dict[str, Any]) -> list[str]:
+        """Reveal only elements learned by a *currently joined* player.
+
+        Core monsters obey the Bestiary's configured weakness reveal milestone;
+        World Event variants follow their own completed-record visibility rule.
+        Never use the Twitch username, level, or client-side flags as authority.
+        """
+        weakness = str(monster.get("weakness") or "").strip().lower()
+        allowed = {"fire", "ice", "lightning", "water", "wind", "earth", "holy", "dark"}
+        if weakness not in allowed:
+            return []
+        monster_id = str(encounter.get("monster_id") or "")
+        kind = str(encounter.get("kind") or "")
+        for player_id in self.encounter_roster:
+            if kind == "world_event":
+                event_id = str(encounter.get("world_event_id") or "")
+                try:
+                    row = self.db.one(
+                        "SELECT clears FROM player_world_event_clears WHERE player_id=? AND world_event_id=?",
+                        (str(player_id), event_id),
+                    )
+                except Exception:
+                    row = None
+                if row and int(row["clears"] or 0) > 0:
+                    return [weakness]
+            else:
+                row = self.db.one(
+                    "SELECT defeats FROM bestiary WHERE player_id=? AND monster_id=?",
+                    (str(player_id), monster_id),
+                )
+                defeats = int(row["defeats"] or 0) if row else 0
+                if "weakness" in progress_for(self.data, monster_id, defeats).get("visible_fields", []):
+                    return [weakness]
+        return []
+
+    def _stream_overlay_payload(self) -> dict[str, Any]:
+        encounter = self.active_encounter or {}
+        kind = str(encounter.get("kind") or "")
+        if kind not in {"venture", "world_event"}:
+            return {"active": False, "status": "IDLE", "updated_at": int(time.time())}
+        monster = self._encounter_monster(encounter)
+        state = str(encounter.get("state") or "rally")
+        planned = encounter.get("stream_enemy_intent") or {}
+        attack_kind = str(planned.get("kind") or "")
+        if state != "combat":
+            attack_name = "Rally forming"
+        elif attack_kind == "special":
+            attack_name = str((planned.get("ability") or {}).get("name") or "Special Attack")
+        elif attack_kind == "utility":
+            attack_name = str((planned.get("utility") or {}).get("name") or "Enemy Technique")
+        elif attack_kind == "stunned":
+            attack_name = "Stunned"
+        else:
+            attack_name = "Attack"
+        status_rows = self._raid_overlay_statuses(encounter.get("monster_statuses"))
+        buffs = {"haste", "protect", "shell", "regen", "brave", "focus", "reflect", "evade", "barrier", "strength_up", "magic_up", "power_up", "taunt"}
+        max_hp = max(1, int(encounter.get("monster_max_hp") or monster.get("hp") or 1))
+        hp = max(0, min(max_hp, int(encounter.get("monster_hp") or max_hp)))
+        return {
+            "active": True, "status": state.upper(), "kind": kind,
+            "monster": str(monster.get("name") or "Unknown Enemy")[:80],
+            "monster_id": str(encounter.get("monster_id") or "")[:80],
+            "art": str(monster.get("art") or (WORLD_EVENTS_BY_ID.get(str(encounter.get("world_event_id") or ""), {}).get("art") if kind == "world_event" else "") or "")[:200],
+            "hp": hp, "max_hp": max_hp,
+            "attack": attack_name[:80], "attack_kind": attack_kind[:16] if state == "combat" else "rally",
+            "weaknesses": self._stream_weaknesses_known(monster, encounter),
+            "buffs": [row["id"] for row in status_rows if row["id"] in buffs],
+            "debuffs": [row["id"] for row in status_rows if row["id"] not in buffs],
+            "joined": min(64, len(self.encounter_roster)),
+            "round": max(0, int(encounter.get("round") or 0)),
+            "next_round_at": max(0, int(encounter.get("next_round_at") or encounter.get("closes_at") or 0)),
+            "updated_at": int(time.time()),
+        }
+
+    def _update_stream_overlay(self) -> None:
+        try:
+            payload = self._stream_overlay_payload()
+            self.stream_overlay_state_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self.stream_overlay_state_path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
+            tmp.replace(self.stream_overlay_state_path)
+        except (OSError, ValueError, TypeError):
+            LOGGER.exception("Failed to publish public Venture / World Event overlay")
 
     def _write_overlay(self, payload: dict[str, Any]) -> None:
         try:
