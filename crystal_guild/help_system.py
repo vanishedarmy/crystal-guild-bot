@@ -20,6 +20,14 @@ HELP_TOPICS = {
         "LURK MODE — !lurkmode on automatically joins an eligible open Venture, World Event, or Raid only after someone else joins. Conservative automatic attacks and healing; !lurkmode off disables, !lurkmode status checks. Never starts an event or joins after rally closes.",
         "MIST SUPPORT — During a live Venture, World Event, or Raid battle, !healparty (100 Gil), !healparty 2 (250 Gil), !healparty 3 (500 Gil), or !healparty 4 (1,000 Gil) immediately heals the living party’s HP/MP. Once per participating hero per Venture, World Event, or Raid (each run has separate uses). No Gil spent if it cannot be used.",
     ),
+    "explore": (
+        "STREAM EXPLORE — While the Twitch channel is LIVE, use !explore once every 5 minutes to roll a small story event: Gil, XP/JP, supplies, materials, a rare discovery, a mishap, or a peaceful walk.",
+        "You must finish any current Hunt, Dungeon, Expedition, Raid or Venture first. Rewards and losses are saved immediately. Exploring never bypasses normal combat timers.",
+    ),
+    "moogle": (
+        "TRAVELING MOOGLE — A wandering merchant may visit unexpectedly while the Twitch stream is LIVE. A visit lasts 12 minutes with limited stock shared across viewers.",
+        "Use !moogle to inspect available numbered offers. Buy with !moogle buy <slot> [quantity]. Purchases cost Gil and are final. Relic and quest-locked equipment never appear.",
+    ),
     "recovery": (
         "RECOVERY — !rest starts a free camp recovery; use !rest again to check the timer. !use tent restores you immediately outside combat. While LIVE, use !use <item> | <username> to apply eligible field recovery to another adventurer.",
         "In Active Battle, healing/Ether/Phoenix Down plus Antidote, Echo Herbs, and Remedy can be queued. Poison, Silence, and Blind are real battle statuses; items are consumed only on successful resolution.",
@@ -89,6 +97,7 @@ ALIASES = {
     "recruit": "start", "begin": "start", "new": "start",
     "hero": "character", "profile": "character", "status": "character", "me": "character", "daily": "character", "substatus": "character",
     "job": "jobs", "jobinfo": "jobs", "abilities": "jobs", "mastery": "jobs", "stance": "jobs",
+    "explore": "explore", "moogle": "moogle", "merchant": "moogle", "travelingmoogle": "moogle",
     "venture": "adventure", "lurkmode": "adventure", "join": "adventure", "encounter": "adventure", "battlelog": "adventure", "roundlog": "adventure", "combatlog": "adventure", "attack": "adventure", "ability": "adventure", "defend": "adventure", "guard": "adventure", "travel": "adventure", "regions": "adventure",
     "rest": "recovery", "camp": "recovery", "use": "recovery", "healparty": "adventure",
     "inv": "inventory", "gear": "inventory", "equipment": "inventory", "equip": "inventory", "item": "inventory",

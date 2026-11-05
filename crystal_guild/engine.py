@@ -7368,6 +7368,25 @@ class CrystalGuildEngine:
                                   "Buy: !buy <item or #> [qty] · More: !shop supplies 2 · Gear: !shop weapons",
                                   stock=[i["id"] for i in stock], expires_at=expires)
 
+    # Live Twitch-only field discoveries and short-lived merchant visits.
+    # These use existing SQLite ledgers and do not change the regional Emporium.
+    def stream_explore(self, twitch_id: str, *, stream_live: bool, now: int | None = None) -> GameResult:
+        from .stream_discoveries import explore
+        return explore(self, twitch_id, stream_live=stream_live, now=now)
+
+    def maybe_spawn_traveling_moogle(self, *, stream_live: bool, now: int | None = None, force: bool = False) -> GameResult:
+        from .stream_discoveries import maybe_spawn_merchant
+        return maybe_spawn_merchant(self, stream_live=stream_live, now=now, force=force)
+
+    def traveling_moogle_status(self, *, stream_live: bool, now: int | None = None) -> GameResult:
+        from .stream_discoveries import merchant_status
+        return merchant_status(self, stream_live=stream_live, now=now)
+
+    def traveling_moogle_buy(self, twitch_id: str, slot: str, quantity: int = 1,
+                              *, stream_live: bool, now: int | None = None) -> GameResult:
+        from .stream_discoveries import merchant_buy
+        return merchant_buy(self, twitch_id, slot, quantity, stream_live=stream_live, now=now)
+
     def _moment_purchase_sql(self, conn: Any, player_id: str, row_id: int, cost: int, *, source: str) -> None:
         """Only an actual committed single storefront debit may award Retail Therapy."""
         if source not in {"shop", "portal_shop", "trading_post_buy"} or cost < 25000:

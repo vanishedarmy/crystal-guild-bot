@@ -354,6 +354,7 @@ class EncounterDaemon:
         self._retry_backoff_ms = 0
         self._next_passive_recovery_scan = 0.0
         self._next_world_event_scan = 0.0
+        self._next_traveling_moogle_scan = 0.0
         # One malformed overdue Hunt must not starve other Hunts, Ventures,
         # World Events or Raids. Retry failed assignments with bounded backoff.
         self._hunt_retry_at: dict[str, float] = {}
@@ -421,6 +422,22 @@ class EncounterDaemon:
             self._last_action = f"world-event-spawn:{result.data.get('world_event_id', 'unknown')}"
             self._publish(result)
             return True
+        return False
+
+    def _tick_traveling_moogle(self, now: float) -> bool:
+        """Independent stream-only merchant scan, never blocking combat."""
+        if self.stream_live_lookup is None or now < self._next_traveling_moogle_scan:
+            return False
+        self._next_traveling_moogle_scan = now + 30.0
+        try:
+            live = bool(self.stream_live_lookup())
+            result = self.game.maybe_spawn_traveling_moogle(stream_live=live, now=int(now))
+            if result.ok and (result.data.get("merchant_spawned") or result.data.get("merchant_departed")):
+                self._last_action = "traveling-moogle-arrived" if result.data.get("merchant_spawned") else "traveling-moogle-departed"
+                self._publish(result)
+                return True
+        except Exception:
+            LOGGER.exception("Traveling Moogle scheduling failed; continuing combat")
         return False
 
     def status(self) -> dict[str, Any]:
@@ -650,6 +667,10 @@ class EncounterDaemon:
                     self._tick_world_event_spawn(now)
                 except Exception:
                     LOGGER.exception("World Event scheduling scan failed; continuing other activities")
+                try:
+                    self._tick_traveling_moogle(now)
+                except Exception:
+                    LOGGER.exception("Traveling Moogle scan failed; continuing other activities")
                 snapshot = self.game.combat_snapshot()
                 hunt_acted = self._tick_hunts(snapshot, now)
                 if hunt_acted:

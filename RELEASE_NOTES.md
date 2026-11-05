@@ -1,3 +1,10 @@
+# v2.1.1 — Live Stream Exploration & Traveling Moogle (November 5, 2026)
+
+- Stream-only `!explore` with nine varied outcome families and five-minute personal cooldown. Modest loot/XP/JP, possible minor harm or lost Gil, and no overlapping active adventures.
+- Autonomous Traveling Moogle merchant visits during confirmed LIVE streams, with randomized arrivals, twelve-minute duration, limited shared stock, rare consumables/materials and atomic Gil transactions. Chat commands: `!moogle`, `!merchant`, `!moogle buy <slot> [quantity]`.
+- Stream Activities and Player Guide now explain the new chat systems.
+- No schema migration or Portal Action protocol change. Existing Raid and Venture/World HUD overlays unchanged; release identity stays v2.1.1 — Adventure Tales.
+
 ## v2.1.1 — Adventure Tales (version-only update)
 
 - Version label updated from v2.1.0 to **v2.1.1**; the release name **Adventure Tales** is unchanged.

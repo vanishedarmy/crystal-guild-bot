@@ -218,6 +218,34 @@ class RPGCommands(commands.Component):
             return
         await send_result(ctx, self.game.dungeon_retreat(uid), limit=2)
 
+    @commands.command()
+    async def explore(self, ctx: commands.Context) -> None:
+        """Live-only mini adventure with varied low-pressure outcomes."""
+        if not await self._require_stream_live(ctx, "Wilderness exploration"):
+            return
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.stream_explore(uid, stream_live=True), limit=3)
+
+    @commands.command(aliases=["merchant", "travelingmoogle"])
+    async def moogle(self, ctx: commands.Context, *, request: str | None = None) -> None:
+        """Inspect and buy a numbered item from the shared traveling stall."""
+        if not await self._require_stream_live(ctx, "Traveling Moogle Merchant"):
+            return
+        if not request or request.strip().lower() in {"stock", "shop", "status"}:
+            await send_result(ctx, self.game.traveling_moogle_status(stream_live=True), limit=3)
+            return
+        parts = request.strip().split()
+        if len(parts) not in {2, 3} or parts[0].lower() != "buy":
+            await ctx.send("TRAVELING MOOGLE — Use !moogle to browse, then !moogle buy <slot> [quantity].")
+            return
+        try:
+            quantity = int(parts[2]) if len(parts) == 3 else 1
+        except ValueError:
+            await ctx.send("TRAVELING MOOGLE — Quantity must be a whole number from 1 to 5.")
+            return
+        uid, _, _ = self._identity(ctx)
+        await send_result(ctx, self.game.traveling_moogle_buy(uid, parts[1], quantity, stream_live=True), limit=3)
+
     @commands.command(aliases=["adv", "adventure"])
     async def venture(self, ctx: commands.Context) -> None:
         if not await self._require_stream_live(ctx, "Rally Venture"):
